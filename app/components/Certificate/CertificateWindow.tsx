@@ -805,76 +805,81 @@ class CertWindow extends React.Component<any, any> {
     );
   }
 
+  componentDidUpdate(prevProps) {
+    const { cloudCSPSettings, cloudCSPState, certificates } = this.props;
+    const { localize, locale } = this.context;
+
+    if (prevProps.cloudCSPState !== this.props.cloudCSPState) {
+      if (cloudCSPState.loaded) {
+        if (cloudCSPState.error) {
+          Materialize.toast(localize("CloudCSP.request_error", locale), 2000, "toast-request_error");
+        }
+
+        if (cloudCSPState.statusCode !== 200) {
+          Materialize.toast(`${localize("CloudCSP.request_error", locale)} : ${cloudCSPState.statusCode}`, 2000, "toast-request_error");
+        } else {
+          if (cloudCSPState.certificates) {
+            const countOfCertificates = cloudCSPState.certificates.length;
+            let testCount = 0;
+
+            for (const hcert of cloudCSPState.certificates) {
+              if (hcert) {
+                try {
+                  trusted.utils.Csp.installCertificateFromCloud(hcert.x509, cloudCSPSettings.authURL, cloudCSPSettings.restURL, hcert.id);
+
+                  testCount++;
+
+                  logger.log({
+                    certificate: hcert.subjectName,
+                    level: "info",
+                    message: "",
+                    operation: "Импорт сертификата",
+                    operationObject: {
+                      in: "CN=" + hcert.subjectFriendlyName + " (DSS)",
+                      out: "Null",
+                    },
+                    userName: USER_NAME,
+                  });
+                } catch (err) {
+                  logger.log({
+                    certificate: hcert.subjectName,
+                    level: "error",
+                    message: err.message ? err.message : err,
+                    operation: "Импорт сертификата",
+                    operationObject: {
+                      in: "CN=" + hcert.subjectFriendlyName + " (DSS)",
+                      out: "Null",
+                    },
+                    userName: USER_NAME,
+                  });
+                }
+              }
+            }
+
+            if (countOfCertificates && countOfCertificates === testCount) {
+              Materialize.toast(localize("CloudCSP.certificates_import_success", locale), 2000, "toast-certificates_import_success");
+            } else {
+              Materialize.toast(localize("CloudCSP.certificates_import_fail", locale), 2000, "toast-certificates_import_fail");
+            }
+          } else {
+            Materialize.toast(localize("CloudCSP.certificates_import_fail", locale), 2000, "toast-certificates_import_fail");
+          }
+
+          this.handleReloadCertificates();
+        }
+
+        resetCloudCSP();
+      }
+    }
+  }
+
   render() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { resetCloudCSP } = this.props;
-    const { certificates, cloudCSPSettings, cloudCSPState, crls, isLoading, isLoadingFromDSS } = this.props;
+    const { certificates, crls, isLoading, isLoadingFromDSS } = this.props;
     const { certificate, crl } = this.state;
     const { localize, locale } = this.context;
 
     if (isLoading || isLoadingFromDSS) {
       return <ProgressBars />;
-    }
-
-    if (cloudCSPState.loaded) {
-      if (cloudCSPState.error) {
-        Materialize.toast(localize("CloudCSP.request_error", locale), 2000, "toast-request_error");
-      }
-
-      if (cloudCSPState.statusCode !== 200) {
-        Materialize.toast(`${localize("CloudCSP.request_error", locale)} : ${cloudCSPState.statusCode}`, 2000, "toast-request_error");
-      } else {
-        if (cloudCSPState.certificates) {
-          const countOfCertificates = certificates.length;
-          let testCount = 0;
-
-          for (const hcert of cloudCSPState.certificates) {
-            if (hcert) {
-              try {
-                trusted.utils.Csp.installCertificateFromCloud(hcert.x509, cloudCSPSettings.authURL, cloudCSPSettings.restURL, hcert.id);
-
-                testCount++;
-
-                logger.log({
-                  certificate: hcert.subjectName,
-                  level: "info",
-                  message: "",
-                  operation: "Импорт сертификата",
-                  operationObject: {
-                    in: "CN=" + hcert.subjectFriendlyName + " (DSS)",
-                    out: "Null",
-                  },
-                  userName: USER_NAME,
-                });
-              } catch (err) {
-                logger.log({
-                  certificate: hcert.subjectName,
-                  level: "error",
-                  message: err.message ? err.message : err,
-                  operation: "Импорт сертификата",
-                  operationObject: {
-                    in: "CN=" + hcert.subjectFriendlyName + " (DSS)",
-                    out: "Null",
-                  },
-                  userName: USER_NAME,
-                });
-              }
-            }
-          }
-
-          if (countOfCertificates && countOfCertificates === testCount) {
-            Materialize.toast(localize("CloudCSP.certificates_import_success", locale), 2000, "toast-certificates_import_success");
-          } else {
-            Materialize.toast(localize("CloudCSP.certificates_import_fail", locale), 2000, "toast-certificates_import_fail");
-          }
-        } else {
-          Materialize.toast(localize("CloudCSP.certificates_import_fail", locale), 2000, "toast-certificates_import_fail");
-        }
-
-        this.handleReloadCertificates();
-      }
-
-      resetCloudCSP();
     }
 
     const ACTIVE_CERTIFICATE_REQUEST = certificate && certificate.category === REQUEST ? "active" : "not-active";
