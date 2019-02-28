@@ -151,7 +151,7 @@ class ServicesWindow extends React.PureComponent<IServicesWindowProps, IServices
             <div className="add-certs-cervices">
               <ul className="collapsible" data-collapsible="accordion">
                 <li>
-                  <div className="collapsible-header color active">
+                  <div className="collapsible-header color active" style={{fontSize: "75%"}}>
                     <i className="material-icons left connect" />
                     {localize("Services.info", locale)}
                   </div>
@@ -167,7 +167,7 @@ class ServicesWindow extends React.PureComponent<IServicesWindowProps, IServices
                   </div>
                 </li>
                 <li>
-                  <div className="collapsible-header color" id="certSection">
+                  <div className="collapsible-header color" id="certSection" style={{fontSize: "75%"}}>
                     <i className="material-icons left cert" />
                     {localize("Services.service_certificates", locale)}
                   </div>
