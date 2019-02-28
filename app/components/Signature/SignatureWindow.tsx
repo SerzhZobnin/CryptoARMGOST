@@ -523,15 +523,7 @@ class SignatureWindow extends React.Component<ISignatureWindowProps, ISignatureW
           const documents: any[] = [];
 
           for (const file of filesForResign) {
-            let cmsContext = null;
-            if (fileCoding(file.fullpath) === trusted.DataFormat.PEM) {
-              cmsContext = fs.readFileSync(file.fullpath, "utf8");
-              cmsContext = cmsContext.replace("-----BEGIN CMS-----\n", "");
-              cmsContext = cmsContext.replace("\n-----END CMS-----", "");
-              cmsContext = cmsContext.replace(/\n/g, "");
-            } else {
-              cmsContext = fs.readFileSync(file.fullpath, "base64");
-            }
+            const cmsContext = fs.readFileSync(file.fullpath, "base64");
 
             documents.push({ Content: cmsContext, Name: file.filename });
           }
