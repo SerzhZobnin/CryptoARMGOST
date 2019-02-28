@@ -71,15 +71,6 @@
       window.tcerr = err;
     }
 
-    if (!trusted) {
-      try {
-        trusted = require('trusted-crypto-nogost');
-	window.tcerr = "";
-      } catch (err) {
-        window.tcerr = err;
-      }
-    }
-
     path = require('path');
     fs = require('fs');
     os = require('os');
