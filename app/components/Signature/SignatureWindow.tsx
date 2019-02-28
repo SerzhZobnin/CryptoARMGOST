@@ -997,6 +997,8 @@ class SignatureWindow extends React.Component<ISignatureWindowProps, ISignatureW
   }
 
   onTokenGet = (token: string) => {
+    const { signer } = this.props;
+
     if (!token || !token.length) {
       return;
     }
@@ -1005,7 +1007,11 @@ class SignatureWindow extends React.Component<ISignatureWindowProps, ISignatureW
 
     this.handleCloseModalServiceSignParams();
 
-    this.handleShowModalDssPin();
+    if (signer.hasPin) {
+      this.handleShowModalDssPin();
+    } else {
+      this.signInService("");
+    }
   }
 
   getSignatureInfo() {

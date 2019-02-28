@@ -40,13 +40,14 @@ export function changeServiceName(id: string, name: string) {
   };
 }
 
-export function addServiceCertificate(certificate: trusted.pki.Certificate, service: string, serviceId: string, certificateId?: string) {
+export function addServiceCertificate(certificate: trusted.pki.Certificate, service: string, serviceId: string, certificateProps?: string) {
   const certProps = {
     active: false,
     category: "MY",
     format: "PEM",
+    hasPin: certificateProps.hasPin,
     hash: certificate.thumbprint,
-    id: certificateId ? certificateId : service + "_" + serviceId + "_" + certificate.thumbprint,
+    id: certificateProps.id ? certificateProps.id : service + "_" + serviceId + "_" + certificate.thumbprint,
     issuerFriendlyName: certificate.issuerFriendlyName,
     issuerName: certificate.issuerName,
     key: "1",
@@ -60,7 +61,7 @@ export function addServiceCertificate(certificate: trusted.pki.Certificate, serv
     serviceId,
     signatureAlgorithm: certificate.signatureAlgorithm,
     signatureDigestAlgorithm: certificate.signatureDigestAlgorithm,
-    status: true,
+    status: certificateProps.status,
     subjectFriendlyName: certificate.subjectFriendlyName,
     subjectName: certificate.subjectName,
     verified: true,

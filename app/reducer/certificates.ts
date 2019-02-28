@@ -9,6 +9,7 @@ export const CertificateModel = Record({
   active: false,
   category: null,
   format: null,
+  hasPin: null,
   hash: null,
   id: null,
   issuerFriendlyName: null,

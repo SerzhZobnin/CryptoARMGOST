@@ -58,8 +58,10 @@ export function getCertificates(authURL: string, restURL: string, token: string)
               for (const certificate of certificates) {
                 const x509 = createX509FromString(certificate.CertificateBase64);
 
+                const hasPin = certificate.hasOwnProperty("HasPin") ? certificate.HasPin : true;
+
                 if (x509) {
-                  hcertificates.push({id: certificate.ID, x509});
+                  hcertificates.push({id: certificate.ID, x509, hasPin, status: certificate.Status && certificate.Status.Value === "ACTIVE"});
                 }
               }
 

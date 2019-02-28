@@ -392,6 +392,8 @@ class EncryptWindow extends React.Component<any, any> {
   }
 
   onTokenGet = (token: string) => {
+    const { decryptedInDSS } = this.state;
+
     if (!token || !token.length) {
       return;
     }
@@ -400,7 +402,12 @@ class EncryptWindow extends React.Component<any, any> {
 
     this.handleCloseModalServiceSignParams();
 
-    this.handleShowModalDssPin();
+    if (decryptedInDSS.dssRecipient.hasPin) {
+      this.handleShowModalDssPin();
+    } else {
+      this.decryptInService("");
+    }
+
   }
 
   showModalDssPin = () => {

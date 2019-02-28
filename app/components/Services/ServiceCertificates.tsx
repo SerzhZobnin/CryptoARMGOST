@@ -104,7 +104,7 @@ class ServiceCertificates extends React.PureComponent<IServiceCertificatesProps,
 
       if (this.props.dss.certificates) {
         for (const certificate of this.props.dss.certificates) {
-          this.props.addServiceCertificate(certificate.x509, CRYPTOPRO_DSS, this.props.serviceId, certificate.id);
+          this.props.addServiceCertificate(certificate.x509, CRYPTOPRO_DSS, this.props.serviceId, certificate);
 
           logger.log({
             certificate: certificate.x509.subjectName,
