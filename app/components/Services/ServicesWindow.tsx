@@ -143,7 +143,7 @@ class ServicesWindow extends React.PureComponent<IServicesWindowProps, IServices
                   <ul id="dropdown-btn-for-service" className="dropdown-content">
                     <li><a onClick={() => this.handleShowModalChangeService()}>{localize("Services.change", locale)}</a></li>
                     <li><a onClick={() => this.handleShowModalDeleteService()}>{localize("Services.delete", locale)}</a></li>
-                    <li><a onClick={this.handleReloadCertificates}>{localize("Services.service_certificates", locale)}</a></li>
+                    <li><a onClick={this.handleReloadCertificates}>{localize("Common.update", locale)}</a></li>
                   </ul>
                 </li>
               </ul>
