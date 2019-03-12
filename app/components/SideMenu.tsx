@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import {
   LOCATION_CERTIFICATES, LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
-  LOCATION_ENCRYPT, LOCATION_EVENTS, LOCATION_HELP,
+  LOCATION_ENCRYPT, LOCATION_EVENTS,
   LOCATION_LICENSE, LOCATION_SERVICES, LOCATION_SIGN,
 } from "../constants";
 
@@ -80,10 +80,6 @@ class SideMenu extends React.Component<{}, {}> {
               <Link to={LOCATION_LICENSE}>
                 {localize("License.License", locale)}
                 <i className="material-icons left license">license</i>
-              </Link>
-              <Link to={LOCATION_HELP}>
-                {localize("Help.Help", locale)}
-                <i className="material-icons left help">help</i>
               </Link>
               <Link to="/" onClick={() => {
                 remote.getGlobal("sharedObject").isQuiting = true;

@@ -158,7 +158,6 @@ export const LOCATION_CONTAINERS = "/containers";
 export const LOCATION_DOCUMENTS = "/documents";
 export const LOCATION_ABOUT = "/about";
 export const LOCATION_LICENSE = "/license";
-export const LOCATION_HELP = "/help";
 export const LOCATION_EVENTS = "/events";
 export const LOCATION_SERVICES = "/services";
 
