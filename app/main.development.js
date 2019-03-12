@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu } = require('electron');
+const { app, BrowserWindow, Tray, Menu, protocol } = require('electron');
 const MenuBuilder = require('./menu');
 
 let mainWindow = null;
@@ -95,6 +95,10 @@ app.on('ready', async () => {
 
   mainWindow.loadURL(`file://${__dirname}/resources/index.html`);
   preloader.loadURL(`file://${__dirname}/resources/preloader_index.html`);
+
+  protocol.registerHttpProtocol('urn', (request, callback) => {
+		callback({url: request.url, method: request.method});
+  });
 
   if (options.indexOf("devtools") !== -1) {
     // Open the DevTools.

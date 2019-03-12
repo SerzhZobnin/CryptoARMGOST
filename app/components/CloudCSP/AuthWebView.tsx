@@ -19,12 +19,12 @@ class AuthWebView extends React.PureComponent<IAuthWebViewProps, IAuthWebViewSta
     this.state = {
       isLoading: false,
       // tslint:disable-next-line:max-line-length
-      url: `${this.props.auth}/authorize?client_id=digt&response_type=token&scope=dss&redirect_uri=https://net.trusted.ru/idp/sso/authorize?auth_type=dss&resource=https://dss.cryptopro.ru/SignServer/rest/api/certificates`,
+      url: `${this.props.auth}/authorize?client_id=cryptoarm&response_type=token&scope=dss&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob%3Aauto&resource=https%3A%2F%2Fdss.cryptopro.ru%2FSignServer%2Frest%2Fapi%2Fcertificates`,
     };
   }
 
   componentDidMount() {
-    const webview = document.querySelector("webview");
+    const webview = document.getElementById("webview");
 
     if (webview) {
       webview.addEventListener("did-start-loading", this.loadStart);
@@ -41,7 +41,7 @@ class AuthWebView extends React.PureComponent<IAuthWebViewProps, IAuthWebViewSta
         {
           isLoading ? <ProgressBars /> : null
         }
-        <webview src={this.state.url} autosize={true} style={{ height: "400px" }}></webview>
+        <webview id="webview" src={this.state.url} autosize={true} style={{ height: "400px" }}></webview>
       </React.Fragment>
     );
   }
@@ -55,7 +55,7 @@ class AuthWebView extends React.PureComponent<IAuthWebViewProps, IAuthWebViewSta
   }
 
   redirect = (details) => {
-    const regex = /^https:\/\/net.trusted.ru\/idp\/sso\/authorize\?auth_type=dss&access_token=([^&]*)/;
+    const regex = /urn:ietf:wg:oauth:2\.0:oob:auto\?access_token=([^&]*)/;
     const mathes = regex.exec(details.newURL);
     if (mathes) {
       const token = mathes[1];
