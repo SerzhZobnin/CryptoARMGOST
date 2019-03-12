@@ -20,7 +20,6 @@ export default {
     developer: "Компания-разработчик",
     email: "Email",
     error_message_send: "Ошибка при отправке сообщения",
-    feedback_description: "Сообщить разработчикам об обнаруженных проблемах или предложить идеи по улучшению программы",
     info: "info@trusted.ru",
     info_about_certificate: "Централизованное управление локальными и облачными хранилищами сертификатов",
     info_about_encrypt: "Защита пакетов документов и произвольного контента с помощью шифрования в адрес одного или нескольких получателей",
@@ -369,11 +368,13 @@ export default {
   Help: {
     Help: "СПРАВКА",
     Important: "Важно!",
+    feedback_description: "Сообщить разработчикам об обнаруженных проблемах или предложить идеи по улучшению программы:",
     help: "Справка",
     link_shop: "https://cryptoarm.ru/shop/cryptoarm-gost",
     link_shop_name: " КриптоАРМ.RU",
     link_user_guide: "https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost-1-4.pdf",
     link_user_guide_name: " КриптоАРМ ГОСТ Руководство пользователя.pdf",
+    user_guide: "Руководство пользователя на программный продукт можно получить по ссылке: ",
   },
   Key: {
     key_load_failed: "Не удалось прочитать ключ",

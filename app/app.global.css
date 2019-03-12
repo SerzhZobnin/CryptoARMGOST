@@ -3067,6 +3067,12 @@ a.hlink {
     border-bottom: none;
 }
 
+.help_paragraf{
+  font-size: 14px;
+  text-align: justify;
+  text-indent: 20px;
+}
+
 a.help_paragraf {
     padding-left: 10px;
 }

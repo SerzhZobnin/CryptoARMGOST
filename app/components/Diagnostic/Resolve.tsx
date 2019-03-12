@@ -37,7 +37,7 @@ class Resolve extends React.Component<IResolveProps, {}> {
               {localize("Problems.resolve_6_2", locale)}
             </p>
             <p className="help_paragraf">{localize("Problems.resolve_6_3", locale)}
-              <a className="hlink" onClick={(event) => this.gotoLink("https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost.pdf")}>
+              <a className="hlink" onClick={(event) => this.gotoLink(localize("Help.link_user_guide", locale))}>
                 {localize("Help.link_user_guide_name", locale)}
               </a>
             </p>

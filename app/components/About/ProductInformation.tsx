@@ -7,7 +7,7 @@ class ProductInformation extends React.Component<{}, {}> {
     localize: PropTypes.func,
   };
 
-  shouldComponentUpdate(nextContext: {locale: string}) {
+  shouldComponentUpdate(nextContext: { locale: string }) {
     return (this.context.locale !== nextContext.locale) ? true : false;
   }
 
@@ -51,7 +51,7 @@ class ProductInformation extends React.Component<{}, {}> {
                   <div className="contact-icon"><i className="mail_contact_icon"></i></div>
                   <div className="h6 text-center"><a href="mailto:info@trusted.ru">{localize("About.info", locale)}</a></div>
                 </div>
-            </div>
+              </div>
             </div>
             <div className="row">
               <span className="card-title sub">{localize("About.AppVersion", locale)}</span>

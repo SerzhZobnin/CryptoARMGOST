@@ -20,7 +20,6 @@ export default {
     developer: "Company-developer",
     email: "Email",
     error_message_send: "Message failed to send",
-    feedback_description: "Report developers about any problems or suggest ideas for improving the program",
     info: "info@trusted.plus",
     info_about_certificate: "Centralized management of local and cloud-based certificate storages",
     info_about_encrypt: "Protection of your documents and any other content by using encryption to address one or more recipients",
@@ -369,11 +368,13 @@ export default {
   Help: {
     Help: "HELP",
     Important: "Important!",
+    feedback_description: "Report developers about any problems or suggest ideas for improving the program:",
     help: "Help",
     link_shop: "https://cryptoarm.ru/shop/cryptoarm-gost",
     link_shop_name: " КриптоАРМ.RU",
-    link_user_guide: "https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost.pdf",
+    link_user_guide: "https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost-1-4.pdf",
     link_user_guide_name: " КриптоАРМ ГОСТ Руководство пользователя.pdf",
+    user_guide: "Documentation for the software product can be obtained from the link: ",
   },
   Key: {
     key_load_failed: "Error load key",
