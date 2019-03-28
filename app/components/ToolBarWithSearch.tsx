@@ -1,6 +1,9 @@
+import { execFileSync } from "child_process";
+import * as os from "os";
 import PropTypes from "prop-types";
 import React from "react";
 import SearchElement from "../Filters/SearchElement";
+import { fileExists } from "../utils";
 
 interface IToolBarWithSearchProps {
   disable?: string;
@@ -44,7 +47,14 @@ export class ToolBarWithSearch extends React.Component<IToolBarWithSearchProps, 
         <ul id="dropdown-btn-import" className="dropdown-content">
           <li><a onClick={this.props.reloadCertificates}>{localize("Common.update_list", locale)}</a></li>
           <li><a onClick={this.certImport}>{localize("Certificate.cert_import_from_file", locale)}</a></li>
-          {(Number(this.getCPCSPVersion().charAt(0)) < 5) ? null : <li><a onClick={this.props.handleShowModalCloudCSP}>{localize("CloudCSP.cert_import_from_cloudCSP", locale)}</a></li>}
+          {
+            (Number(this.getCPCSPVersion().charAt(0)) < 5) ? null :
+              <li>
+                <a onClick={this.importFromCloudCSP}>
+                  {localize("CloudCSP.cert_import_from_cloudCSP", locale)}
+                </a>
+              </li>
+          }
           <li><a onClick={this.props.handleShowModalCertificateRequest}>{localize("CSR.create_request", locale)}</a></li>
         </ul>
       </li>;
@@ -70,6 +80,20 @@ export class ToolBarWithSearch extends React.Component<IToolBarWithSearchProps, 
         {btn}
       </ul>
     </nav>;
+  }
+
+  importFromCloudCSP = () => {
+    if (os.type() === "Windows_NT") {
+      const executablePath = "C:\\Program Files (x86)\\Common Files\\Crypto Pro\\Shared\\cptools.exe";
+
+      if (fileExists(executablePath)) {
+        execFileSync(executablePath);
+
+        return;
+      }
+    }
+
+    this.props.handleShowModalCloudCSP();
   }
 
   getCPCSPVersion = () => {
