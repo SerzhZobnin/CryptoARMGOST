@@ -23,11 +23,29 @@ if (remote.getGlobal("sharedObject").logcrypto) {
   window.logger = trusted.utils.Logger.start(TRUSTED_CRYPTO_LOG);
 }
 
-class MenuBar extends React.Component<any, {}> {
+interface IMenuBarState {
+  isMaximized: boolean;
+}
+
+class MenuBar extends React.Component<any, IMenuBarState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
+
+  constructor(props: any) {
+    super(props);
+    this.state = ({
+      isMaximized: false,
+    });
+  }
+
+  maximizeWindow() {
+    const window = remote.getCurrentWindow();
+    window.isMaximized() ? window.unmaximize() : window.maximize();
+
+    this.setState({ isMaximized: !this.state.isMaximized });
+  }
 
   minimizeWindow() {
     remote.getCurrentWindow().minimize();
@@ -36,7 +54,7 @@ class MenuBar extends React.Component<any, {}> {
   closeWindow() {
     const { localize, locale } = this.context;
     const { cloudCSPSettings, encSettings, recipients,
-       saveToDocuments, signSettings, signer, tempContentOfSignedFiles } = this.props;
+      saveToDocuments, signSettings, signer, tempContentOfSignedFiles } = this.props;
 
     if (this.isFilesFromSocket()) {
       this.removeAllFiles();
@@ -56,7 +74,7 @@ class MenuBar extends React.Component<any, {}> {
       },
     });
 
-    for (const filePath of tempContentOfSignedFiles ) {
+    for (const filePath of tempContentOfSignedFiles) {
       if (fileExists(filePath)) {
         fs.unlinkSync(filePath);
       }
@@ -161,6 +179,11 @@ class MenuBar extends React.Component<any, {}> {
                   <li>
                     <a className="minimize-window-btn waves-effect waves-light" onClick={this.minimizeWindow.bind(this)}>
                       <i className="material-icons">remove</i>
+                    </a>
+                  </li>
+                  <li>
+                    <a className="maximize-window-btn waves-effect waves-light" onClick={this.maximizeWindow.bind(this)}>
+                      <i className="material-icons">{this.state.isMaximized ? "filter_none" : "crop_square"}</i>
                     </a>
                   </li>
                   <li>
