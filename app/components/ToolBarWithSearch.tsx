@@ -84,7 +84,11 @@ export class ToolBarWithSearch extends React.Component<IToolBarWithSearchProps, 
 
   importFromCloudCSP = () => {
     if (os.type() === "Windows_NT") {
-      const executablePath = "C:\\Program Files (x86)\\Common Files\\Crypto Pro\\Shared\\cptools.exe";
+      let executablePath = "C:\\Program Files (x86)\\Common Files\\Crypto Pro\\Shared\\cptools.exe";
+
+      if (os.arch() !== "x64") {
+        executablePath = "C:\\Program Files\\Common Files\\Crypto Pro\\Shared\\cptools.exe";
+      }
 
       if (fileExists(executablePath)) {
         execFileSync(executablePath);
