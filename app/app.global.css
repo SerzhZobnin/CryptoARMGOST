@@ -2514,10 +2514,7 @@ a.cert-back-btn.waves-effect.waves-light {
     height: 16px;
     width: 16px;
     position: absolute;
-    margin-left: 340px;
-    top: 26px;
-    padding-left: 0px;
-    left: -2px;
+    margin-top: 2px;
 }
 
 .short {
@@ -2533,11 +2530,7 @@ a.cert-back-btn.waves-effect.waves-light {
     background-size: 100%;
     height: 20px;
     width: 20px;
-    position: absolute;
-    margin-left: 336px;
-    top: 2px;
-    padding-left: 0px;
-    left: 0px;
+    margin-top: 2px;
 }
 
 .cert_status_error {
@@ -2545,31 +2538,7 @@ a.cert-back-btn.waves-effect.waves-light {
     background-size: 100%;
     height: 20px;
     width: 20px;
-    position: absolute;
-    margin-left: 336px;
-    top: 2px;
-    padding-left: 0px;
-    left: 0px;
-}
-
-.cert_status_ok.short {
-    margin-left: 285px;
-}
-
-.cert_status_error.short {
-    margin-left: 285px;
-}
-
-.cert_status_ok.long{
-    margin-left: 355px;
-}
-
-.cert_status_error.long {
-    margin-left: 355px;
-}
-
-.key.long{
-    margin-left: 359px;
+    margin-top: 2px;
 }
 
 /*---------------вход по сертификату---------------*/
@@ -2856,7 +2825,6 @@ i.material-icons.left.chain_10 {
 }
 .collection .collection-item .collection-title.si-title,
 .collection .collection-item .collection-info.si-info {
-    margin-left: 45px;
     padding: 0;
     height: 15px;
     line-height: 15px;

@@ -73,7 +73,7 @@ class CertificateBlockForSignature extends React.Component<any, any> {
         <div className="add-certs">
           <div className="add-certs-item">
             <div className="row">
-              <div className="col s11">
+              <div className="col s10">
                 <CertificateInfo certificate={signer} />
               </div>
               <div className="col s1">

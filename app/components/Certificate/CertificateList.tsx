@@ -135,7 +135,7 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
                     selectedCert={() => selectedCert(cert)}
                     isOpen={isItemOpened(cert.id.toString())}
                     toggleOpen={toggleOpenItem(cert.id.toString())}
-                    style={style} />;
+                    style={style} />
                 </ul>
               );
             }}

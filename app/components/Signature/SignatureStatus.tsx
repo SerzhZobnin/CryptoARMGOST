@@ -65,7 +65,9 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
               year: "numeric",
             })}</div>
           </div>
-          <div className={icon} />
+          <div className="col s1">
+            <div className={icon} />
+          </div>
         </div>
       </div>
     );

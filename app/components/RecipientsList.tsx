@@ -49,15 +49,15 @@ class RecipientsList extends React.Component<any, any> {
             let curKeyStyle;
             let rectangleStyle;
             if (element.status) {
-              (dialogType === "modal") ? curStatusStyle = "cert_status_ok short" : curStatusStyle = "cert_status_ok long";
+              curStatusStyle = "cert_status_ok";
               rectangleStyle = rectangleValidStyle;
             } else {
-              (dialogType === "modal") ? curStatusStyle = "cert_status_error short" : curStatusStyle = "cert_status_error long";
+              curStatusStyle = "cert_status_error";
               rectangleStyle = rectangleUnvalidStyle;
             }
 
             if (element.key.length > 0) {
-              (dialogType === "modal") ? curKeyStyle = "key short " : curKeyStyle = "key long ";
+              curKeyStyle = "key ";
               if (curKeyStyle) {
                 if (element.service) {
                   if (element.service === MEGAFON) {
@@ -74,14 +74,23 @@ class RecipientsList extends React.Component<any, any> {
             }
 
             return <div className="collection-item avatar certs-collection" key={element.id + 1}
-             onClick={() => this.handleClick(element)}
-             onDoubleClick={() => this.handleDoubleClick(element)}>
-              <div className="r-iconbox-link">
-                <div className={"rectangle"} style={rectangleStyle}></div>
-                <div className="collection-title pad-cert">{element.subjectFriendlyName}</div>
-                <div className="collection-info cert-info pad-cert">{element.issuerFriendlyName}
-                  <div className={curKeyStyle}></div>
-                  <div className={curStatusStyle}></div>
+              onClick={() => this.handleClick(element)}
+              onDoubleClick={() => this.handleDoubleClick(element)}>
+              <div className="row nobottom">
+                <div className="col s1" style={{ padding: 0, width: "0%" }}>
+                  <div className="rectangle" style={rectangleStyle} />
+                </div>
+                <div className="col s11">
+                  <div className="collection-title">{element.subjectFriendlyName}</div>
+                  <div className="collection-info cert-info ">{element.issuerFriendlyName}</div>
+                </div>
+                <div className="col s1">
+                  <div className="row nobottom">
+                    <div className={curStatusStyle} />
+                  </div>
+                  <div className="row nobottom">
+                    <div className={curKeyStyle} />
+                  </div>
                 </div>
               </div>
             </div>;

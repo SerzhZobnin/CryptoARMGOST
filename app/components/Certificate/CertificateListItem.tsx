@@ -74,12 +74,7 @@ class CertificateListItem extends React.Component<ICertificateListItemProps, {}>
       rectangleStyle = rectangleUnvalidStyle;
     }
 
-    if (operation === "encrypt" || operation === "sign") {
-      curKeyStyle = cert.key.length > 0 ? curKeyStyle = "key short " : curKeyStyle = "";
-      curStatusStyle += " short";
-    } else {
-      curKeyStyle = cert.key.length > 0 ? curKeyStyle = "key " : curKeyStyle = "";
-    }
+    curKeyStyle = cert.key.length > 0 ? curKeyStyle = "key " : curKeyStyle = "";
 
     if (curKeyStyle) {
       if (cert.service) {
@@ -101,14 +96,22 @@ class CertificateListItem extends React.Component<ICertificateListItemProps, {}>
       <div className="row certificate-list-item" id={cert.id}>
         <div className={"collection-item avatar certs-collection " + active}
           onClick={this.handleClick}>
-          <div className="rectangle" style={rectangleStyle}></div>
-          <div className="col s11">
-            <div className="collection-title ">{cert.subjectFriendlyName}</div>
-            <div className="collection-info cert-info ">{cert.issuerFriendlyName}</div>
-          </div>
-          <div className="col s1">
-            <div className={curKeyStyle}></div>
-            <div className={curStatusStyle}></div>
+          <div className="row nobottom">
+            <div className="col s1" style={{ padding: 0, width: "0%" }}>
+              <div className="rectangle" style={rectangleStyle} />
+            </div>
+            <div className="col s11">
+              <div className="collection-title">{cert.subjectFriendlyName}</div>
+              <div className="collection-info cert-info ">{cert.issuerFriendlyName}</div>
+            </div>
+            <div className="col s1">
+              <div className="row nobottom">
+                <div className={curStatusStyle} />
+              </div>
+              <div className="row nobottom">
+                <div className={curKeyStyle} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

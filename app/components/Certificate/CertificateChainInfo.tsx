@@ -126,8 +126,12 @@ class CertificateChainInfo extends React.Component<any, any> {
                 </div>
               </div>
               <div className="col s1">
-                <div className={curKeyStyle + " "}></div>
-                <div className={curStatusStyle + " "}></div>
+                <div className="row nobottom">
+                  <div className={curStatusStyle + " "} />
+                </div>
+                <div className="row">
+                  <div className={curKeyStyle + " "} />
+                </div>
               </div>
             </div>
           </div>);
