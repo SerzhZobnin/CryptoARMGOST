@@ -14,15 +14,15 @@ class MainWindow extends React.Component<{}, {}> {
 
     return (
       <div className="main">
-        <div className="content">
+        <div className="content" style={{flexDirection: "column"}}>
           <div className="main-window">
             <div className="main-window-workspace">
               <div className="header image">
                 <div className="row">
-                  <div className="col s3">
+                  <div className="col s3 l1">
                     <i className="logo" />
                   </div>
-                  <div className="col s9">
+                  <div className="col s9 l11">
                     <div className="white-text cryptobanner">
                       <p>{localize("About.info_about_product", locale)}</p>
                     </div>
