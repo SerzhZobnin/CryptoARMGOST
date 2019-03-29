@@ -1511,14 +1511,6 @@ display: inline-block;
     color:gray;
 }
 
-.card.infoapp {
-  height: 532px;
-}
-
-.card.contact {
-  height: 447px;
-}
-
 span.card-title {
   color: #bf3817;
   font-size: 20px;

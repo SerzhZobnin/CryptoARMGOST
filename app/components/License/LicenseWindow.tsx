@@ -20,16 +20,14 @@ class LicenseWindow extends React.Component<{}, {}> {
     const { localize, locale } = this.context;
 
     return (
-      <div className="main">
-        <div className="license_background">
-          <div className="row card">
-            <LicenseInfo />
-            <div className="row nobottom">
-              <LicenseStatus />
-            </div>
-            <div className="row" />
-            <LicenseInfoCSP />
+      <div className="content">
+        <div className="row">
+          <LicenseInfo />
+          <div className="row nobottom">
+            <LicenseStatus />
           </div>
+          <div className="row" />
+          <LicenseInfoCSP />
         </div>
         <LicenseSetupModal text_info={localize("License.entered_the_key", locale)} closeWindow={function () {
           $("#add-licence-key").closeModal();
