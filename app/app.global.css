@@ -1488,9 +1488,6 @@ display: inline-block;
 }
 
 .license_background{
-    margin-top: 1px;
-    width: 800px;
-    height: 600px;
     background: url(./resources/image/geo_gray.png);
 }
 
@@ -3030,8 +3027,6 @@ a.hlink {
     left: 10px;
     right: 10px;
     bottom: 10px;
-    width: 780px;
-    height: 530px;
 }
 
 .input-field.col.s12.noborder {

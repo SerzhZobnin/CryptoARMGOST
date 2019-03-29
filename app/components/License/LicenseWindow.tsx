@@ -31,8 +31,6 @@ class LicenseWindow extends React.Component<{}, {}> {
             <LicenseInfoCSP />
           </div>
         </div>
-        <div className="onlinelic_area">
-        </div>
         <LicenseSetupModal text_info={localize("License.entered_the_key", locale)} closeWindow={function () {
           $("#add-licence-key").closeModal();
         }} icon="" />
