@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { List } from "react-virtualized";
+import { AutoSizer, List } from "react-virtualized";
 import { loadAllCertificates, verifyCertificate } from "../../AC";
 import accordion from "../../decorators/accordion";
 import { filteredCertificatesSelector } from "../../selectors";
@@ -110,37 +110,41 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
           {head}
         </div>
         <div className="collapsible-body">
-          <List
-            height={this.getListHeight(elements.length)}
-            overscanRowCount={1}
-            rowCount={elements.length}
-            rowHeight={ROW_HEIGHT}
-            rowRenderer={({ index, key, style }) => {
-              if (!elements.length || this.state.activeSection !== name) {
-                return null;
-              }
+          <AutoSizer disableHeight>
+            {({ width }) => (
+              <List
+                height={this.getListHeight(elements.length)}
+                overscanRowCount={1}
+                rowCount={elements.length}
+                rowHeight={ROW_HEIGHT}
+                rowRenderer={({ index, key, style }) => {
+                  if (!elements.length || this.state.activeSection !== name) {
+                    return null;
+                  }
 
-              const cert = elements[index];
+                  const cert = elements[index];
 
-              return (
-                <ul
-                  key={key}
-                  style={style}
-                >
-                  <CertificateListItem
-                    key={cert.id}
-                    cert={cert}
-                    chooseCert={() => activeCert(cert)}
-                    operation={operation}
-                    selectedCert={() => selectedCert(cert)}
-                    isOpen={isItemOpened(cert.id.toString())}
-                    toggleOpen={toggleOpenItem(cert.id.toString())}
-                    style={style} />
-                </ul>
-              );
-            }}
-            width={operation === "certificate" ? 377 : 318}
-          />
+                  return (
+                    <ul
+                      key={key}
+                      style={style}
+                    >
+                      <CertificateListItem
+                        key={cert.id}
+                        cert={cert}
+                        chooseCert={() => activeCert(cert)}
+                        operation={operation}
+                        selectedCert={() => selectedCert(cert)}
+                        isOpen={isItemOpened(cert.id.toString())}
+                        toggleOpen={toggleOpenItem(cert.id.toString())}
+                        style={style} />
+                    </ul>
+                  );
+                }}
+                width={width}
+              />
+            )}
+          </AutoSizer>
         </div>
       </li>
     );

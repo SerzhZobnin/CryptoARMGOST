@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { Column, Table } from "react-virtualized";
+import { AutoSizer, Column, Table } from "react-virtualized";
 import { loadAllEvents, removeAllEvents } from "../../AC/eventsActions";
 import { filteredEventsSelector } from "../../selectors/eventsSelectors";
 import "../../table.global.css";
@@ -97,101 +97,105 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
 
     return (
       <React.Fragment>
-        <Table
-          ref="Table"
-          disableHeader={disableHeader}
-          height={475}
-          width={780}
-          headerHeight={30}
-          noRowsRenderer={this.noRowsRenderer}
-          headerClassName={"headerColumn"}
-          rowHeight={45}
-          rowClassName={this.rowClassName}
-          overscanRowCount={5}
-          rowGetter={rowGetter}
-          rowCount={sortedList.size}
-          scrollToIndex={scrollToIndex}
-          sort={this.sort}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-        >
-          <Column
-            cellRenderer={({ cellData }) => {
-              return (new Date(cellData)).toLocaleDateString(locale, {
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                month: "numeric",
-                year: "numeric",
-              });
-            }}
-            dataKey="timestamp"
-            disableSort={false}
-            headerRenderer={this.headerRenderer}
-            width={130}
-            label={localize("EventsTable.date_and_time", locale)}
-          />
-          <Column
-            dataKey="operation"
-            disableSort={false}
-            headerRenderer={this.headerRenderer}
-            width={180}
-            label={localize("EventsTable.operation", locale)}
-          />
-          <Column
-            dataKey="userName"
-            disableSort={false}
-            headerRenderer={this.headerRenderer}
-            width={120}
-            label={localize("EventsTable.user_name", locale)}
-          />
-          <Column
-            cellRenderer={({ cellData }) => {
-              return (
-                <div className="row nobottom">
-                  <div className="col s12">
-                    <div className="truncate">{cellData.in}</div>
-                    <div className="truncate" style={{ opacity: .6 }}> -> {cellData.out}</div>
-                  </div>
-                </div>
-              );
-            }}
-            dataKey="operationObject"
-            disableSort
-            headerRenderer={this.headerRenderer}
-            width={280}
-            label={localize("EventsTable.operation_object", locale)}
-          />
-          <Column
-            cellRenderer={({ cellData }) => {
-              let iconStatus;
-
-              switch (cellData) {
-                case "info":
-                  iconStatus = "icon_operation_status_success";
-                  break;
-                case "error":
-                  iconStatus = "icon_operation_status_error";
-                  break;
-              }
-
-              return (
-                <div className="row nobottom">
-                  <div className="valign-wrapper">
-                    <div className="col s12">
-                      <div className={iconStatus}></div>
+        <AutoSizer disableHeight>
+          {({ width }) => (
+            <Table
+              ref="Table"
+              disableHeader={disableHeader}
+              height={475}
+              width={width}
+              headerHeight={30}
+              noRowsRenderer={this.noRowsRenderer}
+              headerClassName={"headerColumn"}
+              rowHeight={45}
+              rowClassName={this.rowClassName}
+              overscanRowCount={5}
+              rowGetter={rowGetter}
+              rowCount={sortedList.size}
+              scrollToIndex={scrollToIndex}
+              sort={this.sort}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+            >
+              <Column
+                cellRenderer={({ cellData }) => {
+                  return (new Date(cellData)).toLocaleDateString(locale, {
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    month: "numeric",
+                    year: "numeric",
+                  });
+                }}
+                dataKey="timestamp"
+                disableSort={false}
+                headerRenderer={this.headerRenderer}
+                width={130}
+                label={localize("EventsTable.date_and_time", locale)}
+              />
+              <Column
+                dataKey="operation"
+                disableSort={false}
+                headerRenderer={this.headerRenderer}
+                width={180}
+                label={localize("EventsTable.operation", locale)}
+              />
+              <Column
+                dataKey="userName"
+                disableSort={false}
+                headerRenderer={this.headerRenderer}
+                width={120}
+                label={localize("EventsTable.user_name", locale)}
+              />
+              <Column
+                cellRenderer={({ cellData }) => {
+                  return (
+                    <div className="row nobottom">
+                      <div className="col s12">
+                        <div className="truncate">{cellData.in}</div>
+                        <div className="truncate" style={{ opacity: .6 }}> -> {cellData.out}</div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            }}
-            dataKey="level"
-            disableSort={false}
-            headerRenderer={this.headerRenderer}
-            width={70}
-            label={localize("EventsTable.status", locale)}
-          />
-        </Table>
+                  );
+                }}
+                dataKey="operationObject"
+                disableSort
+                headerRenderer={this.headerRenderer}
+                width={280}
+                label={localize("EventsTable.operation_object", locale)}
+              />
+              <Column
+                cellRenderer={({ cellData }) => {
+                  let iconStatus;
+
+                  switch (cellData) {
+                    case "info":
+                      iconStatus = "icon_operation_status_success";
+                      break;
+                    case "error":
+                      iconStatus = "icon_operation_status_error";
+                      break;
+                  }
+
+                  return (
+                    <div className="row nobottom">
+                      <div className="valign-wrapper">
+                        <div className="col s12">
+                          <div className={iconStatus}></div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }}
+                dataKey="level"
+                disableSort={false}
+                headerRenderer={this.headerRenderer}
+                width={70}
+                label={localize("EventsTable.status", locale)}
+              />
+            </Table>
+          )}
+        </AutoSizer>
         {searchValue && foundEvents.length ?
           <div className="card navigationToolbar valign-wrapper">
             <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToFirstOfFoud}>first_page</i>
@@ -315,7 +319,7 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
       .update(
         // tslint:disable-next-line:no-shadowed-variable
         (eventsMap: any) => (sortDirection === SortDirection.DESC ? eventsMap.reverse() : eventsMap),
-    );
+      );
   }
 
   headerRenderer = ({ dataKey, label, sortBy, sortDirection }: { dataKey?: string, label?: string, sortBy?: string, sortDirection?: TSortDirection }) => {

@@ -81,7 +81,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     const disabledClass = documents.length ? "" : "disabled_docs";
 
     return (
-      <div className="content">
+      <div className="content-noflex">
         <div className="row">
           <div className="row halfbottom" />
 

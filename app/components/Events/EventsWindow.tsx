@@ -62,7 +62,7 @@ class EventsWindow extends React.Component<IEventsWindowProps & IEventsWindowDis
     const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
 
     return (
-      <div className="content">
+      <div className="content-noflex">
         <div className="row">
           <div className="row halfbottom" />
 

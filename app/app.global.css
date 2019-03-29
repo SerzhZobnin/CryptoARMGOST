@@ -113,13 +113,17 @@ nav .input-field input {
 
 .content {
     display:flex;
-    min-width: 800px;
-    min-height: 536px;
     border: 2px solid #bf3817;
     border-top: none;
     width: 100%;
     height: calc(100% - 48px);
     position: absolute;
+}
+.content-noflex {
+  border: 2px solid #bf3817;
+  width: 100%;
+  height: calc(100% - 48px);
+  position: absolute;
 }
 .content-tem {
     display: flex;
