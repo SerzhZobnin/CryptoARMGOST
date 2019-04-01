@@ -40,9 +40,9 @@ export default {
     product_name: "КриптоАРМ ГОСТ",
     send: "Отправить",
     username: "Имя",
-    version: "1.5.2",
+    version: "1.5.3",
     version_app: "Версия приложения",
-    version_full: "Версия продукта: 1.5.2",
+    version_full: "Версия продукта: 1.5.3",
   },
   Agreement: {
     Agreement: "СОГЛАШЕНИЕ",

@@ -40,9 +40,9 @@ export default {
     product_name: "CryptoARM GOST",
     send: "Send",
     username: "Name",
-    version: "1.5.2",
+    version: "1.5.3",
     version_app: "Application version",
-    version_full: "Version: 1.5.2",
+    version_full: "Version: 1.5.3",
   },
   Agreement: {
     Agreement: "AGREEMENT",
