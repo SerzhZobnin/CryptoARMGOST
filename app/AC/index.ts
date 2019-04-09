@@ -468,7 +468,7 @@ export function deleteFile(fileId: number) {
   };
 }
 
-export function verifySignature(fileId: string, svsURL?: string) {
+export function verifySignature(fileId: string, verifyDetached: boolean = true, svsURL?: string) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     const state = getState();
     const { connections, documents, files } = state;
@@ -485,9 +485,13 @@ export function verifySignature(fileId: string, svsURL?: string) {
       cms = signs.loadSign(file.fullpath);
 
       if (cms.isDetached()) {
-        // tslint:disable-next-line:no-conditional-assignment
-        if (!(cms = signs.setDetachedContent(cms, file.fullpath))) {
-          throw new Error(("err"));
+        if (verifyDetached) {
+          // tslint:disable-next-line:no-conditional-assignment
+          if (!(cms = signs.setDetachedContent(cms, file.fullpath))) {
+            throw new Error(("err"));
+          }
+        } else {
+          return;
         }
       }
 

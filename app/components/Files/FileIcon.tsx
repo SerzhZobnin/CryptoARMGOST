@@ -15,7 +15,7 @@ interface IFileRedux {
 
 interface IFileIconProps {
   file: IFileRedux;
-  verifySignature: (id: number) => void;
+  verifySignature: (id: number, verifyDetached?: boolean) => void;
 }
 
 class FileIcon extends React.Component<IFileIconProps, {}> {
@@ -29,7 +29,7 @@ class FileIcon extends React.Component<IFileIconProps, {}> {
         const signs = this.props.signatures.getIn(["entities", file.id]);
 
         if (!signs) {
-          this.props.verifySignature(file.id);
+          this.props.verifySignature(file.id, false);
         }
       }
 
@@ -49,7 +49,7 @@ class FileIcon extends React.Component<IFileIconProps, {}> {
         const signs = this.props.signatures.getIn(["entities", file.id]);
 
         if (!signs) {
-          this.props.verifySignature(file.id);
+          this.props.verifySignature(file.id, false);
         }
       }
 
