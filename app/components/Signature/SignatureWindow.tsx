@@ -91,7 +91,7 @@ interface ISignatureWindowProps {
     remoteId?: string;
     socket?: string;
   }>;
-  verifySignature: (file: string, verifyDetached?: boolean, svsURL?: string) => void;
+  verifySignature: (file: string, showOpenDialogForDetached?: boolean, svsURL?: string) => void;
   removeAllRemoteFiles: () => void;
   services: Map<any, any>;
   signatures: any;

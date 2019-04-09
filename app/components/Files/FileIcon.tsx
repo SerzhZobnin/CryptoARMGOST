@@ -15,7 +15,7 @@ interface IFileRedux {
 
 interface IFileIconProps {
   file: IFileRedux;
-  verifySignature: (id: number, verifyDetached?: boolean) => void;
+  verifySignature: (id: number, showOpenDialogForDetached?: boolean) => void;
 }
 
 class FileIcon extends React.Component<IFileIconProps, {}> {

@@ -26,22 +26,26 @@ export function loadSign(uri: string): trusted.cms.SignedData {
   }
 }
 
-export function setDetachedContent(cms: trusted.cms.SignedData, uri: string): trusted.cms.SignedData {
+export function setDetachedContent(cms: trusted.cms.SignedData, uri: string, showDialog: boolean = true): trusted.cms.SignedData {
   try {
     if (cms.isDetached()) {
       let tempURI: string;
       tempURI = uri.substring(0, uri.lastIndexOf("."));
       if (!fileExists(tempURI)) {
-        tempURI = dialog.showOpenDialog(null, { title: localize("Sign.sign_content_file", window.locale) + path.basename(uri), properties: ["openFile"] });
+        if (showDialog) {
+          tempURI = dialog.showOpenDialog(null, { title: localize("Sign.sign_content_file", window.locale) + path.basename(uri), properties: ["openFile"] });
 
-        if (tempURI) {
-          tempURI = tempURI[0];
-        }
+          if (tempURI) {
+            tempURI = tempURI[0];
+          }
 
-        if (!tempURI || !fileExists(tempURI)) {
-          $(".toast-verify_get_content_failed").remove();
-          Materialize.toast(localize("Sign.verify_get_content_failed", window.locale), 2000, "toast-verify_get_content_failed");
+          if (!tempURI || !fileExists(tempURI)) {
+            $(".toast-verify_get_content_failed").remove();
+            Materialize.toast(localize("Sign.verify_get_content_failed", window.locale), 2000, "toast-verify_get_content_failed");
 
+            return undefined;
+          }
+        } else {
           return undefined;
         }
       }
