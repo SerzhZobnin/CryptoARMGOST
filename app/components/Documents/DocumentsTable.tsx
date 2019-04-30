@@ -116,7 +116,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
             <Table
               ref="Table"
               disableHeader={disableHeader}
-              height={400}
+              height={800}
               width={width}
               headerHeight={30}
               noRowsRenderer={this.noRowsRenderer}

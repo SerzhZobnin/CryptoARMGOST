@@ -166,6 +166,7 @@
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-router-redux": "^5.0.0-alpha.9",
+    "react-treebeard": "^3.1.0",
     "react-virtualized": "^9.21.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.3.0",

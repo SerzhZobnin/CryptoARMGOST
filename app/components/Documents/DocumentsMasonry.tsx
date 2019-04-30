@@ -223,9 +223,10 @@ class DocumentsMasonry extends React.Component<IDocumentsMasonryProps & IDocumen
         cellMeasurerCache={this._cache}
         cellPositioner={this._cellPositioner}
         cellRenderer={this._cellRenderer}
-        height={400}
+        height={480}
         ref={this._setMasonryRef}
         width={width}
+        rowDirection="rtl"
       />
     );
   }

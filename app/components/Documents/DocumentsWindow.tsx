@@ -14,8 +14,10 @@ import {
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
 import Modal from "../Modal";
 import DeleteDocuments from "./DeleteDocuments";
+import DocumentsMasonry from "./DocumentsMasonry";
 import DocumentsTable from "./DocumentsTable";
 import FilterDocuments from "./FilterDocuments";
+import TreeExample from "./TreeExample";
 
 interface IDocumentsWindowProps {
   documents: any;
@@ -65,7 +67,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
       outDuration: 225,
     });
 
-    $(document).ready(function() {
+    $(document).ready(function () {
       $(".tooltipped").tooltip();
     });
   }
@@ -82,10 +84,23 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
     return (
       <div className="content-noflex">
-        <div className="row">
+        <div className="row nobottom">
           <div className="row halfbottom" />
-
-          <div className="col s10">
+          <div className="col s1">
+            <a className={`waves-effect waves-light`} data-position="bottom"
+              onClick={this.handleArhiveDocuments} >
+              <div className="row docmenu"><i className="material-icons docmenu_arhiver"></i></div>
+              <div className="row docmenu">Создать</div>
+            </a>
+          </div>
+          <div className="col s1">
+            <a className={`waves-effect waves-light`} data-position="bottom"
+              onClick={this.handleArhiveDocuments} >
+              <div className="row docmenu"><i className="material-icons docmenu_arhiver"></i></div>
+              <div className="row docmenu">Обновить</div>
+            </a>
+          </div>
+          <div className="col s8">
             <div className="input-field input-field-csr col s12 border_element find_box">
               <i className="material-icons prefix">search</i>
               <input
@@ -112,9 +127,23 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
               <li><a onClick={this.handleOpenDocumentsFolder}>{localize("Documents.go_to_documents_folder", locale)}</a></li>
             </ul>
           </div>
-          <div className="col s12">
-            <div className="row halfbottom">
-              <div className="col s10prt">
+        </div>
+        <div className="row">
+          {/* <div className="col s3 m3 l2 xl1" style={{ minHeight: "100vh", backgroundColor: "Gainsboro" }}>
+          <TreeExample/>
+          </div> */}
+          <div className="col s9" style={{ minHeight: "100vh" }}>
+            <div className="row halfbottom" />
+
+            <div className="col s12">
+              <DocumentsTable searchValue={this.state.searchValue} />
+            </div>
+            {this.showModalFilterDocuments()}
+            {this.showModalDeleteDocuments()}
+          </div>
+          <div className="col s3" style={{ minHeight: "100vh", backgroundColor: "Gainsboro" }}>
+            <div className="row">
+              <div className="row nobottom">
                 <a className={`waves-effect waves-light  ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`}
                   data-position="bottom"
                   onClick={this.handleClickSign}>
@@ -122,7 +151,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                   <div className="row docmenu">{localize("Documents.docmenu_sign", locale)}</div>
                 </a>
               </div>
-              <div className="col s10prt">
+              <div className="row nobottom">
                 <a className={`waves-effect waves-light  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`}
                   data-position="bottom"
                   data-tooltip={localize("Sign.sign_and_verify", locale)}
@@ -131,35 +160,35 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                   <div className="row docmenu">{localize("Documents.docmenu_verifysign", locale)}</div>
                 </a>
               </div>
-              <div className="col s10prt">
+              <div className="row nobottom">
                 <a className={`waves-effect waves-light ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} data-position="bottom"
                   onClick={this.handleClickSign}>
                   <div className="row docmenu"><i className="material-icons docmenu_removesign"></i></div>
                   <div className="row docmenu">{localize("Documents.docmenu_removesign", locale)}</div>
                 </a>
               </div>
-              <div className="col s10prt">
+              <div className="row nobottom">
                 <a className={`waves-effect waves-light ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`}
                   data-position="bottom" onClick={this.handleClickEncrypt}>
                   <div className="row docmenu"><i className="material-icons docmenu_encrypt"></i></div>
                   <div className="row docmenu">{localize("Documents.docmenu_enctypt", locale)}</div>
                 </a>
               </div>
-              <div className="col s10prt">
+              <div className="row nobottom">
                 <a className={`waves-effect waves-light ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} data-position="bottom"
                   onClick={this.handleClickEncrypt} >
                   <div className="row docmenu"><i className="material-icons docmenu_decrypt"></i></div>
                   <div className="row docmenu">{localize("Documents.docmenu_dectypt", locale)}</div>
                 </a>
               </div>
-              <div className="col s10prt">
+              <div className="row nobottom">
                 <a className={`waves-effect waves-light ${disabledClass}`} data-position="bottom"
                   onClick={this.handleArhiveDocuments} >
                   <div className="row docmenu"><i className="material-icons docmenu_arhiver"></i></div>
                   <div className="row docmenu">{localize("Documents.docmenu_arhiver", locale)}</div>
                 </a>
               </div>
-              <div className="col s1">
+              <div className="col s1 nobottom">
                 <a className={`waves-effect waves-light ${disabledClass}`} data-position="bottom"
                   onClick={this.handleShowModalDeleteDocuments} >
                   <div className="row docmenu"><i className="material-icons docmenu_remove"></i></div>
@@ -168,11 +197,6 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
               </div>
             </div>
           </div>
-          <div className="col s12">
-            <DocumentsTable searchValue={this.state.searchValue} />
-          </div>
-          {this.showModalFilterDocuments()}
-          {this.showModalDeleteDocuments()}
         </div>
       </div>
     );
