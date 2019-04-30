@@ -460,6 +460,12 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     ext = new trusted.pki.Extension(oid, "critical,CA:false");
     exts.push(ext);
 
+    if (template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_ADDITIONAL || REQUEST_TEMPLATE_KEP_FIZ) {
+      oid = new trusted.pki.Oid("1.2.643.100.111");
+      ext = new trusted.pki.Extension(oid, `ASN1:FORMAT:UTF8,UTF8String:КриптоПро CSP (версия ${this.getCPCSPVersion()})`);
+      exts.push(ext);
+    }
+
     try {
       switch (algorithm) {
         case ALG_GOST2001:
@@ -490,7 +496,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       { type: "title", value: title },
     ];
 
-    if (template !== REQUEST_TEMPLATE_DEFAULT ) {
+    if (template !== REQUEST_TEMPLATE_DEFAULT) {
       atrs.push(
         { type: "1.2.643.3.131.1.1", value: inn },
         { type: "1.2.643.100.3", value: snils },
@@ -707,7 +713,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
     if (name === "containerName") {
       if (pattern.test(value || !value)) {
-        this.setState({[name]: value});
+        this.setState({ [name]: value });
       } else {
         $(".toast-invalid_character").remove();
         Materialize.toast(localize("Containers.invalid_character", locale), 2000, "toast-invalid_character");
@@ -716,7 +722,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       return;
     }
 
-    this.setState({[name]: value});
+    this.setState({ [name]: value });
   }
 
   handleCountryChange = (ev: any) => {
@@ -804,6 +810,14 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
         [name]: !this.state.extKeyUsage[name],
       },
     });
+  }
+
+  getCPCSPVersion = () => {
+    try {
+      return trusted.utils.Csp.getCPCSPVersion().substring(3, 0);
+    } catch (e) {
+      return "";
+    }
   }
 }
 
