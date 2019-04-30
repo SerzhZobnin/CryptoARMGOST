@@ -17,7 +17,6 @@ import DeleteDocuments from "./DeleteDocuments";
 import DocumentsMasonry from "./DocumentsMasonry";
 import DocumentsTable from "./DocumentsTable";
 import FilterDocuments from "./FilterDocuments";
-import TreeExample from "./TreeExample";
 
 interface IDocumentsWindowProps {
   documents: any;
@@ -129,9 +128,6 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
           </div>
         </div>
         <div className="row">
-          {/* <div className="col s3 m3 l2 xl1" style={{ minHeight: "100vh", backgroundColor: "Gainsboro" }}>
-          <TreeExample/>
-          </div> */}
           <div className="col s9" style={{ minHeight: "100vh" }}>
             <div className="row halfbottom" />
 
