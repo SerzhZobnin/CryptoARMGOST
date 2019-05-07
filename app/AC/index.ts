@@ -216,6 +216,7 @@ export function filePackageSelect(files: IFilePath[]) {
           extension,
           extra,
           filename: path.basename(fullpath),
+          filesize: stat.size,
           fullpath,
           id: Date.now() + Math.random(),
           lastModifiedDate: stat.birthtime,
@@ -443,7 +444,7 @@ export function selectFile(fullpath: string, name?: string, lastModifiedDate?: D
     fullpath,
     lastModifiedDate: lastModifiedDate ? lastModifiedDate : (stat ? stat.birthtime : undefined),
     remoteId,
-    size: size ? size : (stat ? stat.size : undefined),
+    filesize: size ? size : (stat ? stat.size : undefined),
     socket,
   };
 

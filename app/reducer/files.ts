@@ -12,6 +12,7 @@ const FileModel = Record({
   extension: null,
   extra: null,
   filename: null,
+  filesize: null,
   fullpath: null,
   id: null,
   lastModifiedDate: null,
