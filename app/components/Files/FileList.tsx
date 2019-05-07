@@ -96,20 +96,24 @@ class FileList extends React.Component<IFilelistProps, {}> {
     const { files, loadingFiles } = this.props;
 
     return (
-      <AutoSizer disableHeight>
-        {({ width }) => (
-          <List
-            rowCount={files.length + loadingFiles.length}
-            height={this.getListHeight()}
-            width={width}
-            overscanRowCount={5}
-            rowHeight={45}
-            rowRenderer={this.rowRenderer}
-            files={loadingFiles.concat(files)}
-            style={{ outline: "none" }}
-          />
-        )}
-      </AutoSizer>
+      <div style={{ display: "flex" }}>
+        <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
+          <AutoSizer>
+            {({ height, width }) => (
+              <List
+                rowCount={files.length + loadingFiles.length}
+                height={height}
+                width={width}
+                overscanRowCount={5}
+                rowHeight={45}
+                rowRenderer={this.rowRenderer}
+                files={loadingFiles.concat(files)}
+                style={{ outline: "none" }}
+              />
+            )}
+          </AutoSizer>
+        </div>
+      </div>
     );
   }
 
