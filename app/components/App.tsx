@@ -19,10 +19,10 @@ import EncryptWindow from "./Encrypt/EncryptWindow";
 import EventsWindow from "./Events/EventsWindow";
 import * as fileManager from "./Files/fileManager";
 import LicenseWindow from "./License/LicenseWindow";
-import MainWindow from "./MainWindow/MainWindow";
 import MenuBar from "./MenuBar";
 import ServicesWindow from "./Services/ServicesWindow";
 import SignatureWindow from "./Signature/SignatureWindow";
+import SignAndEncryptWindow from "./SignatureAndEncrypt/SignatureAndEncryptWindow";
 
 interface IAppProps {
   locale: string;
@@ -53,7 +53,7 @@ class App extends React.Component<IAppProps, {}> {
       <Router history={history}>
         <React.Fragment>
           <Route path="/" component={MenuBar} />
-          <Route exact path="/" component={MainWindow} />
+          <Route exact path="/" component={SignAndEncryptWindow} />
           <Route path={LOCATION_SIGN} component={SignatureWindow} />
           <Route path={LOCATION_ENCRYPT} component={EncryptWindow} />
           <Route path={LOCATION_CERTIFICATES} component={CertificateWindow} />
