@@ -260,7 +260,7 @@ export function xorConvolutionMD5(hash: string): string {
   if (hash && hash.length && hash.length === 32) {
     for (let i = 0; i < 8; i++) {
       // tslint:disable-next-line:no-bitwise
-      res += (charToHex(hash.charAt(i)) ^ charToHex(hash.charAt(i + 8))  ^ charToHex(hash.charAt(i + 16))  ^ charToHex(hash.charAt(i + 24)) ).toString(16);
+      res += (charToHex(hash.charAt(i)) ^ charToHex(hash.charAt(i + 8)) ^ charToHex(hash.charAt(i + 16)) ^ charToHex(hash.charAt(i + 24))).toString(16);
     }
   }
 
@@ -269,4 +269,20 @@ export function xorConvolutionMD5(hash: string): string {
 
 function charToHex(char: string): number {
   return parseInt(char, 16);
+}
+
+export function bytesToSize(bytes: number, decimals = 2) {
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+
+  if (bytes === 0) {
+    return "n/a";
+  }
+
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+
+  if (i === 0) {
+    return `${bytes} ${sizes[i]}`;
+  }
+
+  return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${sizes[i]}`;
 }
