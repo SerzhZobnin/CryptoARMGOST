@@ -157,6 +157,18 @@ nav .input-field input {
     width: 100%;
     background-color: #ffffff;
 }
+
+.leftcol {
+  width: calc(100% - 350px) !important;
+}
+
+.rightcol {
+  background-color: #e1e1e1;
+  float: right !important;
+  min-height: calc(100vh - 52px) !important;
+  width: 350px !important;
+}
+
 /*html-main*/
 html {
     -webkit-user-select: none;
@@ -893,10 +905,9 @@ nav .cert-seacrh label i {
 }
 .add-certs {
     width: 100%;
-    height: calc(100% - 48px);
+    height: calc(100% - 52px);
     position: relative;
     overflow: auto;
-    border-top: 2px solid #ffffff;
     z-index: 2;
 }
 

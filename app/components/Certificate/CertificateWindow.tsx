@@ -1,6 +1,7 @@
 import * as os from "os";
 import PropTypes from "prop-types";
 import React from "react";
+import Media from "react-media";
 import { connect } from "react-redux";
 import { loadAllCertificates, loadAllContainers, removeAllCertificates, removeAllContainers } from "../../AC";
 import { resetCloudCSP } from "../../AC/cloudCspActions";
@@ -31,6 +32,7 @@ import CertificateExport from "./CertificateExport";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
+import CertificateTable from "./CertificateTable";
 
 const OS_TYPE = os.type();
 
@@ -628,9 +630,7 @@ class CertWindow extends React.Component<any, any> {
     return (
       <div className="add-certs">
         <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
-        <div className="add-certs-item">
-          {cert}
-        </div>
+        {cert}
       </div>
     );
   }
@@ -640,9 +640,7 @@ class CertWindow extends React.Component<any, any> {
 
     return (
       <div className="add-certs">
-        <div className="add-certs-item">
-          <CRLInfo crl={crl} />
-        </div>
+        <CRLInfo crl={crl} />
       </div>
     );
   }
@@ -890,82 +888,125 @@ class CertWindow extends React.Component<any, any> {
     return (
       <div className="main">
         <div className="content">
-          <div className="col s6 m6 l6 content-item-height">
+          <div className="col s8 leftcol">
+            <div className="row nobottom">
+              <div className="row halfbottom" />
+              <div className="col s9 m9 l10">
+                <div className="input-field input-field-csr col s12 border_element find_box">
+                  <i className="material-icons prefix">search</i>
+                  <input
+                    id="search"
+                    type="search"
+                    placeholder={localize("EventsTable.search_in_doclist", locale)}
+                    value={this.state.searchValue}
+                    onChange={this.handleSearchValueChange} />
+                  <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
+                </div>
+              </div>
+              <div className="col s2 m2 l1">
+                <a className={"nav-small-btn waves-effect waves-light"} onClick={this.handleReloadCertificates}>
+                  <i className={"material-icons"}>autorenew</i>
+                </a>
+              </div>
+              <div className="col s1">
+                <div className="right">
+                  <a className={"nav-small-btn waves-effect waves-light "} data-activates="dropdown-btn-set-add-files">
+                    <i className="material-icons">more_vert</i>
+                  </a>
+                  <ul id="dropdown-btn-set-add-files" className="dropdown-content">
+                    <li><a onClick={this.selectedAll}>{localize("Settings.selected_all", locale)}</a></li>
+                    <li><a onClick={this.removeSelectedAll}>{localize("Settings.remove_selected", locale)}</a></li>
+                    <li><a onClick={this.removeAllFiles}>{localize("Settings.remove_all_files", locale)}</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
             <div className="cert-content-item">
-              <div className="content-wrapper z-depth-1">
-                <ToolBarWithSearch operation="certificate" disable=""
-                  reloadCertificates={this.handleReloadCertificates}
-                  handleShowModalCertificateRequest={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)}
-                  handleShowModalCloudCSP={() => this.handleShowModalByType(MODAL_CLOUD_CSP)}
-                  rightBtnAction={
-                    (event: any) => {
-                      this.handleCertificateImport(event.target.files);
-                    }
-                  } />
-                <div className="add-certs">
-                  <div className="add-certs-item">
-                    <div className={"add-cert-collection collection " + VIEW}>
-                      <CertificateList activeCert={this.handleActiveCert} operation="certificate" />
-                      <CRLList activeCert={this.handleActiveCRL} />
+              {/* <ToolBarWithSearch operation="certificate" disable=""
+                reloadCertificates={this.handleReloadCertificates}
+                handleShowModalCertificateRequest={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)}
+                handleShowModalCloudCSP={() => this.handleShowModalByType(MODAL_CLOUD_CSP)}
+                rightBtnAction={
+                  (event: any) => {
+                    this.handleCertificateImport(event.target.files);
+                  }
+                } /> */}
+              <div className="add-certs">
+                <div className={"add-cert-collection collection " + VIEW}>
+                  <div className="row">
+                    <div className="col s12">
+                      <Media query="(max-width: 1000px)">
+                        {(matches) =>
+                          matches ? (
+                            <div style={{ display: "flex" }}>
+                              <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
+                                <CertificateList activeCert={this.handleActiveCert} operation="certificate" />
+                                <CRLList activeCert={this.handleActiveCRL} />
+                              </div>
+                            </div>
+                          ) : (
+                            <CertificateTable activeCert={this.handleActiveCert} operation="certificate" />
+                            )
+                        }
+                      </Media>
+
                     </div>
-                    <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />
                   </div>
+                  <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />
                 </div>
               </div>
             </div>
           </div>
-          <div className="col s6 m6 l6 content-item-height">
+          <div className="col s4 rightcol">
             <div className={"cert-content-item-height " + ACTIVE_CERTIFICATE_REQUEST}>
-              <div className="content-wrapper z-depth-1">
-                <nav className="app-bar-cert">
-                  <ul className="app-bar-items">
-                    <li className="cert-bar-text">
-                      {this.getTitle()}
-                    </li>
-                    <li className="right">
-                      <a className={"nav-small-btn waves-effect waves-light " + DISABLED} data-activates="dropdown-btn-for-cert">
-                        <i className="nav-small-icon material-icons cert-settings">more_vert</i>
-                      </a>
-                      <ul id="dropdown-btn-for-cert" className="dropdown-content">
-                        {
-                          certificate ?
-                            <React.Fragment>
-                              <li><a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE)}>{localize("Certificate.cert_export", locale)}</a></li>
-                              <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CERTIFICATE)}>{localize("Common.delete", locale)}</a></li>
-                            </React.Fragment>
-                            : null
-                        }
-                        {
-                          certificate && certificate.category === REQUEST ?
-                            <li>
-                              <a onClick={this.handleOpenCSRFolder}>
-                                {localize("CSR.go_to_csr_folder", locale)}
-                              </a>
-                            </li>
-                            :
-                            null
-                        }
-                        {
-                          crl ?
-                            <li>
-                              <a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CRL)}>{localize("Certificate.cert_export", locale)}</a>
-                              <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CRL)}>{localize("Common.delete", locale)}</a></li>
-                            </li>
-                            :
-                            null
-                        }
-                      </ul>
-                    </li>
-                  </ul>
-                </nav>
-                {this.getCertificateOrCRLInfo()}
-                {this.showModalDeleteCertificate()}
-                {this.showModalExportCertificate()}
-                {this.showModalExportCRL()}
-                {this.showModalDeleteCrl()}
-                {this.showModalCertificateRequest()}
-                {this.showModalCloudCSP()}
-              </div>
+              {/* <nav className="app-bar-cert">
+                <ul className="app-bar-items">
+                  <li className="cert-bar-text">
+                    {this.getTitle()}
+                  </li>
+                  <li className="right">
+                    <a className={"nav-small-btn waves-effect waves-light " + DISABLED} data-activates="dropdown-btn-for-cert">
+                      <i className="nav-small-icon material-icons cert-settings">more_vert</i>
+                    </a>
+                    <ul id="dropdown-btn-for-cert" className="dropdown-content">
+                      {
+                        certificate ?
+                          <React.Fragment>
+                            <li><a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE)}>{localize("Certificate.cert_export", locale)}</a></li>
+                            <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CERTIFICATE)}>{localize("Common.delete", locale)}</a></li>
+                          </React.Fragment>
+                          : null
+                      }
+                      {
+                        certificate && certificate.category === REQUEST ?
+                          <li>
+                            <a onClick={this.handleOpenCSRFolder}>
+                              {localize("CSR.go_to_csr_folder", locale)}
+                            </a>
+                          </li>
+                          :
+                          null
+                      }
+                      {
+                        crl ?
+                          <li>
+                            <a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CRL)}>{localize("Certificate.cert_export", locale)}</a>
+                            <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CRL)}>{localize("Common.delete", locale)}</a></li>
+                          </li>
+                          :
+                          null
+                      }
+                    </ul>
+                  </li>
+                </ul>
+              </nav> */}
+              {this.getCertificateOrCRLInfo()}
+              {this.showModalDeleteCertificate()}
+              {this.showModalExportCertificate()}
+              {this.showModalExportCRL()}
+              {this.showModalDeleteCrl()}
+              {this.showModalCertificateRequest()}
+              {this.showModalCloudCSP()}
               {
                 certificate && certificate.category === REQUEST ?
                   <RequestButtons onCopy={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)} /> : null
