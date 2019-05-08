@@ -3,9 +3,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { activeFile, deleteFile, filePackageDelete, filePackageSelect, selectFile } from "../../AC";
 import {
-  DECRYPT, DEFAULT_DOCUMENTS_PATH, ENCRYPT,
-  LOCATION_ENCRYPT, LOCATION_SIGN, SIGN,
-  UNSIGN, VERIFY,
+  DECRYPT, ENCRYPT,
+  SIGN, UNSIGN, VERIFY,
 } from "../../constants";
 import { activeFilesSelector } from "../../selectors";
 import { bytesToSize, mapToArr } from "../../utils";
@@ -18,6 +17,7 @@ interface ISignatureAndEncryptWindowProps {
 }
 
 interface ISignatureAndEncryptWindowState {
+  currentOperation: string;
   searchValue: string;
   showModalDeleteDocuments: boolean;
   showModalFilterDocments: boolean;
@@ -33,6 +33,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
     super(props);
 
     this.state = {
+      currentOperation: "",
       searchValue: "",
       showModalDeleteDocuments: false,
       showModalFilterDocments: false,
@@ -47,99 +48,118 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
     return (
       <div className="content-noflex">
         <div className="row">
-          <div className="row halfbottom" />
-          <div className="col s11">
-            <div className="input-field input-field-csr col s12 border_element find_box">
-              <i className="material-icons prefix">search</i>
-              <input
-                id="search"
-                type="search"
-                placeholder={localize("EventsTable.search_in_doclist", locale)}
-                value={this.state.searchValue}
-                onChange={this.handleSearchValueChange} />
-              <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
-            </div>
-          </div>
-          <div className="col s1">
-            <a className={"btn-small waves-effect waves-light"} onClick={this.handleShowModalFilterDocuments}>
-              <i className={"material-icons " + classDefaultFilters}>filter_list</i>
-            </a>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col s8" style={{ width: "calc(100% - 300px)" }}>
-            <FileSelector operation="SIGN" />
-          </div>
-          <div className="col s4" style={{ float: "right", minHeight: "calc(100vh - 114px)", width: "300px", backgroundColor: "#e1e1e1" }}>
-            <div className="row halfbottom" />
-            <div>
-              <div className="col s12">
-                <div className="desktoplic_text_item bottomitem">Выбранные элементы:</div>
+          <div className="col s8 leftcol">
+            <div className="row">
+              <div className="row halfbottom" />
+              <div className="col s9 m9 l10">
+                <div className="input-field input-field-csr col s12 border_element find_box">
+                  <i className="material-icons prefix">search</i>
+                  <input
+                    id="search"
+                    type="search"
+                    placeholder={localize("EventsTable.search_in_doclist", locale)}
+                    value={this.state.searchValue}
+                    onChange={this.handleSearchValueChange} />
+                  <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
+                </div>
               </div>
-              <div className="col s11">
-                <div className="col s12">
-                  <div className="desktoplic_text_item topitem">{`Количество: ${this.props.activeFiles.length}`}</div>
-                </div>
-                <div className="col s12">
-                  <div className="desktoplic_text_item topitem">{`Общий объем: ${this.getSelectedFilesSize()}`}</div>
-                </div>
-
+              <div className="col s2 m2 l1">
+                <a className={"btn-small waves-effect waves-light"} onClick={this.handleShowModalFilterDocuments}>
+                  <i className={"material-icons " + classDefaultFilters}>filter_list</i>
+                </a>
               </div>
               <div className="col s1">
                 <div className="right">
                   <a className={"nav-small-btn waves-effect waves-light "} data-activates="dropdown-btn-set-add-files">
-                    <i className="nav-small-icon material-icons">more_vert</i>
+                    <i className="material-icons">more_vert</i>
                   </a>
                   <ul id="dropdown-btn-set-add-files" className="dropdown-content">
-                    <li><a onClick={this.selectedAll.bind(this)}>{localize("Settings.selected_all", locale)}</a></li>
-                    <li><a onClick={this.removeSelectedAll.bind(this)}>{localize("Settings.remove_selected", locale)}</a></li>
-                    <li><a onClick={this.removeAllFiles.bind(this)}>{localize("Settings.remove_all_files", locale)}</a></li>
+                    <li><a onClick={this.selectedAll}>{localize("Settings.selected_all", locale)}</a></li>
+                    <li><a onClick={this.removeSelectedAll}>{localize("Settings.remove_selected", locale)}</a></li>
+                    <li><a onClick={this.removeAllFiles}>{localize("Settings.remove_all_files", locale)}</a></li>
                   </ul>
                 </div>
               </div>
-              <div className="row" />
+            </div>
+            <FileSelector operation="SIGN" />
+          </div>
+          <div className="col s4 rightcol">
+            <div className="row halfbottom" />
+            <div className="col s12">
+              <div className="desktoplic_text_item bottomitem">Выбранные элементы:</div>
+            </div>
+            <div className="col s11">
               <div className="col s12">
-                <div className="desktoplic_text_item bottomitem">Доступные операции:</div>
+                <div className="desktoplic_text_item topitem">{`Количество: ${this.props.activeFiles.length}`}</div>
               </div>
-              <div className="row" />
+              <div className="col s12">
+                <div className="desktoplic_text_item topitem">{`Общий объем: ${this.getSelectedFilesSize()}`}</div>
+              </div>
+            </div>
+
+            <div className="row" />
+            <div className="col s12">
+              <div className="desktoplic_text_item bottomitem">Доступные операции:</div>
+            </div>
+            <div className="row" />
+            <div className="row" >
               <div className="col s4">
                 <a className={`waves-effect waves-light  ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`}
                   data-position="bottom"
-                >
-                  <div className="row docmenu"><i className="material-icons docmenu_sign"></i></div>
+                  onClick={this.handleClickSign}>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu_sign" />
+                  </div>
                   <div className="row docmenu">{localize("Documents.docmenu_sign", locale)}</div>
                 </a>
               </div>
               <div className="col s4">
                 <a className={`waves-effect waves-light  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`}
                   data-position="bottom"
-                  data-tooltip={localize("Sign.sign_and_verify", locale)}
-                >
-                  <div className="row docmenu"><i className="material-icons docmenu_verifysign"></i></div>
+                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu_verifysign" />
+                  </div>
                   <div className="row docmenu">{localize("Documents.docmenu_verifysign", locale)}</div>
                 </a>
               </div>
               <div className="col s4">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} data-position="bottom"
-                >
-                  <div className="row docmenu"><i className="material-icons docmenu_removesign"></i></div>
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} data-position="bottom">
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu_removesign" />
+                  </div>
                   <div className="row docmenu">{localize("Documents.docmenu_removesign", locale)}</div>
                 </a>
               </div>
-              <div className="col s4">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`}
-                  data-position="bottom" >
-                  <div className="row docmenu"><i className="material-icons docmenu_encrypt"></i></div>
-                  <div className="row docmenu">{localize("Documents.docmenu_enctypt", locale)}</div>
-                </a>
-              </div>
-              <div className="col s4">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} data-position="bottom"
-                >
-                  <div className="row docmenu"><i className="material-icons docmenu_decrypt"></i></div>
-                  <div className="row docmenu">{localize("Documents.docmenu_dectypt", locale)}</div>
-                </a>
-              </div>
+            </div>
+            <div className="col s4">
+              <a className={`waves-effect waves-light ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`}
+                data-position="bottom" onClick={this.handleClickEncrypt}>
+                <div className="row docmenu">
+                  <i className="material-icons docmenu_encrypt" />
+                </div>
+                <div className="row docmenu">{localize("Documents.docmenu_enctypt", locale)}</div>
+              </a>
+            </div>
+            <div className="col s4">
+              <a className={`waves-effect waves-light ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} data-position="bottom">
+                <div className="row docmenu">
+                  <i className="material-icons docmenu_decrypt" />
+                </div>
+                <div className="row docmenu">{localize("Documents.docmenu_dectypt", locale)}</div>
+              </a>
+            </div>
+            <div className="row" />
+            <div className="col s12">
+              <div className="desktoplic_text_item bottomitem">Выполняется:</div>
+            </div>
+            <div className="col s12">
+              <div className="desktoplic_text_item topitem">{this.state.currentOperation}</div>
+            </div>
+
+            <div className="row" />
+            <div className="col s12">
+              <div className="desktoplic_text_item bottomitem">Сертификат подписчика:</div>
             </div>
           </div>
         </div>
@@ -148,7 +168,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
     );
   }
 
-  selectedAll() {
+  selectedAll = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { files, activeFile } = this.props;
 
@@ -157,7 +177,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
     }
   }
 
-  removeSelectedAll() {
+  removeSelectedAll = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { files, activeFile } = this.props;
 
@@ -166,7 +186,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
     }
   }
 
-  removeAllFiles() {
+  removeAllFiles = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { filePackageDelete, files } = this.props;
 
@@ -227,6 +247,14 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
       default:
         return false;
     }
+  }
+
+  handleClickSign = () => {
+    this.setState({ currentOperation: SIGN });
+  }
+
+  handleClickEncrypt = () => {
+    this.setState({ currentOperation: ENCRYPT });
   }
 
   getSelectedFilesSize = () => {

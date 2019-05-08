@@ -340,7 +340,7 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
               rowHeight={ROW_HEIGHT}
               rowRenderer={renderRow} /> */}
           </div>
-          <div className="fixed-action-btn" style={{ bottom: "20px", right: "320px" }}>
+          <div className="fixed-action-btn" style={{ bottom: "20px", right: "370px" }}>
             <a className="btn-floating btn-large waves-effect waves-light red" id="fileSelect" onClick={this.addFiles.bind(this)}><i className="material-icons">add</i></a>
           </div>
         </div>
