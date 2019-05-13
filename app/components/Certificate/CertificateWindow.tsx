@@ -27,7 +27,6 @@ import PasswordDialog from "../PasswordDialog";
 import ProgressBars from "../ProgressBars";
 import CertificateRequest from "../Request/CertificateRequest";
 import RequestButtons from "../Request/RequestButtons";
-import { ToolBarWithSearch } from "../ToolBarWithSearch";
 import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateDelete from "./CertificateDelete";
 import CertificateExport from "./CertificateExport";
@@ -813,9 +812,14 @@ class CertWindow extends React.Component<any, any> {
     );
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { cloudCSPSettings, cloudCSPState, certificates } = this.props;
+    const { certificate, crl } = this.state;
     const { localize, locale } = this.context;
+
+    if ((!prevState.certificate && certificate) || (!prevState.crl && crl)) {
+      $(".nav-small-btn").dropdown();
+    }
 
     if (prevProps.cloudCSPState !== this.props.cloudCSPState) {
       if (cloudCSPState.loaded) {
@@ -968,19 +972,23 @@ class CertWindow extends React.Component<any, any> {
           </div>
           <div className="col s4 rightcol">
             {this.getSelectedCertificate()}
-            <div style={{ display: "flex" }}>
-              <div style={{ flex: "1 1 auto", height: "calc(100vh - 98px)" }}>
-                {this.getCertificateOrCRLInfo()}
-                {this.showModalDeleteCertificate()}
-                {this.showModalExportCertificate()}
-                {this.showModalExportCRL()}
-                {this.showModalDeleteCrl()}
-                {this.showModalCertificateRequest()}
-                {this.showModalCloudCSP()}
-
+            <div className="row">
+              <div className="col s12">
+                <div style={{ display: "flex" }}>
+                  <div style={{ flex: "1 1 auto", height: "calc(100vh - 98px)" }}>
+                    {this.getCertificateOrCRLInfo()}
+                  </div>
+                </div>
               </div>
             </div>
+            {this.showModalDeleteCertificate()}
+            {this.showModalExportCertificate()}
+            {this.showModalExportCRL()}
+            {this.showModalDeleteCrl()}
+            {this.showModalCertificateRequest()}
+            {this.showModalCloudCSP()}
           </div>
+
         </div>
         <Dialog isOpen={this.state.showDialogInstallRootCertificate}
           header="Внимание!" body="Для установки корневых сертификатов требуются права администратора. Продолжить?"
@@ -1040,52 +1048,50 @@ class CertWindow extends React.Component<any, any> {
       return (
         <div className="row">
           <div className="row halfbottom" />
-          <div className="col s12">
+          <div className="col s11">
             <div className="desktoplic_text_item bottomitem">Выбранные элементы:</div>
-          </div>
-          <div className="row nobottom">
             <div className="col s1">
               <div className={curStatusStyle} />
             </div>
-            <div className="col s10">
+            <div className="col s11">
               <div className="desktoplic_text_item topitem truncate">{certificate.subjectFriendlyName}</div>
               <div className="desktoplic_text_item topitem truncate">{certificate.issuerFriendlyName}</div>
             </div>
-            <div className="col s1">
-              <div className="right import-col">
-                <a className={"nav-small-btn waves-effect waves-light " + DISABLED} data-activates="dropdown-btn-for-cert">
-                  <i className="material-icons">more_vert</i>
-                </a>
-                <ul id="dropdown-btn-for-cert" className="dropdown-content">
-                  {
-                    certificate ?
-                      <React.Fragment>
-                        <li><a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE)}>{localize("Certificate.cert_export", locale)}</a></li>
-                        <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CERTIFICATE)}>{localize("Common.delete", locale)}</a></li>
-                      </React.Fragment>
-                      : null
-                  }
-                  {
-                    certificate && certificate.category === REQUEST ?
-                      <li>
-                        <a onClick={this.handleOpenCSRFolder}>
-                          {localize("CSR.go_to_csr_folder", locale)}
-                        </a>
-                      </li>
-                      :
-                      null
-                  }
-                  {
-                    crl ?
-                      <li>
-                        <a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CRL)}>{localize("Certificate.cert_export", locale)}</a>
-                        <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CRL)}>{localize("Common.delete", locale)}</a></li>
-                      </li>
-                      :
-                      null
-                  }
-                </ul>
-              </div>
+          </div>
+          <div className="col s1">
+            <div className="right import-col">
+              <a className={"nav-small-btn waves-effect waves-light " + DISABLED} data-activates="dropdown-btn-for-cert">
+                <i className="material-icons">more_vert</i>
+              </a>
+              <ul id="dropdown-btn-for-cert" className="dropdown-content">
+                {
+                  certificate ?
+                    <React.Fragment>
+                      <li><a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE)}>{localize("Certificate.cert_export", locale)}</a></li>
+                      <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CERTIFICATE)}>{localize("Common.delete", locale)}</a></li>
+                    </React.Fragment>
+                    : null
+                }
+                {
+                  certificate && certificate.category === REQUEST ?
+                    <li>
+                      <a onClick={this.handleOpenCSRFolder}>
+                        {localize("CSR.go_to_csr_folder", locale)}
+                      </a>
+                    </li>
+                    :
+                    null
+                }
+                {
+                  crl ?
+                    <li>
+                      <a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CRL)}>{localize("Certificate.cert_export", locale)}</a>
+                      <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CRL)}>{localize("Common.delete", locale)}</a></li>
+                    </li>
+                    :
+                    null
+                }
+              </ul>
             </div>
           </div>
         </div>
