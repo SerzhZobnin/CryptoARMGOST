@@ -64,8 +64,8 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
                 </div>
               </div>
               <div className="col s2 m2 l1">
-                <a className={"btn-small waves-effect waves-light"} onClick={this.handleShowModalFilterDocuments}>
-                  <i className={"material-icons " + classDefaultFilters}>filter_list</i>
+                <a className={"nav-small-btn waves-effect waves-light"} onClick={this.handleShowModalFilterDocuments}>
+                  <i className={"material-icons"}>filter_list</i>
                 </a>
               </div>
               <div className="col s1">
