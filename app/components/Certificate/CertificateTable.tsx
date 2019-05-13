@@ -45,7 +45,7 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
   constructor(props: ICertificateTableProps & ICertificateTableDispatch) {
     super(props);
 
-    const sortBy = "mtime";
+    const sortBy = "subjectFriendlyName";
     const sortDirection = SortDirection.DESC;
     const sortedList = this.sortList({ sortBy, sortDirection });
 

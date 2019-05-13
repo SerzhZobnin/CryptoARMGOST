@@ -69,6 +69,10 @@ class CertWindow extends React.Component<any, any> {
     });
   }
 
+  componentDidMount() {
+    $(".nav-small-btn").dropdown();
+  }
+
   handleShowModalByType = (typeOfModal: string) => {
     switch (typeOfModal) {
       case MODAL_DELETE_CERTIFICATE:
@@ -631,6 +635,10 @@ class CertWindow extends React.Component<any, any> {
       <div className="add-certs">
         <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
         {cert}
+        {
+                  certificate && certificate.category === REQUEST ?
+                    <RequestButtons onCopy={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)} /> : null
+                }
       </div>
     );
   }
@@ -910,13 +918,20 @@ class CertWindow extends React.Component<any, any> {
               </div>
               <div className="col s1">
                 <div className="right">
-                  <a className={"nav-small-btn waves-effect waves-light "} data-activates="dropdown-btn-set-add-files">
+                  <a className={"nav-small-btn waves-effect waves-light "} data-activates="dropdown-btn-import">
                     <i className="material-icons">more_vert</i>
                   </a>
-                  <ul id="dropdown-btn-set-add-files" className="dropdown-content">
-                    <li><a onClick={this.selectedAll}>{localize("Settings.selected_all", locale)}</a></li>
-                    <li><a onClick={this.removeSelectedAll}>{localize("Settings.remove_selected", locale)}</a></li>
-                    <li><a onClick={this.removeAllFiles}>{localize("Settings.remove_all_files", locale)}</a></li>
+                  <ul id="dropdown-btn-import" className="dropdown-content">
+                    <li><a >{localize("Certificate.cert_import_from_file", locale)}</a></li>
+                    {
+                      (Number(this.getCPCSPVersion().charAt(0)) < 5) ? null :
+                        <li>
+                          <a >
+                            {localize("CloudCSP.cert_import_from_cloudCSP", locale)}
+                          </a>
+                        </li>
+                    }
+                    <li><a >{localize("CSR.create_request", locale)}</a></li>
                   </ul>
                 </div>
               </div>
@@ -932,7 +947,7 @@ class CertWindow extends React.Component<any, any> {
                   }
                 } /> */}
               <div className="add-certs">
-                <div className={"add-cert-collection collection " + VIEW}>
+                <div className={"collection " + VIEW}>
                   <div className="row">
                     <div className="col s12">
                       <Media query="(max-width: 1000px)">
@@ -945,7 +960,7 @@ class CertWindow extends React.Component<any, any> {
                               </div>
                             </div>
                           ) : (
-                            <CertificateTable activeCert={this.handleActiveCert} operation="certificate" />
+                              <CertificateTable activeCert={this.handleActiveCert} operation="certificate" />
                             )
                         }
                       </Media>
@@ -958,8 +973,10 @@ class CertWindow extends React.Component<any, any> {
             </div>
           </div>
           <div className="col s4 rightcol">
-            <div className={"cert-content-item-height " + ACTIVE_CERTIFICATE_REQUEST}>
-              {/* <nav className="app-bar-cert">
+            {this.getSelectedCertificate()}
+            <div style={{ display: "flex" }}>
+              <div style={{ flex: "1 1 auto", height: "calc(100vh - 98px)" }}>
+                {/* <nav className="app-bar-cert">
                 <ul className="app-bar-items">
                   <li className="cert-bar-text">
                     {this.getTitle()}
@@ -1000,17 +1017,15 @@ class CertWindow extends React.Component<any, any> {
                   </li>
                 </ul>
               </nav> */}
-              {this.getCertificateOrCRLInfo()}
-              {this.showModalDeleteCertificate()}
-              {this.showModalExportCertificate()}
-              {this.showModalExportCRL()}
-              {this.showModalDeleteCrl()}
-              {this.showModalCertificateRequest()}
-              {this.showModalCloudCSP()}
-              {
-                certificate && certificate.category === REQUEST ?
-                  <RequestButtons onCopy={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)} /> : null
-              }
+                {this.getCertificateOrCRLInfo()}
+                {this.showModalDeleteCertificate()}
+                {this.showModalExportCertificate()}
+                {this.showModalExportCRL()}
+                {this.showModalDeleteCrl()}
+                {this.showModalCertificateRequest()}
+                {this.showModalCloudCSP()}
+
+              </div>
             </div>
           </div>
         </div>
@@ -1022,8 +1037,51 @@ class CertWindow extends React.Component<any, any> {
     );
   }
 
+  getSelectedCertificate = () => {
+    const { certificate } = this.state;
+
+    if (certificate) {
+      const status = certificate.status;
+      let curStatusStyle;
+
+      if (status) {
+        curStatusStyle = "cert_status_ok";
+      } else {
+        curStatusStyle = "cert_status_error";
+      }
+
+      return (
+        <div className="row">
+          <div className="row halfbottom" />
+          <div className="col s12">
+            <div className="desktoplic_text_item bottomitem">Выбранные элементы:</div>
+          </div>
+          <div className="row nobottom">
+            <div className="col s1">
+              <div className={curStatusStyle} />
+            </div>
+            <div className="col s10">
+              <div className="desktoplic_text_item topitem truncate">{certificate.subjectFriendlyName}</div>
+              <div className="desktoplic_text_item topitem truncate">{certificate.issuerFriendlyName}</div>
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  }
+
   handleOpenCSRFolder = () => {
     window.electron.shell.openItem(DEFAULT_CSR_PATH);
+  }
+
+  getCPCSPVersion = () => {
+    try {
+      return trusted.utils.Csp.getCPCSPVersion();
+    } catch (e) {
+      return "";
+    }
   }
 }
 
