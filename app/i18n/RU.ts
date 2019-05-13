@@ -188,6 +188,7 @@ export default {
     priv_key: "Закрытый ключ",
     public_key_algorithm: "Алгоритм открытого ключа",
     realy_delete_certificate: "Вы действительно хотите удалить сертификат?",
+    search_in_certificates_list: "Поиск по списку сертификатов",
     serialNumber: "Серийный номер",
     signature_digest_algorithm: "Хэш-алгоритм подписи",
     subject: "Владелец сертификата",

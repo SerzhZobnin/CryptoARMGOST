@@ -188,6 +188,7 @@ export default {
     priv_key: "Private key",
     public_key_algorithm: "Public key algorithm",
     realy_delete_certificate: "You really want delete certificate?",
+    search_in_certificates_list: "Search in certificate lists",
     serialNumber: "Serial number",
     signature_digest_algorithm: "Signature digest algorithm",
     subject: "Certificate owner",
