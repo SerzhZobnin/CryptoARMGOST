@@ -14,7 +14,9 @@ import SortIndicator from "../Sort/SortIndicator";
 type TSortDirection = "ASC" | "DESC" | undefined;
 
 interface ICertificateTableProps {
-  documentsMap: any;
+  activeCert: (cert: any) => void;
+  certificate: any;
+  certificatesMap: any;
   isLoaded: boolean;
   isLoading: boolean;
   searchValue?: string;
@@ -70,8 +72,8 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
   }
 
   componentDidUpdate(prevProps: ICertificateTableProps & ICertificateTableDispatch) {
-    if (!prevProps.documentsMap.size && this.props.documentsMap && this.props.documentsMap.size ||
-      (prevProps.documentsMap.size !== this.props.documentsMap.size)) {
+    if (!prevProps.certificatesMap.size && this.props.certificatesMap && this.props.certificatesMap.size ||
+      (prevProps.certificatesMap.size !== this.props.certificatesMap.size)) {
       this.sort(this.state);
     }
 
@@ -232,23 +234,21 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
     return arr[index];
   }
 
-  rowClassName = ({ index, rowData }: { index: number }) => {
-    const { foundDocuments } = this.state;
-    const { selectedDocuments } = this.props;
+  rowClassName = ({ index }: { index: number }) => {
+    const { certificate } = this.props;
 
     if (index < 0) {
       return "headerRow";
     } else {
-      return "evenRow ";
-      // let rowClassName = index % 2 === 0 ? "evenRow " : "oddRow ";
+      let rowClassName = index % 2 === 0 ? "evenRow " : "oddRow ";
 
-      // if (selectedDocuments.includes(this.getDatum(this.state.sortedList, index))) {
-      //   rowClassName += "selectedEvent";
-      // } else if (foundDocuments.indexOf(index) >= 0) {
-      //   rowClassName += "foundEvent";
-      // }
+      const datum = this.getDatum(this.state.sortedList, index);
 
-      // return rowClassName;
+      if (datum && certificate && datum.id === certificate.id) {
+        rowClassName += "selectedEvent";
+      }
+
+      return rowClassName;
     }
   }
 
@@ -291,13 +291,13 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
   }
 
   sortList = ({ sortBy, sortDirection }: { sortBy: string, sortDirection: TSortDirection }) => {
-    const { documentsMap } = this.props;
+    const { certificatesMap } = this.props;
 
-    return documentsMap
+    return certificatesMap
       .sortBy((item: any) => item[sortBy])
       .update(
         // tslint:disable-next-line:no-shadowed-variable
-        (documentsMap: any) => (sortDirection === SortDirection.DESC ? documentsMap.reverse() : documentsMap),
+        (certificatesMap: any) => (sortDirection === SortDirection.DESC ? certificatesMap.reverse() : certificatesMap),
       );
   }
 
@@ -326,7 +326,7 @@ interface IOwnProps {
 }
 
 export default connect((state, ownProps: IOwnProps) => ({
-  documentsMap: filteredCertificatesSelector(state, { operation: ownProps.operation }),
+  certificatesMap: filteredCertificatesSelector(state, { operation: ownProps.operation }),
   isLoaded: state.certificates.loaded,
   isLoading: state.certificates.loading,
 }), { loadAllCertificates, verifyCertificate })(CertificateTable);

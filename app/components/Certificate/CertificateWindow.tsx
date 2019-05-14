@@ -957,12 +957,12 @@ class CertWindow extends React.Component<any, any> {
                                 <CRLList activeCert={this.handleActiveCRL} />
                               </div>
                             </div>
-                          ) : (
-                              <CertificateTable activeCert={this.handleActiveCert} operation="certificate" />
+                          ) :
+                            (
+                              <CertificateTable activeCert={this.handleActiveCert} certificate={this.state.certificate} operation="certificate" />
                             )
                         }
                       </Media>
-
                     </div>
                   </div>
                   <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />
