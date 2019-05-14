@@ -6,10 +6,10 @@ import { loadAllCertificates, verifyCertificate } from "../../AC";
 import { filteredCertificatesSelector } from "../../selectors";
 import "../../table.global.css";
 import { extFile, mapToArr } from "../../utils";
-import FileIcon from "../Files/FileIcon";
 import ProgressBars from "../ProgressBars";
 import SortDirection from "../Sort/SortDirection";
 import SortIndicator from "../Sort/SortIndicator";
+import CertificateStatusIcon from "./CertificateStatusIcon";
 
 type TSortDirection = "ASC" | "DESC" | undefined;
 
@@ -88,7 +88,7 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
 
   render() {
     const { locale, localize } = this.context;
-    const { isLoading, searchValue } = this.props;
+    const { isLoading, verifyCertificate, searchValue } = this.props;
     const { disableHeader, foundDocuments, scrollToIndex, sortBy, sortDirection, sortedList } = this.state;
 
     if (isLoading) {
@@ -126,20 +126,9 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
                   sortDirection={sortDirection}
                 >
                   <Column
-                    cellRenderer={({ cellData, rowData }) => {
-                      let curStatusStyle;
-                      const status = rowData.status;
-
-                      if (status) {
-                        curStatusStyle = "cert_status_ok";
-                      } else {
-                        curStatusStyle = "cert_status_error";
-                      }
-
-                      return (
-                        <div className={curStatusStyle} />
-                      );
-                    }}
+                    cellRenderer={({ cellData, rowData }) =>
+                      <CertificateStatusIcon certificate={rowData} verifyCertificate={verifyCertificate} />
+                    }
                     dataKey="status"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
