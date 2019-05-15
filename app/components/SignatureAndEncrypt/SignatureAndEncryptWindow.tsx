@@ -9,8 +9,10 @@ import {
 import { activeFilesSelector } from "../../selectors";
 import { bytesToSize, mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
+import FileSelector from "../Files/FileSelector";
 import Modal from "../Modal";
-import FileSelector from "./FileSelector";
+
+const dialog = window.electron.remote.dialog;
 
 interface ISignatureAndEncryptWindowProps {
   isDefaultFilters: boolean;
@@ -51,7 +53,12 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
           <div className="col s8 leftcol">
             <div className="row">
               <div className="row halfbottom" />
-              <div className="col s9 m9 l10">
+              <div className="col" style={{width: "40px"}}>
+                <a className={"nav-small-btn waves-effect waves-light"} onClick={this.addFiles.bind(this)}>
+                  <i className={"material-icons"}>add</i>
+                </a>
+              </div>
+              <div className="col " style={{width: "calc(100% - 130px)"}}>
                 <div className="input-field input-field-csr col s12 border_element find_box">
                   <i className="material-icons prefix">search</i>
                   <input
@@ -63,13 +70,13 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
                   <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
                 </div>
               </div>
-              <div className="col s2 m2 l1">
+              <div className="col" style={{width: "40px"}}>
                 <a className={"nav-small-btn waves-effect waves-light"} onClick={this.handleShowModalFilterDocuments}>
                   <i className={"material-icons"}>filter_list</i>
                 </a>
               </div>
-              <div className="col s1">
-                <div className="right">
+              <div className="col" style={{width: "40px"}}>
+                <div>
                   <a className={"nav-small-btn waves-effect waves-light "} data-activates="dropdown-btn-set-add-files">
                     <i className="material-icons">more_vert</i>
                   </a>
@@ -247,6 +254,23 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
       default:
         return false;
     }
+  }
+
+  addFiles() {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { filePackageSelect } = this.props;
+
+    dialog.showOpenDialog(null, { properties: ["openFile", "multiSelections"] }, (selectedFiles: string[]) => {
+      if (selectedFiles) {
+        const pack: IFilePath[] = [];
+
+        selectedFiles.forEach((file) => {
+          pack.push({ fullpath: file });
+        });
+
+        filePackageSelect(pack);
+      }
+    });
   }
 
   handleClickSign = () => {

@@ -526,7 +526,7 @@ export default {
     choose_files: "Выбрать файлы",
     delete_file: "Удалить из списка",
     directory_file_save: "Директория для сохранения файла",
-    drag_drop: "Перетащите в это поле мышкой",
+    drag_drop: "Перетащите файлы в это окно",
     email_error: "Некорректный e-mail",
     encoding: "Кодировка",
     failed_find_directory: "Указанная директория не существует",

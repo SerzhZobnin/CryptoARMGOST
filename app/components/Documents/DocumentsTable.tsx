@@ -116,7 +116,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
             <Table
               ref="Table"
               disableHeader={disableHeader}
-              height={800}
+              height={400}
               width={width}
               headerHeight={30}
               noRowsRenderer={this.noRowsRenderer}
@@ -124,7 +124,6 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
               rowHeight={45}
               rowClassName={this.rowClassName}
               onRowClick={this.handleOnRowClick}
-              onRowsRendered={this.handleOnRowsRendered}
               overscanRowCount={3}
               rowGetter={rowGetter}
               rowCount={sortedList.size}
