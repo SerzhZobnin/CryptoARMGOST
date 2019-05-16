@@ -340,7 +340,7 @@ class DocumentsMasonry extends React.Component<IDocumentsMasonryProps & IDocumen
       let rowClassName = "";
 
       if (selectedDocuments.includes(this.getDatum(this.state.sortedList, index))) {
-        rowClassName += "selectedEvent";
+        rowClassName += "selectedRow";
       } else if (foundDocuments.indexOf(index) >= 0) {
         rowClassName += "foundEvent";
       }

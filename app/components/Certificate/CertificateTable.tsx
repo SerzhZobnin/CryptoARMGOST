@@ -234,7 +234,7 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
       const datum = this.getDatum(this.state.sortedList, index);
 
       if (datum && certificate && datum.id === certificate.id) {
-        rowClassName += "selectedEvent";
+        rowClassName += "selectedRow";
       }
 
       return rowClassName;
