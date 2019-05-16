@@ -12,7 +12,7 @@ import ProgressBars from "../ProgressBars";
 import SortDirection from "../Sort/SortDirection";
 import SortIndicator from "../Sort/SortIndicator";
 import FileIcon from "./FileIcon";
-import FileItemDropdown from "./FileItemDropdown";
+import FileItemButtons from "./FileItemButtons";
 
 type TSortDirection = "ASC" | "DESC" | undefined;
 
@@ -193,20 +193,14 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
                     label={localize("Documents.mdate", locale)}
                   />
                   <Column
-                    cellRenderer={({ cellData, rowIndex }) => {
+                    cellRenderer={({ cellData, rowData, rowIndex }) => {
                       return (
                         (rowIndex === this.state.hoveredRowIndex) ?
-                          <div className="row nobottom">
-                            <div className="col" style={{ width: "50px" }}>
-                              <i className="file-setting-item waves-effect material-icons secondary-content">visibility</i>
-                            </div>
-                            <div className="col" style={{ width: "40px" }}>
-                              <i className="file-setting-item waves-effect material-icons secondary-content">directions</i>
-                            </div>
-                            <div className="col" style={{ width: "40px" }}>
-                              <i className="file-setting-item waves-effect material-icons secondary-content">delete</i>
-                            </div>
-                          </div>
+                          <FileItemButtons
+                            deleteFile={this.props.deleteFile}
+                            file={rowData}
+                            selectTempContentOfSignedFiles={this.props.selectTempContentOfSignedFiles}
+                          />
                           :
                           <div className="row nobottom">
                             <div className="col s12">
