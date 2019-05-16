@@ -163,7 +163,7 @@ nav .input-field input {
 }
 
 .rightcol {
-  background-color: #e1e1e1;
+  background-color: rgba(242,245,245,0.8);
   float: right !important;
   min-height: calc(100vh - 52px) !important;
   width: 350px !important;
