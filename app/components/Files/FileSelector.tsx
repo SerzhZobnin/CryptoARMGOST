@@ -10,6 +10,7 @@ import { mapToArr } from "../../utils";
 import FileList from "../Files/FileList";
 import FileTable from "../Files/FileTable";
 import ProgressBars from "../ProgressBars";
+import FileTableSmall from "./FileTableSmall";
 
 const appBarStyle = {
   width: "calc(100% - 85px)",
@@ -236,11 +237,7 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
             <Media query="(max-width: 1020px)">
               {(matches) =>
                 matches ? (
-                  <div style={{ display: "flex" }}>
-                    <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
-                      <FileList operation={this.props.operation} />
-                    </div>
-                  </div>
+                  <FileTableSmall operation={this.props.operation} />
                 ) :
                   (
                     <FileTable operation={this.props.operation} />
