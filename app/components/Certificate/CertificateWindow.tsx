@@ -948,7 +948,7 @@ class CertWindow extends React.Component<any, any> {
                 <div className={"collection " + VIEW}>
                   <div className="row">
                     <div className="col s12">
-                      <Media query="(max-width: 1000px)">
+                      <Media query="(max-width: 1020px)">
                         {(matches) =>
                           matches ? (
                             <div style={{ display: "flex" }}>

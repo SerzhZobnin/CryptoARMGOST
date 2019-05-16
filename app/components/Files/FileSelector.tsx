@@ -233,7 +233,7 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
             <i className="material-icons large fullscreen">fullscreen</i>
           </div>
           <div className={collection} >
-            <Media query="(max-width: 1000px)">
+            <Media query="(max-width: 1020px)">
               {(matches) =>
                 matches ? (
                   <div style={{ display: "flex" }}>

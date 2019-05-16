@@ -266,8 +266,11 @@ body {
     height: 36px;
     width: 36px;
     text-align: center;
-    color: black;
+    color: rgba(0,0,0,0.6);
     line-height: 36px;
+}
+.material-icons.secondary-content.file-setting-item:hover {
+  color: rgba(0,0,0,1);
 }
 .file-setting-item:hover {
     background-color: rgba(0,0,0,0.1);

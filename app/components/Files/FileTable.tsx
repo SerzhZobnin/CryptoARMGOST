@@ -118,8 +118,6 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
       return null;
     }
 
-    const self = this;
-
     return (
       <React.Fragment>
         <div style={{ display: "flex" }}>
@@ -138,7 +136,7 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
                   rowClassName={this.rowClassName}
                   onRowClick={this.handleOnRowClick}
                   onRowMouseOver={this.handleOnRowMouseOver}
-                  // onRowMouseOut={this.handleOnRowMouseOut}
+                  onRowMouseOut={this.handleOnRowMouseOut}
                   overscanRowCount={3}
                   rowGetter={rowGetter}
                   rowCount={sortedList.size}
@@ -191,26 +189,34 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
                     dataKey="lastModifiedDate"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={220}
+                    width={210}
                     label={localize("Documents.mdate", locale)}
                   />
                   <Column
                     cellRenderer={({ cellData, rowIndex }) => {
                       return (
-                        <div className="row nobottom">
-                          <div className="col s8">
-                            <div className="truncate">{bytesToSize(cellData)}</div>
+                        (rowIndex === this.state.hoveredRowIndex) ?
+                          <div className="row nobottom">
+                            <div className="col" style={{ width: "50px" }}>
+                              <i className="file-setting-item waves-effect material-icons secondary-content">visibility</i>
+                            </div>
+                            <div className="col" style={{ width: "40px" }}>
+                              <i className="file-setting-item waves-effect material-icons secondary-content">directions</i>
+                            </div>
+                            <div className="col" style={{ width: "40px" }}>
+                              <i className="file-setting-item waves-effect material-icons secondary-content">delete</i>
+                            </div>
                           </div>
-                          {
-                            (rowIndex === this.state.hoveredRowIndex) ?
-                              <FileItemDropdown />
-                              : null
-                          }
-                        </div>
+                          :
+                          <div className="row nobottom">
+                            <div className="col s12">
+                              <div className="truncate">{bytesToSize(cellData)}</div>
+                            </div>
+                          </div>
                       );
                     }}
                     dataKey="filesize"
-                    width="180"
+                    width={250}
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     label={localize("Documents.filesize", locale)}

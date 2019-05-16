@@ -42,6 +42,16 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
     };
   }
 
+  componentDidMount() {
+    $(".btn-floated").dropdown({
+      alignment: "left",
+      belowOrigin: false,
+      gutter: 0,
+      inDuration: 300,
+      outDuration: 225,
+    });
+  }
+
   render() {
     const { localize, locale } = this.context;
     const { isDefaultFilters } = this.props;
@@ -51,14 +61,12 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
       <div className="content-noflex">
         <div className="row">
           <div className="col s8 leftcol">
-            <div className="row">
+            <div className="row halfbottom">
               <div className="row halfbottom" />
-              <div className="col" style={{width: "40px"}}>
-                <a className={"nav-small-btn waves-effect waves-light"} onClick={this.addFiles.bind(this)}>
-                  <i className={"material-icons"}>add</i>
-                </a>
+              <div className="col">
+                <div className="file-setting-item waves-effect material-icons secondary-content" onClick={this.addFiles.bind(this)}>add</div>
               </div>
-              <div className="col " style={{width: "calc(100% - 130px)"}}>
+              <div className="col" style={{ width: "calc(100% - 150px)" }}>
                 <div className="input-field input-field-csr col s12 border_element find_box">
                   <i className="material-icons prefix">search</i>
                   <input
@@ -70,15 +78,15 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
                   <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
                 </div>
               </div>
-              <div className="col" style={{width: "40px"}}>
-                <a className={"nav-small-btn waves-effect waves-light"} onClick={this.handleShowModalFilterDocuments}>
-                  <i className={"material-icons"}>filter_list</i>
+              <div className="col" style={{ width: "40px" }}>
+                <a onClick={this.handleShowModalFilterDocuments}>
+                  <i className="file-setting-item waves-effect material-icons secondary-content">filter_list</i>
                 </a>
               </div>
-              <div className="col" style={{width: "40px"}}>
+              <div className="col" style={{ width: "40px" }}>
                 <div>
-                  <a className={"nav-small-btn waves-effect waves-light "} data-activates="dropdown-btn-set-add-files">
-                    <i className="material-icons">more_vert</i>
+                  <a className="btn-floated" data-activates="dropdown-btn-set-add-files">
+                    <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
                   </a>
                   <ul id="dropdown-btn-set-add-files" className="dropdown-content">
                     <li><a onClick={this.selectedAll}>{localize("Settings.selected_all", locale)}</a></li>
