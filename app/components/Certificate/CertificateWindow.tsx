@@ -71,7 +71,7 @@ class CertWindow extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    $(".nav-small-btn").dropdown();
+    $(".btn-floated").dropdown();
   }
 
   handleShowModalByType = (typeOfModal: string) => {
@@ -901,9 +901,9 @@ class CertWindow extends React.Component<any, any> {
       <div className="main">
         <div className="content">
           <div className="col s8 leftcol">
-            <div className="row nobottom">
+            <div className="row">
               <div className="row halfbottom" />
-              <div className="col s9 m9 l10">
+              <div className="col" style={{ width: "calc(100% - 80px)" }}>
                 <div className="input-field input-field-csr col s12 border_element find_box">
                   <i className="material-icons prefix">search</i>
                   <input
@@ -915,18 +915,15 @@ class CertWindow extends React.Component<any, any> {
                   <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
                 </div>
               </div>
-              <div className="col s2 m2 l1">
-                <a className={"nav-small-btn waves-effect waves-light"} onClick={this.handleReloadCertificates}>
-                  <i className={"material-icons"}>autorenew</i>
+              <div className="col" style={{ width: "40px" }}>
+                <a onClick={this.handleReloadCertificates}>
+                  <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
                 </a>
               </div>
-              <div className="col s1">
-                <div className="right import-col">
-                  <input type="file" id="choose-cert" value="" onChange={(event: any) => {
-                    this.handleCertificateImport(event.target.files);
-                  }} />
-                  <a className={"nav-small-btn waves-effect waves-light "} data-activates="dropdown-btn-import">
-                    <i className="material-icons">more_vert</i>
+              <div className="col" style={{ width: "40px" }}>
+                <div>
+                  <a className="btn-floated" data-activates="dropdown-btn-import">
+                    <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
                   </a>
                   <ul id="dropdown-btn-import" className="dropdown-content">
                     <li><a onClick={this.certImport}>{localize("Certificate.cert_import_from_file", locale)}</a></li>
@@ -940,33 +937,34 @@ class CertWindow extends React.Component<any, any> {
                     }
                     <li><a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)}>{localize("CSR.create_request", locale)}</a></li>
                   </ul>
+                  <input type="file" id="choose-cert" value="" onChange={(event: any) => {
+                    this.handleCertificateImport(event.target.files);
+                  }} />
                 </div>
               </div>
             </div>
-            <div className="cert-content-item">
-              <div className="add-certs">
-                <div className={"collection " + VIEW}>
-                  <div className="row">
-                    <div className="col s12">
-                      <Media query="(max-width: 1020px)">
-                        {(matches) =>
-                          matches ? (
-                            <div style={{ display: "flex" }}>
-                              <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
-                                <CertificateList activeCert={this.handleActiveCert} operation="certificate" />
-                                <CRLList activeCert={this.handleActiveCRL} />
-                              </div>
+            <div className="add-certs">
+              <div className={"collection " + VIEW}>
+                <div className="row">
+                  <div className="col s12">
+                    <Media query="(max-width: 1020px)">
+                      {(matches) =>
+                        matches ? (
+                          <div style={{ display: "flex" }}>
+                            <div style={{ flex: "1 1 auto", height: "calc(100vh - 140px)" }}>
+                              <CertificateList activeCert={this.handleActiveCert} operation="certificate" />
+                              <CRLList activeCert={this.handleActiveCRL} />
                             </div>
-                          ) :
-                            (
-                              <CertificateTable activeCert={this.handleActiveCert} certificate={this.state.certificate} operation="certificate" />
-                            )
-                        }
-                      </Media>
-                    </div>
+                          </div>
+                        ) :
+                          (
+                            <CertificateTable activeCert={this.handleActiveCert} certificate={this.state.certificate} operation="certificate" />
+                          )
+                      }
+                    </Media>
                   </div>
-                  <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />
                 </div>
+                <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />
               </div>
             </div>
           </div>

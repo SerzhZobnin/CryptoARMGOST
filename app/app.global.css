@@ -908,7 +908,7 @@ nav .cert-seacrh label i {
 }
 .add-certs {
     width: 100%;
-    height: calc(100% - 52px);
+    height: calc(100% - 70px);
     position: relative;
     overflow: auto;
     z-index: 2;
