@@ -63,10 +63,12 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
           <div className="col s8 leftcol">
             <div className="row halfbottom">
               <div className="row halfbottom" />
-              <div className="col">
-                <div className="file-setting-item waves-effect material-icons secondary-content" onClick={this.addFiles.bind(this)}>add</div>
+              <div className="col" style={{ width: "40px" }}>
+                <a onClick={this.addFiles.bind(this)}>
+                  <i className="file-setting-item waves-effect material-icons secondary-content">add</i>
+                </a>
               </div>
-              <div className="col" style={{ width: "calc(100% - 150px)" }}>
+              <div className="col" style={{ width: "calc(100% - 120px)" }}>
                 <div className="input-field input-field-csr col s12 border_element find_box">
                   <i className="material-icons prefix">search</i>
                   <input
