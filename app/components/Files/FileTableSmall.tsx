@@ -132,7 +132,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
                   headerHeight={30}
                   noRowsRenderer={this.noRowsRenderer}
                   headerClassName={"headerColumn"}
-                  rowHeight={72}
+                  rowHeight={45}
                   rowClassName={this.rowClassName}
                   onRowClick={this.handleOnRowClick}
                   onRowMouseOver={this.handleOnRowMouseOver}
@@ -167,9 +167,9 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
                               <div className="col s12">
                                 <div className="collection-title truncate">{cellData}</div>
                               </div>
-                              <div className="col s12">
+                              {/* <div className="col s12">
                                 <div className="collection-info cert-info truncate">{path.dirname(rowData.fullpath)}</div>
-                              </div>
+                              </div> */}
                               <div className="col s5">
                                 <div className="collection-info cert-info truncate">{(new Date(rowData.lastModifiedDate)).toLocaleDateString(locale, {
                                   day: "numeric",
@@ -187,7 +187,6 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
                           </div>
                           {(hovered) ?
                             <div className="col m2 l2">
-                              <div className="row halfbottom" />
                               <FileItemButtons
                                 deleteFile={this.props.deleteFile}
                                 file={rowData}
