@@ -584,6 +584,35 @@ div::-webkit-scrollbar-thumb {
     font-size: 60%;
 }
 
+.btn-outlined {
+  background-color: transparent;
+  border-style: solid;
+  box-shadow: none;
+  padding: 0 15px 0 15px;
+  border-width: 1px;
+  overflow: hidden;
+  vertical-align: middle;
+  border-radius: 4px;
+  color: #bf3817;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.btn-outlined:hover {
+  background-color: #e4dedc;
+  box-shadow: none;
+}
+
+.fixed-bottom-rightcolumn {
+  position: fixed;
+  bottom: 23px;
+  padding-top: 15px;
+  margin-bottom: 0;
+}
+
 .choose-btn:hover{
     background-color: #bf3817;
 }
@@ -3331,74 +3360,47 @@ svg:hover {
     padding-top: 2px!important;
 }
 /*-------------Documents---------------*/
-i.material-icons.docmenu_sign {
+  i.material-icons.docmenu {
     display: block;
     text-indent: -9999px;
-    width: 32px;
-    height: 32px;
-    background: url(./resources/image/docmenu_sign.svg);
-    background-size: 32px 32px;
+    width: 25px;
+    height: 25px;
     margin-left: 14px;
   }
 
-  i.material-icons.docmenu_verifysign {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.sign {
+    background: url(./resources/image/docmenu_sign.svg);
+    background-size: 25px 25px;
+  }
+
+  i.material-icons.docmenu.verifysign {
     background: url(./resources/image/docmenu_verifysign.svg);
-    background-size: 32px 32px;
-    margin-left: 20px;
+    background-size: 25px 25px;
   }
 
-  i.material-icons.docmenu_removesign {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.removesign {
     background: url(./resources/image/docmenu_removesign.svg);
-    background-size: 32px 32px;
-    margin-left: 20px;
+    background-size: 25px 25px;
   }
 
-  i.material-icons.docmenu_encrypt {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.encrypt {
     background: url(./resources/image/docmenu_encrypt.svg);
-    background-size: 32px 32px;
-    margin-left: 22px;
+    background-size: 25px 25px;
   }
 
-  i.material-icons.docmenu_decrypt {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.decrypt {
     background: url(./resources/image/docmenu_decrypt.svg);
-    background-size: 32px 32px;
-    margin-left: 22px;
+    background-size: 25px 25px;
   }
 
-  i.material-icons.docmenu_arhiver {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.arhiver {
     background: url(./resources/image/docmenu_arhiver.svg);
-    background-size: 32px 32px;
-    margin-left: 22px;
+    background-size: 25px 25px;
   }
 
-  i.material-icons.docmenu_remove {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.remove {
     background: url(./resources/image/docmenu_remove.svg);
-    background-size: 32px 32px;
-    margin-left: 7px;
+    background-size: 25px 25px;
   }
 
   .col.s10prt{

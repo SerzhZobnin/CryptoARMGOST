@@ -63,12 +63,12 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
           <div className="col s8 leftcol">
             <div className="row halfbottom">
               <div className="row halfbottom" />
-              <div className="col" style={{ width: "40px" }}>
+              <div className="col" style={{ width: "40px", paddingLeft: "40px" }}>
                 <a onClick={this.addFiles.bind(this)}>
-                  <i className="file-setting-item waves-effect material-icons secondary-content">add</i>
+                  <i className="file-setting-item waves-effect material-icons secondary-content pulse">add</i>
                 </a>
               </div>
-              <div className="col" style={{ width: "calc(100% - 120px)" }}>
+              <div className="col" style={{ width: "calc(100% - 140px)" }}>
                 <div className="input-field input-field-csr col s12 border_element find_box">
                   <i className="material-icons prefix">search</i>
                   <input
@@ -101,86 +101,86 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
             <FileSelector operation="SIGN" />
           </div>
           <div className="col s4 rightcol">
-            <div className="row halfbottom" />
+            <div className="row" />
             <div className="col s12">
-              <div className="desktoplic_text_item bottomitem">Выбранные элементы:</div>
+              <div className="desktoplic_text_item">Сертификат подписи:</div>
+              <hr />
             </div>
-            <div className="col s11">
-              <div className="col s12">
-                <div className="desktoplic_text_item topitem">{`Количество: ${this.props.activeFiles.length}`}</div>
-              </div>
-              <div className="col s12">
-                <div className="desktoplic_text_item topitem">{`Общий объем: ${this.getSelectedFilesSize()}`}</div>
-              </div>
+            <div className="col s12">
+              <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                ВЫБРАТЬ
+              </a>
+            </div>
+            <div className="row" />
+            <div className="col s12">
+              <div className="desktoplic_text_item">Сертификаты шифрования:</div>
+              <hr />
+            </div>
+            <div className="col s12">
+              <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                ВЫБРАТЬ
+              </a>
             </div>
 
-            <div className="row" />
-            <div className="col s12">
-              <div className="desktoplic_text_item bottomitem">Доступные операции:</div>
-            </div>
-            <div className="row" />
-            <div className="row" >
+            <div className="row fixed-bottom-rightcolumn" >
+              <div className="col s12">
+                <hr />
+              </div>
               <div className="col s4">
-                <a className={`waves-effect waves-light  ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`}
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`}
                   data-position="bottom"
                   onClick={this.handleClickSign}>
                   <div className="row docmenu">
-                    <i className="material-icons docmenu_sign" />
+                    <i className="material-icons docmenu sign" />
                   </div>
                   <div className="row docmenu">{localize("Documents.docmenu_sign", locale)}</div>
                 </a>
               </div>
               <div className="col s4">
-                <a className={`waves-effect waves-light  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`}
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`}
                   data-position="bottom"
                   data-tooltip={localize("Sign.sign_and_verify", locale)}>
                   <div className="row docmenu">
-                    <i className="material-icons docmenu_verifysign" />
+                    <i className="material-icons docmenu verifysign" />
                   </div>
-                  <div className="row docmenu">{localize("Documents.docmenu_verifysign", locale)}</div>
+                  <div className="row docmenu">{"Проверить"}</div>
                 </a>
               </div>
               <div className="col s4">
                 <a className={`waves-effect waves-light ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} data-position="bottom">
                   <div className="row docmenu">
-                    <i className="material-icons docmenu_removesign" />
+                    <i className="material-icons docmenu removesign" />
                   </div>
                   <div className="row docmenu">{localize("Documents.docmenu_removesign", locale)}</div>
                 </a>
               </div>
-            </div>
-            <div className="col s4">
-              <a className={`waves-effect waves-light ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`}
-                data-position="bottom" onClick={this.handleClickEncrypt}>
-                <div className="row docmenu">
-                  <i className="material-icons docmenu_encrypt" />
-                </div>
-                <div className="row docmenu">{localize("Documents.docmenu_enctypt", locale)}</div>
-              </a>
-            </div>
-            <div className="col s4">
-              <a className={`waves-effect waves-light ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} data-position="bottom">
-                <div className="row docmenu">
-                  <i className="material-icons docmenu_decrypt" />
-                </div>
-                <div className="row docmenu">{localize("Documents.docmenu_dectypt", locale)}</div>
-              </a>
-            </div>
-            <div className="row" />
-            <div className="col s12">
-              <div className="desktoplic_text_item bottomitem">Выполняется:</div>
-            </div>
-            <div className="col s12">
-              <div className="desktoplic_text_item topitem">{this.state.currentOperation}</div>
-            </div>
-
-            <div className="row" />
-            <div className="col s12">
-              <div className="desktoplic_text_item bottomitem">Сертификат подписчика:</div>
+              <div className="col s12">
+                <div className="row" />
+              </div>
+              <div className="col s4">
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`}
+                  data-position="bottom"
+                  onClick={this.handleClickSign}>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu encrypt" />
+                  </div>
+                  <div className="row docmenu">{localize("Documents.docmenu_enctypt", locale)}</div>
+                </a>
+              </div>
+              <div className="col s4">
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`}
+                  data-position="bottom"
+                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu decrypt" />
+                  </div>
+                  <div className="row docmenu">{localize("Documents.docmenu_dectypt", locale)}</div>
+                </a>
+              </div>
             </div>
           </div>
+          {this.showModalFilterDocuments()}
         </div>
-        {this.showModalFilterDocuments()}
       </div>
     );
   }
@@ -217,15 +217,15 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
   }
 
   checkEnableOperationButton = (operation: string) => {
-    const { activeFiles } = this.props;
+    const { activeFilesArr } = this.props;
 
-    if (!activeFiles.length) {
+    if (!activeFilesArr.length) {
       return false;
     }
 
     switch (operation) {
       case SIGN:
-        for (const document of activeFiles) {
+        for (const document of activeFilesArr) {
           if (document.extname === ".enc") {
             return false;
           }
@@ -235,7 +235,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
       case VERIFY:
       case UNSIGN:
-        for (const document of activeFiles) {
+        for (const document of activeFilesArr) {
           if (document.extname !== ".sig") {
             return false;
           }
@@ -244,7 +244,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
         return true;
 
       case ENCRYPT:
-        for (const document of activeFiles) {
+        for (const document of activeFilesArr) {
           if (document.extname === ".enc") {
             return false;
           }
@@ -253,7 +253,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
         return true;
 
       case DECRYPT:
-        for (const document of activeFiles) {
+        for (const document of activeFilesArr) {
           if (document.extname !== ".enc") {
             return false;
           }
@@ -338,6 +338,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 export default connect((state) => {
   return {
     activeFiles: activeFilesSelector(state, { active: true }),
+    activeFilesArr: mapToArr(activeFilesSelector(state, { active: true })),
     files: mapToArr(state.files.entities),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
   };
