@@ -1088,9 +1088,7 @@ nav .cert-seacrh label i {
     min-height: 0;
     border-bottom: 1px solid lightgrey;
 }
-.choose-certs-view .collection-item.avatar.certs-collection {
-    cursor: default;
-}
+
 .cert-content-item {
     height: 100%;
     width: 100%;

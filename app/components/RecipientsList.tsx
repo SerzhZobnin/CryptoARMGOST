@@ -42,7 +42,7 @@ class RecipientsList extends React.Component<any, any> {
     }
 
     return (
-      <div className="cert-view-main choose-certs-view">
+      <div className="choose-certs-view">
         <div className={"add-cert-collection collection "}>
           {recipients.map((element) => {
             let curStatusStyle;

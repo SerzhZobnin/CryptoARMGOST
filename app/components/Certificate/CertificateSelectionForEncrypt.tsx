@@ -6,18 +6,19 @@ import Media from "react-media";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
+  addRecipientCertificate, deleteRecipient,
   loadAllCertificates, loadAllContainers, removeAllCertificates,
   removeAllContainers, selectSignerCertificate,
 } from "../../AC";
 import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
 import {
-  ADDRESS_BOOK, CA,
+  ADDRESS_BOOK, CA, DEFAULT_CSR_PATH,
   LOCATION_MAIN, PROVIDER_CRYPTOPRO,
   PROVIDER_MICROSOFT, REQUEST, ROOT, USER_NAME,
 } from "../../constants";
 import { filteredCertificatesSelector } from "../../selectors";
-import { fileCoding, fileExists } from "../../utils";
+import { fileCoding, fileExists, mapToArr } from "../../utils";
 import logger from "../../winstonLogger";
 import BlockNotElements from "../BlockNotElements";
 import CloudCSP from "../CloudCSP/CloudCSP";
@@ -25,12 +26,16 @@ import Dialog from "../Dialog";
 import Modal from "../Modal";
 import PasswordDialog from "../PasswordDialog";
 import ProgressBars from "../ProgressBars";
+import RecipientsList from "../RecipientsList";
 import CertificateRequest from "../Request/CertificateRequest";
 import CertificateChainInfo from "./CertificateChainInfo";
+import CertificateDelete from "./CertificateDelete";
+import CertificateExport from "./CertificateExport";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
 import CertificateTable from "./CertificateTable";
+import { readSync } from "fs";
 
 const OS_TYPE = os.type();
 
@@ -41,7 +46,7 @@ const MODAL_DELETE_CRL = "MODAL_DELETE_CRL";
 const MODAL_CERTIFICATE_REQUEST = "MODAL_CERTIFICATE_REQUEST";
 const MODAL_CLOUD_CSP = "MODAL_CLOUD_CSP";
 
-class CertificateSelectionForSignature extends React.Component<any, any> {
+class CertificateSelectionForEncrypt extends React.Component<any, any> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -52,11 +57,13 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
 
     this.state = ({
       activeCertInfoTab: true,
+      activeCertificate: null,
       certificate: null,
       crl: null,
       importingCertificate: null,
       importingCertificatePath: null,
       password: "",
+      selectedRecipients: props.recipients,
       showDialogInstallRootCertificate: false,
       showModalCertificateRequest: false,
       showModalCloudCSP: false,
@@ -152,10 +159,6 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
     this.setState({
       activeCertInfoTab: certInfoTab,
     });
-  }
-
-  handleActiveCert = (certificate: any) => {
-    this.setState({ certificate, crl: null });
   }
 
   handleReloadCertificates = () => {
@@ -772,7 +775,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
 
   render() {
     const { certificates, isLoading, isLoadingFromDSS, searchValue } = this.props;
-    const { certificate } = this.state;
+    const { certificate, selectedRecipients } = this.state;
     const { localize, locale } = this.context;
 
     if (isLoading || isLoadingFromDSS) {
@@ -781,6 +784,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
 
     const NAME = certificates.length < 1 ? "active" : "not-active";
     const VIEW = certificates.length < 1 ? "not-active" : "";
+    const CHOOSE_VIEW = !selectedRecipients || !selectedRecipients.length ? "active" : "not-active";
 
     return (
       <div className="main">
@@ -837,12 +841,12 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
                         matches ? (
                           <div style={{ display: "flex" }}>
                             <div style={{ flex: "1 1 auto", height: "calc(100vh - 140px)" }}>
-                              <CertificateList activeCert={this.handleActiveCert} operation="sign" />
+                              <CertificateList activeCert={this.handleAddRecipient} operation="encrypt" />
                             </div>
                           </div>
                         ) :
                           (
-                            <CertificateTable activeCert={this.handleActiveCert} certificate={this.state.certificate} operation="sign" />
+                            <CertificateTable activeCert={this.handleAddRecipient} certificate={this.state.certificate} operation="sign" />
                           )
                       }
                     </Media>
@@ -855,31 +859,46 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
           <div className="col s4 rightcol">
             <div className="row" />
             <div className="row">
-            <div className="col s12">
-                <div className="desktoplic_text_item">Сертификат подписи</div>
+              <div className="col s12">
+                <div className="desktoplic_text_item">Сертификаты шифрования</div>
                 <hr />
               </div>
               <div className="col s12">
                 <div style={{ display: "flex" }}>
                   <div style={{ flex: "1 1 auto", height: "calc(100vh - 120px)" }}>
-                    {this.getCertificateOrCRLInfo()}
+                    <div className="add-certs">
+                      {(this.state.activeCertificate) ? <CertificateInfo certificate={this.state.activeCertificate} /> :
+                        <RecipientsList onActive={this.handleActiveCert} handleRemoveRecipient={this.handleRemoveRecipient} dialogType="modal" recipients={this.state.selectedRecipients} />
+                      }
+
+                      <BlockNotElements name={CHOOSE_VIEW} title={localize("Certificate.cert_not_select", locale)} />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div className="row fixed-bottom-rightcolumn">
-              <div className="col s5 offset-s5">
-                <Link to={LOCATION_MAIN}>
-                  <a className="btn btn-text waves-effect waves-light">
-                    ОТМЕНА
+              {(this.state.activeCertificate) ?
+                <div className="col s1 offset-s12">
+                  <a className="btn btn-text waves-effect waves-light" onClick={this.backViewChooseCerts}>
+                    {"< НАЗАД"}
+                  </a>
+                </div> :
+                <React.Fragment>
+                  <div className="col s5 offset-s5">
+                    <Link to={LOCATION_MAIN}>
+                      <a className="btn btn-text waves-effect waves-light">
+                        ОТМЕНА
                 </a>
-                </Link>
-              </div>
-              <div className="col s2">
-                <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleChooseSigner}>
-                  ВЫБРАТЬ
+                    </Link>
+                  </div>
+                  <div className="col s2">
+                    <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleChooseRecipients}>
+                      ВЫБРАТЬ
                 </a>
-              </div>
+                  </div>
+                </React.Fragment>
+              }
             </div>
             {this.showModalCertificateRequest()}
             {this.showModalCloudCSP()}
@@ -894,12 +913,55 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
     );
   }
 
-  handleChooseSigner = () => {
-    const { selectSignerCertificate } = this.props;
-    const { certificate } = this.state;
+  handleAddRecipient = (cert: any) => {
+    if (!this.state.selectedRecipients.includes(cert)) {
+      this.setState({
+        selectedRecipients: [...this.state.selectedRecipients, cert],
+      });
+    }
+  }
 
-    selectSignerCertificate(certificate.id);
+  handleRemoveRecipient = (cert: any) => {
+    this.setState({
+      selectedRecipients: this.state.selectedRecipients.filter((item: object) => item !== cert),
+    });
+  }
+
+  handleActiveCert = (certificate: any) => {
+    this.setState({ activeCertificate: certificate });
+  }
+
+  backViewChooseCerts = () => {
+    this.setState({ activeCertificate: null });
+  }
+
+  handleChooseRecipients = () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { addRecipientCertificate } = this.props;
+    const { selectedRecipients } = this.state;
+
+    this.handleCleanRecipientsList();
+
+    for (const recipient of selectedRecipients) {
+      addRecipientCertificate(recipient.id);
+    }
+
+    this.setState({ modalCertList: false });
+
     this.props.history.push(LOCATION_MAIN);
+  }
+
+  handleCleanRecipientsList = () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { deleteRecipient, recipients } = this.props;
+
+    recipients.forEach((recipient) => deleteRecipient(recipient.id));
+  }
+
+  handleCleanStateList = () => {
+    this.setState({
+      selectedRecipients: [],
+    });
   }
 
   handleSearchValueChange = (ev: any) => {
@@ -944,16 +1006,19 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
 
 export default connect((state) => {
   return {
-    certificates: filteredCertificatesSelector(state, { operation: "sign" }),
+    certificates: filteredCertificatesSelector(state, { operation: "encrypt" }),
     cloudCSPSettings: state.settings.cloudCSP,
     cloudCSPState: state.cloudCSP,
     containersLoading: state.containers.loading,
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
+    recipients: mapToArr(state.recipients.entities)
+      .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
+      .filter((recipient) => recipient !== undefined),
     searchValue: state.filters.searchValue,
   };
 }, {
-    changeSearchValue, loadAllCertificates, loadAllContainers,
-    removeAllCertificates, removeAllContainers, resetCloudCSP,
-    selectSignerCertificate,
-  })(CertificateSelectionForSignature);
+    addRecipientCertificate, changeSearchValue, deleteRecipient,
+    loadAllCertificates, loadAllContainers, removeAllCertificates,
+    removeAllContainers, resetCloudCSP, selectSignerCertificate,
+  })(CertificateSelectionForEncrypt);

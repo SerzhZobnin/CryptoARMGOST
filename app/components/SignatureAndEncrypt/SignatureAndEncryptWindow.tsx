@@ -2,16 +2,21 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { activeFile, deleteFile, filePackageDelete, filePackageSelect, selectFile } from "../../AC";
 import {
-  DECRYPT, ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
-  SIGN, UNSIGN, VERIFY,
+  activeFile, deleteFile, deleteRecipient,
+  filePackageDelete, filePackageSelect, selectFile,
+  selectSignerCertificate,
+} from "../../AC";
+import {
+  DECRYPT, ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
+  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, SIGN, UNSIGN, VERIFY,
 } from "../../constants";
 import { activeFilesSelector } from "../../selectors";
 import { bytesToSize, mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
 import FileSelector from "../Files/FileSelector";
 import Modal from "../Modal";
+import RecipientsList from "../RecipientsList";
 
 const dialog = window.electron.remote.dialog;
 
@@ -55,7 +60,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   render() {
     const { localize, locale } = this.context;
-    const { isDefaultFilters, signer } = this.props;
+    const { isDefaultFilters, recipients, signer } = this.props;
     const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
 
     return (
@@ -103,9 +108,19 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
           </div>
           <div className="col s4 rightcol">
             <div className="row" />
-            <div className="col s12">
+            <div className="col s10">
               <div className="desktoplic_text_item">Сертификат подписи:</div>
               <hr />
+            </div>
+            <div className="col s2">
+              <div className="right import-col">
+                <a className="btn-floated" data-activates="dropdown-btn-signer">
+                  <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                </a>
+                <ul id="dropdown-btn-signer" className="dropdown-content">
+                  <li><a onClick={() => this.props.selectSignerCertificate(0)}>Очистить</a></li>
+                </ul>
+              </div>
             </div>
             {
               (signer) ? this.getSelectedSigner() :
@@ -118,15 +133,42 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
                 </div>
             }
             <div className="row" />
-            <div className="col s12">
+            <div className="col s10">
               <div className="desktoplic_text_item">Сертификаты шифрования:</div>
               <hr />
             </div>
-            <div className="col s12">
-              <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
-                ВЫБРАТЬ
-              </a>
+            <div className="col s2">
+              <div className="right import-col">
+                <a className="btn-floated" data-activates="dropdown-btn-encrypt">
+                  <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                </a>
+                <ul id="dropdown-btn-encrypt" className="dropdown-content">
+                  <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
+                    <li><a>Добавить</a></li>
+                  </Link>
+                  <li><a onClick={() => this.handleCleanRecipientsList()}>Очистить</a></li>
+                </ul>
+              </div>
             </div>
+            {
+              (recipients && recipients.length) ?
+                <div className="col s12">
+                  <div style={{ display: "flex" }}>
+                    <div style={{ flex: "1 1 auto", height: "calc(100vh - 300px)" }}>
+                      <div className="add-certs">
+                        <RecipientsList recipients={recipients} />
+                      </div>
+                    </div>
+                  </div>
+                </div> :
+                <div className="col s12">
+                  <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
+                    <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                      ВЫБРАТЬ
+                    </a>
+                  </Link>
+                </div>
+            }
 
             <div className="row fixed-bottom-rightcolumn" >
               <div className="col s12">
@@ -207,7 +249,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
       return (
         <React.Fragment>
-          <div className="col s11">
+          <div className="col s12">
             <div className="col s1">
               <div className={curStatusStyle} />
             </div>
@@ -216,21 +258,18 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
               <div className="desktoplic_text_item topitem truncate">{signer.issuerFriendlyName}</div>
             </div>
           </div>
-          <div className="col s1">
-            <div className="right import-col">
-              <a className={"nav-small-btn waves-effect waves-light "} data-activates="dropdown-btn-for-cert">
-                <i className="material-icons">more_vert</i>
-              </a>
-              <ul id="dropdown-btn-for-cert" className="dropdown-content">
-                <li><a>Очистить</a></li>
-              </ul>
-            </div>
-          </div>
         </React.Fragment>
       );
     } else {
       return null;
     }
+  }
+
+  handleCleanRecipientsList = () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { deleteRecipient, recipients } = this.props;
+
+    recipients.forEach((recipient) => deleteRecipient(recipient.id));
   }
 
   selectedAll = () => {
@@ -389,6 +428,9 @@ export default connect((state) => {
     activeFilesArr: mapToArr(activeFilesSelector(state, { active: true })),
     files: mapToArr(state.files.entities),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
+    recipients: mapToArr(state.recipients.entities)
+      .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
+      .filter((recipient) => recipient !== undefined),
     signer: state.certificates.getIn(["entities", state.signers.signer]),
   };
-}, { activeFile, deleteFile, filePackageSelect, filePackageDelete, selectFile })(SignatureAndEncryptWindow);
+}, { activeFile, deleteFile, deleteRecipient, filePackageSelect, filePackageDelete, selectFile, selectSignerCertificate })(SignatureAndEncryptWindow);

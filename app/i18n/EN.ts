@@ -167,6 +167,7 @@ export default {
     cert_trusted_import_ok: "The trusted certificate is successfully imported",
     cert_valid: "Is valid until",
     certificate: "A certificate",
+    certificate_selection_for_encrypt: "Certificate selection for encrypt",
     certificate_selection_for_signature: "Certificate selection for signature",
     certs: "Certificates",
     certs_encrypt: "Encryption certificates",
