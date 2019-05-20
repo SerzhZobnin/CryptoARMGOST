@@ -4,8 +4,9 @@ import React from "react";
 import { connect } from "react-redux";
 import { filePackageDelete } from "../AC";
 import {
-  LOCATION_ABOUT, LOCATION_CERTIFICATES, LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
-  LOCATION_ENCRYPT, LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SERVICES,
+  LOCATION_ABOUT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_CERTIFICATES,
+  LOCATION_CONTAINERS, LOCATION_DOCUMENTS, LOCATION_ENCRYPT,
+  LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SERVICES,
   LOCATION_SIGN, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
 } from "../constants";
 import { connectedSelector, loadingRemoteFilesSelector } from "../selectors";
@@ -100,6 +101,9 @@ class MenuBar extends React.Component<any, IMenuBarState> {
     switch (pathname) {
       case LOCATION_ABOUT:
         return localize("About.about", locale);
+
+      case LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE:
+          return localize("Certificate.certificate_selection_for_signature", locale);
 
       case LOCATION_CERTIFICATES:
         return localize("Certificate.certs", locale);

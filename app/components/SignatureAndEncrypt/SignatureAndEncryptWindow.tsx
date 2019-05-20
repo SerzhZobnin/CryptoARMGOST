@@ -1,9 +1,10 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { activeFile, deleteFile, filePackageDelete, filePackageSelect, selectFile } from "../../AC";
 import {
-  DECRYPT, ENCRYPT,
+  DECRYPT, ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
   SIGN, UNSIGN, VERIFY,
 } from "../../constants";
 import { activeFilesSelector } from "../../selectors";
@@ -43,7 +44,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
   }
 
   componentDidMount() {
-    $(".btn-floated").dropdown({
+    $(".btn-floated, .nav-small-btn").dropdown({
       alignment: "left",
       belowOrigin: false,
       gutter: 0,
@@ -54,7 +55,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   render() {
     const { localize, locale } = this.context;
-    const { isDefaultFilters } = this.props;
+    const { isDefaultFilters, signer } = this.props;
     const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
 
     return (
@@ -106,11 +107,16 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
               <div className="desktoplic_text_item">Сертификат подписи:</div>
               <hr />
             </div>
-            <div className="col s12">
-              <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
-                ВЫБРАТЬ
-              </a>
-            </div>
+            {
+              (signer) ? this.getSelectedSigner() :
+                <div className="col s12">
+                  <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
+                    <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                      ВЫБРАТЬ
+                    </a>
+                  </Link>
+                </div>
+            }
             <div className="row" />
             <div className="col s12">
               <div className="desktoplic_text_item">Сертификаты шифрования:</div>
@@ -183,6 +189,48 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
         </div>
       </div>
     );
+  }
+
+  getSelectedSigner = () => {
+    const { signer } = this.props;
+    const { localize, locale } = this.context;
+
+    if (signer) {
+      const status = signer.status;
+      let curStatusStyle;
+
+      if (status) {
+        curStatusStyle = "cert_status_ok";
+      } else {
+        curStatusStyle = "cert_status_error";
+      }
+
+      return (
+        <React.Fragment>
+          <div className="col s11">
+            <div className="col s1">
+              <div className={curStatusStyle} />
+            </div>
+            <div className="col s11">
+              <div className="desktoplic_text_item topitem truncate">{signer.subjectFriendlyName}</div>
+              <div className="desktoplic_text_item topitem truncate">{signer.issuerFriendlyName}</div>
+            </div>
+          </div>
+          <div className="col s1">
+            <div className="right import-col">
+              <a className={"nav-small-btn waves-effect waves-light "} data-activates="dropdown-btn-for-cert">
+                <i className="material-icons">more_vert</i>
+              </a>
+              <ul id="dropdown-btn-for-cert" className="dropdown-content">
+                <li><a>Очистить</a></li>
+              </ul>
+            </div>
+          </div>
+        </React.Fragment>
+      );
+    } else {
+      return null;
+    }
   }
 
   selectedAll = () => {
@@ -341,5 +389,6 @@ export default connect((state) => {
     activeFilesArr: mapToArr(activeFilesSelector(state, { active: true })),
     files: mapToArr(state.files.entities),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
+    signer: state.certificates.getIn(["entities", state.signers.signer]),
   };
 }, { activeFile, deleteFile, filePackageSelect, filePackageDelete, selectFile })(SignatureAndEncryptWindow);

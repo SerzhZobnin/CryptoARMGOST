@@ -584,6 +584,22 @@ div::-webkit-scrollbar-thumb {
     font-size: 60%;
 }
 
+.btn-text {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0 15px 0 15px;
+  border-width: 1px;
+  overflow: hidden;
+  vertical-align: middle;
+  border-radius: 4px;
+  color: #bf3817;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .btn-outlined {
   background-color: transparent;
   border-style: solid;
@@ -601,7 +617,7 @@ div::-webkit-scrollbar-thumb {
   font-weight: bold;
 }
 
-.btn-outlined:hover {
+.btn-outlined:hover, .btn-text:hover  {
   background-color: #e4dedc;
   box-shadow: none;
 }

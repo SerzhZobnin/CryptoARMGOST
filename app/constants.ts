@@ -151,9 +151,12 @@ export const REMOVE_CONNECTION = "REMOVE_CONNECTION";
 export const SET_CONNECTED = "SET_CONNECTED";
 export const SET_DISCONNECTED = "SET_DISCONNECTED";
 
+export const LOCATION_MAIN = "/";
 export const LOCATION_SIGN = "/sign";
 export const LOCATION_ENCRYPT = "/encrypt";
 export const LOCATION_CERTIFICATES = "/certificate";
+export const LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE = "/certificateForSignature";
+export const LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT = "/certificateForEncrypt";
 export const LOCATION_CONTAINERS = "/containers";
 export const LOCATION_DOCUMENTS = "/documents";
 export const LOCATION_ABOUT = "/about";

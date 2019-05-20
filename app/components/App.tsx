@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import { Route } from "react-router-dom";
 import { ConnectedRouter as Router, push } from "react-router-redux";
 import {
-  LOCATION_ABOUT, LOCATION_CERTIFICATES, LOCATION_CONTAINERS,
+  LOCATION_ABOUT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_CERTIFICATES,
+  LOCATION_CONTAINERS,
   LOCATION_DOCUMENTS, LOCATION_ENCRYPT, LOCATION_EVENTS,
   LOCATION_LICENSE, LOCATION_SERVICES, LOCATION_SIGN,
 } from "../constants";
@@ -12,6 +13,7 @@ import history from "../history";
 import localize from "../i18n/localize";
 import store from "../store/index";
 import AboutWindow from "./About/AboutWindow";
+import CertificateSelectionForSignature from "./Certificate/CertificateSelectionForSignature";
 import CertificateWindow from "./Certificate/CertificateWindow";
 import ContainersWindow from "./Containers/ContainersWindow";
 import DocumentsWindow from "./Documents/DocumentsWindow";
@@ -56,6 +58,7 @@ class App extends React.Component<IAppProps, {}> {
           <Route exact path="/" component={SignAndEncryptWindow} />
           <Route path={LOCATION_SIGN} component={SignatureWindow} />
           <Route path={LOCATION_ENCRYPT} component={EncryptWindow} />
+          <Route path={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE} component={CertificateSelectionForSignature} />
           <Route path={LOCATION_CERTIFICATES} component={CertificateWindow} />
           <Route path={LOCATION_CONTAINERS} component={ContainersWindow} />
           <Route path={LOCATION_LICENSE} component={LicenseWindow} />

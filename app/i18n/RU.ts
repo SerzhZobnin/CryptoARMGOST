@@ -167,6 +167,7 @@ export default {
     cert_trusted_import_ok: "Корневой сертификат успешно импортирован",
     cert_valid: "Годен до",
     certificate: "Сертификат",
+    certificate_selection_for_signature: "Выбор сертификата подписи",
     certs: "Сертификаты",
     certs_encrypt: "Сертификаты шифрования",
     certs_getters: "Сертификаты получателей",
