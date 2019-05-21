@@ -185,17 +185,17 @@ class MenuBar extends React.Component<any, IMenuBarState> {
                     <LocaleSelect />
                   </li>
                   <li>
-                    <a className="minimize-window-btn waves-effect waves-light" onClick={this.minimizeWindow.bind(this)}>
+                    <a className="waves-effect waves-light" onClick={this.minimizeWindow.bind(this)}>
                       <i className="material-icons">remove</i>
                     </a>
                   </li>
                   <li>
-                    <a className="maximize-window-btn waves-effect waves-light" onClick={this.maximizeWindow.bind(this)}>
+                    <a className="waves-effect waves-light" onClick={this.maximizeWindow.bind(this)}>
                       <i className="material-icons">{this.state.isMaximized ? "filter_none" : "crop_square"}</i>
                     </a>
                   </li>
                   <li>
-                    <a className="close-window-btn waves-effect waves-light" onClick={this.closeWindow.bind(this)}>
+                    <a className="waves-effect waves-light" onClick={this.closeWindow.bind(this)}>
                       <i className="material-icons">close</i>
                     </a>
                   </li>

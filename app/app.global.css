@@ -7,19 +7,19 @@
 
 /* Стили заголовка окна  */
 nav.app-bar {
-    height: 48px;
+    height: 35px;
 }
 
 nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
-  height: 48px;
-  line-height: 48px;
+  height: 35px;
+  line-height: 35px;
 }
 
 nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   display: block;
   font-size: 1.5rem;
-  height: 48px;
-  line-height: 48px;
+  height: 35px;
+  line-height: 35px;
 }
 
 .disabled{
@@ -37,7 +37,7 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   background-color: #bf3817 !important;
 }
 
-.maximize-window-btn, .minimize-window-btn, .close-window-btn, .setting-window-btn, .menu-btn, .cert-setting-btn, .setting-btn  {
+.setting-window-btn, .cert-setting-btn, .setting-btn  {
     border-radius: 100%;
     overflow: hidden;
 }
@@ -116,13 +116,13 @@ nav .input-field input {
     border: 2px solid #bf3817;
     border-top: none;
     width: 100%;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     position: absolute;
 }
 .content-noflex {
   border: 2px solid #bf3817;
   width: 100%;
-  height: calc(100% - 48px);
+  height: calc(100% - 35px);
   position: absolute;
 }
 .content-tem {
@@ -191,7 +191,7 @@ body {
 }
 .settings-content {
     overflow: auto;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     white-space: nowrap;
     font-size: 75%;
     width: 100%;
@@ -199,7 +199,7 @@ body {
 
 .sign-info-content {
     overflow: auto;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     white-space: nowrap;
     border-top: 2px solid #ffffff;
     width: 100%;
@@ -475,7 +475,7 @@ body {
 }
 .add {
     width: 100%;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     position: relative;
     border-top: 2px solid #ffffff;
 }
@@ -558,8 +558,8 @@ div::-webkit-scrollbar-thumb {
 .app-bar-content {
     background-color: lightgray;
     box-shadow: none;
-    height: 48px;
-    line-height: 48px;
+    height: 35px;
+    line-height: 35px;
 }
 
 .input-checkbox label {
@@ -855,11 +855,6 @@ i.material-icons.choosefolder {
   margin-top: 5px;
 }
 
-.lang {
-  border-radius: 100%;
-  overflow: hidden;
-}
-
 .triangle-down {
 	width: 0;
 	height: 0;
@@ -909,7 +904,7 @@ i.material-icons.choosefolder {
 .cert-window-content {
     display:flex;
     width: 100%;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     border-top: none;
 }
 .add-cert-content {
@@ -961,7 +956,7 @@ nav .cert-seacrh label i {
 
 .add-certs-cervices {
   width: 100%;
-  height: calc(100% - 48px);
+  height: calc(100% - 35px);
   position: relative;
   overflow: auto;
   border-top: 2px solid #ffffff;
@@ -1131,7 +1126,7 @@ nav .cert-seacrh label i {
 }
 .cert-view-main {
     overflow: auto;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     display: flex;
     align-items: center;
 }
@@ -2113,7 +2108,7 @@ p.message_onlinelic{
 }
 
 .password-modal-content {
-  height: calc(100% - 48px);
+  height: calc(100% - 35px);
   padding: 10px;
   font-size: 80%;
 }

@@ -21,7 +21,7 @@ class LocaleSelect extends React.Component<ILocaleSelectProps, {}> {
     const { locale } = this.props;
 
     return (
-      <div className="lang waves-effect waves-light">
+      <div className="waves-effect waves-light">
         <a className={locale} onClick={this.handleChange}>{locale}</a>
       </div>
     );
