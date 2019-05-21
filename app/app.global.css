@@ -182,8 +182,8 @@ body {
     padding: 0;
     height: 100%;
     font-size: 18px;
-    min-height: 600px;
-    min-width: 800px;
+    min-height: 700px;
+    min-width: 900px;
 }
 #container, .main {
     /* height: 100%; */
@@ -1533,8 +1533,8 @@ display: inline-block;
 
 .about{
     margin-top: 1px;
-    width: 800px;
-    height: 600px;
+    width: 900px;
+    height: 700px;
     background: url(./resources/image/geo_gray.png);
 }
 

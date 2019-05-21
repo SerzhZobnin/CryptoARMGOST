@@ -31,6 +31,7 @@ export const VERIFY = "VERIFY";
 export const UNSIGN = "UNSIGN";
 export const ENCRYPT = "ENCRYPT";
 export const DECRYPT = "DECRYPT";
+export const REMOVE = "REMOVE";
 export const CERTIFICATE_GENERATION = "CERTIFICATE_GENERATION";
 export const CSR_GENERATION = "CSR_GENERATION";
 export const CERTIFICATE_IMPORT = "CERTIFICATE_IMPORT";
