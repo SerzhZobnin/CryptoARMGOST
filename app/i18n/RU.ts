@@ -142,7 +142,7 @@ export default {
     absent: "Отсутствует",
     cert: "Сертификаты",
     cert_chain: "Цепочка сертификации",
-    cert_chain_info: "Состав цепочки",
+    cert_chain_info: "Цепочка сертификации",
     cert_chain_status: "Общий статус цепочки",
     cert_chain_status_false: "недействительна",
     cert_chain_status_true: "действительна",

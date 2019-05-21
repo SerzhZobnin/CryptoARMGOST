@@ -634,8 +634,27 @@ class CertWindow extends React.Component<any, any> {
 
     return (
       <div className="add-certs">
-        <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
-        {cert}
+        <Media query="(max-height: 870px)">
+          {(matches) =>
+            matches ? (
+              <React.Fragment>
+                <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
+                {cert}
+              </ React.Fragment>
+            ) :
+              <React.Fragment>
+                <div className="col s12">
+                  <div className="desktoplic_text_item">Сведения о сертификате:</div>
+                  <hr />
+                </div>
+                <div className="col s12" style={{padding: 0}}>
+                <CertificateInfo certificate={certificate} />
+                <a className="collection-info chain-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
+                <CertificateChainInfo certificate={certificate} key={"chain_" + certificate.id} style="" onClick={() => { return; }} />
+                </div>
+              </React.Fragment>
+          }
+        </Media>
         {/* {
           certificate && certificate.category === REQUEST ?
             <RequestButtons onCopy={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)} /> : null
