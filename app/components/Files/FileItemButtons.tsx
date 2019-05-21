@@ -23,8 +23,8 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
     const { file } = this.props;
 
     return (
-      <div className="row nobottom" style={{ width: "130px"}}>
-        <div className="col" style={{ width: "50px" }}>
+      <div className="row nobottom" style={{ width: "120px"}}>
+        <div className="col" style={{ width: "40px" }}>
           <i className="file-setting-item waves-effect material-icons secondary-content"
             onClick={(event) => {
               event.stopPropagation();

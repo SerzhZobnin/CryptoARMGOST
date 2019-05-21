@@ -162,7 +162,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
                               </div>
                             </div>
                           </div>
-                          <div className={`col ${hovered ? "s6 m7 l8" : "s11"}`}>
+                          <div className={`col ${hovered ? "s8 l8" : "s11"}`}>
                             <div className="row nobottom">
                               <div className="col s12">
                                 <div className="collection-title truncate">{cellData}</div>
