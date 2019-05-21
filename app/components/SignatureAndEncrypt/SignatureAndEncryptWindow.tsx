@@ -153,13 +153,9 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
             </div>
             {
               (recipients && recipients.length) ?
-                <div className="col s12">
-                  <div style={{ display: "flex" }}>
-                    <div style={{ flex: "1 1 auto", height: "calc(100vh - 300px)" }}>
-                      <div className="add-certs">
-                        <RecipientsList recipients={recipients} />
-                      </div>
-                    </div>
+                <div style={{ height: "calc(100vh - 300px)" }}>
+                  <div className="add-certs">
+                    <RecipientsList recipients={recipients} />
                   </div>
                 </div> :
                 <div className="col s12">
@@ -260,13 +256,13 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
       return (
         <React.Fragment>
-          <div className="col s12">
-            <div className="col s1">
+          <div className="col s12 valign-wrapper">
+            <div className="col s2">
               <div className={curStatusStyle} />
             </div>
-            <div className="col s11">
-              <div className="desktoplic_text_item topitem truncate">{signer.subjectFriendlyName}</div>
-              <div className="desktoplic_text_item topitem truncate">{signer.issuerFriendlyName}</div>
+            <div className="col s10"  style={{fontSize: "75%"}}>
+              <div className="collection-title">{signer.subjectFriendlyName}</div>
+              <div className="collection-info cert-info">{signer.issuerFriendlyName}</div>
             </div>
           </div>
         </React.Fragment>

@@ -73,25 +73,21 @@ class RecipientsList extends React.Component<any, any> {
               curKeyStyle = "";
             }
 
-            return <div className="collection-item avatar certs-collection" key={element.id + 1}
-              onClick={() => this.handleClick(element)}
-              onDoubleClick={() => this.handleDoubleClick(element)}>
-              <div className="row nobottom">
-                <div className="col s1" style={{ padding: 0, width: "0%" }}>
-                  <div className="rectangle" style={rectangleStyle} />
+            return <div className="row certificate-list-item" id={element.id}>
+              <div className="collection-item avatar certs-collection "
+                onClick={() => this.handleClick(element)}
+                onDoubleClick={() => this.handleDoubleClick(element)}>
+                <React.Fragment>
+                  <div className="col s12 valign-wrapper">
+                    <div className="col s2">
+                      <div className={curStatusStyle} />
+                    </div>
+                    <div className="col s10">
+                      <div className="collection-title">{element.subjectFriendlyName}</div>
+                      <div className="collection-info cert-info">{element.issuerFriendlyName}</div>
+                    </div>
                 </div>
-                <div className="col s11">
-                  <div className="collection-title">{element.subjectFriendlyName}</div>
-                  <div className="collection-info cert-info ">{element.issuerFriendlyName}</div>
-                </div>
-                <div className="col s1">
-                  <div className="row nobottom">
-                    <div className={curStatusStyle} />
-                  </div>
-                  <div className="row nobottom">
-                    <div className={curKeyStyle} />
-                  </div>
-                </div>
+              </React.Fragment>
               </div>
             </div>;
           })}

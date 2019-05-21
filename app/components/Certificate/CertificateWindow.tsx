@@ -969,14 +969,36 @@ class CertWindow extends React.Component<any, any> {
             </div>
           </div>
           <div className="col s4 rightcol">
-            {this.getSelectedCertificate()}
+            <div className="row halfbottom" />
             <div className="row">
               <div className="col s12">
-                <div style={{ display: "flex" }}>
-                  <div style={{ flex: "1 1 auto", height: "calc(100vh - 98px)" }}>
-                    {this.getCertificateOrCRLInfo()}
-                  </div>
+                <div style={{ height: "calc(100vh - 80px)" }}>
+                  {this.getCertificateOrCRLInfo()}
                 </div>
+              </div>
+            </div>
+            <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "80px" }}>
+              <div className="col s12">
+                <hr />
+              </div>
+              <div className="col s3 offset-s6">
+                <a className={`waves-effect waves-light `}
+                  data-position="bottom">
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu sign" />
+                  </div>
+                  <div className="row docmenu">Экспорт</div>
+                </a>
+              </div>
+              <div className="col s3">
+                <a className={`waves-effect waves-light `}
+                  data-position="bottom"
+                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu remove" />
+                  </div>
+                  <div className="row docmenu">{localize("Documents.docmenu_remove", locale)}</div>
+                </a>
               </div>
             </div>
             {this.showModalDeleteCertificate()}
@@ -1046,20 +1068,14 @@ class CertWindow extends React.Component<any, any> {
       return (
         <div className="row">
           <div className="row halfbottom" />
-          <div className="col s11">
-            <div className="desktoplic_text_item bottomitem">Выбранные элементы:</div>
-            <div className="col s1">
-              <div className={curStatusStyle} />
-            </div>
-            <div className="col s11">
-              <div className="desktoplic_text_item topitem truncate">{certificate.subjectFriendlyName}</div>
-              <div className="desktoplic_text_item topitem truncate">{certificate.issuerFriendlyName}</div>
-            </div>
+          <div className="col s10">
+            <div className="desktoplic_text_item">Сертификат:</div>
+            <hr />
           </div>
-          <div className="col s1">
+          <div className="col s2">
             <div className="right import-col">
               <a className={"nav-small-btn waves-effect waves-light " + DISABLED} data-activates="dropdown-btn-for-cert">
-                <i className="material-icons">more_vert</i>
+                <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
               </a>
               <ul id="dropdown-btn-for-cert" className="dropdown-content">
                 {
@@ -1092,6 +1108,16 @@ class CertWindow extends React.Component<any, any> {
               </ul>
             </div>
           </div>
+          <div className="col s11">
+            <div className="col s1">
+              <div className={curStatusStyle} />
+            </div>
+            <div className="col s11">
+              <div className="desktoplic_text_item topitem truncate">{certificate.subjectFriendlyName}</div>
+              <div className="desktoplic_text_item topitem truncate">{certificate.issuerFriendlyName}</div>
+            </div>
+          </div>
+
         </div>
       );
     } else {

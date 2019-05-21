@@ -864,17 +864,16 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
                 <hr />
               </div>
               <div className="col s12">
-                <div style={{ display: "flex" }}>
-                  <div style={{ flex: "1 1 auto", height: "calc(100vh - 100px)" }}>
+                <div style={{ height: "calc(100vh - 100px)" }}>
                     <div className="add-certs">
                       {(this.state.activeCertificate) ? <CertificateInfo certificate={this.state.activeCertificate} /> :
-                        <RecipientsList onActive={this.handleActiveCert} handleRemoveRecipient={this.handleRemoveRecipient} dialogType="modal" recipients={this.state.selectedRecipients} />
+                        <div>
+                          <RecipientsList onActive={this.handleActiveCert} handleRemoveRecipient={this.handleRemoveRecipient} dialogType="modal" recipients={this.state.selectedRecipients} />
+                        </div>
                       }
-
                       <BlockNotElements name={CHOOSE_VIEW} title={localize("Certificate.cert_not_select", locale)} />
                     </div>
                   </div>
-                </div>
               </div>
             </div>
             <div className="row fixed-bottom-rightcolumn">

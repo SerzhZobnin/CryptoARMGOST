@@ -855,15 +855,13 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
           <div className="col s4 rightcol">
             <div className="row" />
             <div className="row">
-            <div className="col s12">
+              <div className="col s12">
                 <div className="desktoplic_text_item">Сертификат подписи</div>
                 <hr />
               </div>
               <div className="col s12">
-                <div style={{ display: "flex" }}>
-                  <div style={{ flex: "1 1 auto", height: "calc(100vh - 120px)" }}>
-                    {this.getCertificateOrCRLInfo()}
-                  </div>
+                <div style={{ height: "calc(100vh - 120px)" }}>
+                  {this.getCertificateOrCRLInfo()}
                 </div>
               </div>
             </div>
