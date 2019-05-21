@@ -165,7 +165,7 @@ nav .input-field input {
 .rightcol {
   background-color: rgba(242,245,245,0.8);
   float: right !important;
-  min-height: calc(100vh - 52px) !important;
+  min-height: calc(100vh - 40px) !important;
   width: 350px !important;
 }
 
@@ -624,7 +624,7 @@ div::-webkit-scrollbar-thumb {
 
 .fixed-bottom-rightcolumn {
   position: fixed;
-  bottom: 23px;
+  bottom: 15px;
   padding-top: 15px;
   margin-bottom: 0;
 }

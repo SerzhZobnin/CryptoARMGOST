@@ -121,7 +121,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
     return (
       <React.Fragment>
         <div style={{ display: "flex" }}>
-          <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
+          <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
             <AutoSizer>
               {({ height, width }) => (
                 <Table

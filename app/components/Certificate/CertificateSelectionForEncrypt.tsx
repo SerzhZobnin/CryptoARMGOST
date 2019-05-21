@@ -865,7 +865,7 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
               </div>
               <div className="col s12">
                 <div style={{ display: "flex" }}>
-                  <div style={{ flex: "1 1 auto", height: "calc(100vh - 120px)" }}>
+                  <div style={{ flex: "1 1 auto", height: "calc(100vh - 100px)" }}>
                     <div className="add-certs">
                       {(this.state.activeCertificate) ? <CertificateInfo certificate={this.state.activeCertificate} /> :
                         <RecipientsList onActive={this.handleActiveCert} handleRemoveRecipient={this.handleRemoveRecipient} dialogType="modal" recipients={this.state.selectedRecipients} />
