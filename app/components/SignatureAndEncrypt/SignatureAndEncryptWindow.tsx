@@ -9,7 +9,8 @@ import {
 } from "../../AC";
 import {
   DECRYPT, ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
-  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, SIGN, UNSIGN, VERIFY,
+  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, REMOVE,
+  SIGN, UNSIGN, VERIFY,
 } from "../../constants";
 import { activeFilesSelector } from "../../selectors";
 import { bytesToSize, mapToArr } from "../../utils";
@@ -225,6 +226,16 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
                   <div className="row docmenu">{localize("Documents.docmenu_dectypt", locale)}</div>
                 </a>
               </div>
+              <div className="col s4">
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`}
+                  data-position="bottom"
+                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu remove" />
+                  </div>
+                  <div className="row docmenu">{localize("Documents.docmenu_remove", locale)}</div>
+                </a>
+              </div>
             </div>
           </div>
           {this.showModalFilterDocuments()}
@@ -346,6 +357,9 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
           }
         }
 
+        return true;
+
+      case REMOVE:
         return true;
 
       default:
