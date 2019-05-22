@@ -590,4 +590,7 @@ export default {
     verify_signercontent_founds_errors: "При проверке контента подписчика обнаружены ошибки",
     verify_signers_failed: "Не удалось проверить подписчиков",
   },
+  SignAndEncrypt: {
+    SignAndEncrypt: "ПОДПИСЬ И ШИФРОВАНИЕ",
+  },
 };

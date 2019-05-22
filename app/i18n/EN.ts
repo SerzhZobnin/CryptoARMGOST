@@ -588,4 +588,7 @@ export default {
     verify_signercontent_founds_errors: "Error: signed content not found",
     verify_signers_failed: "Error: verify signers",
   },
+  SignAndEncrypt: {
+    SignAndEncrypt: "SIGNING AND ENCRYPTION",
+  },
 };

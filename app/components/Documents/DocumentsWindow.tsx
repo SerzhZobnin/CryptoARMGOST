@@ -1,18 +1,24 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { changeLocation, filePackageSelect, removeAllFiles, removeAllRemoteFiles } from "../../AC";
+import { Link } from "react-router-dom";
+import {
+  changeLocation, filePackageSelect, removeAllFiles,
+  removeAllRemoteFiles, selectSignerCertificate,
+} from "../../AC";
 import {
   arhiveDocuments, loadAllDocuments, removeAllDocuments,
   removeDocuments, selectAllDocuments, selectDocument,
 } from "../../AC/documentsActions";
 import {
   DECRYPT, DEFAULT_DOCUMENTS_PATH, ENCRYPT,
-  LOCATION_ENCRYPT, LOCATION_SIGN, SIGN,
-  UNSIGN, VERIFY,
+  LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_ENCRYPT,
+  LOCATION_SIGN, REMOVE, SIGN, UNSIGN, VERIFY,
 } from "../../constants";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
+import { mapToArr } from "../../utils";
 import Modal from "../Modal";
+import RecipientsList from "../RecipientsList";
 import DeleteDocuments from "./DeleteDocuments";
 import DocumentsTable from "./DocumentsTable";
 import FilterDocuments from "./FilterDocuments";
@@ -57,7 +63,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
   }
 
   componentDidMount() {
-    $(".nav-small-btn").dropdown({
+    $(".btn-floated").dropdown({
       alignment: "left",
       belowOrigin: false,
       gutter: 0,
@@ -65,7 +71,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
       outDuration: 225,
     });
 
-    $(document).ready(function() {
+    $(document).ready(function () {
       $(".tooltipped").tooltip();
     });
   }
@@ -76,106 +82,225 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
   render() {
     const { localize, locale } = this.context;
-    const { documents, isDefaultFilters } = this.props;
+    const { documents, isDefaultFilters, recipients, signer } = this.props;
     const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
     const disabledClass = documents.length ? "" : "disabled_docs";
 
     return (
-      <div className="content">
+      <div className="content-noflex">
         <div className="row">
-          <div className="row halfbottom" />
-
-          <div className="col s10">
-            <div className="input-field input-field-csr col s12 border_element find_box">
-              <i className="material-icons prefix">search</i>
-              <input
-                id="search"
-                type="search"
-                placeholder={localize("EventsTable.search_in_doclist", locale)}
-                value={this.state.searchValue}
-                onChange={this.handleSearchValueChange} />
-              <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
-            </div>
-          </div>
-          <div className="col s1">
-            <a className={"btn-small waves-effect waves-light"} onClick={this.handleShowModalFilterDocuments}>
-              <i className={"material-icons " + classDefaultFilters}>filter_list</i>
-            </a>
-          </div>
-          <div className="col s1">
-            <a className={"nav-small-btn waves-effect waves-light"} data-activates="dropdown-btn-for-documents" style={{ margin: 0 }}>
-              <i className="nav-small-icon material-icons context_menu">more_vert</i>
-            </a>
-            <ul id="dropdown-btn-for-documents" className="dropdown-content">
-              <li><a onClick={this.handleReloadDocuments}>{localize("Common.update", locale)}</a></li>
-              <li><a onClick={this.handleSelectAllDocuments}>{localize("Documents.selected_all", locale)}</a></li>
-              <li><a onClick={this.handleOpenDocumentsFolder}>{localize("Documents.go_to_documents_folder", locale)}</a></li>
-            </ul>
-          </div>
-          <div className="col s12">
+          <div className="col s8 leftcol">
             <div className="row halfbottom">
-              <div className="col s10prt">
-                <a className={`waves-effect waves-light  ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`}
+              <div className="row halfbottom" />
+              <div className="col" style={{ width: "40px", paddingLeft: "40px" }}>
+                <a >
+                  <i className="file-setting-item waves-effect material-icons secondary-content pulse">add</i>
+                </a>
+              </div>
+              <div className="col" style={{ width: "calc(100% - 140px)" }}>
+                <div className="input-field input-field-csr col s12 border_element find_box">
+                  <i className="material-icons prefix">search</i>
+                  <input
+                    id="search"
+                    type="search"
+                    placeholder={localize("EventsTable.search_in_doclist", locale)}
+                    value={this.state.searchValue}
+                    onChange={this.handleSearchValueChange} />
+                  <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
+                </div>
+              </div>
+              <div className="col" style={{ width: "40px" }}>
+                <a onClick={this.handleShowModalFilterDocuments}>
+                  <i className="file-setting-item waves-effect material-icons secondary-content">filter_list</i>
+                </a>
+              </div>
+              <div className="col" style={{ width: "40px" }}>
+                <div>
+                  <a className="btn-floated" data-activates="dropdown-btn-set-add-files">
+                    <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                  </a>
+                  <ul id="dropdown-btn-set-add-files" className="dropdown-content">
+                    <li><a onClick={this.handleReloadDocuments}>{localize("Common.update", locale)}</a></li>
+                    <li><a onClick={this.handleSelectAllDocuments}>{localize("Documents.selected_all", locale)}</a></li>
+                    <li><a onClick={this.handleOpenDocumentsFolder}>{localize("Documents.go_to_documents_folder", locale)}</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <DocumentsTable searchValue={this.state.searchValue} />
+          </div>
+          <div className="col s4 rightcol">
+            <div className="row" />
+            <div className="col s10">
+              <div className="desktoplic_text_item">Сертификат подписи:</div>
+              <hr />
+            </div>
+            <div className="col s2">
+              <div className="right import-col">
+                <a className="btn-floated" data-activates="dropdown-btn-signer">
+                  <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                </a>
+                <ul id="dropdown-btn-signer" className="dropdown-content">
+                  <li><a onClick={() => this.props.selectSignerCertificate(0)}>Очистить</a></li>
+                </ul>
+              </div>
+            </div>
+            {
+              (signer) ? this.getSelectedSigner() :
+                <div className="col s12">
+                  <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
+                    <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                      ВЫБРАТЬ
+                    </a>
+                  </Link>
+                </div>
+            }
+            <div className="row" />
+            <div className="col s10">
+              <div className="desktoplic_text_item">Сертификаты шифрования:</div>
+              <hr />
+            </div>
+            <div className="col s2">
+              <div className="right import-col">
+                <a className="btn-floated" data-activates="dropdown-btn-encrypt">
+                  <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                </a>
+                <ul id="dropdown-btn-encrypt" className="dropdown-content">
+                  <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
+                    <li><a>Добавить</a></li>
+                  </Link>
+                  <li><a onClick={() => this.handleCleanRecipientsList()}>Очистить</a></li>
+                </ul>
+              </div>
+            </div>
+            {
+              (recipients && recipients.length) ?
+                <div style={{ height: "calc(100vh - 300px)" }}>
+                  <div className="add-certs">
+                    <RecipientsList recipients={recipients} />
+                  </div>
+                </div> :
+                <div className="col s12">
+                  <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
+                    <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                      ВЫБРАТЬ
+                    </a>
+                  </Link>
+                </div>
+            }
+
+            <div className="row fixed-bottom-rightcolumn" >
+              <div className="col s12">
+                <hr />
+              </div>
+              <div className="col s4">
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`}
                   data-position="bottom"
                   onClick={this.handleClickSign}>
-                  <div className="row docmenu"><i className="material-icons docmenu_sign"></i></div>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu sign" />
+                  </div>
                   <div className="row docmenu">{localize("Documents.docmenu_sign", locale)}</div>
                 </a>
               </div>
-              <div className="col s10prt">
-                <a className={`waves-effect waves-light  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`}
+              <div className="col s4">
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`}
                   data-position="bottom"
-                  data-tooltip={localize("Sign.sign_and_verify", locale)}
-                  onClick={this.handleClickSign}>
-                  <div className="row docmenu"><i className="material-icons docmenu_verifysign"></i></div>
-                  <div className="row docmenu">{localize("Documents.docmenu_verifysign", locale)}</div>
+                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu verifysign" />
+                  </div>
+                  <div className="row docmenu">{"Проверить"}</div>
                 </a>
               </div>
-              <div className="col s10prt">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} data-position="bottom"
-                  onClick={this.handleClickSign}>
-                  <div className="row docmenu"><i className="material-icons docmenu_removesign"></i></div>
+              <div className="col s4">
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} data-position="bottom">
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu removesign" />
+                  </div>
                   <div className="row docmenu">{localize("Documents.docmenu_removesign", locale)}</div>
                 </a>
               </div>
-              <div className="col s10prt">
+              <div className="col s12">
+                <div className="row" />
+              </div>
+              <div className="col s4">
                 <a className={`waves-effect waves-light ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`}
-                  data-position="bottom" onClick={this.handleClickEncrypt}>
-                  <div className="row docmenu"><i className="material-icons docmenu_encrypt"></i></div>
+                  data-position="bottom"
+                  onClick={this.handleClickSign}>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu encrypt" />
+                  </div>
                   <div className="row docmenu">{localize("Documents.docmenu_enctypt", locale)}</div>
                 </a>
               </div>
-              <div className="col s10prt">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} data-position="bottom"
-                  onClick={this.handleClickEncrypt} >
-                  <div className="row docmenu"><i className="material-icons docmenu_decrypt"></i></div>
+              <div className="col s4">
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`}
+                  data-position="bottom"
+                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu decrypt" />
+                  </div>
                   <div className="row docmenu">{localize("Documents.docmenu_dectypt", locale)}</div>
                 </a>
               </div>
-              <div className="col s10prt">
-                <a className={`waves-effect waves-light ${disabledClass}`} data-position="bottom"
-                  onClick={this.handleArhiveDocuments} >
-                  <div className="row docmenu"><i className="material-icons docmenu_arhiver"></i></div>
-                  <div className="row docmenu">{localize("Documents.docmenu_arhiver", locale)}</div>
-                </a>
-              </div>
-              <div className="col s1">
-                <a className={`waves-effect waves-light ${disabledClass}`} data-position="bottom"
-                  onClick={this.handleShowModalDeleteDocuments} >
-                  <div className="row docmenu"><i className="material-icons docmenu_remove"></i></div>
+              <div className="col s4">
+                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`}
+                  onClick={this.handleShowModalDeleteDocuments}
+                  data-position="bottom"
+                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                  <div className="row docmenu">
+                    <i className="material-icons docmenu remove" />
+                  </div>
                   <div className="row docmenu">{localize("Documents.docmenu_remove", locale)}</div>
                 </a>
               </div>
             </div>
-          </div>
-          <div className="col s12">
-            <DocumentsTable searchValue={this.state.searchValue} />
           </div>
           {this.showModalFilterDocuments()}
           {this.showModalDeleteDocuments()}
         </div>
       </div>
     );
+  }
+
+  handleCleanRecipientsList = () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { deleteRecipient, recipients } = this.props;
+
+    recipients.forEach((recipient) => deleteRecipient(recipient.id));
+  }
+
+  getSelectedSigner = () => {
+    const { signer } = this.props;
+    const { localize, locale } = this.context;
+
+    if (signer) {
+      const status = signer.status;
+      let curStatusStyle;
+
+      if (status) {
+        curStatusStyle = "cert_status_ok";
+      } else {
+        curStatusStyle = "cert_status_error";
+      }
+
+      return (
+        <React.Fragment>
+          <div className="col s12 valign-wrapper">
+            <div className="col s2">
+              <div className={curStatusStyle} />
+            </div>
+            <div className="col s10" style={{ fontSize: "75%" }}>
+              <div className="collection-title">{signer.subjectFriendlyName}</div>
+              <div className="collection-info cert-info">{signer.issuerFriendlyName}</div>
+            </div>
+          </div>
+        </React.Fragment>
+      );
+    } else {
+      return null;
+    }
   }
 
   checkEnableOperationButton = (operation: string) => {
@@ -221,6 +346,9 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
           }
         }
 
+        return true;
+
+      case REMOVE:
         return true;
 
       default:
@@ -383,8 +511,12 @@ export default connect((state) => ({
   documentsLoaded: state.events.loaded,
   documentsLoading: state.events.loading,
   isDefaultFilters: state.filters.documents.isDefaultFilters,
+  recipients: mapToArr(state.recipients.entities)
+    .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
+    .filter((recipient) => recipient !== undefined),
+  signer: state.certificates.getIn(["entities", state.signers.signer]),
 }), {
     arhiveDocuments, changeLocation, filePackageSelect, loadAllDocuments,
     removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
-    selectAllDocuments, selectDocument,
+    selectAllDocuments, selectDocument, selectSignerCertificate,
   })(DocumentsWindow);

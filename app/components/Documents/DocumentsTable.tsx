@@ -111,92 +111,96 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
 
     return (
       <React.Fragment>
-        <AutoSizer disableHeight>
-          {({ width }) => (
-            <Table
-              ref="Table"
-              disableHeader={disableHeader}
-              height={400}
-              width={width}
-              headerHeight={30}
-              noRowsRenderer={this.noRowsRenderer}
-              headerClassName={"headerColumn"}
-              rowHeight={45}
-              rowClassName={this.rowClassName}
-              onRowClick={this.handleOnRowClick}
-              overscanRowCount={3}
-              rowGetter={rowGetter}
-              rowCount={sortedList.size}
-              scrollToIndex={scrollToIndex}
-              sort={this.sort}
-              sortBy={sortBy}
-              sortDirection={sortDirection}
-            >
-              <Column
-                cellRenderer={({ cellData, rowData }) => {
-                  return (
-                    <FileIcon file={{ extension: extFile(rowData.filename), id: rowData.id }} key={rowData.id} />
-                  );
-                }}
-                dataKey="extname"
-                disableSort={false}
-                headerRenderer={this.headerRenderer}
-                width={50}
-                label={localize("Documents.type", locale)}
-              />
-              <Column
-                cellRenderer={({ cellData }) => {
-                  return (new Date(cellData)).toLocaleDateString(locale, {
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                    month: "numeric",
-                    year: "numeric",
-                  });
-                }}
-                dataKey="mtime"
-                disableSort={false}
-                headerRenderer={this.headerRenderer}
-                width={150}
-                label={localize("Documents.mdate", locale)}
-              />
-              <Column
-                dataKey="filename"
-                disableSort={false}
-                headerRenderer={this.headerRenderer}
-                width={480}
-                label={localize("Documents.filename", locale)}
-              />
-              <Column
-                cellRenderer={({ cellData, rowData }) => {
-                  return (
-                    <div className="row nobottom">
-                      <div className="col s12">
-                        <div className="truncate">{this.bytesToSize(cellData)}</div>
-                      </div>
-                    </div>
-                  );
-                }}
-                dataKey="filesize"
-                disableSort={false}
-                headerRenderer={this.headerRenderer}
-                width={100}
-                label={localize("Documents.filesize", locale)}
-              />
-            </Table>
-          )}
-        </AutoSizer>
-        {searchValue && foundDocuments.length ?
-          <div className="card navigationToolbar valign-wrapper">
-            <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToFirstOfFoud}>first_page</i>
-            <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToBefore}>navigate_before</i>
-            <div style={{ color: "black" }}>
-              {foundDocuments.indexOf(scrollToIndex) + 1}/{foundDocuments.length}
-            </div>
-            <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToNext}>navigate_next</i>
-            <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToLastOfFoud}>last_page</i>
-          </div> :
-          null}
+        <div style={{ display: "flex" }}>
+          <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
+            <AutoSizer>
+              {({ height, width }) => (
+                <Table
+                  ref="Table"
+                  disableHeader={disableHeader}
+                  height={height}
+                  width={width}
+                  headerHeight={30}
+                  noRowsRenderer={this.noRowsRenderer}
+                  headerClassName={"headerColumn"}
+                  rowHeight={45}
+                  rowClassName={this.rowClassName}
+                  onRowClick={this.handleOnRowClick}
+                  overscanRowCount={3}
+                  rowGetter={rowGetter}
+                  rowCount={sortedList.size}
+                  scrollToIndex={scrollToIndex}
+                  sort={this.sort}
+                  sortBy={sortBy}
+                  sortDirection={sortDirection}
+                >
+                  <Column
+                    cellRenderer={({ cellData, rowData }) => {
+                      return (
+                        <FileIcon file={{ extension: extFile(rowData.filename), id: rowData.id }} key={rowData.id} />
+                      );
+                    }}
+                    dataKey="extname"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={50}
+                    label={localize("Documents.type", locale)}
+                  />
+                  <Column
+                    cellRenderer={({ cellData }) => {
+                      return (new Date(cellData)).toLocaleDateString(locale, {
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                      });
+                    }}
+                    dataKey="mtime"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={150}
+                    label={localize("Documents.mdate", locale)}
+                  />
+                  <Column
+                    dataKey="filename"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={480}
+                    label={localize("Documents.filename", locale)}
+                  />
+                  <Column
+                    cellRenderer={({ cellData, rowData }) => {
+                      return (
+                        <div className="row nobottom">
+                          <div className="col s12">
+                            <div className="truncate">{this.bytesToSize(cellData)}</div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                    dataKey="filesize"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={100}
+                    label={localize("Documents.filesize", locale)}
+                  />
+                </Table>
+              )}
+            </AutoSizer>
+            {searchValue && foundDocuments.length ?
+              <div className="card navigationToolbar valign-wrapper">
+                <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToFirstOfFoud}>first_page</i>
+                <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToBefore}>navigate_before</i>
+                <div style={{ color: "black" }}>
+                  {foundDocuments.indexOf(scrollToIndex) + 1}/{foundDocuments.length}
+                </div>
+                <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToNext}>navigate_next</i>
+                <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToLastOfFoud}>last_page</i>
+              </div> :
+              null}
+          </div>
+        </div>
       </React.Fragment>
     );
   }
