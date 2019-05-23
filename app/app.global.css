@@ -662,7 +662,7 @@ div::-webkit-scrollbar-thumb {
 /*-------------------------------Стили главного меню------------------*/
 .side-nav {
     height: 100%;
-    width: 240px;
+    width: 250px;
     border: 2px solid #bf3817;
     overflow: hidden;
 }
