@@ -885,11 +885,9 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
                 </div> :
                 <React.Fragment>
                   <div className="col s5 offset-s5">
-                    <Link to={LOCATION_MAIN}>
-                      <a className="btn btn-text waves-effect waves-light">
+                      <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
                         ОТМЕНА
-                </a>
-                    </Link>
+                      </a>
                   </div>
                   <div className="col s2">
                     <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleChooseRecipients}>
@@ -946,8 +944,7 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
     }
 
     this.setState({ modalCertList: false });
-
-    this.props.history.push(LOCATION_MAIN);
+    this.props.history.goBack();
   }
 
   handleCleanRecipientsList = () => {

@@ -867,11 +867,9 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
             </div>
             <div className="row fixed-bottom-rightcolumn">
               <div className="col s5 offset-s5">
-                <Link to={LOCATION_MAIN}>
-                  <a className="btn btn-text waves-effect waves-light">
+                  <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
                     ОТМЕНА
                 </a>
-                </Link>
               </div>
               <div className="col s2">
                 <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleChooseSigner}>
@@ -897,7 +895,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
     const { certificate } = this.state;
 
     selectSignerCertificate(certificate.id);
-    this.props.history.push(LOCATION_MAIN);
+    this.props.history.goBack();
   }
 
   handleSearchValueChange = (ev: any) => {
