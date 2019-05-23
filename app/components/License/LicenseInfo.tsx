@@ -69,8 +69,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
       productIssue = "-";
       return (
         <React.Fragment>
-          <div className="bmark_desktoplic">{localize("License.About_License", locale)}</div>
-          <div className="row leftshifter">
+          <div className="row">
             <div className="col s6">
               <LicenseInfoFiled title={localize("Certificate.issuer_name", locale)} info={productIssue} />
             </div>
@@ -78,7 +77,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
               <LicenseInfoFiled title={localize("Common.subject", locale)} info={productAutor} />
             </div>
           </div>
-          <div className="row leftshifter">
+          <div className="row">
             <div className="col s6">
               <LicenseInfoFiled title={localize("Common.product", locale)} info={productName} />
             </div>
@@ -86,7 +85,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
               <LicenseInfoFiled title={localize("License.lic_notbefore", locale)} info={notBefore} />
             </div>
           </div>
-          <div className="row leftshifter">
+          <div className="row">
             <div className="col s6">
               <LicenseInfoFiled title="" info="" style={style} />
             </div>
@@ -105,8 +104,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
       productName = localize("About.product_name", locale);
       return (
         <React.Fragment>
-          <div className="bmark_desktoplic">{localize("License.About_License", locale)}</div>
-          <div className="row leftshifter">
+          <div className="row">
             <div className="col s6">
               <LicenseInfoFiled title={localize("Certificate.issuer_name", locale)} info={license.iss} />
             </div>
@@ -114,15 +112,13 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
               <LicenseInfoFiled title={localize("License.lic_notbefore", locale)} info={notBefore} />
             </div>
           </div>
-          <div className="row leftshifter">
+          <div className="row">
             <div className="col s6">
               <LicenseInfoFiled title={localize("Common.product", locale)} info={productName} />
             </div>
             <div className="col s6">
               <LicenseInfoFiled title={localize("License.lic_notafter", locale)} info={notAfter} />
             </div>
-          </div>
-          <div className="row leftshifter">
           </div>
         </React.Fragment>
       );
@@ -139,8 +135,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
       }
       return (
         <React.Fragment>
-          <div className="bmark_desktoplic">{localize("License.About_License", locale)}</div>
-          <div className="row leftshifter">
+          <div className="row">
             <div className="col s6">
               <LicenseInfoFiled title={localize("Certificate.issuer_name", locale)} info={license.iss} />
             </div>
@@ -148,15 +143,13 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
               <LicenseInfoFiled title={localize("License.lic_notafter", locale)} info={notAfter} />
             </div>
           </div>
-          <div className="row leftshifter">
+          <div className="row">
             <div className="col s6">
               <LicenseInfoFiled title={localize("Common.product", locale)} info={productName} />
             </div>
             <div className="col s6">
 
             </div>
-          </div>
-          <div className="row leftshifter">
           </div>
         </React.Fragment>
       );
@@ -179,7 +172,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
       return (
         <React.Fragment>
           <div className="bmark_desktoplic">{localize("License.About_License", locale)}</div>
-          <div className="row leftshifter">
+          <div className="row">
             <div className="col s6">
               <LicenseInfoFiled title={localize("Certificate.issuer_name", locale)} info={license.iss} />
             </div>
@@ -187,7 +180,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
               <LicenseInfoFiled title={localize("Common.subject", locale)} info={license.aud} />
             </div>
           </div>
-          <div className="row leftshifter">
+          <div className="row">
             <div className="col s6">
               <LicenseInfoFiled title={localize("Common.product", locale)} info={productName} />
             </div>
@@ -195,7 +188,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
               <LicenseInfoFiled title={localize("License.lic_notbefore", locale)} info={notBefore} />
             </div>
           </div>
-          <div className="row leftshifter">
+          <div className="row">
             <div className="col s6">
               <LicenseInfoFiled title="" info="" style={style} />
             </div>

@@ -39,6 +39,7 @@ export default {
     product_NAME: "CryptoARM GOST",
     product_name: "CryptoARM GOST",
     send: "Send",
+    support: "Support",
     username: "Name",
     version: "1.5.2",
     version_app: "Application version",
@@ -383,8 +384,8 @@ export default {
     key_load_failed: "Error load key",
   },
   License: {
-    About_License: "LICENSE INFORMATION",
-    About_License_CSP: "CRYPTOPRO CSP LICENSE INFORMATION",
+    About_License: "License information",
+    About_License_CSP: "CryptoPro CSP license information",
     Buy_license: "BUY LICENSE",
     Enter_Key: "ENTER THE KEY",
     Enter_license: "УСТАНОВИТЬ ЛИЦЕНЗИЮ",

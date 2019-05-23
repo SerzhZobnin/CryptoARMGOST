@@ -1,39 +1,93 @@
 import PropTypes from "prop-types";
 import React from "react";
-import ProductInformation from "./ProductInformation";
+import LicenseCSPSetup from "../License/LicenseCSPSetup";
+import LicenseInfo from "../License/LicenseInfo";
+import LicenseSetupModal from "../License/LicenseSetupModal";
+import Modal from "../Modal";
 
-class AboutWindow extends React.PureComponent {
+interface ILicenseInfoCSPState {
+  showModalLicenseCSPSetup: boolean;
+  showModalLicenseSetup: boolean;
+}
+
+class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
 
+  constructor(props: {}) {
+    super(props);
+
+    this.state = ({
+      showModalLicenseCSPSetup: false,
+      showModalLicenseSetup: false,
+    });
+  }
+
+  componentDidMount() {
+    $(".add-licence-modal-btn").leanModal();
+  }
+
   render() {
     const { localize, locale } = this.context;
+    const licenseCsp = this.getLicense();
 
     return (
-      <React.Fragment>
-        <div className="content">
-          <div className="row">
-            <div className="col s6">
-              <ProductInformation />
-            </div>
-            <div className="col s6">
-              <div className="row">
-                <span className="card-title">
-                  {localize("Help.Help", locale)}
-                </span>
-                <div className="row">
-                  <p className="help_paragraf">{localize("Help.user_guide", locale)}
-                    <a className="hlink" onClick={(event) => this.gotoLink(localize("Help.link_user_guide", locale))}>
-                      {localize("Help.link_user_guide_name", locale)}
-                    </a>
-                  </p>
+      <div className="content-noflex">
+        <div className="row">
+          <div className="col s8 leftcol">
+            <div className="row halfbottom">
+              <div className="row halfbottom" />
+              <div className="col s12">
+                <div className="desktoplic_text_item">{localize("License.About_License", locale)}</div>
+                <hr />
+                <LicenseInfo />
+              </div>
+              <div className="col s12">
+                <div className="desktoplic_text_item">{localize("License.About_License_CSP", locale)}</div>
+                <hr />
+                <div className="col s6">
+                  <div className="desktoplic_text_item bottomitem">{localize("License.serial_number", locale)}</div>
+                  <div className="desktoplic_text_item">{licenseCsp.substring(0, licenseCsp.length - 5)}</div>
                 </div>
-                <p className="help_paragraf">
-                  <h6 className="contact-text">{localize("Help.feedback_description", locale)}</h6>
-                </p>
+                <div className="col s6">
+                  <div className="desktoplic_text_item bottomitem">{localize("License.lic_status", locale)}</div>
+                  <div className="desktoplic_text_item">{this.getLicenseStatus() ? localize("License.license_correct", locale) : localize("License.license_incorrect", locale)}</div>
+                </div>
+              </div>
+
+              <div className="row" />
+
+              <div className="col s12">
+                <div className="desktoplic_text_item">О программе</div>
+                <hr />
                 <div className="row">
+                  <div className="col s12">
+                    <div className="desktoplic_text_item">{localize("About.about_programm", locale)}</div>
+                  </div>
+                </div>
+                <div className="col s6">
+                  <div className="desktoplic_text_item bottomitem">{localize("About.AppVersion", locale)}</div>
+                  <div className="desktoplic_text_item">{`${localize("About.product_NAME", locale)} ${localize("About.version", locale)}`}</div>
+                </div>
+                <div className="col s6">
+                  <div className="desktoplic_text_item bottomitem">{localize("About.developer", locale)}</div>
+                  <div className="desktoplic_text_item">{localize("About.company_name", locale)},  {localize("About.address", locale)}</div>
+                  <h6 className="contact-text"></h6>
+                  <div className="mail-block">
+                    <div className="contact-icon"><i className="mail_contact_icon"></i></div>
+                    <div className="h6 text-center"><a href="mailto:info@trusted.ru">{localize("About.info", locale)}</a></div>
+                  </div>
+                </div>
+                <div className="row" />
+                <div className="col s6">
+                  <div className="desktoplic_text_item bottomitem">{localize("About.CspVersion", locale)}</div>
+                  <div className="desktoplic_text_item">{localize("Csp.cpcspPKZIVersion", locale)} {this.getCPCSPVersionPKZI()}</div>
+                  <div className="desktoplic_text_item">{localize("Csp.cpcspSKZIVersion", locale)} {this.getCPCSPVersionSKZI()}</div>
+                </div>
+                <div className="col s6">
+                  <div className="desktoplic_text_item bottomitem">{localize("About.support", locale)}</div>
                   <div className="mail-block">
                     <div className="contact-icon"><i className="mail_contact_icon"></i></div>
                     <div className="h6 text-center"><a href="mailto:support@trusted.ru">support@trusted.ru</a></div>
@@ -42,13 +96,168 @@ class AboutWindow extends React.PureComponent {
               </div>
             </div>
           </div>
+          <div className="col s4 rightcol">
+            <div className="row" />
+            <div className="col s12">
+              <div className="desktoplic_text_item">Управление лицензией КриптоАРМ ГОСТ</div>
+              <hr />
+              <div className="row" >
+                <div className="col s4">
+                  <a className={`waves-effect waves-light`}
+                    data-position="bottom"
+                    onClick={this.showModalLicenseSetup}>
+                    <div className="row docmenu">
+                      <i className="material-icons docmenu sign" />
+                    </div>
+                    <div className="row docmenu">{localize("Documents.docmenu_sign", locale)}</div>
+                  </a>
+                </div>
+                <div className="col s4">
+                  <a className={`waves-effect waves-light`}
+                    data-position="bottom"
+                    data-tooltip={localize("Sign.sign_and_verify", locale)}
+                    onClick={() => this.gotoLink(localize("License.link_buy_license", locale))}>
+                    <div className="row docmenu">
+                      <i className="material-icons docmenu verifysign" />
+                    </div>
+                    <div className="row docmenu">{localize("License.Buy_license", locale)}</div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="col s12">
+              <div className="desktoplic_text_item">Управление лицензией КриптоПро CSP</div>
+              <hr />
+              <div className="row" >
+                <div className="col s4">
+                  <a className={`waves-effect waves-light`}
+                    data-position="bottom"
+                    onClick={this.showModalLicenseCSPSetup}>
+                    <div className="row docmenu">
+                      <i className="material-icons docmenu sign" />
+                    </div>
+                    <div className="row docmenu">{localize("License.Enter_Key", locale)}</div>
+                  </a>
+                </div>
+                <div className="col s4">
+                  <a className={`waves-effect waves-light`}
+                    data-position="bottom"
+                    data-tooltip={localize("Sign.sign_and_verify", locale)}
+                    onClick={() => this.gotoLink(localize("License.link_buy_license_csp", locale))}>
+                    <div className="row docmenu">
+                      <i className="material-icons docmenu verifysign" />
+                    </div>
+                    <div className="row docmenu">{localize("License.Buy_license", locale)}</div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </React.Fragment>
+        {this.getModalLicenseCSPSetup()}
+        {this.getModalLicenseSetup()}
+      </div>
     );
+  }
+
+  getCPCSPVersionPKZI = () => {
+    try {
+      return trusted.utils.Csp.getCPCSPVersion() + "." + trusted.utils.Csp.getCPCSPVersionPKZI();
+    } catch (e) {
+      return "";
+    }
+  }
+
+  getCPCSPVersionSKZI = () => {
+    try {
+      return trusted.utils.Csp.getCPCSPVersion() + "." + trusted.utils.Csp.getCPCSPVersionSKZI() + " " + trusted.utils.Csp.getCPCSPSecurityLvl();
+    } catch (e) {
+      return "";
+    }
+  }
+
+  getLicense = () => {
+    try {
+      return trusted.utils.Csp.getCPCSPLicense();
+    } catch (e) {
+      return "-";
+    }
+  }
+
+  getLicenseStatus = () => {
+    try {
+      return trusted.utils.Csp.checkCPCSPLicense();
+    } catch (e) {
+      return false;
+    }
   }
 
   gotoLink = (address: string) => {
     window.electron.shell.openExternal(address);
+  }
+
+  getModalLicenseCSPSetup = () => {
+    const { localize, locale } = this.context;
+    const { showModalLicenseCSPSetup } = this.state;
+
+    if (!showModalLicenseCSPSetup) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalLicenseCSPSetup}
+        header={localize("License.enter_key_csp", locale)}
+        onClose={() => {
+          this.closeModalLicenseCSPSetup();
+          this.forceUpdate();
+        }}
+        style={{ height: "200px" }}
+      >
+
+        <LicenseCSPSetup onCancel={this.closeModalLicenseCSPSetup} />
+      </Modal>
+    );
+  }
+
+  getModalLicenseSetup = () => {
+    const { localize, locale } = this.context;
+    const { showModalLicenseSetup } = this.state;
+
+    if (!showModalLicenseSetup) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalLicenseSetup}
+        header={localize("License.enter_key", locale)}
+        onClose={() => {
+          this.closeModalLicenseSetup();
+          this.forceUpdate();
+        }}
+        style={{ height: "300px" }}
+      >
+
+        <LicenseSetupModal text_info={localize("License.entered_the_key", locale)}  icon="" />
+      </Modal>
+    );
+  }
+
+  showModalLicenseCSPSetup = () => {
+    this.setState({ showModalLicenseCSPSetup: true });
+  }
+
+  closeModalLicenseCSPSetup = () => {
+    this.setState({ showModalLicenseCSPSetup: false });
+  }
+
+  showModalLicenseSetup = () => {
+    this.setState({ showModalLicenseSetup: true });
+  }
+
+  closeModalLicenseSetup = () => {
+    this.setState({ showModalLicenseSetup: false });
   }
 }
 
