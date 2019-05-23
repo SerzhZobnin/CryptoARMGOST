@@ -97,105 +97,109 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
 
     return (
       <React.Fragment>
-        <AutoSizer disableHeight>
-          {({ width }) => (
-            <Table
-              ref="Table"
-              disableHeader={disableHeader}
-              height={475}
-              width={width}
-              headerHeight={30}
-              noRowsRenderer={this.noRowsRenderer}
-              headerClassName={"headerColumn"}
-              rowHeight={45}
-              rowClassName={this.rowClassName}
-              overscanRowCount={5}
-              rowGetter={rowGetter}
-              rowCount={sortedList.size}
-              scrollToIndex={scrollToIndex}
-              sort={this.sort}
-              sortBy={sortBy}
-              sortDirection={sortDirection}
-            >
-              <Column
-                cellRenderer={({ cellData }) => {
-                  return (new Date(cellData)).toLocaleDateString(locale, {
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                    month: "numeric",
-                    year: "numeric",
-                  });
-                }}
-                dataKey="timestamp"
-                disableSort={false}
-                headerRenderer={this.headerRenderer}
-                width={130}
-                label={localize("EventsTable.date_and_time", locale)}
-              />
-              <Column
-                dataKey="operation"
-                disableSort={false}
-                headerRenderer={this.headerRenderer}
-                width={180}
-                label={localize("EventsTable.operation", locale)}
-              />
-              <Column
-                dataKey="userName"
-                disableSort={false}
-                headerRenderer={this.headerRenderer}
-                width={120}
-                label={localize("EventsTable.user_name", locale)}
-              />
-              <Column
-                cellRenderer={({ cellData }) => {
-                  return (
-                    <div className="row nobottom">
-                      <div className="col s12">
-                        <div className="truncate">{cellData.in}</div>
-                        <div className="truncate" style={{ opacity: .6 }}> -> {cellData.out}</div>
-                      </div>
-                    </div>
-                  );
-                }}
-                dataKey="operationObject"
-                disableSort
-                headerRenderer={this.headerRenderer}
-                width={280}
-                label={localize("EventsTable.operation_object", locale)}
-              />
-              <Column
-                cellRenderer={({ cellData }) => {
-                  let iconStatus;
-
-                  switch (cellData) {
-                    case "info":
-                      iconStatus = "icon_operation_status_success";
-                      break;
-                    case "error":
-                      iconStatus = "icon_operation_status_error";
-                      break;
-                  }
-
-                  return (
-                    <div className="row nobottom">
-                      <div className="valign-wrapper">
-                        <div className="col s12">
-                          <div className={iconStatus}></div>
+        <div style={{ display: "flex" }}>
+          <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
+            <AutoSizer>
+              {({ height, width }) => (
+                <Table
+                  ref="Table"
+                  disableHeader={disableHeader}
+                  height={height}
+                  width={width}
+                  headerHeight={30}
+                  noRowsRenderer={this.noRowsRenderer}
+                  headerClassName={"headerColumn"}
+                  rowHeight={45}
+                  rowClassName={this.rowClassName}
+                  overscanRowCount={5}
+                  rowGetter={rowGetter}
+                  rowCount={sortedList.size}
+                  scrollToIndex={scrollToIndex}
+                  sort={this.sort}
+                  sortBy={sortBy}
+                  sortDirection={sortDirection}
+                >
+                  <Column
+                    cellRenderer={({ cellData }) => {
+                      return (new Date(cellData)).toLocaleDateString(locale, {
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                      });
+                    }}
+                    dataKey="timestamp"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={130}
+                    label={localize("EventsTable.date_and_time", locale)}
+                  />
+                  <Column
+                    dataKey="operation"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={180}
+                    label={localize("EventsTable.operation", locale)}
+                  />
+                  <Column
+                    dataKey="userName"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={120}
+                    label={localize("EventsTable.user_name", locale)}
+                  />
+                  <Column
+                    cellRenderer={({ cellData }) => {
+                      return (
+                        <div className="row nobottom">
+                          <div className="col s12">
+                            <div className="truncate">{cellData.in}</div>
+                            <div className="truncate" style={{ opacity: .6 }}> -> {cellData.out}</div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  );
-                }}
-                dataKey="level"
-                disableSort={false}
-                headerRenderer={this.headerRenderer}
-                width={70}
-                label={localize("EventsTable.status", locale)}
-              />
-            </Table>
-          )}
-        </AutoSizer>
+                      );
+                    }}
+                    dataKey="operationObject"
+                    disableSort
+                    headerRenderer={this.headerRenderer}
+                    width={280}
+                    label={localize("EventsTable.operation_object", locale)}
+                  />
+                  <Column
+                    cellRenderer={({ cellData }) => {
+                      let iconStatus;
+
+                      switch (cellData) {
+                        case "info":
+                          iconStatus = "icon_operation_status_success";
+                          break;
+                        case "error":
+                          iconStatus = "icon_operation_status_error";
+                          break;
+                      }
+
+                      return (
+                        <div className="row nobottom">
+                          <div className="valign-wrapper">
+                            <div className="col s12">
+                              <div className={iconStatus}></div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                    dataKey="level"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={70}
+                    label={localize("EventsTable.status", locale)}
+                  />
+                </Table>
+              )}
+            </AutoSizer>
+          </div>
+        </div>
         {searchValue && foundEvents.length ?
           <div className="card navigationToolbar valign-wrapper">
             <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToFirstOfFoud}>first_page</i>
