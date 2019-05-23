@@ -3434,6 +3434,10 @@ svg:hover {
     text-align: center;
   }
 
+  .hover_outline:hover {
+    outline: 1px solid #bf3817;
+  }
+
   .disabled_docs{
     box-shadow: none;
     color: #9F9F9F !important;
