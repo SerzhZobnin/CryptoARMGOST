@@ -102,26 +102,23 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
               <div className="desktoplic_text_item">Управление лицензией КриптоАРМ ГОСТ</div>
               <hr />
               <div className="row" >
-                <div className="col s4">
-                  <a className={`waves-effect waves-light`}
-                    data-position="bottom"
-                    onClick={this.showModalLicenseSetup}>
-                    <div className="row docmenu">
-                      <i className="material-icons docmenu sign" />
-                    </div>
-                    <div className="row docmenu">{localize("Documents.docmenu_sign", locale)}</div>
-                  </a>
+                <div className="col s6 waves-effect waves-cryptoarm">
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom"
+                      onClick={this.showModalLicenseSetup}>
+                      <i className="material-icons license install" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("License.enter_key", locale)}</div>
                 </div>
-                <div className="col s4">
-                  <a className={`waves-effect waves-light`}
-                    data-position="bottom"
-                    data-tooltip={localize("Sign.sign_and_verify", locale)}
-                    onClick={() => this.gotoLink(localize("License.link_buy_license", locale))}>
-                    <div className="row docmenu">
-                      <i className="material-icons docmenu verifysign" />
-                    </div>
-                    <div className="row docmenu">{localize("License.Buy_license", locale)}</div>
-                  </a>
+                <div className="col s6 waves-effect waves-cryptoarm">
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom"
+                      onClick={() => this.gotoLink(localize("License.link_buy_license", locale))}>
+                      <i className="material-icons license buy" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("License.buy_license", locale)}</div>
                 </div>
               </div>
             </div>
@@ -129,26 +126,23 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
               <div className="desktoplic_text_item">Управление лицензией КриптоПро CSP</div>
               <hr />
               <div className="row" >
-                <div className="col s4">
-                  <a className={`waves-effect waves-light`}
-                    data-position="bottom"
-                    onClick={this.showModalLicenseCSPSetup}>
-                    <div className="row docmenu">
-                      <i className="material-icons docmenu sign" />
-                    </div>
-                    <div className="row docmenu">{localize("License.Enter_Key", locale)}</div>
-                  </a>
+                <div className="col s6 waves-effect waves-cryptoarm">
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom"
+                      onClick={this.showModalLicenseCSPSetup}>
+                      <i className="material-icons license install" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("License.enter_key", locale)}</div>
                 </div>
-                <div className="col s4">
-                  <a className={`waves-effect waves-light`}
-                    data-position="bottom"
-                    data-tooltip={localize("Sign.sign_and_verify", locale)}
-                    onClick={() => this.gotoLink(localize("License.link_buy_license_csp", locale))}>
-                    <div className="row docmenu">
-                      <i className="material-icons docmenu verifysign" />
-                    </div>
-                    <div className="row docmenu">{localize("License.Buy_license", locale)}</div>
-                  </a>
+                <div className="col s6 waves-effect waves-cryptoarm">
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom"
+                      onClick={() => this.gotoLink(localize("License.link_buy_license_csp", locale))}>
+                      <i className="material-icons license buy" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("License.buy_license", locale)}</div>
                 </div>
               </div>
             </div>
@@ -239,7 +233,7 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
         style={{ height: "300px" }}
       >
 
-        <LicenseSetupModal text_info={localize("License.entered_the_key", locale)}  icon="" />
+        <LicenseSetupModal text_info={localize("License.entered_the_key", locale)} icon="" />
       </Modal>
     );
   }

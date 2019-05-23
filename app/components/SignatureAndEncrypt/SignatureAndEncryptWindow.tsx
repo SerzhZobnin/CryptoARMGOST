@@ -171,67 +171,76 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
               <div className="col s12">
                 <hr />
               </div>
-              <div className="col s4">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`}
-                  data-position="bottom"
-                  onClick={this.handleClickSign}>
-                  <div className="row docmenu">
+
+              <div className="col s4 waves-effect waves-cryptoarm">
+                <div className="col s12 svg_icon">
+                  <a className={`${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`}
+                    data-position="bottom"
+                    onClick={this.handleClickSign}>
                     <i className="material-icons docmenu sign" />
-                  </div>
-                  <div className="row docmenu">{localize("Documents.docmenu_sign", locale)}</div>
-                </a>
+                  </a>
+                </div>
+                <div className="col s12 svg_icon_text">{localize("Documents.docmenu_sign", locale)}</div>
               </div>
-              <div className="col s4">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`}
-                  data-position="bottom"
-                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
-                  <div className="row docmenu">
+
+              <div className="col s4 waves-effect waves-cryptoarm">
+                <div className="col s12 svg_icon">
+                  <a className={`${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`}
+                    data-position="bottom"
+                    data-tooltip={localize("Sign.sign_and_verify", locale)}>
                     <i className="material-icons docmenu verifysign" />
-                  </div>
-                  <div className="row docmenu">{"Проверить"}</div>
-                </a>
+
+                  </a>
+                </div>
+                <div className="col s12 svg_icon_text">{"Проверить"}</div>
               </div>
-              <div className="col s4">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} data-position="bottom">
-                  <div className="row docmenu">
+
+              <div className="col s4 waves-effect waves-cryptoarm">
+                <div className="col s12 svg_icon">
+                  <a className={`${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} data-position="bottom">
                     <i className="material-icons docmenu removesign" />
-                  </div>
-                  <div className="row docmenu">{localize("Documents.docmenu_removesign", locale)}</div>
-                </a>
+                  </a>
+                </div>
+                <div className="col s12 svg_icon_text">{localize("Documents.docmenu_removesign", locale)}</div>
               </div>
+
               <div className="col s12">
-                <div className="row" />
+                <div className="row halbottom" />
               </div>
-              <div className="col s4">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`}
-                  data-position="bottom"
-                  onClick={this.handleClickSign}>
-                  <div className="row docmenu">
+
+              <div className="col s4 waves-effect waves-cryptoarm">
+                <div className="col s12 svg_icon">
+                  <a className={`${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`}
+                    data-position="bottom"
+                    onClick={this.handleClickSign}>
                     <i className="material-icons docmenu encrypt" />
-                  </div>
-                  <div className="row docmenu">{localize("Documents.docmenu_enctypt", locale)}</div>
-                </a>
+                  </a>
+                </div>
+                <div className="col s12 svg_icon_text">{localize("Documents.docmenu_enctypt", locale)}</div>
               </div>
-              <div className="col s4">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`}
-                  data-position="bottom"
-                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
-                  <div className="row docmenu">
+
+              <div className="col s4 waves-effect waves-cryptoarm">
+                <div className="col s12 svg_icon">
+                  <a className={`${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`}
+                    data-position="bottom"
+                    data-tooltip={localize("Sign.sign_and_verify", locale)}>
                     <i className="material-icons docmenu decrypt" />
-                  </div>
-                  <div className="row docmenu">{localize("Documents.docmenu_dectypt", locale)}</div>
-                </a>
+                  </a>
+                </div>
+                <div className="col s12 svg_icon_text">{localize("Documents.docmenu_dectypt", locale)}</div>
               </div>
-              <div className="col s4">
-                <a className={`waves-effect waves-light ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`}
-                  data-position="bottom"
-                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
-                  <div className="row docmenu">
+
+              <div className="col s4 waves-effect waves-cryptoarm">
+                <div className="col s12 svg_icon">
+                  <a className={`${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`}
+                    data-position="bottom"
+                    data-tooltip={localize("Sign.sign_and_verify", locale)}>
                     <i className="material-icons docmenu remove" />
-                  </div>
-                  <div className="row docmenu">{localize("Documents.docmenu_remove", locale)}</div>
-                </a>
+                  </a>
+                </div>
+                <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
               </div>
+
             </div>
           </div>
           {this.showModalFilterDocuments()}
@@ -260,7 +269,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
             <div className="col s2">
               <div className={curStatusStyle} />
             </div>
-            <div className="col s10"  style={{fontSize: "75%"}}>
+            <div className="col s10" style={{ fontSize: "75%" }}>
               <div className="collection-title">{signer.subjectFriendlyName}</div>
               <div className="collection-info cert-info">{signer.issuerFriendlyName}</div>
             </div>

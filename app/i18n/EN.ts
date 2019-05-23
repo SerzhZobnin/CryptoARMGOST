@@ -394,6 +394,7 @@ export default {
     License_overtimes: "INTERIM LICENSE",
     License_reques_send: "SEND REQUEST",
     License_request: "OBTAIN A TEMPORARY LICENSE",
+    buy_license: "Buy license",
     enter_key: "Enter the license",
     enter_key_csp: "Enter the license CryptoPro CSP",
     entered_the_key: "Enter the key",
