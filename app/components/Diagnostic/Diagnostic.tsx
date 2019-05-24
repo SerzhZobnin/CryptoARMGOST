@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { loadAllCertificates } from "../../AC";
 import { loadLicense } from "../../AC/licenseActions";
+import { LOCATION_ABOUT } from "../../constants";
 import {
   BUG, ERROR_CHECK_CSP_LICENSE, ERROR_CHECK_CSP_PARAMS,
   ERROR_LOAD_TRUSTED_CRYPTO,  NO_CORRECT_CRYPTOARM_LICENSE, NO_CRYPTOARM_LICENSE,
@@ -183,7 +184,7 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
 
     if (!criticalError && activeError === NO_CORRECT_CRYPTOARM_LICENSE || activeError === NO_CRYPTOARM_LICENSE || activeError === ERROR_CHECK_CSP_LICENSE) {
       return (
-        <Link to={"/license"} onClick={() => $("#modal-window-diagnostic").closeModal()}>
+        <Link to={LOCATION_ABOUT} onClick={() => $("#modal-window-diagnostic").closeModal()}>
           <a className="waves-effect waves-light btn modal-close">{localize("Common.goOver", locale)}</a>
         </Link>
       );
