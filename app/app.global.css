@@ -3426,6 +3426,24 @@ svg:hover {
     background: url(./resources/image/operations/buy_lic.svg);
   }
 
+  i.material-icons.certificate {
+    background-size: 36px 36px !important;
+    width: 36px;
+    height: 36px;
+  }
+
+  i.material-icons.certificate.export {
+    background: url(./resources/image/operations/export_cert.svg);
+  }
+
+  i.material-icons.certificate.remove {
+    background: url(./resources/image/operations/delete.svg);
+  }
+
+  i.material-icons.certificate.csrfolder {
+    background: url(./resources/image/folder_icon.svg);
+  }
+
   .col.s10prt{
      width:12%;
   }

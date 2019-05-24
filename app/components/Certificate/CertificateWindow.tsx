@@ -647,10 +647,10 @@ class CertWindow extends React.Component<any, any> {
                   <div className="desktoplic_text_item">Сведения о сертификате:</div>
                   <hr />
                 </div>
-                <div className="col s12" style={{padding: 0}}>
-                <CertificateInfo certificate={certificate} />
-                <a className="collection-info chain-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
-                <CertificateChainInfo certificate={certificate} key={"chain_" + certificate.id} style="" onClick={() => { return; }} />
+                <div className="col s12" style={{ padding: 0 }}>
+                  <CertificateInfo certificate={certificate} />
+                  <a className="collection-info chain-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
+                  <CertificateChainInfo certificate={certificate} key={"chain_" + certificate.id} style="" onClick={() => { return; }} />
                 </div>
               </React.Fragment>
           }
@@ -991,35 +991,57 @@ class CertWindow extends React.Component<any, any> {
             <div className="row halfbottom" />
             <div className="row">
               <div className="col s12">
-                <div style={{ height: "calc(100vh - 80px)" }}>
+                <div style={{ height: "calc(100vh - 110px)" }}>
                   {this.getCertificateOrCRLInfo()}
                 </div>
               </div>
             </div>
-            <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "80px" }}>
-              <div className="col s12">
-                <hr />
-              </div>
-              <div className="col s3 offset-s6">
-                <a className={`waves-effect waves-light `}
-                  data-position="bottom">
-                  <div className="row docmenu">
-                    <i className="material-icons docmenu sign" />
+            {
+              certificate || crl ?
+                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "80px" }}>
+                  <div className="col s12">
+                    <hr />
                   </div>
-                  <div className="row docmenu">Экспорт</div>
-                </a>
-              </div>
-              <div className="col s3">
-                <a className={`waves-effect waves-light `}
-                  data-position="bottom"
-                  data-tooltip={localize("Sign.sign_and_verify", locale)}>
-                  <div className="row docmenu">
-                    <i className="material-icons docmenu remove" />
+                  <div className="col s4 waves-effect waves-cryptoarm">
+                    <div className="col s12 svg_icon">
+                      <a
+                        onClick={() => certificate ? this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE) : this.handleShowModalByType(MODAL_EXPORT_CRL)}
+                        data-position="bottom">
+                        <i className="material-icons certificate export" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Certificate.cert_export", locale)}</div>
                   </div>
-                  <div className="row docmenu">{localize("Documents.docmenu_remove", locale)}</div>
-                </a>
-              </div>
-            </div>
+
+                  <div className="col s4 waves-effect waves-cryptoarm">
+                    <div className="col s12 svg_icon">
+                      <a
+                        onClick={() => certificate ? this.handleShowModalByType(MODAL_DELETE_CERTIFICATE) : this.handleShowModalByType(MODAL_DELETE_CRL)}
+                        data-position="bottom">
+                        <i className="material-icons certificate remove" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+                  </div>
+
+                  {
+                    certificate && certificate.category === REQUEST ?
+                    <div className="col s4 waves-effect waves-cryptoarm">
+                      <div className="col s12 svg_icon">
+                        <a
+                          onClick={this.handleOpenCSRFolder}
+                          data-position="bottom">
+                          <i className="material-icons certificate csrfolder" />
+                        </a>
+                      </div>
+                      <div className="col s12 svg_icon_text">{localize("CSR.go_to_csr_folder", locale)}</div>
+                    </div> :
+                    null
+                    }
+                </div>
+                : null
+            }
+
             {this.showModalDeleteCertificate()}
             {this.showModalExportCertificate()}
             {this.showModalExportCRL()}
