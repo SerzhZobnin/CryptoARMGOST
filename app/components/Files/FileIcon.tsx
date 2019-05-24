@@ -68,12 +68,8 @@ class FileIcon extends React.Component<IFileIconProps, {}> {
     const { file } = this.props;
 
     return (
-      <div className="row nobottom">
-        <div className="valign-wrapper">
-          <div className="col s12">
-            <i className={this.getFileIconByExtname(file.extension, file.id) + " icon_file_type"} />
-          </div>
-        </div>
+      <div>
+        <i className={this.getFileIconByExtname(file.extension, file.id) + " icon_file_type"} style={this.props.style} />
       </div>
     );
   }

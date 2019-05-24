@@ -514,6 +514,7 @@ export function verifySignature(fileId: string, showOpenDialogForDetached: boole
           fileId,
           ...info,
           id: Math.random(),
+          verifyingTime: new Date().getTime()
         };
       });
 

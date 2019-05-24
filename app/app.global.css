@@ -37,6 +37,14 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   background-color: #bf3817 !important;
 }
 
+.valid {
+  color: #4caf50 !important;
+}
+
+.unvalid {
+  color: #bf3817 !important;
+}
+
 .setting-window-btn, .cert-setting-btn, .setting-btn  {
     border-radius: 100%;
     overflow: hidden;
@@ -253,7 +261,6 @@ body {
 }
 .collection-title, .collection-info {
     padding-left: 0;
-    color: black;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -991,7 +998,7 @@ nav .cert-seacrh label i {
     display: none;
 }
 .cert-info {
-    color: gray;
+    color: rgba(0,0,0,0.6);
 }
 
 .cert-info-blue {
@@ -3279,9 +3286,9 @@ svg:hover {
   .icon_file_type {
     background-size: 100% !important;
     left: 5px;
-    height: 40px !important;
-    width: 40px !important;
-    position: absolute !important;
+    height: 36px !important;
+    width: 36px !important;
+    position: absolute;
     top: 2px !important;
   }
 
