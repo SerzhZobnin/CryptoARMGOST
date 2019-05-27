@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import {
   LOCATION_CERTIFICATES, LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
-  LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_MAIN,
+  LOCATION_EVENTS, LOCATION_MAIN, LOCATION_SETTINGS,
 } from "../constants";
 
 const remote = window.electron.remote;
@@ -52,6 +52,11 @@ class SideMenu extends React.Component<{}, {}> {
           <Link to={LOCATION_CONTAINERS}>
             {localize("Containers.Containers", locale)}
             <i className="material-icons left keystore">library_books</i>
+          </Link>
+
+          <Link to={LOCATION_SETTINGS}>
+            {localize("Settings.Settings", locale)}
+            <i className="material-icons left settings">library_books</i>
           </Link>
 
           <Link to={LOCATION_EVENTS}>

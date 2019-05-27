@@ -5,13 +5,10 @@ import {
   changeSignatureDetached, changeSignatureEncoding,
   changeSignatureOutfolder, changeSignatureTimestamp, toggleSaveToDocuments,
 } from "../../AC";
-import { DEFAULT_DOCUMENTS_PATH } from "../../constants";
 import { loadingRemoteFilesSelector } from "../../selectors";
 import { mapToArr } from "../../utils";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 import EncodingTypeSelector from "../EncodingTypeSelector";
-import HeaderWorkspaceBlock from "../HeaderWorkspaceBlock";
-import SelectFolder from "../SelectFolder";
 
 const dialog = window.electron.remote.dialog;
 
@@ -96,13 +93,6 @@ class SignatureSettings extends React.Component<ISignatureSettingsProps, any> {
     toggleSaveToDocuments(!saveToDocuments);
   }
 
-  handleOutfolderChange = (ev: any) => {
-    ev.preventDefault();
-    // tslint:disable-next-line:no-shadowed-variable
-    const { changeSignatureOutfolder } = this.props;
-    changeSignatureOutfolder(ev.target.value);
-  }
-
   handleEncodingChange = (encoding: string) => {
     // tslint:disable-next-line:no-shadowed-variable
     const { changeSignatureEncoding } = this.props;
@@ -121,34 +111,27 @@ class SignatureSettings extends React.Component<ISignatureSettingsProps, any> {
     }
 
     return (
-      <div id="sign-settings-content" className="content-wrapper z-depth-1">
-        <HeaderWorkspaceBlock text={localize("Sign.sign_setting", locale)} />
-        <div className="settings-content">
+      <div className="settings-content">
+        <div className="col s12 m12 l6">
           <EncodingTypeSelector
             EncodingValue={encoding}
             handleChange={this.handleEncodingChange}
             disabled={signer && signer.service} />
+        </div>
+        <div className="col s12 m12 l6">
           <CheckBoxWithLabel
             disabled={disabled}
             onClickCheckBox={this.handleDetachedClick}
             isChecked={settings.detached}
             elementId="detached-sign"
             title={localize("Sign.sign_detached", locale)} />
+        </div>
+        <div className="col s12 m6 m12 l6">
           <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
             disabled={disabled || (signer && signer.service)}
             isChecked={settings.timestamp || (signer && signer.service)}
             elementId="sign-time"
             title={localize("Sign.sign_time", locale)} />
-          <CheckBoxWithLabel onClickCheckBox={this.handleSaveToDocumentsClick}
-            disabled={disabled}
-            isChecked={saveToDocuments}
-            elementId="saveToDocuments"
-            title={localize("Documents.save_to_documents", locale)} />
-          <SelectFolder
-            disabled={disabled}
-            directory={saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder}
-            viewDirect={this.handleOutfolderChange}
-            openDirect={this.addDirect.bind(this)} />
         </div>
       </div>
     );

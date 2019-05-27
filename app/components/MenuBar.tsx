@@ -6,8 +6,8 @@ import { filePackageDelete } from "../AC";
 import {
   LOCATION_ABOUT, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
   LOCATION_CERTIFICATES,
-  LOCATION_CONTAINERS, LOCATION_DOCUMENTS, LOCATION_ENCRYPT,
-  LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SERVICES,
+  LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
+  LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SETTINGS,
   LOCATION_SIGN, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
 } from "../constants";
 import { connectedSelector, loadingRemoteFilesSelector } from "../selectors";
@@ -115,17 +115,11 @@ class MenuBar extends React.Component<any, IMenuBarState> {
       case LOCATION_CONTAINERS:
         return localize("Containers.containers", locale);
 
-      case LOCATION_ENCRYPT:
-        return localize("Encrypt.encrypt_and_decrypt", locale);
-
       case LOCATION_LICENSE:
         return localize("License.license", locale);
 
-      case LOCATION_SIGN:
-        return localize("Sign.sign_and_verify", locale);
-
-      case LOCATION_SERVICES:
-        return localize("Services.Services", locale);
+      case LOCATION_SETTINGS:
+        return localize("Settings.settings", locale);
 
       case LOCATION_DOCUMENTS:
         return localize("Documents.documents", locale);

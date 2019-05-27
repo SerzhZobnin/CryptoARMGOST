@@ -148,7 +148,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
                 </div>
               </div>
             </div>
-            <FileSelector operation="SIGN" />
+            <FileSelector operation="SIGN" searchValue={this.state.searchValue}/>
           </div>
           <div className="col s4 rightcol">
             <div className="row" />
