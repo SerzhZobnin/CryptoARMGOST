@@ -86,13 +86,17 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
   }
 
   shouldComponentUpdate(nextProps: IFileSelectorProps) {
-    const { files, loadingFiles, selectingFilesPackage } = this.props;
+    const { files, loadingFiles, searchValue, selectingFilesPackage } = this.props;
 
     if (selectingFilesPackage !== nextProps.selectingFilesPackage) {
       return true;
     }
 
     if (loadingFiles.length !== nextProps.loadingFiles.length) {
+      return true;
+    }
+
+    if (searchValue !== nextProps.searchValue) {
       return true;
     }
 
@@ -237,10 +241,10 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
             <Media query="(max-width: 1020px)">
               {(matches) =>
                 matches ? (
-                  <FileTableSmall operation={this.props.operation} />
+                  <FileTableSmall operation={this.props.operation} searchValue={this.props.searchValue}/>
                 ) :
                   (
-                    <FileTable operation={this.props.operation} />
+                    <FileTable operation={this.props.operation} searchValue={this.props.searchValue}/>
                   )
               }
             </Media>

@@ -286,6 +286,7 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
   }
 
   rowClassName = ({ index }: { index: number }) => {
+    const { foundDocuments } = this.state;
     const { activeFilesMap } = this.props;
 
     if (index < 0) {
@@ -295,6 +296,8 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
 
       if (activeFilesMap.includes(this.getDatum(this.state.sortedList, index))) {
         rowClassName += "selectedRow ";
+      } else if (foundDocuments.indexOf(index) >= 0) {
+        rowClassName += "foundEvent ";
       }
 
       if (index === this.state.hoveredRowIndex) {
