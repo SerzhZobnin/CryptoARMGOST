@@ -1003,7 +1003,7 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
 export default connect((state) => {
   return {
     certificates: filteredCertificatesSelector(state, { operation: "encrypt" }),
-    cloudCSPSettings: state.settings.cloudCSP,
+    cloudCSPSettings: state.settings.getIn(["entities", state.settings.active]).cloudCSP,
     cloudCSPState: state.cloudCSP,
     containersLoading: state.containers.loading,
     isLoading: state.certificates.loading,

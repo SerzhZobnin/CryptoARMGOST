@@ -159,7 +159,7 @@ class SignatureSettings extends React.Component<ISignatureSettingsProps, any> {
 export default connect((state) => ({
   files: mapToArr(state.files.entities),
   loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
-  saveToDocuments: state.settings.saveToDocuments,
-  settings: state.settings.sign,
+  saveToDocuments: state.settings.getIn(["entities", state.settings.active]).saveToDocuments,
+  settings: state.settings.getIn(["entities", state.settings.active]).sign,
   signer: state.certificates.getIn(["entities", state.signers.signer]),
 }), { changeSignatureDetached, changeSignatureEncoding, changeSignatureOutfolder, changeSignatureTimestamp, toggleSaveToDocuments }, null, { pure: false })(SignatureSettings);

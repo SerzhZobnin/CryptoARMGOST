@@ -2,8 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import {
-  changeArchiveFilesBeforeEncrypt, changeDeleteFilesAfterEncrypt,
-  changeEncryptEncoding, changeEncryptOutfolder, toggleSaveToDocuments,
+  changeEncryptOutfolder, changeSettingsName, toggleSaveToDocuments,
 } from "../../AC";
 import { DEFAULT_DOCUMENTS_PATH } from "../../constants";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
@@ -32,6 +31,44 @@ class GeneralSettings extends React.Component<IEncryptSettingsProps, {}> {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
+
+  componentDidMount() {
+    Materialize.updateTextFields();
+  }
+
+  render() {
+    const { name, saveToDocuments, settings } = this.props;
+    const { localize, locale } = this.context;
+
+    return (
+      <div className="settings-content">
+        <div className="row" />
+        <div className="row">
+          <div className="input-field input-field-csr col s12">
+            <input
+              id="name"
+              type="text"
+              className="validate"
+              name="name"
+              value={name}
+              onChange={this.handleInputNameChange}
+              placeholder={localize("Settings.name", locale)}
+            />
+            <label htmlFor="name">{localize("Settings.name", locale)}</label>
+          </div>
+        </div>
+        <CheckBoxWithLabel onClickCheckBox={this.handleSaveToDocumentsClick}
+          isChecked={saveToDocuments}
+          elementId="saveToDocuments"
+          title={localize("Documents.save_to_documents", locale)} />
+        <SelectFolder
+          directory={saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder}
+          viewDirect={this.handleOutfolderChange}
+          openDirect={this.addDirect.bind(this)}
+        />
+      </div>
+    );
+  }
 
   addDirect() {
     // tslint:disable-next-line:no-shadowed-variable
@@ -63,27 +100,15 @@ class GeneralSettings extends React.Component<IEncryptSettingsProps, {}> {
     toggleSaveToDocuments(!saveToDocuments);
   }
 
-  render() {
-    const { saveToDocuments, settings } = this.props;
-    const { localize, locale } = this.context;
-
-    return (
-      <div className="settings-content">
-        <CheckBoxWithLabel onClickCheckBox={this.handleSaveToDocumentsClick}
-          isChecked={saveToDocuments}
-          elementId="saveToDocuments"
-          title={localize("Documents.save_to_documents", locale)} />
-        <SelectFolder
-          directory={saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder}
-          viewDirect={this.handleOutfolderChange}
-          openDirect={this.addDirect.bind(this)}
-        />
-      </div>
-    );
+  handleInputNameChange = (ev: any) => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { changeSettingsName } = this.props;
+    changeSettingsName(ev.target.value);
   }
 }
 
 export default connect((state) => ({
-  saveToDocuments: state.settings.saveToDocuments,
-  settings: state.settings.encrypt,
-}), { changeArchiveFilesBeforeEncrypt, changeDeleteFilesAfterEncrypt, changeEncryptEncoding, changeEncryptOutfolder, toggleSaveToDocuments }, null, { pure: false })(GeneralSettings);
+  name: state.settings.getIn(["entities", state.settings.active]).name,
+  saveToDocuments: state.settings.getIn(["entities", state.settings.active]).saveToDocuments,
+  settings: state.settings.getIn(["entities", state.settings.active]).encrypt,
+}), { changeEncryptOutfolder, changeSettingsName, toggleSaveToDocuments }, null, { pure: false })(GeneralSettings);

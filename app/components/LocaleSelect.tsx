@@ -29,5 +29,5 @@ class LocaleSelect extends React.Component<ILocaleSelectProps, {}> {
 }
 
 export default connect((state) => ({
-  locale: state.settings.locale,
+  locale: state.settings.getIn(["entities", state.settings.active]).locale,
 }), { changeLocale })(LocaleSelect);

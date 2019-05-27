@@ -538,6 +538,7 @@ export default {
     field_empty: "Поле не может быть пустым",
     general: "Общие настройки",
     go_to_file: "Перейти к файлу",
+    name: "Наименование",
     open_file: "Открыть файл",
     pass_enter: "Ввод пароля",
     password: "Пароль",

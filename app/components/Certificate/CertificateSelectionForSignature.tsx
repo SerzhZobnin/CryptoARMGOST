@@ -941,7 +941,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
 export default connect((state) => {
   return {
     certificates: filteredCertificatesSelector(state, { operation: "sign" }),
-    cloudCSPSettings: state.settings.cloudCSP,
+    cloudCSPSettings: state.settings.getIn(["entities", state.settings.active]).cloudCSP,
     cloudCSPState: state.cloudCSP,
     containersLoading: state.containers.loading,
     isLoading: state.certificates.loading,

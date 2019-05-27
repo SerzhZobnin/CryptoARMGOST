@@ -55,8 +55,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
   closeWindow() {
     const { localize, locale } = this.context;
-    const { cloudCSPSettings, encSettings, recipients,
-      saveToDocuments, signSettings, signer, tempContentOfSignedFiles } = this.props;
+    const { recipients, settings, signer, tempContentOfSignedFiles } = this.props;
 
     if (this.isFilesFromSocket()) {
       this.removeAllFiles();
@@ -64,17 +63,13 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
     const state = ({
       recipients,
-      settings: {
-        cloudCSP: cloudCSPSettings,
-        encrypt: encSettings,
-        locale,
-        saveToDocuments,
-        sign: signSettings,
-      },
+      settings: settings.toJS(),
       signers: {
         signer,
       },
     });
+
+    state.settings = mapToArr(settings.entities);
 
     for (const filePath of tempContentOfSignedFiles) {
       if (fileExists(filePath)) {
@@ -254,10 +249,10 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
 export default connect((state, ownProps) => {
   return {
-    cloudCSPSettings: state.settings.cloudCSP,
+    cloudCSPSettings: state.settings.getIn(["entities", state.settings.active]).cloudCSP,
     connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
-    encSettings: state.settings.encrypt,
+    encSettings: state.settings.getIn(["entities", state.settings.active]).encrypt,
     eventsDateFrom: state.events.dateFrom,
     eventsDateTo: state.events.dateTo,
     files: mapToArr(state.files.entities),
@@ -265,8 +260,10 @@ export default connect((state, ownProps) => {
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     location: ownProps.location,
     recipients: mapToArr(state.recipients.entities),
-    saveToDocuments: state.settings.saveToDocuments,
-    signSettings: state.settings.sign,
+    saveToDocuments: state.settings.getIn(["entities", state.settings.active]).saveToDocuments,
+    settingsName: state.settings.getIn(["entities", state.settings.active]).name,
+    settings: state.settings,
+    signSettings: state.settings.getIn(["entities", state.settings.active]).sign,
     signer: state.signers.signer,
     tempContentOfSignedFiles: state.files.tempContentOfSignedFiles,
   };

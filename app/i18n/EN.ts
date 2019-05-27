@@ -536,6 +536,7 @@ export default {
     field_empty: "This field cannot be empty!",
     general: "General settings",
     go_to_file: "Go to the file",
+    name: "Name",
     open_file: "Open the file",
     pass_enter: "Enter the password",
     password: "Password",

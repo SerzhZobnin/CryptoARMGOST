@@ -93,6 +93,6 @@ class EncryptSettings extends React.Component<IEncryptSettingsProps, {}> {
 }
 
 export default connect((state) => ({
-  saveToDocuments: state.settings.saveToDocuments,
-  settings: state.settings.encrypt,
+  saveToDocuments: state.settings.getIn(["entities", state.settings.active]).saveToDocuments,
+  settings: state.settings.getIn(["entities", state.settings.active]).encrypt,
 }), { changeArchiveFilesBeforeEncrypt, changeDeleteFilesAfterEncrypt, changeEncryptEncoding, changeEncryptOutfolder, toggleSaveToDocuments }, null, { pure: false })(EncryptSettings);

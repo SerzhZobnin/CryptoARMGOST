@@ -68,6 +68,7 @@ export const CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT = "CHANGE_ARCHIVE_FILES_BEFORE_
 export const CHANGE_ENCRYPT_OUTFOLDER = "CHANGE_ENCRYPT_OUTFOLDER";
 
 export const TOGGLE_SAVE_TO_DOCUMENTS = "TOGGLE_SAVE_TO_DOCUMENTS";
+export const CHANGE_SETTINGS_NAME = "CHANGE_SETTINGS_NAME";
 
 export const PACKAGE_SELECT_FILE = "PACKAGE_SELECT_FILE";
 export const PACKAGE_DELETE_FILE = "PACKAGE_DELETE_FILE";
@@ -165,6 +166,7 @@ export const LOCATION_LICENSE = "/license";
 export const LOCATION_EVENTS = "/events";
 export const LOCATION_SERVICES = "/services";
 export const LOCATION_SETTINGS = "/settings";
+export const LOCATION_SETTINGS_CONFIG = "/settings_config";
 
 export const KEY_USAGE_SIGN = "sign";
 export const KEY_USAGE_ENCIPHERMENT  = "encipherment";

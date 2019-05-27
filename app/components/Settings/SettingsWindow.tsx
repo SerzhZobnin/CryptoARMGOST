@@ -1,23 +1,13 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import {
-  deleteRecipient, selectSignerCertificate,
-} from "../../AC";
-import {
-  LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
-  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
+  LOCATION_SETTINGS_CONFIG,
 } from "../../constants";
-import { mapToArr } from "../../utils";
-import EncryptSettings from "../Encrypt/EncryptSettings";
-import RecipientsList from "../RecipientsList";
-import SignatureSettings from "../Signature/SignatureSettings";
-import GeneralSettings from "./GeneralSettings";
+import SettingsTable from "./SettingsTable";
 
 interface ISettingsWindowState {
-  showModalLicenseCSPSetup: boolean;
-  showModalLicenseSetup: boolean;
+  searchValue: string;
+  setting: any;
 }
 
 class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
@@ -28,6 +18,12 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
 
   constructor(props: {}) {
     super(props);
+
+    this.state = {
+      searchValue: "",
+      setting: null,
+      showModalFilterEvents: false,
+    };
   }
 
   componentDidMount() {
@@ -42,7 +38,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
 
   render() {
     const { localize, locale } = this.context;
-    const { recipients, signer } = this.props;
+    const { setting } = this.state;
 
     return (
       <div className="content-noflex">
@@ -51,144 +47,64 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
             <div className="row halfbottom">
               <div className="row halfbottom" />
               <div className="col s12">
-                <div className="desktoplic_text_item">{localize("Settings.general", locale)}</div>
-                <hr />
-                <GeneralSettings />
-              </div>
-
-              <div className="row" />
-
-              <div className="col s12">
-                <div className="desktoplic_text_item">{localize("Sign.sign_setting", locale)}</div>
-                <hr />
-                <SignatureSettings />
-                <div className="col s12">
-                  <div className="col s10">
-                    <div className="desktoplic_text_item">Сертификат подписи:</div>
-                    <hr />
-                  </div>
-                  <div className="col s2">
-                    <div className="right import-col">
-                      <a className="btn-floated" data-activates="dropdown-btn-signer">
-                        <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
-                      </a>
-                      <ul id="dropdown-btn-signer" className="dropdown-content">
-                        <li><a onClick={() => this.props.selectSignerCertificate(0)}>Очистить</a></li>
-                      </ul>
-                    </div>
-
-                  </div>
-                  {
-                    (signer) ? this.getSelectedSigner() :
-                      <div className="col s12">
-                        <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
-                          <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
-                            ВЫБРАТЬ
-                    </a>
-                        </Link>
-                      </div>
-                  }
+                <div className="input-field input-field-csr col s12 border_element find_box">
+                  <i className="material-icons prefix">search</i>
+                  <input
+                    id="search"
+                    type="search"
+                    placeholder={localize("EventsTable.search_in_table", locale)}
+                    value={this.state.searchValue}
+                    onChange={this.handleSearchValueChange} />
+                  <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
                 </div>
               </div>
-
-              <div className="row" />
-
               <div className="col s12">
-                <div className="desktoplic_text_item">{localize("Encrypt.encrypt_setting", locale)}</div>
-                <hr />
-                <EncryptSettings />
-
-                <div className="row" />
-
-                <div className="col s12">
-                  <div className="col s10">
-                    <div className="desktoplic_text_item">Сертификаты шифрования:</div>
-                    <hr />
-                  </div>
-                  <div className="col s2">
-                    <div className="right import-col">
-                      <a className="btn-floated" data-activates="dropdown-btn-encrypt">
-                        <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
-                      </a>
-                      <ul id="dropdown-btn-encrypt" className="dropdown-content">
-                        <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
-                          <li><a>Добавить</a></li>
-                        </Link>
-                        <li><a onClick={() => this.handleCleanRecipientsList()}>Очистить</a></li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  {
-                    (recipients && recipients.length) ?
-                      <div>
-                        <RecipientsList recipients={recipients} />
-                      </div> :
-                      <div className="col s12">
-                        <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
-                          <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
-                            ВЫБРАТЬ
-                        </a>
-                        </Link>
-                      </div>
-                  }
-                </div>
+                <SettingsTable searchValue={this.state.searchValue} selectSetting={this.handleSelectSetting} setting={this.state.setting} />
               </div>
             </div>
           </div>
           <div className="col s4 rightcol">
             <div className="row" />
+            {
+              setting ?
+                <div className="row fixed-bottom-rightcolumn" style={{ bottom: "20px" }}>
+                  <div className="col s12">
+                    <hr />
+                  </div>
+                  <div className="col s4 waves-effect waves-cryptoarm">
+                    <div className="col s12 svg_icon">
+                      <a onClick={() => this.props.history.push(LOCATION_SETTINGS_CONFIG)}
+                        data-position="bottom">
+                        <i className="material-icons certificate export" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{"Редактирвоать"}</div>
+                  </div>
+
+                  <div className="col s4 waves-effect waves-cryptoarm">
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons certificate remove" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+                  </div>
+                </div>
+                : null
+            }
           </div>
         </div>
       </div>
     );
   }
 
-  handleCleanRecipientsList = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { deleteRecipient, recipients } = this.props;
-
-    recipients.forEach((recipient) => deleteRecipient(recipient.id));
+  handleSearchValueChange = (ev: any) => {
+    this.setState({ searchValue: ev.target.value });
   }
 
-  getSelectedSigner = () => {
-    const { signer } = this.props;
-    const { localize, locale } = this.context;
-
-    if (signer) {
-      const status = signer.status;
-      let curStatusStyle;
-
-      if (status) {
-        curStatusStyle = "cert_status_ok";
-      } else {
-        curStatusStyle = "cert_status_error";
-      }
-
-      return (
-        <React.Fragment>
-          <div className="col s12 valign-wrapper">
-            <div className="col s2">
-              <div className={curStatusStyle} />
-            </div>
-            <div className="col s10" style={{ fontSize: "75%" }}>
-              <div className="collection-title">{signer.subjectFriendlyName}</div>
-              <div className="collection-info cert-info">{signer.issuerFriendlyName}</div>
-            </div>
-          </div>
-        </React.Fragment>
-      );
-    } else {
-      return null;
-    }
+  handleSelectSetting = (setting: any) => {
+    this.setState({ setting });
   }
 }
 
-export default connect((state) => {
-  return {
-    recipients: mapToArr(state.recipients.entities)
-      .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
-      .filter((recipient) => recipient !== undefined),
-    signer: state.certificates.getIn(["entities", state.signers.signer]),
-  };
-}, { deleteRecipient, selectSignerCertificate })(SettingsWindow);
+export default SettingsWindow;

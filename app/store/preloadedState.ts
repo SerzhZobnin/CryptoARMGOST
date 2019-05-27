@@ -4,6 +4,7 @@ import { SERVICES_JSON, SETTINGS_JSON } from "../constants";
 import { CertificateModel, DefaultReducerState as DefaultCertificatesReducerState } from "../reducer/certificates";
 import { DefaultReducerState as DefaultRecipientsReducerState, RecipientModel } from "../reducer/recipients";
 import { DefaultReducerState as DefaultServicesReducerState, ServiceModel, SettingsModel } from "../reducer/services";
+import { DefaultReducerState as DefaultSettingsState, EncryrptModel, SettingsModel as GlobalSettingsModel, SignModel } from "../reducer/settings";
 import { fileExists } from "../utils";
 
 let odata = {};
@@ -24,6 +25,19 @@ if (fileExists(SETTINGS_JSON)) {
       }
 
       odata.recipients = recipientsMap;
+
+      let settingsMap = new DefaultSettingsState();
+
+      for (const setting of odata.settings) {
+        settingsMap = settingsMap.setIn(["entities", setting.id], new GlobalSettingsModel({
+          ...setting,
+          encrypt: new EncryrptModel(setting.encrypt),
+          id: setting.id,
+          sign: new SignModel(setting.sign),
+        }));
+      }
+
+      odata.settings = settingsMap;
 
       if (odata.settings && !odata.settings.cloudCSP) {
         odata.settings.cloudCSP = {
