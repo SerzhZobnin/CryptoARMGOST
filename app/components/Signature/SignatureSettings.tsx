@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import {
   changeSignatureDetached, changeSignatureEncoding,
   changeSignatureOutfolder, changeSignatureTimestamp, toggleSaveToDocuments,
-} from "../../AC";
+} from "../../AC/settingsActions";
 import { loadingRemoteFilesSelector } from "../../selectors";
 import { mapToArr } from "../../utils";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";

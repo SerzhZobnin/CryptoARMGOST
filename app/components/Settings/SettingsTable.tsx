@@ -116,6 +116,22 @@ class SettingsTable extends React.Component<ISettingsTableProps & ISettingsTable
                     width={180}
                     label={localize("EventsTable.operation", locale)}
                   />
+                  <Column
+                    cellRenderer={({ cellData }) => {
+                      return (new Date(cellData)).toLocaleDateString(locale, {
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                      });
+                    }}
+                    dataKey="mtime"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={130}
+                    label={localize("EventsTable.date_and_time", locale)}
+                  />
                 </Table>
               )}
             </AutoSizer>

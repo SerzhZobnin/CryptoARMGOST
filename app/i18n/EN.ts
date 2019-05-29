@@ -549,6 +549,7 @@ export default {
     selected_all: "Select all",
     setting_file: "settings.json",
     settings: "Settings",
+    settings_config: "Configure settings",
     wait: "Please wait",
     write_file_failed: "File saving error",
     write_file_ok: "The settings saved",

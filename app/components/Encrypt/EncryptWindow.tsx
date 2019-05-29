@@ -584,7 +584,7 @@ export default connect((state) => {
     licenseToken: state.license.data,
     mapCertificates: state.certificates,
     recipients: mapToArr(state.recipients.entities).map((recipient) => state.certificates.getIn(["entities", recipient.certId])),
-    settings: state.settings.getIn(["entities", state.settings.active]).encrypt,
+    settings: state.settings.getIn(["entities", state.settings.default]).encrypt,
     services: state.services,
   };
 }, { deleteFile, loadAllCertificates, selectFile })(EncryptWindow);

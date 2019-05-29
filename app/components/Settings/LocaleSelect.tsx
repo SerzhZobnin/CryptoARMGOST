@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import { changeLocale } from "../AC";
-import { EN, RU } from "../constants";
+import { changeLocale } from "../../AC/settingsActions";
+import { EN, RU } from "../../constants";
 
 interface ILocaleSelectProps {
   changeLocale: (locale: string) => void;
@@ -29,5 +29,5 @@ class LocaleSelect extends React.Component<ILocaleSelectProps, {}> {
 }
 
 export default connect((state) => ({
-  locale: state.settings.getIn(["entities", state.settings.active]).locale,
+  locale: state.settings.getIn(["entities", state.settings.default]).locale,
 }), { changeLocale })(LocaleSelect);

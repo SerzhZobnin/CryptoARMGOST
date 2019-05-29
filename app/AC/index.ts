@@ -514,7 +514,7 @@ export function verifySignature(fileId: string, showOpenDialogForDetached: boole
           fileId,
           ...info,
           id: Math.random(),
-          verifyingTime: new Date().getTime()
+          verifyingTime: new Date().getTime(),
         };
       });
 
@@ -585,86 +585,6 @@ export function verifySignature(fileId: string, showOpenDialogForDetached: boole
   };
 }
 
-export function changeSignatureEncoding(encoding: string) {
-  return {
-    payload: { encoding },
-    type: CHANGE_SIGNATURE_ENCODING,
-  };
-}
-
-export function changeSignatureDetached(detached: boolean) {
-  return {
-    payload: { detached },
-    type: CHANGE_SIGNATURE_DETACHED,
-  };
-}
-
-export function changeSignatureTimestamp(timestamp: boolean) {
-  return {
-    payload: { timestamp },
-    type: CHANGE_SIGNATURE_TIMESTAMP,
-  };
-}
-
-export function toggleSaveToDocuments(saveToDocuments: boolean) {
-  return (dispatch: (action: {}) => void) => {
-    if (saveToDocuments) {
-      dispatch(changeSignatureOutfolder(DEFAULT_DOCUMENTS_PATH));
-      dispatch(changeEncryptOutfolder(DEFAULT_DOCUMENTS_PATH));
-    } else {
-      dispatch(changeSignatureOutfolder(""));
-      dispatch(changeEncryptOutfolder(""));
-    }
-
-    dispatch({
-      payload: { saveToDocuments },
-      type: TOGGLE_SAVE_TO_DOCUMENTS,
-    });
-  };
-}
-
-export function changeSettingsName(name: string) {
-  return {
-    payload: { name },
-    type: CHANGE_SETTINGS_NAME,
-  };
-}
-
-export function changeSignatureOutfolder(outfolder: string) {
-  return {
-    payload: { outfolder },
-    type: CHANGE_SIGNATURE_OUTFOLDER,
-  };
-}
-
-export function changeEncryptEncoding(encoding: string) {
-  return {
-    payload: { encoding },
-    type: CHANGE_ECRYPT_ENCODING,
-  };
-}
-
-export function changeDeleteFilesAfterEncrypt(del: boolean) {
-  return {
-    payload: { del },
-    type: CHANGE_DELETE_FILES_AFTER_ENCRYPT,
-  };
-}
-
-export function changeArchiveFilesBeforeEncrypt(archive: boolean) {
-  return {
-    payload: { archive },
-    type: CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT,
-  };
-}
-
-export function changeEncryptOutfolder(outfolder: string) {
-  return {
-    payload: { outfolder },
-    type: CHANGE_ENCRYPT_OUTFOLDER,
-  };
-}
-
 export function addRecipientCertificate(certId: number) {
   return {
     payload: { certId },
@@ -676,12 +596,5 @@ export function deleteRecipient(recipient: number) {
   return {
     payload: { recipient },
     type: DELETE_RECIPIENT_CERTIFICATE,
-  };
-}
-
-export function changeLocale(locale: string) {
-  return {
-    payload: { locale },
-    type: CHANGE_LOCALE,
   };
 }

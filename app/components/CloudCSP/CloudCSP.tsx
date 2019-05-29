@@ -195,5 +195,5 @@ class CloudCSP extends React.Component<ICloudCSPProps, ICloudCSPState> {
 }
 
 export default connect((state) => ({
-  settings: state.settings.getIn(["entities", state.settings.active]).cloudCSP,
+  settings: state.settings.getIn(["entities", state.settings.default]).cloudCSP,
 }), { changeAuthURL, changeRestURL, getCertificates })(CloudCSP);

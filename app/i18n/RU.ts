@@ -551,6 +551,7 @@ export default {
     selected_all: "Выделить все",
     setting_file: "settings.json",
     settings: "Настройки",
+    settings_config: "Редактирование настройки",
     wait: "Пожалуйста, подождите...",
     write_file_failed: "Ошибка записи в файл",
     write_file_ok: "Настройки сохранены",

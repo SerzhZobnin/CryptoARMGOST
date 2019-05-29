@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import {
   changeArchiveFilesBeforeEncrypt, changeDeleteFilesAfterEncrypt,
   changeEncryptEncoding, changeEncryptOutfolder, toggleSaveToDocuments,
-} from "../../AC";
+} from "../../AC/settingsActions";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 import EncodingTypeSelector from "../EncodingTypeSelector";
 

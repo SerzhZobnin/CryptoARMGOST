@@ -1071,7 +1071,7 @@ export default connect((state) => {
     method: state.remoteFiles.method,
     packageSignResult: state.signatures.packageSignResult,
     services: state.services,
-    settings: state.settings.getIn(["entities", state.settings.active]).sign,
+    settings: state.settings.getIn(["entities", state.settings.default]).sign,
     signatures,
     signedPackage: state.signatures.signedPackage,
     signer: state.certificates.getIn(["entities", state.signers.signer]),

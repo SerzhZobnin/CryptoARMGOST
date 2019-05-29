@@ -1182,7 +1182,7 @@ class CertWindow extends React.Component<any, any> {
 export default connect((state) => {
   return {
     certificates: filteredCertificatesSelector(state, { operation: "certificate" }),
-    cloudCSPSettings: state.settings.getIn(["entities", state.settings.active]).cloudCSP,
+    cloudCSPSettings: state.settings.getIn(["entities", state.settings.default]).cloudCSP,
     cloudCSPState: state.cloudCSP,
     containersLoading: state.containers.loading,
     crls: filteredCrlsSelector(state),

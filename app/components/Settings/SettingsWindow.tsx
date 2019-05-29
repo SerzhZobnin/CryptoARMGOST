@@ -1,5 +1,10 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { connect } from "react-redux";
+import {
+  activeSetting, changeDefaultSettings, createSettings,
+  deleteSetting,
+} from "../../AC/settingsActions";
 import {
   LOCATION_SETTINGS_CONFIG,
 } from "../../constants";
@@ -34,11 +39,13 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
       inDuration: 300,
       outDuration: 225,
     });
+
+    this.props.activeSetting(this.props.settings.default);
   }
 
   render() {
     const { localize, locale } = this.context;
-    const { setting } = this.state;
+    const { setting, settings } = this.props;
 
     return (
       <div className="content-noflex">
@@ -47,19 +54,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
             <div className="row halfbottom">
               <div className="row halfbottom" />
               <div className="col s12">
-                <div className="input-field input-field-csr col s12 border_element find_box">
-                  <i className="material-icons prefix">search</i>
-                  <input
-                    id="search"
-                    type="search"
-                    placeholder={localize("EventsTable.search_in_table", locale)}
-                    value={this.state.searchValue}
-                    onChange={this.handleSearchValueChange} />
-                  <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
-                </div>
-              </div>
-              <div className="col s12">
-                <SettingsTable searchValue={this.state.searchValue} selectSetting={this.handleSelectSetting} setting={this.state.setting} />
+                <SettingsTable searchValue={this.state.searchValue} selectSetting={this.handleSelectSetting} setting={setting} />
               </div>
             </div>
           </div>
@@ -71,6 +66,22 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                   <div className="col s12">
                     <hr />
                   </div>
+
+                  {
+                    settings.default !== setting.id ?
+                      <div className="col s4 waves-effect waves-cryptoarm">
+                        <div className="col s12 svg_icon">
+                          <a onClick={() => this.props.changeDefaultSettings(setting.id)}
+                            data-position="bottom">
+                            <i className="material-icons certificate export" />
+                          </a>
+                        </div>
+                        <div className="col s12 svg_icon_text">{"Применить"}</div>
+                      </div>
+                      :
+                      null
+                  }
+
                   <div className="col s4 waves-effect waves-cryptoarm">
                     <div className="col s12 svg_icon">
                       <a onClick={() => this.props.history.push(LOCATION_SETTINGS_CONFIG)}
@@ -81,16 +92,37 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                     <div className="col s12 svg_icon_text">{"Редактирвоать"}</div>
                   </div>
 
+                  {
+                    settings.default !== setting.id ?
+                      <div className="col s4 waves-effect waves-cryptoarm">
+                        <div className="col s12 svg_icon">
+                          <a onClick={() => this.props.deleteSetting(setting.id)}
+                            data-position="bottom">
+                            <i className="material-icons certificate remove" />
+                          </a>
+                        </div>
+                        <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+                      </div> :
+                      null
+                  }
+
+                </div>
+                :
+                <div className="row fixed-bottom-rightcolumn" style={{ bottom: "20px" }}>
+                  <div className="col s12">
+                    <hr />
+                  </div>
+
                   <div className="col s4 waves-effect waves-cryptoarm">
                     <div className="col s12 svg_icon">
-                      <a data-position="bottom">
+                      <a onClick={() => this.props.createSettings()}
+                        data-position="bottom">
                         <i className="material-icons certificate remove" />
                       </a>
                     </div>
-                    <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+                    <div className="col s12 svg_icon_text">{"Создать"}</div>
                   </div>
                 </div>
-                : null
             }
           </div>
         </div>
@@ -102,9 +134,12 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
     this.setState({ searchValue: ev.target.value });
   }
 
-  handleSelectSetting = (setting: any) => {
-    this.setState({ setting });
+  handleSelectSetting = (setting) => {
+    this.props.activeSetting(setting.id);
   }
 }
 
-export default SettingsWindow;
+export default connect((state) => ({
+  setting: state.settings.getIn(["entities", state.settings.active]),
+  settings: state.settings,
+}), { activeSetting, changeDefaultSettings, createSettings, deleteSetting })(SettingsWindow);

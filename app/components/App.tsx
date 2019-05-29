@@ -70,5 +70,5 @@ class App extends React.Component<IAppProps, {}> {
 }
 
 export default connect((state) => ({
-  locale: state.settings.getIn(["entities", state.settings.active]).locale,
+  locale: state.settings.getIn(["entities", state.settings.default]).locale,
 }))(App);

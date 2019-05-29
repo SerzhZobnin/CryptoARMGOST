@@ -8,13 +8,13 @@ import {
   LOCATION_CERTIFICATES,
   LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
   LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SETTINGS,
-  LOCATION_SIGN, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
+  LOCATION_SETTINGS_CONFIG, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
 } from "../constants";
 import { connectedSelector, loadingRemoteFilesSelector } from "../selectors";
 import { CANCELLED } from "../server/constants";
 import { fileExists, mapToArr } from "../utils";
 import Diagnostic from "./Diagnostic/Diagnostic";
-import LocaleSelect from "./LocaleSelect";
+import LocaleSelect from "./Settings/LocaleSelect";
 import SideMenu from "./SideMenu";
 
 // tslint:disable-next-line:no-var-requires
@@ -115,6 +115,9 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
       case LOCATION_SETTINGS:
         return localize("Settings.settings", locale);
+
+      case LOCATION_SETTINGS_CONFIG:
+        return localize("Settings.settings_config", locale);
 
       case LOCATION_DOCUMENTS:
         return localize("Documents.documents", locale);
@@ -249,10 +252,10 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
 export default connect((state, ownProps) => {
   return {
-    cloudCSPSettings: state.settings.getIn(["entities", state.settings.active]).cloudCSP,
+    cloudCSPSettings: state.settings.getIn(["entities", state.settings.default]).cloudCSP,
     connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
-    encSettings: state.settings.getIn(["entities", state.settings.active]).encrypt,
+    encSettings: state.settings.getIn(["entities", state.settings.default]).encrypt,
     eventsDateFrom: state.events.dateFrom,
     eventsDateTo: state.events.dateTo,
     files: mapToArr(state.files.entities),
@@ -260,10 +263,10 @@ export default connect((state, ownProps) => {
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     location: ownProps.location,
     recipients: mapToArr(state.recipients.entities),
-    saveToDocuments: state.settings.getIn(["entities", state.settings.active]).saveToDocuments,
-    settingsName: state.settings.getIn(["entities", state.settings.active]).name,
+    saveToDocuments: state.settings.getIn(["entities", state.settings.default]).saveToDocuments,
+    settingsName: state.settings.getIn(["entities", state.settings.default]).name,
     settings: state.settings,
-    signSettings: state.settings.getIn(["entities", state.settings.active]).sign,
+    signSettings: state.settings.getIn(["entities", state.settings.default]).sign,
     signer: state.signers.signer,
     tempContentOfSignedFiles: state.files.tempContentOfSignedFiles,
   };

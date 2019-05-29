@@ -3,7 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 import {
   changeEncryptOutfolder, changeSettingsName, toggleSaveToDocuments,
-} from "../../AC";
+} from "../../AC/settingsActions";
 import { DEFAULT_DOCUMENTS_PATH } from "../../constants";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 import SelectFolder from "../SelectFolder";
@@ -108,7 +108,7 @@ class GeneralSettings extends React.Component<IEncryptSettingsProps, {}> {
 }
 
 export default connect((state) => ({
-  name: state.settings.getIn(["entities", state.settings.active]).name,
-  saveToDocuments: state.settings.getIn(["entities", state.settings.active]).saveToDocuments,
+  name: state.settings.getIn(["entities", state.settings.default]).name,
+  saveToDocuments: state.settings.getIn(["entities", state.settings.default]).saveToDocuments,
   settings: state.settings.getIn(["entities", state.settings.active]).encrypt,
 }), { changeEncryptOutfolder, changeSettingsName, toggleSaveToDocuments }, null, { pure: false })(GeneralSettings);
