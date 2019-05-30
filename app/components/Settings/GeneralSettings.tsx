@@ -108,7 +108,7 @@ class GeneralSettings extends React.Component<IEncryptSettingsProps, {}> {
 }
 
 export default connect((state) => ({
-  name: state.settings.getIn(["entities", state.settings.default]).name,
-  saveToDocuments: state.settings.getIn(["entities", state.settings.default]).saveToDocuments,
-  settings: state.settings.getIn(["entities", state.settings.active]).encrypt,
+  name: state.settings.getIn(["entities", state.settings.active]).name,
+  saveToDocuments: state.settings.getIn(["entities", state.settings.active]).saveToDocuments,
+  settings: state.settings.getIn(["entities", state.settings.active]),
 }), { changeEncryptOutfolder, changeSettingsName, toggleSaveToDocuments }, null, { pure: false })(GeneralSettings);

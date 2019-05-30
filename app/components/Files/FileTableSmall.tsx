@@ -96,6 +96,17 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
       this.sort(this.state);
     }
 
+    if (prevProps.activeFilesArr.length === this.props.activeFilesArr.length) {
+      for (let i = 0; i <= prevProps.activeFilesArr.length; i++) {
+        if (is(prevProps.activeFilesArr[i], this.props.activeFilesArr[i])) {
+          continue;
+        } else {
+          this.sort(this.state);
+          break;
+        }
+      }
+    }
+
     if (prevProps.searchValue !== this.props.searchValue && this.props.searchValue) {
       this.search(this.props.searchValue);
     }
@@ -372,6 +383,7 @@ interface IOwnProps {
 }
 
 export default connect((state, ownProps: IOwnProps) => ({
+  activeFilesArr: mapToArr(activeFilesSelector(state, { active: true })),
   activeFilesMap: activeFilesSelector(state, { active: true }),
   filesMap: filteredFilesSelector(state),
   loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),

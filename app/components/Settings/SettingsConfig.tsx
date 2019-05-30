@@ -196,6 +196,6 @@ export default connect((state) => {
     recipients: mapToArr(state.recipients.entities)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
-    signer: state.certificates.getIn(["entities", state.signers.signer]),
+    signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
 }, { deleteRecipient, selectSignerCertificate })(SettingsWindow);

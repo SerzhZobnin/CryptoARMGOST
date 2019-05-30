@@ -1074,7 +1074,7 @@ export default connect((state) => {
     settings: state.settings.getIn(["entities", state.settings.default]).sign,
     signatures,
     signedPackage: state.signatures.signedPackage,
-    signer: state.certificates.getIn(["entities", state.signers.signer]),
+    signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
     signingPackage: state.signatures.signingPackage,
     uploader: state.remoteFiles.uploader,
     verifyingPackage: state.signatures.verifyingPackage,

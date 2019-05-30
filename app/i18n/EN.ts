@@ -597,5 +597,6 @@ export default {
   },
   SignAndEncrypt: {
     SignAndEncrypt: "SIGNING AND ENCRYPTION",
+    sign_and_encrypt: "Signature and encryption",
   },
 };

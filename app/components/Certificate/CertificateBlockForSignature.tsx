@@ -215,6 +215,6 @@ export default connect((state) => {
     certificates: filteredCertificatesSelector(state, { operation: "sign" }),
     isLoaded: state.certificates.loaded,
     isLoading: state.certificates.loading,
-    signer: state.certificates.getIn(["entities", state.signers.signer]),
+    signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
 }, { selectSignerCertificate, verifyCertificate }, null, { pure: false })(CertificateBlockForSignature);

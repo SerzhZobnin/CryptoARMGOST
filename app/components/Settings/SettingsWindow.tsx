@@ -138,15 +138,24 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
   }
 
   handleSelectSetting = (setting) => {
-    this.props.activeSetting(setting.id);
+    const { settings } = this.props;
+    if (settings && settings.active !== setting.id) {
+      this.props.activeSetting(setting.id);
+    } else {
+      this.props.activeSetting(null);
+    }
   }
 }
 
-export default connect((state) => ({
-  recipients: mapToArr(state.recipients.entities)
-    .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
-    .filter((recipient) => recipient !== undefined),
-  setting: state.settings.getIn(["entities", state.settings.active]),
-  settings: state.settings,
-  signer: state.certificates.getIn(["entities", state.signers.signer]),
-}), { activeSetting, changeDefaultSettings, createSettings, deleteSetting })(SettingsWindow);
+export default connect((state) => {
+  const setting = state.settings.getIn(["entities", state.settings.active]);
+
+  return {
+    recipients: mapToArr(state.recipients.entities)
+      .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
+      .filter((recipient) => recipient !== undefined),
+    setting: setting,
+    settings: state.settings,
+    signer: setting ? state.certificates.getIn(["entities", setting.sign.signer]) : "",
+  };
+}, { activeSetting, changeDefaultSettings, createSettings, deleteSetting })(SettingsWindow);

@@ -4,14 +4,14 @@ import {
   CHANGE_DELETE_FILES_AFTER_ENCRYPT, CHANGE_DSS_AUTH_URL, CHANGE_DSS_REST_URL, CHANGE_ECRYPT_ENCODING,
   CHANGE_ENCRYPT_OUTFOLDER, CHANGE_LOCALE, CHANGE_SETTINGS_NAME,
   CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING, CHANGE_SIGNATURE_OUTFOLDER, CHANGE_SIGNATURE_TIMESTAMP,
-  CREATE_SETTING, DELETE_SETTING, RU, TOGGLE_SAVE_TO_DOCUMENTS,
+  CREATE_SETTING, DELETE_SETTING, REMOVE_ALL_CERTIFICATES, RU, SELECT_SIGNER_CERTIFICATE, TOGGLE_SAVE_TO_DOCUMENTS,
 } from "../constants";
 import { uuid } from "../utils";
 
 export const SignModel = Record({
   detached: false,
   encoding: BASE64,
-  outfolder: "",
+  signer: "",
   timestamp: true,
 });
 
@@ -19,7 +19,6 @@ export const EncryrptModel = Record({
   archive: false,
   delete: false,
   encoding: BASE64,
-  outfolder: "",
 });
 
 const DEFAULT_ID = "DEFAULT_ID";
@@ -30,6 +29,7 @@ export const SettingsModel = Record({
   locale: RU,
   mtime: null,
   name: "Настройка #1",
+  outfolder: "",
   saveToDocuments: false,
   sign: new SignModel(),
 });
@@ -55,11 +55,7 @@ export default (settings = new DefaultReducerState(), action) => {
       }));
 
     case ACTIVE_SETTING:
-      if (settings.active === payload.id) {
-        return settings.set("active", null);
-      } else {
-        return settings.set("active", payload.id);
-      }
+      return settings.set("active", payload.id);
 
     case DELETE_SETTING:
       if (settings.default === payload.id || DEFAULT_ID === payload.id) {
@@ -94,7 +90,7 @@ export default (settings = new DefaultReducerState(), action) => {
     case CHANGE_SIGNATURE_OUTFOLDER:
       return settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
-        .setIn(["entities", settings.active, "sign", "outfolder"], payload.outfolder);
+        .setIn(["entities", settings.active, "outfolder"], payload.outfolder);
 
     case CHANGE_SIGNATURE_TIMESTAMP:
       return settings
@@ -119,12 +115,26 @@ export default (settings = new DefaultReducerState(), action) => {
     case CHANGE_ENCRYPT_OUTFOLDER:
       return settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
-        .setIn(["entities", settings.active, "encrypt", "outfolder"], payload.outfolder);
+        .setIn(["entities", settings.active, "outfolder"], payload.outfolder);
 
     case CHANGE_LOCALE:
       return settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "locale"], payload.locale);
+
+    case SELECT_SIGNER_CERTIFICATE:
+      if (!settings.active) {
+        settings = settings.set("active", settings.default);
+      }
+
+      return settings
+        .setIn(["entities", settings.active, "mtime"], new Date().getTime())
+        .setIn(["entities", settings.active, "sign", "signer"], payload.selected);
+
+    case REMOVE_ALL_CERTIFICATES:
+      return settings
+        .setIn(["entities", settings.active, "mtime"], new Date().getTime())
+        .setIn(["entities", settings.active, "sign", "signer"], "");
   }
 
   return settings;

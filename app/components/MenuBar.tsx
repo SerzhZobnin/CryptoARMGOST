@@ -55,18 +55,16 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
   closeWindow() {
     const { localize, locale } = this.context;
-    const { recipients, settings, signer, tempContentOfSignedFiles } = this.props;
+    const { recipients, settings, tempContentOfSignedFiles } = this.props;
 
     if (this.isFilesFromSocket()) {
       this.removeAllFiles();
     }
 
     const state = ({
+      default: settings.default,
       recipients,
       settings: settings.toJS(),
-      signers: {
-        signer,
-      },
     });
 
     state.settings = mapToArr(settings.entities);
@@ -145,7 +143,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
         return title;
 
       default:
-        return localize("About.product_NAME", locale);
+        return `${localize("About.product_NAME", locale)}. ${localize("SignAndEncrypt.sign_and_encrypt", locale)}`;
     }
   }
 
@@ -267,7 +265,6 @@ export default connect((state, ownProps) => {
     settingsName: state.settings.getIn(["entities", state.settings.default]).name,
     settings: state.settings,
     signSettings: state.settings.getIn(["entities", state.settings.default]).sign,
-    signer: state.signers.signer,
     tempContentOfSignedFiles: state.files.tempContentOfSignedFiles,
   };
 }, { filePackageDelete })(MenuBar);

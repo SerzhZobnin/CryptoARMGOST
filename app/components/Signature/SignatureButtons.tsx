@@ -252,6 +252,6 @@ export default connect((state) => {
     isDocumentsReviewed: state.files.documentsReviewed,
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     method: state.remoteFiles.method,
-    signer: state.certificates.getIn(["entities", state.signers.signer]),
+    signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
 }, { documentsReviewed })(SignatureButtons);

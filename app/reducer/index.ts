@@ -36,5 +36,4 @@ export default combineReducers({
   services,
   settings,
   signatures,
-  signers,
 });

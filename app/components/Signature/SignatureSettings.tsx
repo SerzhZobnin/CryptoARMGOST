@@ -161,5 +161,5 @@ export default connect((state) => ({
   loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
   saveToDocuments: state.settings.getIn(["entities", state.settings.active]).saveToDocuments,
   settings: state.settings.getIn(["entities", state.settings.active]).sign,
-  signer: state.certificates.getIn(["entities", state.signers.signer]),
+  signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
 }), { changeSignatureDetached, changeSignatureEncoding, changeSignatureOutfolder, changeSignatureTimestamp, toggleSaveToDocuments }, null, { pure: false })(SignatureSettings);

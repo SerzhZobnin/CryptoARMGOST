@@ -223,7 +223,7 @@ export function unSign(uri: string, folderOut: string, logOperation = true): any
   let outURI: string;
   let content: trusted.cms.ISignedDataContent;
 
-  if (folderOut.length > 0) {
+  if (folderOut && folderOut.length > 0) {
     outURI = path.join(folderOut, path.basename(uri));
     outURI = outURI.substring(0, outURI.lastIndexOf("."));
   } else {

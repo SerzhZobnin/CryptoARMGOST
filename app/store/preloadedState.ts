@@ -37,6 +37,10 @@ if (fileExists(SETTINGS_JSON)) {
         }));
       }
 
+      if (odata.default && settingsMap) {
+        settingsMap = settingsMap.set("default", odata.default);
+      }
+
       odata.settings = settingsMap;
 
       if (odata.settings && !odata.settings.cloudCSP) {
