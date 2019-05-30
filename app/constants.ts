@@ -127,7 +127,6 @@ export const PLATFORM: string = window.PLATFORM;
 export const TMP_DIR: string = window.TMP_DIR;
 export const LICENSE_PATH = window.LICENSE_PATH;
 export const SETTINGS_JSON = window.SETTINGS_JSON;
-export const SERVICES_JSON = window.SERVICES_JSON;
 export const TRUSTED_CRYPTO_LOG = window.TRUSTED_CRYPTO_LOG;
 export const APP_LOG_FILE = window.APP_LOG_FILE;
 export const APP_ERRORS_LOG_FILE = window.APP_ERRORS_LOG_FILE;
@@ -186,13 +185,7 @@ export const CHANGE_DSS_REST_URL = "CHANGE_DSS_REST_URL";
 export const GET_CERTIFICATES_FROM_DSS = "GET_CERTIFICATES_FROM_DSS";
 export const RESET_CLOUD_CSP = "RESET_CLOUD_CSP";
 
-export const ADD_SERVICE = "ADD_SERVICE";
 export const ADD_SERVICE_CERTIFICATE = "ADD_SERVICE_CERTIFICATE";
 export const DELETE_SERVICE = "DELETE_SERVICE";
-export const CHANGE_SERVICE_SETTINGS = "CHANGE_SERVICE_SETTINGS";
-export const CHANGE_SERVICE_NAME = "CHANGE_SERVICE_NAME";
 
-export const CRYPTOPRO_DSS = "CRYPTOPRO_DSS";
 export const CRYPTOPRO_DSS_NAME = "КриптоПро DSS";
-export const CRYPTOPRO_SVS = "CRYPTOPRO_SVS";
-export const CRYPTOPRO_SVS_NAME = "КриптоПро SVS 2.0";

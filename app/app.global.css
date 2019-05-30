@@ -1739,20 +1739,6 @@ h6.contact-title {
   background: url(./resources/image/files/file_file.png) no-repeat;
 }
 
-.type_icon.MEGAFON{
-  background: url(./resources/image/services/megafon.png) no-repeat;
-}
-
-.type_icon.CRYPTOPRO_DSS{
-  background: url(./resources/image/services/dss.png) no-repeat;
-  margin-left: 5px;
-}
-
-.type_icon.CRYPTOPRO_SVS{
-  background: url(./resources/image/services/svs.png) no-repeat;
-  margin-left: 5px;
-}
-
 #file-avatar {
   height: 40px;
   width: 32px;
@@ -2505,15 +2491,6 @@ a.cert-back-btn.waves-effect.waves-light {
 
 .localkey {
   background: url(./resources/image/key.svg);
-}
-
-.megafonkey {
-  background: url(./resources/image/services/megafon.png);
-}
-
-.dsskey {
-  background: url(./resources/image/services/dss_key.svg);
-  background-repeat: no-repeat;
 }
 
 .key {

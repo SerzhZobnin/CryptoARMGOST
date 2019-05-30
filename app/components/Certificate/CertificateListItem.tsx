@@ -2,8 +2,6 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { verifyCertificate } from "../../AC";
-import { CRYPTOPRO_DSS } from "../../constants";
-import { MEGAFON } from "../../service/megafon/constants";
 
 const rectangleValidStyle = {
   background: "#4caf50",
@@ -77,15 +75,7 @@ class CertificateListItem extends React.Component<ICertificateListItemProps, {}>
     curKeyStyle = cert.key.length > 0 ? curKeyStyle = "key " : curKeyStyle = "";
 
     if (curKeyStyle) {
-      if (cert.service) {
-        if (cert.service === MEGAFON) {
-          curKeyStyle += "megafonkey";
-        } else if (cert.service === CRYPTOPRO_DSS) {
-          curKeyStyle += "dsskey";
-        }
-      } else {
-        curKeyStyle += "localkey";
-      }
+      curKeyStyle += "localkey";
     }
 
     if (isOpen) {
