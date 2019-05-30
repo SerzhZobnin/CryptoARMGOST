@@ -26,7 +26,6 @@ import Modal from "../Modal";
 import PasswordDialog from "../PasswordDialog";
 import ProgressBars from "../ProgressBars";
 import CertificateRequest from "../Request/CertificateRequest";
-import RequestButtons from "../Request/RequestButtons";
 import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateDelete from "./CertificateDelete";
 import CertificateExport from "./CertificateExport";
@@ -655,10 +654,6 @@ class CertWindow extends React.Component<any, any> {
               </React.Fragment>
           }
         </Media>
-        {/* {
-          certificate && certificate.category === REQUEST ?
-            <RequestButtons onCopy={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)} /> : null
-        } */}
       </div>
     );
   }

@@ -5,7 +5,7 @@ import { AutoSizer, Column, Table } from "react-virtualized";
 import { loadAllCertificates, verifyCertificate } from "../../AC";
 import { filteredCertificatesSelector } from "../../selectors";
 import "../../table.global.css";
-import { extFile, mapToArr } from "../../utils";
+import { mapToArr } from "../../utils";
 import ProgressBars from "../ProgressBars";
 import SortDirection from "../Sort/SortDirection";
 import SortIndicator from "../Sort/SortIndicator";

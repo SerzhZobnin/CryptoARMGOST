@@ -6,7 +6,6 @@ import {
   REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS, SELECT_ALL_DOCUMENTS,
   SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, VERIFY_SIGNATURE,
 } from "../constants";
-import * as signs from "../trusted/sign";
 import { dirExists } from "../utils";
 
 interface IDocument {

@@ -35,7 +35,6 @@ import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
 import CertificateTable from "./CertificateTable";
-import { readSync } from "fs";
 
 const OS_TYPE = os.type();
 

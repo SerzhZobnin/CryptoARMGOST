@@ -1,9 +1,6 @@
 import * as fs from "fs";
-import { OrderedMap, Record } from "immutable";
-import { SERVICES_JSON, SETTINGS_JSON } from "../constants";
-import { CertificateModel, DefaultReducerState as DefaultCertificatesReducerState } from "../reducer/certificates";
+import { SETTINGS_JSON } from "../constants";
 import { DefaultReducerState as DefaultRecipientsReducerState, RecipientModel } from "../reducer/recipients";
-import { DefaultReducerState as DefaultServicesReducerState, ServiceModel, SettingsModel } from "../reducer/services";
 import { DefaultReducerState as DefaultSettingsState, EncryrptModel, SettingsModel as GlobalSettingsModel, SignModel } from "../reducer/settings";
 import { fileExists } from "../utils";
 
@@ -51,39 +48,6 @@ if (fileExists(SETTINGS_JSON)) {
       }
     } catch (e) {
       odata = {};
-    }
-  }
-}
-
-if (fileExists(SERVICES_JSON)) {
-  const services = fs.readFileSync(SERVICES_JSON, "utf8");
-
-  if (services) {
-    try {
-      let servicesMap = new DefaultServicesReducerState();
-      let certificatesMap = new DefaultCertificatesReducerState();
-
-      const data = JSON.parse(services);
-
-      for (const service of data.services) {
-        let mservice = new ServiceModel({ ...service });
-        mservice = mservice.setIn(["settings"], new SettingsModel({ ...service.settings }));
-        servicesMap = servicesMap.setIn(["entities", service.id], mservice);
-      }
-
-      odata.services = servicesMap;
-
-      if (data.certificates) {
-        for (const certificate of data.certificates) {
-          certificatesMap = certificatesMap.setIn(["entities", certificate.id], new CertificateModel({ ...certificate }));
-        }
-
-        odata.certificates = certificatesMap;
-      }
-
-    } catch (e) {
-      odata.services = {};
-      odata.certificates = {};
     }
   }
 }

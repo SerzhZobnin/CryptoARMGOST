@@ -1,12 +1,8 @@
-import fs from "fs";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { deleteServiceCertificate } from "../../AC/servicesActions";
-import { SERVICES_JSON, USER_NAME } from "../../constants";
-import { mapToArr } from "../../utils";
+import { USER_NAME } from "../../constants";
 import logger from "../../winstonLogger";
-import { IService } from "../Services/types";
 
 interface ICertificateDeleteProps {
   certificate: any;
@@ -15,7 +11,6 @@ interface ICertificateDeleteProps {
   onCancel?: () => void;
   reloadCertificates: () => void;
   reloadContainers: () => void;
-  services: IService[];
 }
 
 interface ICertificateDeleteState {
@@ -158,37 +153,7 @@ class CertificateDelete extends React.Component<ICertificateDeleteProps, ICertif
       }
     }
 
-    if (certificate.service) {
-      deleteServiceCertificate(certificate.id);
-
-      const state = {
-        certificates: mapToArr(certificates.filter((scertificate) => scertificate.service && scertificate.serviceId && scertificate.id !== certificate.id)),
-        services: this.props.services,
-      };
-
-      const sstate = JSON.stringify(state, null, 4);
-
-      fs.writeFile(SERVICES_JSON, sstate, (err: any) => {
-        if (err) {
-          // tslint:disable-next-line:no-console
-          console.log("error save services");
-        }
-        // tslint:disable-next-line:no-console
-        console.log("success save services");
-      });
-
-      logger.log({
-        certificate: certificate.subjectName,
-        level: "info",
-        message: "",
-        operation: "Удаление сертификата",
-        operationObject: {
-          in: "CN=" + certificate.subjectFriendlyName,
-          out: "Null",
-        },
-        userName: USER_NAME,
-      });
-    } else if (!window.PKISTORE.deleteCertificate(certificate)) {
+    if (!window.PKISTORE.deleteCertificate(certificate)) {
       $(".toast-cert_delete_failed").remove();
       Materialize.toast(localize("Certificate.cert_delete_failed", locale), 2000, "toast-cert_delete_failed");
 
@@ -219,5 +184,4 @@ class CertificateDelete extends React.Component<ICertificateDeleteProps, ICertif
 
 export default connect((state) => ({
   certificates: state.certificates.entities,
-  services: mapToArr(state.services.entities),
-}), { deleteServiceCertificate })(CertificateDelete);
+}))(CertificateDelete);
