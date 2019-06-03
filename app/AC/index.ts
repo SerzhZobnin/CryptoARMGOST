@@ -374,7 +374,7 @@ export function loadAllContainers() {
         containers: filteredContainers,
         type: LOAD_ALL_CONTAINERS + SUCCESS,
       });
-    }, 0);
+    }, 200);
   };
 }
 

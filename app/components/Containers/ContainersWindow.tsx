@@ -43,7 +43,6 @@ class ContainersWindow extends React.Component<any, any> {
       <div className="main">
         <div className="content">
           <div className="col col s8 leftcol">
-            {/* <ToolBarWithSearch rightBtnAction={this.handleReloadContainers} operation="containers" /> */}
             <div className="row">
               <div className="row halfbottom" />
               <div className="col" style={{ width: "calc(100% - 40px)" }}>
@@ -79,7 +78,7 @@ class ContainersWindow extends React.Component<any, any> {
             <div className="row halfbottom" />
             <div className="row">
               <div className="col s12">
-                <div style={{ height: "calc(100vh - 80px)" }}>
+                <div style={{ height: "calc(100vh - 110px)" }}>
                   {this.getCertificateInfoBody()}
                 </div>
               </div>
@@ -87,7 +86,7 @@ class ContainersWindow extends React.Component<any, any> {
 
             {
               container ?
-                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "120px" }}>
+                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "80px" }}>
                   <div className="col s12">
                     <hr />
                   </div>
