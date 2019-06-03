@@ -247,8 +247,11 @@ export default {
     containers: "Контейнеры",
     containersNotFound: "Контейнеры не найдены",
     delete_container: "удалить связанный с сертификатом контейнер (не рекомендуется)",
+    get_certificate_fail: "В контейнере отсутствуют сертификаты",
     installCertificate: "Установить сертификат",
     invalid_character: "Недопустимый символ",
+    realy_delete_container: "Вы действительно хотите удалить контейнер закрытого ключа?",
+    remove_container: "Удалить контейнер",
   },
   Csp: {
     cpcspPKZIVersion: "Версия КриптоПро CSP",

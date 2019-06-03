@@ -1,6 +1,8 @@
 import { OrderedMap, Record } from "immutable";
-import { ACTIVE_CONTAINER, GET_CERTIFICATE_FROM_CONTAINER,
-   LOAD_ALL_CONTAINERS, REMOVE_ALL_CONTAINERS, START, SUCCESS } from "../constants";
+import {
+  ACTIVE_CONTAINER, FAIL, GET_CERTIFICATE_FROM_CONTAINER,
+  LOAD_ALL_CONTAINERS, REMOVE_ALL_CONTAINERS, START, SUCCESS,
+} from "../constants";
 import { arrayToMap } from "../utils";
 
 const ContainerModel = Record({
@@ -43,6 +45,11 @@ export default (sContainers = new DefaultReducerState(), action) => {
       return sContainers
         .setIn(["entities", payload.container, "certificate"], payload.certificate)
         .setIn(["entities", payload.container, "certificateItem"], payload.certificateItem)
+        .setIn(["entities", payload.container, "certificateLoading"], false)
+        .setIn(["entities", payload.container, "certificateLoaded"], true);
+
+    case GET_CERTIFICATE_FROM_CONTAINER + FAIL:
+      return sContainers
         .setIn(["entities", payload.container, "certificateLoading"], false)
         .setIn(["entities", payload.container, "certificateLoaded"], true);
 

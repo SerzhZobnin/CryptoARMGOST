@@ -2,13 +2,15 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { getCertificateFromContainer, loadAllCertificates, loadAllContainers, removeAllCertificates, removeAllContainers } from "../../AC";
+import { changeSearchValue } from "../../AC/searchActions";
 import { USER_NAME } from "../../constants";
 import { filteredContainersSelector } from "../../selectors";
 import logger from "../../winstonLogger";
 import BlockNotElements from "../BlockNotElements";
 import CertificateInfo from "../Certificate/CertificateInfo";
+import Modal from "../Modal";
 import ProgressBars from "../ProgressBars";
-import { ToolBarWithSearch } from "../ToolBarWithSearch";
+import ContainerDelete from "./ContainerDelete";
 import ContainersList from "./ContainersList";
 
 class ContainersWindow extends React.Component<any, any> {
@@ -16,6 +18,147 @@ class ContainersWindow extends React.Component<any, any> {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
+
+  constructor(props: any) {
+    super(props);
+
+    this.state = ({
+      showModalDeleteContainer: false,
+    });
+  }
+
+  render() {
+    const { container, containers, isLoading, certificatesLoading, searchValue } = this.props;
+    const { localize, locale } = this.context;
+
+    if (isLoading || certificatesLoading) {
+      return <ProgressBars />;
+    }
+
+    const block = containers.length > 0 ? "not-active" : "active";
+    const active = container ? "active" : "not-active";
+    const view = containers.length < 1 ? "not-active" : "";
+
+    return (
+      <div className="main">
+        <div className="content">
+          <div className="col col s8 leftcol">
+            {/* <ToolBarWithSearch rightBtnAction={this.handleReloadContainers} operation="containers" /> */}
+            <div className="row">
+              <div className="row halfbottom" />
+              <div className="col" style={{ width: "calc(100% - 40px)" }}>
+                <div className="input-field input-field-csr col s12 border_element find_box">
+                  <i className="material-icons prefix">search</i>
+                  <input
+                    id="search"
+                    type="search"
+                    placeholder={localize("Certificate.search_in_certificates_list", locale)}
+                    value={searchValue}
+                    onChange={this.handleSearchValueChange} />
+                  <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={{}}>close</i>
+                </div>
+              </div>
+              <div className="col" style={{ width: "40px" }}>
+                <a onClick={this.handleReloadContainers}>
+                  <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
+                </a>
+              </div>
+            </div>
+            <div className="add-certs">
+              <BlockNotElements name={block} title={localize("Containers.containersNotFound", locale)} />
+              <div className={"collection " + view}>
+                <div className="row">
+                  <div className="col s12">
+                    <ContainersList />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col s4 rightcol">
+            <div className="row halfbottom" />
+            <div className="row">
+              <div className="col s12">
+                <div style={{ height: "calc(100vh - 80px)" }}>
+                  {this.getCertificateInfoBody()}
+                </div>
+              </div>
+            </div>
+
+            {
+              container ?
+                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "120px" }}>
+                  <div className="col s12">
+                    <hr />
+                  </div>
+
+                  {
+                    container.certificate ?
+                      <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleInstallCertificate}>
+                        <div className="col s12 svg_icon">
+                          <a data-position="bottom">
+                            <i className="material-icons certificate import" />
+                          </a>
+                        </div>
+                        <div className="col s12 svg_icon_text">{localize("Containers.installCertificate", locale)}</div>
+                      </div> :
+                      null
+                  }
+
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleShowModalDeleteContainer}>
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons certificate remove" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Containers.remove_container", locale)}</div>
+                  </div>
+                </div> :
+                null
+            }
+          </div>
+          {this.showModalDeleteContainer()}
+        </div>
+      </div>
+    );
+  }
+
+  handleShowModalDeleteContainer = () => {
+    this.setState({ showModalDeleteContainer: true });
+  }
+
+  handleCloseModalDeleteContainer = () => {
+    this.setState({ showModalDeleteContainer: false });
+  }
+
+  showModalDeleteContainer = () => {
+    const { localize, locale } = this.context;
+    const { showModalDeleteContainer } = this.state;
+    const { container } = this.props;
+
+    if (!showModalDeleteContainer) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalDeleteContainer}
+        header={localize("Containers.remove_container", locale)}
+        onClose={this.handleCloseModalDeleteContainer}>
+
+        <ContainerDelete
+          container={container}
+          onCancel={this.handleCloseModalDeleteContainer}
+          reloadContainers={this.handleReloadContainers} />
+      </Modal>
+    );
+  }
+
+  handleSearchValueChange = (ev: any) => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { changeSearchValue } = this.props;
+    changeSearchValue(ev.target.value);
+  }
 
   handleInstallCertificate = () => {
     // tslint:disable-next-line:no-shadowed-variable
@@ -76,22 +219,6 @@ class ContainersWindow extends React.Component<any, any> {
     }
   }
 
-  getInstallButton() {
-    const { container } = this.props;
-    const { localize, locale } = this.context;
-
-    if (!container) {
-      return (
-        null
-      );
-    }
-
-    return (
-      <div className={"choose-cert"}>
-        <a className="waves-effect waves-light btn-large choose-btn " onClick={this.handleInstallCertificate}>{localize("Containers.installCertificate", locale)}</a>
-      </div>);
-  }
-
   getCertificateInfoBody() {
     // tslint:disable-next-line:no-shadowed-variable
     const { container, getCertificateFromContainer } = this.props;
@@ -107,61 +234,17 @@ class ContainersWindow extends React.Component<any, any> {
       getCertificateFromContainer(container.id);
     }
 
-    if (!container.certificate || container.certificateLoading) {
+    if (container.certificateLoading) {
       return <ProgressBars />;
+    }
+
+    if (container.certificateLoaded && !container.certificate) {
+      return <BlockNotElements name={"active"} title={localize("Containers.get_certificate_fail", locale)} />;
     }
 
     return (
       <div className="add-certs">
         <CertificateInfo certificate={container.certificateItem} />
-      </div>
-    );
-  }
-
-  render() {
-    const { container, containers, isLoading, certificatesLoading } = this.props;
-    const { localize, locale } = this.context;
-
-    if (isLoading || certificatesLoading) {
-      return <ProgressBars />;
-    }
-
-    const block = containers.length > 0 ? "not-active" : "active";
-    const active = container ? "active" : "not-active";
-    const view = containers.length < 1 ? "not-active" : "";
-
-    return (
-      <div className="main">
-        <div className="content">
-          <div className="col s6 m6 l6 content-item-height">
-            <div className="cert-content-item">
-              <div className="content-wrapper z-depth-1">
-                <ToolBarWithSearch rightBtnAction={this.handleReloadContainers} operation="containers" />
-                <div className="add-certs">
-                  <BlockNotElements name={block} title={localize("Containers.containersNotFound", locale)} />
-                  <div className={"add-cert-collection collection " + view}>
-                    <ContainersList />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col s6 m6 l6 content-item-height">
-            <div className={"file-content-height " + active}>
-              <div className="content-wrapper z-depth-1">
-                <nav className="app-bar-cert">
-                  <ul className="app-bar-items">
-                    <li className="cert-bar-text">
-                      <div className="collection-title">{localize("Containers.certificateInfo", locale)}</div>
-                    </li>
-                  </ul>
-                </nav>
-                {this.getCertificateInfoBody()}
-                {this.getInstallButton()}
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     );
   }
@@ -172,7 +255,10 @@ export default connect((state) => {
     certificatesLoading: state.certificates.loading,
     container: state.containers.getIn(["entities", state.containers.active]),
     containers: filteredContainersSelector(state),
-    isLoaded: state.containers.loaded,
     isLoading: state.containers.loading,
+    searchValue: state.filters.searchValue,
   };
-}, { getCertificateFromContainer, loadAllCertificates, loadAllContainers, removeAllContainers, removeAllCertificates })(ContainersWindow);
+}, {
+    changeSearchValue, getCertificateFromContainer, loadAllCertificates,
+    loadAllContainers, removeAllContainers, removeAllCertificates
+  })(ContainersWindow);

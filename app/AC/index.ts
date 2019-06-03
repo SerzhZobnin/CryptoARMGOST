@@ -394,25 +394,34 @@ export function getCertificateFromContainer(container: number) {
     setTimeout(() => {
       const { containers } = getState();
       const cont = containers.getIn(["entities", container]);
-      const certificate = trusted.utils.Csp.getCertificateFromContainer(cont.name, 75);
-      const certificateItem = {
-        hash: certificate.thumbprint,
-        issuerFriendlyName: certificate.issuerFriendlyName,
-        key: "1",
-        notAfter: certificate.notAfter,
-        organizationName: certificate.organizationName,
-        publicKeyAlgorithm: certificate.publicKeyAlgorithm,
-        serial: certificate.serialNumber,
-        signatureAlgorithm: certificate.signatureAlgorithm,
-        signatureDigestAlgorithm: certificate.signatureDigestAlgorithm,
-        subjectFriendlyName: certificate.subjectFriendlyName,
-        subjectName: null,
-      };
+      let certificate;
 
-      dispatch({
-        payload: { container, certificate, certificateItem },
-        type: GET_CERTIFICATE_FROM_CONTAINER + SUCCESS,
-      });
+      try {
+        certificate = trusted.utils.Csp.getCertificateFromContainer(cont.name, 75);
+        const certificateItem = {
+          hash: certificate.thumbprint,
+          issuerFriendlyName: certificate.issuerFriendlyName,
+          key: "1",
+          notAfter: certificate.notAfter,
+          organizationName: certificate.organizationName,
+          publicKeyAlgorithm: certificate.publicKeyAlgorithm,
+          serial: certificate.serialNumber,
+          signatureAlgorithm: certificate.signatureAlgorithm,
+          signatureDigestAlgorithm: certificate.signatureDigestAlgorithm,
+          subjectFriendlyName: certificate.subjectFriendlyName,
+          subjectName: null,
+        };
+
+        dispatch({
+          payload: { container, certificate, certificateItem },
+          type: GET_CERTIFICATE_FROM_CONTAINER + SUCCESS,
+        });
+      } catch (e) {
+        dispatch({
+          payload: { container },
+          type: GET_CERTIFICATE_FROM_CONTAINER + FAIL,
+        });
+      }
     }, 0);
   };
 }
