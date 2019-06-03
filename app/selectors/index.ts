@@ -77,8 +77,8 @@ export const filteredFilesSelector = createSelector(filesGetter, filtersGetter, 
       (dateFrom ? (new Date(file.mtime)).getTime() >= (new Date(dateFrom)).getTime() : true) &&
       (dateTo ? (new Date(file.mtime)).getTime() <= (new Date(dateTo.setHours(23, 59, 59, 999))).getTime() : true) &&
       (
-        types[ENCRYPTED] && file.extname === ".enc" ||
-        types[SIGNED] && file.extname === ".sig" ||
+        types[ENCRYPTED] && file.extension === "enc" ||
+        types[SIGNED] && file.extension === "sig" ||
         (
           !types[ENCRYPTED] && !types[SIGNED]
         )
