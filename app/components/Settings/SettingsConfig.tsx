@@ -121,8 +121,8 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
 
                   {
                     (recipients && recipients.length) ?
-                      <div>
-                        <RecipientsList recipients={recipients} />
+                      <div className="col s12">
+                        <RecipientsList recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
                       </div> :
                       <div className="col s12">
                         <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>

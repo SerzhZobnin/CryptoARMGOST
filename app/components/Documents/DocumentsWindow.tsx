@@ -3,7 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
-  changeLocation, filePackageSelect, removeAllFiles,
+  changeLocation, deleteRecipient, filePackageSelect, removeAllFiles,
   removeAllRemoteFiles, selectSignerCertificate,
 } from "../../AC";
 import {
@@ -177,7 +177,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
               (recipients && recipients.length) ?
                 <div style={{ height: "calc(100vh - 300px)" }}>
                   <div className="add-certs">
-                    <RecipientsList recipients={recipients} />
+                    <RecipientsList recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
                   </div>
                 </div> :
                 <div className="col s12">
@@ -524,7 +524,7 @@ export default connect((state) => ({
     .filter((recipient) => recipient !== undefined),
   signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
 }), {
-    arhiveDocuments, changeLocation, filePackageSelect, loadAllDocuments,
+    arhiveDocuments, changeLocation, deleteRecipient, filePackageSelect, loadAllDocuments,
     removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
     selectAllDocuments, selectDocument, selectSignerCertificate,
   })(DocumentsWindow);

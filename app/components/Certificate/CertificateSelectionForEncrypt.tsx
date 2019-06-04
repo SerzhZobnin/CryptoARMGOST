@@ -867,7 +867,7 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
                     <div className="add-certs">
                       {(this.state.activeCertificate) ? <CertificateInfo certificate={this.state.activeCertificate} /> :
                         <div>
-                          <RecipientsList onActive={this.handleActiveCert} handleRemoveRecipient={this.handleRemoveRecipient} dialogType="modal" recipients={this.state.selectedRecipients} />
+                          <RecipientsList onActive={this.handleActiveCert} handleRemoveRecipient={this.handleRemoveRecipient} recipients={this.state.selectedRecipients} />
                         </div>
                       }
                       <BlockNotElements name={CHOOSE_VIEW} title={localize("Certificate.cert_not_select", locale)} />

@@ -262,7 +262,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
                   (recipients && recipients.length) ?
                     <div style={{ height: "calc(100vh - 400px)" }}>
                       <div className="add-certs">
-                        <RecipientsList recipients={recipients} />
+                        <RecipientsList recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
                       </div>
                     </div> :
                     <div className="col s12">

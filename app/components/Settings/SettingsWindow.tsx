@@ -2,6 +2,9 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import {
+  deleteRecipient,
+} from "../../AC";
+import {
   activeSetting, changeDefaultSettings, createSettings,
   deleteSetting,
 } from "../../AC/settingsActions";
@@ -63,7 +66,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
             {
               setting ?
                 <React.Fragment>
-                  <SettingsInfo setting={setting} signer={signer} recipients={recipients} />
+                  <SettingsInfo setting={setting} signer={signer} recipients={recipients}  handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)}/>
                   <div className="row fixed-bottom-rightcolumn" style={{ bottom: "20px" }}>
                     <div className="col s12">
                       <hr />
@@ -158,4 +161,4 @@ export default connect((state) => {
     settings: state.settings,
     signer: setting ? state.certificates.getIn(["entities", setting.sign.signer]) : "",
   };
-}, { activeSetting, changeDefaultSettings, createSettings, deleteSetting })(SettingsWindow);
+}, { activeSetting, changeDefaultSettings, createSettings, deleteRecipient, deleteSetting })(SettingsWindow);
