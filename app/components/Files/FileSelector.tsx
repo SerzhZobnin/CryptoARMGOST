@@ -18,7 +18,7 @@ const appBarStyle = {
 
 interface IFile {
   lastModified: number;
-  lastModifiedDate: Date;
+  mtime: Date;
   name: string;
   path: string;
   size: number;
@@ -40,7 +40,7 @@ interface IFileRedux {
   filename: string;
   fullpath: string;
   id: number;
-  lastModifiedDate: Date;
+  mtime: Date;
   remoteId: string;
   socket: string;
 }
@@ -62,7 +62,7 @@ interface IFileSelectorProps {
   operation: string;
   loadingFiles: IRemoteFile[];
   files: IFileRedux[];
-  selectFile: (fullpath: string, name?: string, lastModifiedDate?: Date, size?: number) => void;
+  selectFile: (fullpath: string, name?: string, mtime?: Date, size?: number) => void;
   selectedFilesPackage: boolean;
   selectingFilesPackage: boolean;
   filePackageSelect: (files: IFilePath[]) => void;
@@ -161,7 +161,7 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
       this.directoryReader(reader);
     } else {
       item.file((dropfile: IFile) => {
-        selectFile(dropfile.path, dropfile.name, dropfile.lastModifiedDate, dropfile.size);
+        selectFile(dropfile.path, dropfile.name, dropfile.mtime, dropfile.size);
       });
     }
   }

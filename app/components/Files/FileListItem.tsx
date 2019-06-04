@@ -14,7 +14,7 @@ interface IFileRedux {
   filename: string;
   fullpath: string;
   id: number;
-  lastModifiedDate: Date;
+  mtime: Date;
   socket: string;
 }
 
@@ -66,7 +66,7 @@ class FileListItem extends React.Component<IFilelistItemProps, {}> {
           <div className="r-iconbox-link">
             <FileIcon file={file} />
             <p className="collection-title">{file.filename}</p>
-            <p className="collection-info-files">{file.lastModifiedDate.toLocaleDateString(locale, {
+            <p className="collection-info-files">{file.mtime.toLocaleDateString(locale, {
               year: "numeric",
               month: "long",
               day: "numeric",

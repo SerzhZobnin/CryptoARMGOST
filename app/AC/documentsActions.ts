@@ -6,12 +6,12 @@ import {
   REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS, SELECT_ALL_DOCUMENTS,
   SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, VERIFY_SIGNATURE,
 } from "../constants";
-import { dirExists } from "../utils";
+import { dirExists, extFile } from "../utils";
 
 interface IDocument {
   atime: Date;
   birthtime: Date;
-  extname: string;
+  extension: string;
   filename: string;
   filesize: number;
   fullpath: string;
@@ -31,12 +31,13 @@ export function loadAllDocuments() {
       if (dirExists(DEFAULT_DOCUMENTS_PATH)) {
         fs.readdirSync(DEFAULT_DOCUMENTS_PATH).forEach((file) => {
           const fullpath = path.join(DEFAULT_DOCUMENTS_PATH, file);
+          const extension = extFile(fullpath);
           const stat = fs.statSync(fullpath);
           if (!stat.isDirectory()) {
             documents.push({
               atime: stat.atime,
               birthtime: stat.birthtime,
-              extname: path.extname(file),
+              extension,
               filename: file,
               filesize: stat.size,
               fullpath,

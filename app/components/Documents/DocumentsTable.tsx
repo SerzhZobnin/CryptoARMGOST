@@ -140,7 +140,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
                         <FileIcon file={{ extension: extFile(rowData.filename), id: rowData.id }} key={rowData.id} />
                       );
                     }}
-                    dataKey="extname"
+                    dataKey="extension"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     width={50}

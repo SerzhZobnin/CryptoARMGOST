@@ -22,7 +22,7 @@ interface IFileRedux {
   filename: string;
   fullpath: string;
   id: number;
-  lastModifiedDate: Date;
+  mtime: Date;
   socket: string;
 }
 
@@ -182,7 +182,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
                                 <div className="collection-info cert-info truncate">{path.dirname(rowData.fullpath)}</div>
                               </div> */}
                               <div className="col s5">
-                                <div className="collection-info cert-info truncate">{(new Date(rowData.lastModifiedDate)).toLocaleDateString(locale, {
+                                <div className="collection-info cert-info truncate">{(new Date(rowData.mtime)).toLocaleDateString(locale, {
                                   day: "numeric",
                                   hour: "numeric",
                                   minute: "numeric",

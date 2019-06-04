@@ -61,7 +61,7 @@ class SignatureInfoBlock extends React.Component<any, any> {
               <div className="truncate">{file.filename}</div>
             </div>
             <div className="col s7">
-              <div className="collection-info cert-info truncate">{(new Date(file.lastModifiedDate)).toLocaleDateString(locale, {
+              <div className="collection-info cert-info truncate">{(new Date(file.mtime)).toLocaleDateString(locale, {
                 day: "numeric",
                 hour: "numeric",
                 minute: "numeric",

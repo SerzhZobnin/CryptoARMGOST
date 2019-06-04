@@ -32,7 +32,7 @@ export function changeLocation(location: string) {
 interface IFile {
   id: number;
   filename: string;
-  lastModifiedDate: Date;
+  mtime: Date;
   fullpath: string;
   extension: string | undefined;
   active: boolean;
@@ -219,7 +219,7 @@ export function filePackageSelect(files: IFilePath[]) {
           filesize: stat.size,
           fullpath,
           id: Date.now() + Math.random(),
-          lastModifiedDate: stat.birthtime,
+          mtime: stat.birthtime,
           remoteId,
           size: stat.size,
           socket,
@@ -433,7 +433,7 @@ export function activeContainer(container: number) {
   };
 }
 
-export function selectFile(fullpath: string, name?: string, lastModifiedDate?: Date, size?: number, remoteId?: string, socket?: string) {
+export function selectFile(fullpath: string, name?: string, mtime?: Date, size?: number, remoteId?: string, socket?: string) {
   let stat;
 
   if (!fileExists(fullpath)) {
@@ -442,7 +442,7 @@ export function selectFile(fullpath: string, name?: string, lastModifiedDate?: D
     };
   }
 
-  if (!lastModifiedDate || !size) {
+  if (!mtime || !size) {
     stat = fs.statSync(fullpath);
   }
 
@@ -451,7 +451,7 @@ export function selectFile(fullpath: string, name?: string, lastModifiedDate?: D
     extension,
     filename: name ? name : path.basename(fullpath),
     fullpath,
-    lastModifiedDate: lastModifiedDate ? lastModifiedDate : (stat ? stat.birthtime : undefined),
+    mtime: mtime ? mtime : (stat ? stat.birthtime : undefined),
     remoteId,
     filesize: size ? size : (stat ? stat.size : undefined),
     socket,

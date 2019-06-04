@@ -410,7 +410,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     switch (operation) {
       case SIGN:
         for (const document of documents) {
-          if (document.extname === ".enc") {
+          if (document.extension === "enc") {
             return false;
           }
         }
@@ -420,7 +420,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
       case VERIFY:
       case UNSIGN:
         for (const document of documents) {
-          if (document.extname !== ".sig") {
+          if (document.extension !== "sig") {
             return false;
           }
         }
@@ -429,7 +429,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
       case ENCRYPT:
         for (const document of documents) {
-          if (document.extname === ".enc") {
+          if (document.extension === "enc") {
             return false;
           }
         }
@@ -438,7 +438,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
       case DECRYPT:
         for (const document of documents) {
-          if (document.extname !== ".enc") {
+          if (document.extension !== "enc") {
             return false;
           }
         }

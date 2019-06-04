@@ -22,7 +22,7 @@ interface IFileRedux {
   filename: string;
   fullpath: string;
   id: number;
-  lastModifiedDate: Date;
+  mtime: Date;
   socket: string;
 }
 
@@ -197,7 +197,7 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
                         year: "numeric",
                       });
                     }}
-                    dataKey="lastModifiedDate"
+                    dataKey="mtime"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     width={210}

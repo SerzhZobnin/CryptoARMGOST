@@ -15,7 +15,7 @@ const FileModel = Record({
   filesize: null,
   fullpath: null,
   id: null,
-  lastModifiedDate: null,
+  mtime: null,
   remoteId: null,
   socket: null,
 });

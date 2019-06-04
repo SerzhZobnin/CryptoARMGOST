@@ -56,7 +56,7 @@ const getFileProperty = (filepath: string) => {
     filename: path.basename(filepath),
     filesize: stat.size,
     fullpath: filepath,
-    lastModifiedDate: stat.birthtime,
+    mtime: stat.birthtime,
     size: stat.size,
   };
 };

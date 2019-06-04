@@ -10,7 +10,7 @@ import { arrayToMap, fileExists } from "../utils";
 const DocumentModel = Record({
   atime: null,
   birthtime: null,
-  extname: null,
+  extension: null,
   filename: null,
   filesize: null,
   fullpath: null,
