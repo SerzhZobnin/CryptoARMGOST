@@ -1007,7 +1007,7 @@ export default connect((state) => {
     containersLoading: state.containers.loading,
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
-    recipients: mapToArr(state.recipients.entities)
+    recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
     searchValue: state.filters.searchValue,

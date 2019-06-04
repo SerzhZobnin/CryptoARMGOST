@@ -1,8 +1,11 @@
 import * as fs from "fs";
+import { OrderedMap, Record } from "immutable";
 import { SETTINGS_JSON } from "../constants";
-import { DefaultReducerState as DefaultRecipientsReducerState, RecipientModel } from "../reducer/recipients";
-import { DefaultReducerState as DefaultSettingsState, EncryrptModel, SettingsModel as GlobalSettingsModel, SignModel } from "../reducer/settings";
-import { fileExists } from "../utils";
+import {
+  DefaultReducerState as DefaultSettingsState, EncryptModel,
+  RecipientModel, SettingsModel as GlobalSettingsModel, SignModel,
+} from "../reducer/settings";
+import { fileExists, mapToArr } from "../utils";
 
 let odata = {};
 
@@ -11,27 +14,26 @@ if (fileExists(SETTINGS_JSON)) {
 
   if (data) {
     try {
-      let recipientsMap = new DefaultRecipientsReducerState();
-
       odata = JSON.parse(data);
-
-      for (const recipient of odata.recipients) {
-        recipientsMap = recipientsMap.setIn(["entities", recipient.certId], new RecipientModel({
-          certId: recipient.certId,
-        }));
-      }
-
-      odata.recipients = recipientsMap;
 
       let settingsMap = new DefaultSettingsState();
 
       for (const setting of odata.settings) {
+        let encrypt = new EncryptModel(setting.encrypt);
+        encrypt = encrypt.setIn(["recipients"], OrderedMap({}));
+
         settingsMap = settingsMap.setIn(["entities", setting.id], new GlobalSettingsModel({
           ...setting,
-          encrypt: new EncryrptModel(setting.encrypt),
+          encrypt,
           id: setting.id,
           sign: new SignModel(setting.sign),
         }));
+
+        for (const recipient of setting.encrypt.recipients) {
+          settingsMap = settingsMap.setIn(["entities", setting.id, "encrypt", "recipients", recipient.certId], new RecipientModel({
+            certId: recipient.certId,
+          }));
+        }
       }
 
       if (odata.default && settingsMap) {

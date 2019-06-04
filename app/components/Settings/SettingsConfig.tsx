@@ -193,9 +193,9 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
 
 export default connect((state) => {
   return {
-    recipients: mapToArr(state.recipients.entities)
+    recipients: mapToArr(state.settings.getIn(["entities", state.settings.active]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
-    signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
+    signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
   };
 }, { deleteRecipient, selectSignerCertificate })(SettingsWindow);

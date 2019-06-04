@@ -519,7 +519,7 @@ export default connect((state) => ({
   documentsLoaded: state.events.loaded,
   documentsLoading: state.events.loading,
   isDefaultFilters: state.filters.documents.isDefaultFilters,
-  recipients: mapToArr(state.recipients.entities)
+  recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
     .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
     .filter((recipient) => recipient !== undefined),
   signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),

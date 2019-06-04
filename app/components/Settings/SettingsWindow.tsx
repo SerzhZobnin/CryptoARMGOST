@@ -151,9 +151,9 @@ export default connect((state) => {
   const setting = state.settings.getIn(["entities", state.settings.active]);
 
   return {
-    recipients: mapToArr(state.recipients.entities)
+    recipients: setting ? mapToArr(setting.encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
-      .filter((recipient) => recipient !== undefined),
+      .filter((recipient) => recipient !== undefined) : [],
     setting: setting,
     settings: state.settings,
     signer: setting ? state.certificates.getIn(["entities", setting.sign.signer]) : "",

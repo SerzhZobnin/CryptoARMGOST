@@ -55,7 +55,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
   closeWindow() {
     const { localize, locale } = this.context;
-    const { recipients, settings, tempContentOfSignedFiles } = this.props;
+    const { settings, tempContentOfSignedFiles } = this.props;
 
     if (this.isFilesFromSocket()) {
       this.removeAllFiles();
@@ -63,11 +63,22 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
     const state = ({
       default: settings.default,
-      recipients,
       settings: settings.toJS(),
     });
 
     state.settings = mapToArr(settings.entities);
+
+    const newSettings = [];
+
+    for (let setting of state.settings) {
+      if (setting && setting.encrypt) {
+        setting = setting.setIn(["encrypt", "recipients"], mapToArr(setting.encrypt.recipients));
+      }
+
+      newSettings.push(setting);
+    }
+
+    state.settings = newSettings;
 
     for (const filePath of tempContentOfSignedFiles) {
       if (fileExists(filePath)) {
@@ -260,7 +271,6 @@ export default connect((state, ownProps) => {
     isArchiveLog: state.events.isArchive,
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     location: ownProps.location,
-    recipients: mapToArr(state.recipients.entities),
     saveToDocuments: state.settings.getIn(["entities", state.settings.default]).saveToDocuments,
     settingsName: state.settings.getIn(["entities", state.settings.default]).name,
     settings: state.settings,

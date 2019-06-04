@@ -1101,7 +1101,7 @@ export default connect((state) => {
     lic_error: state.license.lic_error,
     mapCertificates: state.certificates,
     packageSignResult: state.signatures.packageSignResult,
-    recipients: mapToArr(state.recipients.entities)
+    recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
     setting: state.settings.getIn(["entities", state.settings.default]),
