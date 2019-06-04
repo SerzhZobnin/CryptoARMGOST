@@ -29,15 +29,17 @@ class SignatureInfoBlock extends React.Component<any, any> {
       );
     });
 
+    const status = this.getSignaturesStatus(signatures);
+
     return (
       <React.Fragment>
         <div className="row">
           <div className="col s2" style={{ width: "11%" }}>
-            <div className="cert_status_error" />
+            <div className={status ? "cert_status_ok" : "cert_status_error"} />
           </div>
           <div className="col s10 " style={{ fontSize: "75%" }}>
             <div className="col s12">
-              <div className="unvalid">{localize("Sign.sign_error", locale)}</div>
+              <div className={status ? "valid" : "unvalid"}>{status ? localize("Sign.sign_ok", locale) : localize("Sign.sign_error", locale)}</div>
               <div className="collection-info cert-info ">{"Проверена:"} {(new Date(signatures[0].verifyingTime)).toLocaleDateString(locale, {
                 day: "numeric",
                 hour: "numeric",
@@ -83,6 +85,23 @@ class SignatureInfoBlock extends React.Component<any, any> {
         </div>
       </React.Fragment>
     );
+  }
+
+  getSignaturesStatus = (signatures) => {
+    let res = true;
+
+    if (signatures) {
+      for (const element of signatures) {
+        if (!element.status_verify) {
+          res = false;
+          break;
+        }
+      }
+
+      return res;
+    } else {
+      return false;
+    }
   }
 }
 
