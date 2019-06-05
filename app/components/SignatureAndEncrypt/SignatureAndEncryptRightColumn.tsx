@@ -146,7 +146,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             </a>
             <ul id="dropdown-btn-encrypt" className="dropdown-content">
               <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
-                <li><a>Добавить</a></li>
+                <li><a onClick={() => {
+                  this.props.activeSetting(this.props.setting.id);
+                }}>Добавить</a></li>
               </Link>
               <li><a onClick={() => this.handleCleanRecipientsList()}>Очистить</a></li>
             </ul>
