@@ -34,6 +34,7 @@ import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 import DeleteDocuments from "./DeleteDocuments";
 import DocumentsTable from "./DocumentsTable";
 import FilterDocuments from "./FilterDocuments";
+import SignerInfo from "../Signature/SignerInfo";
 
 interface IDocumentsWindowProps {
   documents: any;
@@ -237,7 +238,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                   </div>
                 </div>
                 {
-                  (signer) ? this.getSelectedSigner() :
+                  (signer) ? <SignerInfo signer={signer} style={{fontSize: "75%"}}/> :
                     <div className="col s12">
                       <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
                         <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
@@ -395,38 +396,6 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     const { deleteRecipient, recipients } = this.props;
 
     recipients.forEach((recipient) => deleteRecipient(recipient.id));
-  }
-
-  getSelectedSigner = () => {
-    const { signer } = this.props;
-    const { localize, locale } = this.context;
-
-    if (signer) {
-      const status = signer.status;
-      let curStatusStyle;
-
-      if (status) {
-        curStatusStyle = "cert_status_ok";
-      } else {
-        curStatusStyle = "cert_status_error";
-      }
-
-      return (
-        <React.Fragment>
-          <div className="col s12 valign-wrapper">
-            <div className="col s2">
-              <div className={curStatusStyle} />
-            </div>
-            <div className="col s10" style={{ fontSize: "75%" }}>
-              <div className="collection-title">{signer.subjectFriendlyName}</div>
-              <div className="collection-info cert-info">{signer.issuerFriendlyName}</div>
-            </div>
-          </div>
-        </React.Fragment>
-      );
-    } else {
-      return null;
-    }
   }
 
   checkEnableOperationButton = (operation: string) => {

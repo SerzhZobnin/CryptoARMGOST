@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import RecipientsList from "../RecipientsList";
+import SignerInfo from "../Signature/SignerInfo";
 
 interface ISettingsInfoProps {
   setting: any;
@@ -58,7 +59,7 @@ export default class SettingsInfo extends React.Component<ISettingsInfoProps, {}
           <div className="collection-info cert-info-blue">
             {"Сертификат подписи:"}
           </div>
-          {(signer) ? this.getSelectedSigner() :
+          {(signer) ? <SignerInfo signer={signer} style={{fontSize: "90%"}}/> :
             <div className="collection-title selectable-text">
               {localize("Common.no", locale)}
             </div>}
@@ -98,37 +99,5 @@ export default class SettingsInfo extends React.Component<ISettingsInfoProps, {}
         </div>
       </div>
     );
-  }
-
-  getSelectedSigner = () => {
-    const { signer } = this.props;
-    const { localize, locale } = this.context;
-
-    if (signer) {
-      const status = signer.status;
-      let curStatusStyle;
-
-      if (status) {
-        curStatusStyle = "cert_status_ok";
-      } else {
-        curStatusStyle = "cert_status_error";
-      }
-
-      return (
-        <React.Fragment>
-          <div className="col s12 valign-wrapper">
-            <div className="col s2">
-              <div className={curStatusStyle} />
-            </div>
-            <div className="col s10">
-              <div className="collection-title">{signer.subjectFriendlyName}</div>
-              <div className="collection-info cert-info">{signer.issuerFriendlyName}</div>
-            </div>
-          </div>
-        </React.Fragment>
-      );
-    } else {
-      return null;
-    }
   }
 }

@@ -14,6 +14,7 @@ import EncryptSettings from "../Encrypt/EncryptSettings";
 import RecipientsList from "../RecipientsList";
 import SignatureSettings from "../Signature/SignatureSettings";
 import GeneralSettings from "./GeneralSettings";
+import SignerInfo from "../Signature/SignerInfo";
 
 interface ISettingsWindowState {
   showModalLicenseCSPSetup: boolean;
@@ -79,7 +80,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
 
                   </div>
                   {
-                    (signer) ? this.getSelectedSigner() :
+                    (signer) ? <SignerInfo signer={signer} style={{fontSize: "75%"}}/> :
                       <div className="col s12">
                         <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
                           <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
@@ -156,38 +157,6 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
     const { deleteRecipient, recipients } = this.props;
 
     recipients.forEach((recipient) => deleteRecipient(recipient.id));
-  }
-
-  getSelectedSigner = () => {
-    const { signer } = this.props;
-    const { localize, locale } = this.context;
-
-    if (signer) {
-      const status = signer.status;
-      let curStatusStyle;
-
-      if (status) {
-        curStatusStyle = "cert_status_ok";
-      } else {
-        curStatusStyle = "cert_status_error";
-      }
-
-      return (
-        <React.Fragment>
-          <div className="col s12 valign-wrapper">
-            <div className="col s2">
-              <div className={curStatusStyle} />
-            </div>
-            <div className="col s10" style={{ fontSize: "75%" }}>
-              <div className="collection-title">{signer.subjectFriendlyName}</div>
-              <div className="collection-info cert-info">{signer.issuerFriendlyName}</div>
-            </div>
-          </div>
-        </React.Fragment>
-      );
-    } else {
-      return null;
-    }
   }
 }
 

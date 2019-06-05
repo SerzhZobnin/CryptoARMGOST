@@ -1,4 +1,6 @@
 import React from "react";
+import { connect } from "react-redux";
+import { verifyCertificate } from "../AC";
 
 const rectangleValidStyle = {
   background: "#4caf50",
@@ -24,7 +26,7 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
   }
 
   render() {
-    const { recipients } = this.props;
+    const { recipients, verifyCertificate } = this.props;
 
     if (!recipients || !recipients.length) {
       return null;
@@ -37,6 +39,11 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
             let curStatusStyle;
             let curKeyStyle;
             let rectangleStyle;
+
+            if (recipient && !recipient.verified) {
+              verifyCertificate(recipient.id);
+            }
+
             if (recipient.status) {
               curStatusStyle = "cert_status_ok";
               rectangleStyle = rectangleValidStyle;
@@ -114,4 +121,6 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
   }
 }
 
-export default RecipientsList;
+export default connect((state) => {
+  return {};
+}, { verifyCertificate })(RecipientsList);
