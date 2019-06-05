@@ -6,6 +6,7 @@ import {
   changeLocation, deleteRecipient, filePackageSelect, removeAllFiles,
   removeAllRemoteFiles, selectSignerCertificate,
 } from "../../AC";
+import { documentsReviewed } from "../../AC/documentsActions";
 import {
   arhiveDocuments, loadAllDocuments, removeAllDocuments,
   removeDocuments, selectAllDocuments, selectDocument,
@@ -112,7 +113,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
   render() {
     const { localize, locale } = this.context;
-    const { documents, isDefaultFilters, recipients, setting, signer } = this.props;
+    const { documents, isDefaultFilters, isDocumentsReviewed, recipients, setting, signer } = this.props;
     const { fileSignatures, file, showSignatureInfo } = this.state;
 
     return (
@@ -159,7 +160,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
             <DocumentsTable searchValue={this.state.searchValue} />
           </div>
           <div className="col s4 rightcol">
-            <div className="row" />
+            <div className="row halfbottom" />
 
             {(showSignatureInfo && fileSignatures) ?
               (
@@ -258,7 +259,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                 </div>
                 {
                   (recipients && recipients.length) ?
-                    <div style={{ height: "calc(100vh - 300px)" }}>
+                    <div style={{ height: "calc(100vh - 400px)" }}>
                       <div className="add-certs">
                         <RecipientsList recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
                       </div>
@@ -276,6 +277,27 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                   <div className="col s12">
                     <hr />
                   </div>
+
+                  {
+                    documents && documents.length ?
+                      <div className="col s12">
+                        <div className="input-checkbox">
+                          <input
+                            name={"filesview"}
+                            type="checkbox"
+                            id={"filesview"}
+                            className="filled-in"
+                            checked={isDocumentsReviewed}
+                            onClick={this.toggleDocumentsReviewed}
+                          />
+                          <label htmlFor={"filesview"} className="truncate">
+                            {localize("Sign.documents_reviewed", locale)}
+                          </label>
+                        </div>
+                        <div className="row halfbottom" />
+                      </div> :
+                      null
+                  }
 
                   <div className="col s4 waves-effect waves-cryptoarm">
                     <div className="col s12 svg_icon">
@@ -310,7 +332,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                   </div>
 
                   <div className="col s12">
-                    <div className="row" />
+                    <div className="row halfbottom" />
                   </div>
 
                   <div className="col s4 waves-effect waves-cryptoarm">
@@ -361,6 +383,13 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     this.setState({ showSignatureInfo: false });
   }
 
+  toggleDocumentsReviewed = () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { documentsReviewed, isDocumentsReviewed } = this.props;
+
+    documentsReviewed(!isDocumentsReviewed);
+  }
+
   handleCleanRecipientsList = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { deleteRecipient, recipients } = this.props;
@@ -401,7 +430,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
   }
 
   checkEnableOperationButton = (operation: string) => {
-    const { documents } = this.props;
+    const { documents, isDocumentsReviewed } = this.props;
 
     if (!documents.length) {
       return false;
@@ -409,9 +438,13 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
     switch (operation) {
       case SIGN:
-        for (const document of documents) {
-          if (document.extension === "enc") {
-            return false;
+        if (!isDocumentsReviewed) {
+          return false;
+        } else {
+          for (const document of documents) {
+            if (document.extension === "enc") {
+              return false;
+            }
           }
         }
 
@@ -615,6 +648,7 @@ export default connect((state) => {
     documentsLoaded: state.events.loaded,
     documentsLoading: state.events.loading,
     isDefaultFilters: state.filters.documents.isDefaultFilters,
+    isDocumentsReviewed: state.files.documentsReviewed,
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
@@ -623,7 +657,8 @@ export default connect((state) => {
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
 }, {
-    arhiveDocuments, activeSetting, changeLocation, deleteRecipient, filePackageSelect, loadAllDocuments,
+    arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
+    filePackageSelect, loadAllDocuments,
     removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
     selectAllDocuments, selectDocument, selectSignerCertificate,
   })(DocumentsWindow);
