@@ -518,6 +518,7 @@ export default {
     setting_not_select: "Настройка не выбрана",
     settings: "Настройки",
     settings_config: "Редактирование настройки",
+    settings_select: "Выбор настройки",
     wait: "Пожалуйста, подождите...",
     write_file_failed: "Ошибка записи в файл",
     write_file_ok: "Настройки сохранены",

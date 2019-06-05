@@ -516,6 +516,7 @@ export default {
     setting_not_select: "No setting selected",
     settings: "Settings",
     settings_config: "Configure settings",
+    settings_select: "Сhoice of setting",
     wait: "Please wait",
     write_file_failed: "File saving error",
     write_file_ok: "The settings saved",

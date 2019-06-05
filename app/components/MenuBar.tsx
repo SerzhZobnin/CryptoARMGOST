@@ -8,7 +8,7 @@ import {
   LOCATION_CERTIFICATES,
   LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
   LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SETTINGS,
-  LOCATION_SETTINGS_CONFIG, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
+  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
 } from "../constants";
 import { connectedSelector, loadingRemoteFilesSelector } from "../selectors";
 import { CANCELLED } from "../server/constants";
@@ -105,37 +105,40 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
     switch (pathname) {
       case LOCATION_ABOUT:
-        return localize("About.about", locale);
+        return `${localize("About.about", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT:
-          return localize("Certificate.certificate_selection_for_encrypt", locale);
+        return `${localize("Certificate.certificate_selection_for_encrypt", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE:
-          return localize("Certificate.certificate_selection_for_signature", locale);
+        return `${localize("Certificate.certificate_selection_for_signature", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_CERTIFICATES:
-        return localize("Certificate.certs", locale);
+        return `${localize("Certificate.certs", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_CONTAINERS:
-        return localize("Containers.containers", locale);
+        return `${localize("Containers.containers", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_LICENSE:
-        return localize("License.license", locale);
+        return `${localize("License.license", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_SETTINGS:
-        return localize("Settings.settings", locale);
+        return `${localize("Settings.settings", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_SETTINGS_CONFIG:
-        return localize("Settings.settings_config", locale);
+        return `${localize("Settings.settings_config", locale)} - ${localize("About.product_NAME", locale)}`;
+
+      case LOCATION_SETTINGS_SELECT:
+        return `${localize("Settings.settings_select", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_DOCUMENTS:
-        return localize("Documents.documents", locale);
+        return `${localize("Documents.documents", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_EVENTS:
-        let title = localize("Events.operations_log", locale);
+        let title = `${localize("Events.operations_log", locale)} - ${localize("About.product_NAME", locale)}`;
 
         if (isArchiveLog && eventsDateFrom && eventsDateTo) {
-          title += " [" +
+          title = localize("Events.operations_log", locale) + " [" +
             (new Date(eventsDateFrom)).toLocaleDateString(locale, {
               day: "numeric",
               hour: "numeric",
@@ -149,12 +152,12 @@ class MenuBar extends React.Component<any, IMenuBarState> {
               minute: "numeric",
               month: "numeric",
               year: "numeric",
-            }) + "]";
+            }) + "] - " + localize("About.product_NAME", locale);
         }
         return title;
 
       default:
-        return `${localize("About.product_NAME", locale)}. ${localize("SignAndEncrypt.sign_and_encrypt", locale)}`;
+        return `${localize("SignAndEncrypt.sign_and_encrypt", locale)} - ${localize("About.product_NAME", locale)}`;
     }
   }
 
