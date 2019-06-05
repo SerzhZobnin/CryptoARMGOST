@@ -170,6 +170,7 @@ export const LOCATION_EVENTS = "/events";
 export const LOCATION_SERVICES = "/services";
 export const LOCATION_SETTINGS = "/settings";
 export const LOCATION_SETTINGS_CONFIG = "/settings_config";
+export const LOCATION_SETTINGS_SELECT = "/settings_select";
 
 export const KEY_USAGE_SIGN = "sign";
 export const KEY_USAGE_ENCIPHERMENT  = "encipherment";

@@ -513,6 +513,7 @@ export default {
     remove_selected: "Delete selection",
     selected_all: "Select all",
     setting_file: "settings.json",
+    setting_not_select: "No setting selected",
     settings: "Settings",
     settings_config: "Configure settings",
     wait: "Please wait",

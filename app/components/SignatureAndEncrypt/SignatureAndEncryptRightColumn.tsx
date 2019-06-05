@@ -15,6 +15,7 @@ import {
 import {
   DECRYPT, ENCRYPT, HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_SETTINGS_CONFIG,
+  LOCATION_SETTINGS_SELECT,
   REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
 import { activeFilesSelector, connectedSelector } from "../../selectors";
@@ -74,7 +75,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   render() {
     const { localize, locale } = this.context;
-    const { activeFiles, isDocumentsReviewed, recipients, setting, signer } = this.props;
+    const { activeFiles, isDocumentsReviewed, recipients, setting, settings, signer } = this.props;
     const { file } = this.state;
 
     return (
@@ -94,6 +95,17 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   this.props.activeSetting(this.props.setting.id);
                 }}>Изменить</a></li>
               </Link>
+              {
+                settings && settings.size > 1 ?
+                  <Link to={LOCATION_SETTINGS_SELECT}>
+                    <li>
+                      <a onClick={() => {
+                        this.props.activeSetting(this.props.setting.id);
+                      }}>Выбрать</a>
+                    </li>
+                  </Link> :
+                  null
+              }
             </ul>
           </div>
         </div>
@@ -994,6 +1006,7 @@ export default connect((state) => {
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
     setting: state.settings.getIn(["entities", state.settings.default]),
+    settings: state.settings.entities,
     signatures,
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };

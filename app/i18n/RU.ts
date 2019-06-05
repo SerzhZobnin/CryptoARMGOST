@@ -515,6 +515,7 @@ export default {
     remove_selected: "Сбросить выделение",
     selected_all: "Выделить все",
     setting_file: "settings.json",
+    setting_not_select: "Настройка не выбрана",
     settings: "Настройки",
     settings_config: "Редактирование настройки",
     wait: "Пожалуйста, подождите...",
