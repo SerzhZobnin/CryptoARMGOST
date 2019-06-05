@@ -22,13 +22,6 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   line-height: 35px;
 }
 
-.disabled{
-  box-shadow: none;
-  color: #9c3b23;
-  cursor: default;
-  pointer-events: none;
-}
-
 .cryptoarm-blue {
   color: #334294;
 }
@@ -3388,7 +3381,7 @@ svg:hover {
   .svg_icon_text {
     margin-bottom: 2px;
     font-size: 12px;
-    color: rgba(0,0,0,0.6);
+    color: rgba(0,0,0,0.87);
     text-align: center;
   }
 
@@ -3402,10 +3395,10 @@ svg:hover {
 
   .disabled_docs{
     box-shadow: none;
-    color: #9F9F9F !important;
+    color: rgba(0,0,0,0.38) !important;
     cursor: default;
     pointer-events: none;
-    opacity: 0.3;
+    opacity: 0.38;
   }
 
   i.material-icons.key_container {

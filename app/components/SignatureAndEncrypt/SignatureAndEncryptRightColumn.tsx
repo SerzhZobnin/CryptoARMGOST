@@ -208,20 +208,18 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               null
           }
 
-          <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleClickSign}>
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
             <div className="col s12 svg_icon">
-              <a className={`${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`}
-                data-position="bottom">
+              <a data-position="bottom">
                 <i className="material-icons docmenu sign" />
               </a>
             </div>
             <div className="col s12 svg_icon_text">{localize("Documents.docmenu_sign", locale)}</div>
           </div>
 
-          <div className="col s4 waves-effect waves-cryptoarm" onClick={this.verifySign}>
+          <div className={`col s4 waves-effect waves-cryptoarm  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`} onClick={this.verifySign}>
             <div className="col s12 svg_icon">
-              <a className={`${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`}
-                data-position="bottom"
+              <a data-position="bottom"
                 data-tooltip={localize("Sign.sign_and_verify", locale)}>
                 <i className="material-icons docmenu verifysign" />
 
@@ -230,10 +228,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             <div className="col s12 svg_icon_text">{"Проверить"}</div>
           </div>
 
-          <div className="col s4 waves-effect waves-cryptoarm" onClick={this.unSign}>
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} onClick={this.unSign}>
             <div className="col s12 svg_icon">
-              <a className={`${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`}
-                data-position="bottom">
+              <a data-position="bottom">
                 <i className="material-icons docmenu removesign" />
               </a>
             </div>
@@ -244,30 +241,27 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             <div className="row halfbottom" />
           </div>
 
-          <div className="col s4 waves-effect waves-cryptoarm" onClick={this.encrypt}>
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`} onClick={this.encrypt}>
             <div className="col s12 svg_icon">
-              <a className={`${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`}
-                data-position="bottom">
+              <a data-position="bottom">
                 <i className="material-icons docmenu encrypt" />
               </a>
             </div>
             <div className="col s12 svg_icon_text">{localize("Documents.docmenu_enctypt", locale)}</div>
           </div>
 
-          <div className="col s4 waves-effect waves-cryptoarm" onClick={this.decrypt}>
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} onClick={this.decrypt}>
             <div className="col s12 svg_icon">
-              <a className={`${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`}
-                data-position="bottom">
+              <a data-position="bottom">
                 <i className="material-icons docmenu decrypt" />
               </a>
             </div>
             <div className="col s12 svg_icon_text">{localize("Documents.docmenu_dectypt", locale)}</div>
           </div>
 
-          <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleRemoveFiles}>
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleRemoveFiles}>
             <div className="col s12 svg_icon">
-              <a className={`${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`}
-                data-position="bottom"
+              <a data-position="bottom"
                 data-tooltip={localize("Sign.sign_and_verify", locale)}>
                 <i className="material-icons docmenu remove" />
               </a>
@@ -899,7 +893,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   checkEnableOperationButton = (operation: string) => {
-    const { activeFilesArr, isDocumentsReviewed } = this.props;
+    const { activeFilesArr, isDocumentsReviewed, signer } = this.props;
 
     if (!activeFilesArr.length) {
       return false;
@@ -907,7 +901,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     switch (operation) {
       case SIGN:
-        if (!isDocumentsReviewed) {
+        if (!isDocumentsReviewed || !signer) {
           return false;
         } else {
           for (const document of activeFilesArr) {

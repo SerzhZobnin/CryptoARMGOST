@@ -3,8 +3,10 @@ import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
-  changeLocation, deleteRecipient, filePackageSelect, removeAllFiles,
-  removeAllRemoteFiles, selectSignerCertificate,
+  activeFile, changeLocation, deleteFile, deleteRecipient,
+  filePackageDelete, filePackageSelect, packageSign,
+  removeAllFiles, removeAllRemoteFiles, selectFile,
+  selectSignerCertificate, verifySignature,
 } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import {
@@ -17,10 +19,15 @@ import {
 import {
   DECRYPT, DEFAULT_DOCUMENTS_PATH, ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_ENCRYPT, LOCATION_SETTINGS_CONFIG,
-  LOCATION_SIGN, REMOVE, SIGN, UNSIGN, VERIFY,
+  LOCATION_SIGN, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
-import { mapToArr } from "../../utils";
+import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
+import * as jwt from "../../trusted/jwt";
+import { checkLicense } from "../../trusted/jwt";
+import * as trustedSign from "../../trusted/sign";
+import { dirExists, fileCoding, mapToArr } from "../../utils";
+import logger from "../../winstonLogger";
 import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
@@ -299,21 +306,18 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                       null
                   }
 
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
                     <div className="col s12 svg_icon">
-                      <a className={`${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`}
-                        data-position="bottom"
-                        onClick={this.handleClickSign}>
+                      <a data-position="bottom">
                         <i className="material-icons docmenu sign" />
                       </a>
                     </div>
                     <div className="col s12 svg_icon_text">{localize("Documents.docmenu_sign", locale)}</div>
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className={`col s4 waves-effect waves-cryptoarm  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`} onClick={this.verifySign}>
                     <div className="col s12 svg_icon">
-                      <a className={`${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`}
-                        data-position="bottom"
+                      <a data-position="bottom"
                         data-tooltip={localize("Sign.sign_and_verify", locale)}>
                         <i className="material-icons docmenu verifysign" />
 
@@ -322,9 +326,9 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                     <div className="col s12 svg_icon_text">{"Проверить"}</div>
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} onClick={this.unSign}>
                     <div className="col s12 svg_icon">
-                      <a className={`${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} data-position="bottom">
+                      <a data-position="bottom">
                         <i className="material-icons docmenu removesign" />
                       </a>
                     </div>
@@ -335,38 +339,34 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                     <div className="row halfbottom" />
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`} onClick={this.encrypt}>
                     <div className="col s12 svg_icon">
-                      <a className={`${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`}
-                        data-position="bottom"
-                        onClick={this.handleClickSign}>
+                      <a data-position="bottom">
                         <i className="material-icons docmenu encrypt" />
                       </a>
                     </div>
                     <div className="col s12 svg_icon_text">{localize("Documents.docmenu_enctypt", locale)}</div>
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} onClick={this.decrypt}>
                     <div className="col s12 svg_icon">
-                      <a className={`${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`}
-                        data-position="bottom"
-                        data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                      <a data-position="bottom">
                         <i className="material-icons docmenu decrypt" />
                       </a>
                     </div>
                     <div className="col s12 svg_icon_text">{localize("Documents.docmenu_dectypt", locale)}</div>
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleRemoveFiles}>
                     <div className="col s12 svg_icon">
-                      <a className={`${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`}
-                        data-position="bottom"
+                      <a data-position="bottom"
                         data-tooltip={localize("Sign.sign_and_verify", locale)}>
                         <i className="material-icons docmenu remove" />
                       </a>
                     </div>
                     <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
                   </div>
+
                 </div>
               </React.Fragment>
             }
@@ -430,7 +430,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
   }
 
   checkEnableOperationButton = (operation: string) => {
-    const { documents, isDocumentsReviewed } = this.props;
+    const { documents, isDocumentsReviewed, signer } = this.props;
 
     if (!documents.length) {
       return false;
@@ -438,7 +438,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
     switch (operation) {
       case SIGN:
-        if (!isDocumentsReviewed) {
+        if (!isDocumentsReviewed || !signer) {
           return false;
         } else {
           for (const document of documents) {
@@ -649,6 +649,7 @@ export default connect((state) => {
     documentsLoading: state.events.loading,
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     isDocumentsReviewed: state.files.documentsReviewed,
+    lic_error: state.license.lic_error,
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
@@ -658,7 +659,7 @@ export default connect((state) => {
   };
 }, {
     arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
-    filePackageSelect, loadAllDocuments,
+    filePackageSelect, filePackageDelete, packageSign, loadAllDocuments,
     removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
     selectAllDocuments, selectDocument, selectSignerCertificate,
   })(DocumentsWindow);
