@@ -457,7 +457,7 @@ body {
 }
 /*----------------------*/
 #droppableZone {
-    height: 100%;
+    height: calc(100vh - 110px);
     width: 100%;
     position: absolute;
     display: flex;
