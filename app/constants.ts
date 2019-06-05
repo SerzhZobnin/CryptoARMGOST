@@ -157,8 +157,6 @@ export const SET_CONNECTED = "SET_CONNECTED";
 export const SET_DISCONNECTED = "SET_DISCONNECTED";
 
 export const LOCATION_MAIN = "/";
-export const LOCATION_SIGN = "/sign";
-export const LOCATION_ENCRYPT = "/encrypt";
 export const LOCATION_CERTIFICATES = "/certificate";
 export const LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE = "/certificateForSignature";
 export const LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT = "/certificateForEncrypt";

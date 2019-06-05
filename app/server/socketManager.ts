@@ -5,8 +5,8 @@ import * as path from "path";
 import { push } from "react-router-redux";
 import {
   ADD_CONNECTION, ADD_LICENSE, ADD_REMOTE_FILE, CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_OUTFOLDER,
-  CHANGE_SIGNATURE_TIMESTAMP, DOWNLOAD_REMOTE_FILE, FAIL, LOCATION_ENCRYPT,
-  LOCATION_SIGN, PACKAGE_SELECT_FILE, REMOVE_ALL_FILES, REMOVE_ALL_REMOTE_FILES, REMOVE_CONNECTION,
+  CHANGE_SIGNATURE_TIMESTAMP, DOWNLOAD_REMOTE_FILE, FAIL, LOCATION_MAIN,
+  PACKAGE_SELECT_FILE, REMOVE_ALL_FILES, REMOVE_ALL_REMOTE_FILES, REMOVE_CONNECTION,
   SET_CONNECTED, SET_REMOTE_FILES_PARAMS, START, SUCCESS, TOGGLE_SAVE_TO_DOCUMENTS,
   VERIFY_SIGNATURE,
 } from "../constants";
@@ -298,12 +298,12 @@ const openWindow = (operation: string) => {
   switch (operation) {
     case SIGN:
     case VERIFY:
-      store.dispatch(push(LOCATION_SIGN));
+      store.dispatch(push(LOCATION_MAIN));
       return;
 
     case ENCRYPT:
     case DECRYPT:
-      store.dispatch(push(LOCATION_ENCRYPT));
+      store.dispatch(push(LOCATION_MAIN));
       return;
 
     default:

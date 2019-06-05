@@ -18,8 +18,8 @@ import {
 } from "../../AC/settingsActions";
 import {
   DECRYPT, DEFAULT_DOCUMENTS_PATH, ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
-  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_ENCRYPT, LOCATION_SETTINGS_CONFIG,
-  LOCATION_SIGN, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
+  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_MAIN, LOCATION_SETTINGS_CONFIG,
+  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
 import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
@@ -31,10 +31,10 @@ import logger from "../../winstonLogger";
 import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
+import SignerInfo from "../Signature/SignerInfo";
 import DeleteDocuments from "./DeleteDocuments";
 import DocumentsTable from "./DocumentsTable";
 import FilterDocuments from "./FilterDocuments";
-import SignerInfo from "../Signature/SignerInfo";
 
 interface IDocumentsWindowProps {
   documents: any;
@@ -535,12 +535,12 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     switch (operation) {
       case SIGN:
       case VERIFY:
-        changeLocation(LOCATION_SIGN);
+        changeLocation(LOCATION_MAIN);
         return;
 
       case ENCRYPT:
       case DECRYPT:
-        changeLocation(LOCATION_ENCRYPT);
+        changeLocation(LOCATION_MAIN);
         return;
 
       default:

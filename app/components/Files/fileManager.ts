@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { push } from "react-router-redux";
 import {
-  LOCATION_ENCRYPT, LOCATION_SIGN, REMOVE_ALL_FILES, REMOVE_ALL_REMOTE_FILES, SELECT_FILE,
+  LOCATION_MAIN, REMOVE_ALL_FILES, REMOVE_ALL_REMOTE_FILES, SELECT_FILE,
 } from "../../constants";
 import { DECRYPT, ENCRYPT, SIGN, VERIFY } from "../../constants";
 import store from "../../store/index";
@@ -68,12 +68,12 @@ const openWindow = (operation: string) => {
   switch (operation) {
     case SIGN:
     case VERIFY:
-      store.dispatch(push(LOCATION_SIGN));
+      store.dispatch(push(LOCATION_MAIN));
       return;
 
     case ENCRYPT:
     case DECRYPT:
-      store.dispatch(push(LOCATION_ENCRYPT));
+      store.dispatch(push(LOCATION_MAIN));
       return;
 
     default:
