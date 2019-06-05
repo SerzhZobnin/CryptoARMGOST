@@ -632,13 +632,17 @@ class CertWindow extends React.Component<any, any> {
     }
 
     return (
-      <div className="add-certs">
+      <div>
         <Media query="(max-height: 870px)">
           {(matches) =>
             matches ? (
               <React.Fragment>
                 <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
-                {cert}
+                <div style={{ height: "calc(100vh - 150px)" }}>
+                  <div className="add-certs">
+                    {cert}
+                  </div>
+                </div>
               </ React.Fragment>
             ) :
               <React.Fragment>
@@ -1021,18 +1025,18 @@ class CertWindow extends React.Component<any, any> {
 
                   {
                     certificate && certificate.category === REQUEST ?
-                    <div className="col s4 waves-effect waves-cryptoarm">
-                      <div className="col s12 svg_icon">
-                        <a
-                          onClick={this.handleOpenCSRFolder}
-                          data-position="bottom">
-                          <i className="material-icons certificate csrfolder" />
-                        </a>
-                      </div>
-                      <div className="col s12 svg_icon_text">{localize("CSR.go_to_csr_folder", locale)}</div>
-                    </div> :
-                    null
-                    }
+                      <div className="col s4 waves-effect waves-cryptoarm">
+                        <div className="col s12 svg_icon">
+                          <a
+                            onClick={this.handleOpenCSRFolder}
+                            data-position="bottom">
+                            <i className="material-icons certificate csrfolder" />
+                          </a>
+                        </div>
+                        <div className="col s12 svg_icon_text">{localize("CSR.go_to_csr_folder", locale)}</div>
+                      </div> :
+                      null
+                  }
                 </div>
                 : null
             }
