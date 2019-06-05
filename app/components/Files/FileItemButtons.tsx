@@ -22,15 +22,24 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
   render() {
     const { file } = this.props;
 
+    if (!file) {
+      return null;
+    }
+
     return (
-      <div className="row nobottom" style={{ width: "120px"}}>
-        <div className="col" style={{ width: "40px" }}>
-          <i className="file-setting-item waves-effect material-icons secondary-content"
-            onClick={(event) => {
-              event.stopPropagation();
-              this.openFile(file.fullpath);
-            }}>visibility</i>
-        </div>
+      <div className="row nobottom" style={{ width: "120px" }}>
+        {
+          file.extension !== "enc" ?
+            <div className="col" style={{ width: "40px" }}>
+              <i className="file-setting-item waves-effect material-icons secondary-content"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  this.openFile(file.fullpath);
+                }}>visibility</i>
+            </div> :
+            null
+        }
+
         <div className="col" style={{ width: "40px" }}>
           <i className="file-setting-item waves-effect material-icons secondary-content"
             onClick={(event) => {
