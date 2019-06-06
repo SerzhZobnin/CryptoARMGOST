@@ -496,6 +496,7 @@ export default {
     add_files: "Добавить файлы",
     choose: "Выбрать",
     choose_files: "Выбрать файлы",
+    date_of_change: "Дата изменения",
     delete_file: "Удалить из списка",
     directory_file_save: "Директория для сохранения файла",
     drag_drop: "Перетащите файлы в это окно",

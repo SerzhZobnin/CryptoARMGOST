@@ -866,7 +866,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
               </div>
             </div>
             <div className="row fixed-bottom-rightcolumn">
-              <div className="col s5 offset-s5">
+              <div className="col s6 offset-s1">
                   <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
                     ОТМЕНА
                 </a>

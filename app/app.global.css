@@ -629,6 +629,8 @@ div::-webkit-scrollbar-thumb {
   bottom: 15px;
   padding-top: 15px;
   margin-bottom: 0;
+  right: 0;
+  width: inherit;
 }
 
 .choose-btn:hover{

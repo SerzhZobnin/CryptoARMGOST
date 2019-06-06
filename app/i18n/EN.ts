@@ -494,6 +494,7 @@ export default {
     add_files: "Add files",
     choose: "Choose",
     choose_files: "Choose files",
+    date_of_change: "Date of change",
     delete_file: "Delete the file from the list",
     directory_file_save: "Save the file to",
     drag_drop: "Drag and drop the files",

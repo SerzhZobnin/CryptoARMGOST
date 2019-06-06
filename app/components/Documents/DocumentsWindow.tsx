@@ -186,7 +186,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                     </div>
                   </div>
                   <div className="row fixed-bottom-rightcolumn">
-                    <div className="col s1 offset-s12">
+                    <div className="col s1 offset-s4">
                       <a className="btn btn-text waves-effect waves-light" onClick={this.backView}>
                         {"< НАЗАД"}
                       </a>

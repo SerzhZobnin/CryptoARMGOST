@@ -114,7 +114,7 @@ class SettingsTable extends React.Component<ISettingsTableProps & ISettingsTable
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     width={180}
-                    label={localize("EventsTable.operation", locale)}
+                    label={localize("Settings.name", locale)}
                   />
                   <Column
                     cellRenderer={({ cellData }) => {
@@ -130,7 +130,7 @@ class SettingsTable extends React.Component<ISettingsTableProps & ISettingsTable
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     width={130}
-                    label={localize("EventsTable.date_and_time", locale)}
+                    label={localize("Settings.date_of_change", locale)}
                   />
                 </Table>
               )}

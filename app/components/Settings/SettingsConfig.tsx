@@ -140,7 +140,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
           <div className="col s4 rightcol">
             <div className="row halfbottom" />
             <div className="row fixed-bottom-rightcolumn">
-              <div className="col s1 offset-s12">
+              <div className="col s1 offset-s4">
                 <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
                   {"< НАЗАД"}
                 </a>

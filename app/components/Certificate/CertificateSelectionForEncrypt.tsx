@@ -877,13 +877,13 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
             </div>
             <div className="row fixed-bottom-rightcolumn">
               {(this.state.activeCertificate) ?
-                <div className="col s1 offset-s12">
+                <div className="col s1 offset-s4">
                   <a className="btn btn-text waves-effect waves-light" onClick={this.backViewChooseCerts}>
                     {"< НАЗАД"}
                   </a>
                 </div> :
                 <React.Fragment>
-                  <div className="col s5 offset-s5">
+                  <div className="col s6 offset-s1">
                       <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
                         ОТМЕНА
                       </a>

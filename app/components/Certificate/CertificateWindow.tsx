@@ -997,7 +997,7 @@ class CertWindow extends React.Component<any, any> {
             </div>
             {
               certificate || crl ?
-                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "80px" }}>
+                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "70px" }}>
                   <div className="col s12">
                     <hr />
                   </div>
