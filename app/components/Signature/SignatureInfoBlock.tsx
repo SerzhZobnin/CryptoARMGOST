@@ -35,7 +35,7 @@ class SignatureInfoBlock extends React.Component<any, any> {
       <React.Fragment>
         <div className="row">
           <div className="col s2" style={{ width: "11%" }}>
-            <div className={status ? "cert_status_ok" : "cert_status_error"} />
+            <div className={status ? "status_ok_icon" : "status_error_icon"} />
           </div>
           <div className="col s10 " style={{ fontSize: "75%" }}>
             <div className="col s12">

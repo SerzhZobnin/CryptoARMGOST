@@ -117,7 +117,7 @@ class CertificateChainInfo extends React.Component<any, any> {
               </div>
               <div className="col s1">
                 <div className="row nobottom">
-                  <div className={curStatusStyle + " "} />
+                  <div className={curStatusStyle + " "} style={{marginLeft: "-15px"}}/>
                 </div>
               </div>
             </div>

@@ -30,11 +30,11 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
 
     if (signature.status_verify === true) {
       status = localize("Sign.sign_ok", locale);
-      icon = "cert_status_ok";
+      icon = "status_ok_icon";
       isValid = "valid";
     } else {
       status = localize("Sign.sign_error", locale);
-      icon = "cert_status_error";
+      icon = "status_error_icon";
       isValid = "unvalid";
     }
 

@@ -1886,6 +1886,20 @@ a.menuheaderlink:hover {
   background-size: 16px 16px;
 }
 
+.status_ok_icon{
+  width: 30px;
+  height: 30px;
+  background: url(./resources/image/status_ok.svg);
+  background-size: 30px 30px;
+}
+
+.status_error_icon{
+  width: 30px;
+  height: 30px;
+  background: url(./resources/image/status_error.svg);
+  background-size: 30px 30px;
+}
+
 .status_ok{
   position: absolute;
   right: 60px;
@@ -2577,6 +2591,7 @@ a.cert-back-btn.waves-effect.waves-light {
 i.material-icons.left.chain_1 {
   background: url(./resources/image/chain_1.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2587,6 +2602,7 @@ i.material-icons.left.chain_1 {
 i.material-icons.left.chain_2 {
   background: url(./resources/image/chain_2.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2597,6 +2613,7 @@ i.material-icons.left.chain_2 {
 i.material-icons.left.chain_3 {
   background: url(./resources/image/chain_3.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2607,6 +2624,7 @@ i.material-icons.left.chain_3 {
 i.material-icons.left.chain_4 {
   background: url(./resources/image/chain_4.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2617,6 +2635,7 @@ i.material-icons.left.chain_4 {
 i.material-icons.left.chain_5 {
   background: url(./resources/image/chain_5.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2627,6 +2646,7 @@ i.material-icons.left.chain_5 {
 i.material-icons.left.chain_6 {
   background: url(./resources/image/chain_6.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2637,6 +2657,7 @@ i.material-icons.left.chain_6 {
 i.material-icons.left.chain_7 {
   background: url(./resources/image/chain_7.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2647,6 +2668,7 @@ i.material-icons.left.chain_7 {
 i.material-icons.left.chain_8 {
   background: url(./resources/image/chain_8.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2657,6 +2679,7 @@ i.material-icons.left.chain_8 {
 i.material-icons.left.chain_9 {
   background: url(./resources/image/chain_9.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2667,6 +2690,7 @@ i.material-icons.left.chain_9 {
 i.material-icons.left.chain_10 {
   background: url(./resources/image/chain_10.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2761,7 +2785,7 @@ i.material-icons.left.chain_10 {
     float:left;
     background: #0262aa;
     left: 0px;
-    margin-left: 21px;
+    margin-left: 17px;
     margin-top: 36px;
     height: 18px;
     width: 2px;
