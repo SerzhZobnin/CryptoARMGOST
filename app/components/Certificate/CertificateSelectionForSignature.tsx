@@ -853,7 +853,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
             </div>
           </div>
           <div className="col s4 rightcol">
-            <div className="row" />
+            <div className="row halfbottom" />
             <div className="row">
               <div className="col s12">
                 <div className="desktoplic_text_item">Сертификат подписи</div>

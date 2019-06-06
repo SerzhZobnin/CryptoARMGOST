@@ -63,7 +63,7 @@ class SettingsSelect extends React.Component<{}, ISettingsSelectState> {
             </div>
           </div>
           <div className="col s4 rightcol">
-            <div className="row" />
+            <div className="row halfbottom" />
             {
               setting ?
                 <React.Fragment>

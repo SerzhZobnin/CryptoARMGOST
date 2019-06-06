@@ -97,7 +97,7 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
             </div>
           </div>
           <div className="col s4 rightcol">
-            <div className="row" />
+            <div className="row halfbottom" />
             <div className="col s12">
               <div className="desktoplic_text_item">Управление лицензией КриптоАРМ ГОСТ</div>
               <hr />
