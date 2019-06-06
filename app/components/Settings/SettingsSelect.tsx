@@ -75,14 +75,16 @@ class SettingsSelect extends React.Component<{}, ISettingsSelectState> {
                       </a>
                     </div>
                     <div className="col s2">
-                      <a className="btn btn-outlined waves-effect waves-light" onClick={ this.handleApplySetting}>
+                      <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleApplySetting}>
                         {localize("Settings.Choose", locale)}
                       </a>
                     </div>
                   </div>
                 </React.Fragment>
                 :
-                <BlockNotElements name={"active"} title={localize("Settings.setting_not_select", locale)} />
+                <div style={{ height: "calc(100vh - 110px)" }}>
+                  <BlockNotElements name={"active"} title={localize("Settings.setting_not_select", locale)} />
+                </div>
             }
           </div>
         </div>

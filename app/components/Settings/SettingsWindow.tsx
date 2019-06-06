@@ -12,6 +12,7 @@ import {
   LOCATION_SETTINGS_CONFIG,
 } from "../../constants";
 import { mapToArr } from "../../utils";
+import BlockNotElements from "../BlockNotElements";
 import SettingsInfo from "./SettingsInfo";
 import SettingsTable from "./SettingsTable";
 
@@ -66,7 +67,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
             {
               setting ?
                 <React.Fragment>
-                  <SettingsInfo setting={setting} signer={signer} recipients={recipients}  handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)}/>
+                  <SettingsInfo setting={setting} signer={signer} recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
                   <div className="row fixed-bottom-rightcolumn">
                     <div className="col s12">
                       <hr />
@@ -114,21 +115,26 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                   </div>
                 </React.Fragment>
                 :
-                <div className="row fixed-bottom-rightcolumn">
-                  <div className="col s12">
-                    <hr />
+                <React.Fragment>
+                  <div style={{ height: "calc(100vh - 110px)" }}>
+                  <BlockNotElements name={"active"} title={localize("Settings.setting_not_select", locale)} />
                   </div>
-
-                  <div className="col s4 waves-effect waves-cryptoarm">
-                    <div className="col s12 svg_icon">
-                      <a onClick={() => this.props.createSettings()}
-                        data-position="bottom">
-                        <i className="material-icons certificate remove" />
-                      </a>
+                  <div className="row fixed-bottom-rightcolumn">
+                    <div className="col s12">
+                      <hr />
                     </div>
-                    <div className="col s12 svg_icon_text">{"Создать"}</div>
+
+                    <div className="col s4 waves-effect waves-cryptoarm">
+                      <div className="col s12 svg_icon">
+                        <a onClick={() => this.props.createSettings()}
+                          data-position="bottom">
+                          <i className="material-icons certificate remove" />
+                        </a>
+                      </div>
+                      <div className="col s12 svg_icon_text">{"Создать"}</div>
+                    </div>
                   </div>
-                </div>
+                </React.Fragment>
             }
           </div>
         </div>
