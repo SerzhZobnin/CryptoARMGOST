@@ -235,7 +235,6 @@ body {
 }
 #directory {
     margin: 0;
-    width: calc(100% - 50px);
 }
 .sign-set-add-folder {
     width: 100%
@@ -809,8 +808,7 @@ i.material-icons.choosefolder {
   height: 24px;
   background: url(./resources/image/folder_shoose_icon.svg);
   background-size: 24px 24px;
-  margin-left: 12px;
-  margin-top: 5px;
+  margin-top: 15px;
 }
 
 .triangle-down {

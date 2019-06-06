@@ -51,33 +51,38 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
           <div className="col s8 leftcol">
             <div className="row halfbottom">
               <div className="row halfbottom" />
-              <div className="col s12">
-                <div className="desktoplic_text_item">{localize("Settings.general", locale)}</div>
-                <hr />
-                <GeneralSettings />
+              <div className="row">
+                <div className="col s12">
+                  <div className="h4">{localize("Settings.general", locale)}</div>
+                  <GeneralSettings />
+                </div>
               </div>
 
-              <div className="row" />
+              <div className="row halfbottom" >
+                <div className="col s12">
+                  <hr />
+                </div>
+              </div>
 
               <div className="col s12">
-                <div className="desktoplic_text_item">{localize("Sign.sign_setting", locale)}</div>
-                <hr />
+                <div className="h4">
+                  {localize("Sign.sign_setting", locale)}
+                </div>
+
                 <SignatureSettings />
-                <div className="col s12">
-                  <div className="col s10">
+
+                <div className="row nobottom">
+                  <div className="col s11">
                     <div className="desktoplic_text_item">{localize("Sign.signer_cert", locale)}</div>
                     <hr />
                   </div>
-                  <div className="col s2">
-                    <div className="right import-col">
-                      <a className="btn-floated" data-activates="dropdown-btn-signer">
-                        <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
-                      </a>
-                      <ul id="dropdown-btn-signer" className="dropdown-content">
-                        <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
-                      </ul>
-                    </div>
-
+                  <div className="col s1">
+                    <a className="btn-floated" data-activates="dropdown-btn-signer">
+                      <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                    </a>
+                    <ul id="dropdown-btn-signer" className="dropdown-content">
+                      <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
+                    </ul>
                   </div>
                   {
                     (signer) ? <SignerInfo signer={signer} style={{ fontSize: "75%" }} /> :
@@ -94,9 +99,14 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
 
               <div className="row" />
 
+              <div className="row halfbottom" >
+                <div className="col s12">
+                  <hr />
+                </div>
+              </div>
+
               <div className="col s12">
-                <div className="desktoplic_text_item">{localize("Encrypt.encrypt_setting", locale)}</div>
-                <hr />
+                <div className="h4">{localize("Encrypt.encrypt_setting", locale)}</div>
                 <EncryptSettings />
 
                 <div className="row" />

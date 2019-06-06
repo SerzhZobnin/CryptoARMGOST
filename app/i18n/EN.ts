@@ -502,7 +502,7 @@ export default {
     encoding: "Encoding type",
     failed_find_directory: "The directory is not found",
     field_empty: "This field cannot be empty!",
-    general: "General settings",
+    general: "General",
     go_to_file: "Go to the file",
     name: "Name",
     open_file: "Open the file",

@@ -21,12 +21,14 @@ class SelectFolder extends React.Component<ISelectFolderProps, {}> {
     const classDisabled = disabled ? "disabled" : "";
 
     return (
-      <div className="row settings-item">
-        <div className={"col sign-set-add-folder " + classDisabled}>
+      <div className="row nobottom">
+        <div className={"col s11 " + classDisabled}>
           <input type="file" ref={(node) => node && node.setAttribute("nwdirectory", "")} id="choose-folder" onChange={this.props.viewDirect} disabled={disabled} />
           <input id="directory" type="text" placeholder={localize("Settings.directory_file_save", locale)}
             value={this.props.directory} onChange={this.props.viewDirect.bind(this)} disabled={disabled} />
-          <a className="btn-add-folder waves-effect" id="add-directory" onClick={this.props.openDirect.bind(this)}>
+        </div>
+        <div className={"col s1 " + classDisabled}>
+          <a className="btn-add-folder" id="add-directory" onClick={this.props.openDirect.bind(this)}>
             <i className="material-icons choosefolder">create_new_folder</i>
           </a>
         </div>

@@ -132,20 +132,26 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
             </a>
             <ul id="dropdown-btn-signer" className="dropdown-content">
-            <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
-                <li><a>Заменить</a></li>
+              <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
+                <li><a onClick={() => {
+                    this.props.activeSetting(this.props.setting.id);
+                  }}>Заменить</a></li>
               </Link>
               <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
             </ul>
           </div>
         </div>
         {
-          (signer) ? <SignerInfo signer={signer} style={{fontSize: "75%"}}/> :
+          (signer) ? <SignerInfo signer={signer} style={{ fontSize: "75%" }} /> :
             <div className="col s12">
               <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
-                <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                <a className="btn btn-outlined waves-effect waves-light"
+                  onClick={() => {
+                    this.props.activeSetting(this.props.setting.id);
+                  }}
+                  style={{ width: "100%" }}>
                   {localize("Settings.Choose", locale)}
-                    </a>
+                </a>
               </Link>
             </div>
         }
@@ -182,7 +188,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
                 <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
                   {localize("Settings.Choose", locale)}
-                    </a>
+                </a>
               </Link>
             </div>
         }

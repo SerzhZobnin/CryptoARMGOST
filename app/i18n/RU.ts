@@ -504,7 +504,7 @@ export default {
     encoding: "Кодировка",
     failed_find_directory: "Указанная директория не существует",
     field_empty: "Поле не может быть пустым",
-    general: "Общие настройки",
+    general: "Основные",
     go_to_file: "Перейти к файлу",
     name: "Наименование",
     open_file: "Открыть файл",

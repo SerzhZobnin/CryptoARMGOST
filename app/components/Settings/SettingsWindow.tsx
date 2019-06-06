@@ -114,7 +114,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                   </div>
                 </React.Fragment>
                 :
-                <div className="row fixed-bottom-rightcolumn" style={{ bottom: "20px" }}>
+                <div className="row fixed-bottom-rightcolumn">
                   <div className="col s12">
                     <hr />
                   </div>
