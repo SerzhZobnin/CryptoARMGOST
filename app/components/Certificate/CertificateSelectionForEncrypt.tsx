@@ -890,7 +890,7 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
                   </div>
                   <div className="col s2">
                     <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleChooseRecipients}>
-                      ВЫБРАТЬ
+                      {localize("Settings.Choose", locale)}
                 </a>
                   </div>
                 </React.Fragment>

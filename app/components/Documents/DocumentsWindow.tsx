@@ -224,7 +224,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                 <div className="row" />
 
                 <div className="col s10">
-                  <div className="desktoplic_text_item">Сертификат подписи:</div>
+                  <div className="desktoplic_text_item">{localize("Sign.signer_cert", locale)}</div>
                   <hr />
                 </div>
                 <div className="col s2">
@@ -233,7 +233,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                       <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
                     </a>
                     <ul id="dropdown-btn-signer" className="dropdown-content">
-                      <li><a onClick={() => this.props.selectSignerCertificate(0)}>Очистить</a></li>
+                      <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
                     </ul>
                   </div>
                 </div>
@@ -242,7 +242,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                     <div className="col s12">
                       <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
                         <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
-                          ВЫБРАТЬ
+                          {localize("Settings.Choose", locale)}
                     </a>
                       </Link>
                     </div>
@@ -259,9 +259,9 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                     </a>
                     <ul id="dropdown-btn-encrypt" className="dropdown-content">
                       <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
-                        <li><a>Добавить</a></li>
+                        <li><a>{localize("Settings.add", locale)}</a></li>
                       </Link>
-                      <li><a onClick={() => this.handleCleanRecipientsList()}>Очистить</a></li>
+                      <li><a onClick={() => this.handleCleanRecipientsList()}>{localize("Common.clear", locale)}</a></li>
                     </ul>
                   </div>
                 </div>
@@ -275,7 +275,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                     <div className="col s12">
                       <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
                         <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
-                          ВЫБРАТЬ
+                          {localize("Settings.Choose", locale)}
                     </a>
                       </Link>
                     </div>

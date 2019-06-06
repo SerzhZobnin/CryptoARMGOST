@@ -125,6 +125,8 @@ export default (settings = new DefaultReducerState(), action) => {
         .setIn(["entities", settings.active, "outfolder"], payload.outfolder);
 
     case CHANGE_LOCALE:
+      settings = settings.set("active", settings.default);
+
       return settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "locale"], payload.locale);

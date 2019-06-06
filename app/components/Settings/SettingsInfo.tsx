@@ -57,7 +57,7 @@ export default class SettingsInfo extends React.Component<ISettingsInfoProps, {}
 
         <div className="collection-item certs-collection certificate-info">
           <div className="collection-info cert-info-blue">
-            {"Сертификат подписи:"}
+            {localize("Sign.signer_cert", locale)}
           </div>
           {(signer) ? <SignerInfo signer={signer} style={{fontSize: "90%"}}/> :
             <div className="collection-title selectable-text">

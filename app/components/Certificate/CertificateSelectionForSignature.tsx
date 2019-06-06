@@ -873,7 +873,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
               </div>
               <div className="col s2">
                 <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleChooseSigner}>
-                  ВЫБРАТЬ
+                  {localize("Settings.Choose", locale)}
                 </a>
               </div>
             </div>

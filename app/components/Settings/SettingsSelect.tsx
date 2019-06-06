@@ -76,7 +76,7 @@ class SettingsSelect extends React.Component<{}, ISettingsSelectState> {
                     </div>
                     <div className="col s2">
                       <a className="btn btn-outlined waves-effect waves-light" onClick={ this.handleApplySetting}>
-                        ВЫБРАТЬ
+                        {localize("Settings.Choose", locale)}
                       </a>
                     </div>
                   </div>
