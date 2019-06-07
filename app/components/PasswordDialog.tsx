@@ -53,22 +53,34 @@ class PasswordDialog extends React.Component<any, any> {
     }
 
     return (
-      <div id="get-password" className="modal password-modal">
-        <div className="password-modal-main">
-          <HeaderWorkspaceBlock text={localize("Settings.pass_enter", locale)} new_class="modal-bar" icon="close" onСlickBtn={this.closeModal} />
-          <div className="password-modal-content">
-            <div className="input-password">
-              <div className="input-field col s8 input-field-password">
-                <i className={"material-icons prefix key-prefix"}>vpn_key</i>
-                <input id="input_password" type="password" value={value} onChange={this.handleChange} />
-                <label htmlFor="input_password" className={active}>{localize("Settings.password", locale)}</label>
-              </div>
-              <div className="col s4">
-                <a className="waves-effect waves-light btn modal-close" id="enter-pass">{localize("License.Entered", locale)}</a>
+      <div id="get-password" className="modal nooverflow">
+        <HeaderWorkspaceBlock text={localize("Settings.pass_enter", locale)} new_class="modal-bar" icon="close" onСlickBtn={this.closeModal} />
+
+        <div className="row halftop">
+          <div className="col s12">
+            <div className="content-wrapper tbody border_group">
+              <div className="row" />
+              <div className="row">
+                <div className="input-field col s12 input-field-password">
+                  <i className={"material-icons prefix key-prefix"}>vpn_key</i>
+                  <input id="input_password" type="password" value={value} onChange={this.handleChange} />
+                  <label htmlFor="input_password" className={active}>{localize("Settings.password", locale)}</label>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <div className="row halfbottom" />
+
+        <div className="row halfbottom">
+          <div style={{ float: "right" }}>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className={"btn btn-outlined waves-effect waves-light modal-close "} id="enter-pass">{localize("Common.apply", locale)}</a>
+            </div>
+          </div>
+        </div>
+
       </div>
     );
   }

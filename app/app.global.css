@@ -1152,6 +1152,8 @@ nav .cert-seacrh label i {
 
 .modal {
   max-height: 87% !important ;
+  width:  87%;
+  max-width: 900px;
 }
 
 .nooverflow {
@@ -2054,7 +2056,6 @@ p.message_onlinelic{
 #get-password {
   top: 30% !important;
   width: 60%;
-  height: 20%;
   border: 2px solid #9c3b23;
   overflow: hidden;
 }
@@ -2559,8 +2560,12 @@ a.cert-back-btn.waves-effect.waves-light {
     display: flex;
 }
 .dialog-content {
+    background-color: #fafafa;
     font-size: 80%;
-    width: 300px;
+    width: 400px;
+}
+.dialog-shadow {
+  box-shadow: 0 16px 28px 0 rgba(0,0,0,0.22), 0 25px 55px 0 rgba(0,0,0,0.21);
 }
 .dialog-bar {
     height: 35px;
@@ -3195,18 +3200,11 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
 }
 
 .tbody {
-  height: 380px;
   overflow: auto;
 }
 
 .content-item-relative {
   position: relative;
-}
-
-@media only screen and (max-width: 992px) {
-  .modal {
-    width: 85%;
-  }
 }
 
 svg:hover {
@@ -3282,7 +3280,6 @@ svg:hover {
 
 .border_group{
     box-shadow: 0 0 0 1px rgb(227, 227, 228);
-    height: 352px;
 }
 
 .border_group_cloud{

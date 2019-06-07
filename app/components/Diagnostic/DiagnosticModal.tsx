@@ -48,8 +48,8 @@ class DiagnosticModal extends React.Component<IDiagnosticModalProps, {}> {
     }
 
     return (
-      <div id="modal-window-diagnostic" className="modal diagnostic-modal">
-        <div className="licence-modal-main">
+      <div id="modal-window-diagnostic" className="modal">
+        <div>
           <HeaderWorkspaceBlock
             text={header}
             new_class="modal-bar"

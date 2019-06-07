@@ -24,22 +24,27 @@ class ContainerDelete extends React.Component<IContainerDeleteProps, {}> {
 
     return (
       <React.Fragment>
-        <div className="row">
+        <div className="row halftop">
           <div className="col s12">
-            <span className="card-infos sub">
-              {localize("Containers.realy_delete_container", locale)}
-            </span>
+            <div className="content-wrapper tbody border_group">
+              <div className="col s12">
+                <span className="card-infos sub">
+                  {localize("Containers.realy_delete_container", locale)}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="row">
-          <div className="col s5 offset-s7">
-            <div className="row nobottom">
-              <div className="col s6">
-                <a className={"waves-effect waves-light btn modal-close"} onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
-              </div>
-              <div className="col s6">
-                <a className="waves-effect waves-light btn modal-close" onClick={this.handleRemove}>{localize("Common.delete", locale)}</a>
-              </div>
+
+        <div className="row halfbottom" />
+
+        <div className="row halfbottom">
+          <div style={{ float: "right" }}>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+            </div>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className="btn btn-outlined waves-effect waves-light modal-close" onClick={this.handleRemove}>{localize("Common.delete", locale)}</a>
             </div>
           </div>
         </div>

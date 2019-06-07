@@ -45,19 +45,34 @@ class Dialog extends React.Component<IDialogProps, IDialogState> {
     }
 
     return (
-      <div className={"dialog active"}>
-        <div className="dialog-content">
+      <div className="dialog active">
+        <div className="dialog-content dialog-shadow">
           <HeaderWorkspaceBlock text={header} new_class="dialog-bar" />
-          <div className="dialog-text">
-            <div className="dialog-message">{body}</div>
+
+          <div className="row halftop">
+            <div className="col s12">
+              <div className="content-wrapper tbody border_group">
+                <div className="row" />
+                <div className="row">
+                  <div className="dialog-text">
+                    <div className="dialog-message">{body}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="dialog-buttons">
-            <a className="waves-effect waves-light btn dialog-btn" onClick={this.handleYes}>
-              {localize("Common.yes", locale)}
-            </a>
-            <a className="waves-effect waves-light btn dialog-btn" onClick={this.handleNo}>
-              {localize("Common.no", locale)}
-            </a>
+
+          <div className="row halfbottom" />
+
+          <div className="row halfbottom">
+            <div style={{ float: "right" }}>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handleNo}>{localize("Common.no", locale)}</a>
+              </div>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <a className={"btn btn-outlined waves-effect waves-light modal-close "} onClick={this.handleYes}>{localize("Common.yes", locale)}</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@ import { loadLicense } from "../../AC/licenseActions";
 import { LOCATION_ABOUT } from "../../constants";
 import {
   BUG, ERROR_CHECK_CSP_LICENSE, ERROR_CHECK_CSP_PARAMS,
-  ERROR_LOAD_TRUSTED_CRYPTO,  NO_CORRECT_CRYPTOARM_LICENSE, NO_CRYPTOARM_LICENSE,
+  ERROR_LOAD_TRUSTED_CRYPTO, NO_CORRECT_CRYPTOARM_LICENSE, NO_CRYPTOARM_LICENSE,
   NO_GOST_2001, NO_HAVE_CERTIFICATES_WITH_KEY, NOT_INSTALLED_CSP, WARNING,
 } from "../../errors";
 import { filteredCertificatesSelector } from "../../selectors";
@@ -185,12 +185,12 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
     if (!criticalError && activeError === NO_CORRECT_CRYPTOARM_LICENSE || activeError === NO_CRYPTOARM_LICENSE || activeError === ERROR_CHECK_CSP_LICENSE) {
       return (
         <Link to={LOCATION_ABOUT} onClick={() => $("#modal-window-diagnostic").closeModal()}>
-          <a className="waves-effect waves-light btn modal-close">{localize("Common.goOver", locale)}</a>
+          <a className="btn btn-outlined waves-effect waves-light modal-close">{localize("Common.goOver", locale)}</a>
         </Link>
       );
     } else {
       return (
-        <a className="waves-effect waves-light btn modal-close" onClick={this.handleMaybeCloseApp}>{localize("Diagnostic.close", locale)}</a>
+        <a className="btn btn-outlined waves-effect waves-light modal-close" onClick={this.handleMaybeCloseApp}>{localize("Diagnostic.close", locale)}</a>
       );
     }
   }
@@ -227,21 +227,24 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
         isOpen={true}
         header={localize("Diagnostic.header", locale)}
         onClose={this.handleMaybeCloseApp}>
-        <div className="main">
-          <div className="row">
-            <div className={"diagnostic-content-item"}>
+        <div>
+          <div className="row nobottom">
+            <div className="diagnostic-content-item">
               <div className="col s6 m5 l6 problem-contaner">
                 <Problems errors={cspErrors.length ? cspErrors : errors} activeError={this.state.activeError} onClick={this.handleClickOnError} />
               </div>
               <div className="col s6 m7 l6 problem-contaner">
                 <Resolve activeError={this.state.activeError} />
               </div>
-
             </div>
-            <div className="row">
-              <div className="row halfbottom" />
-              <div className="col s3 offset-s9">
-                {this.getCloseButton()}
+
+            <div className="row halfbottom" />
+
+            <div className="row halfbottom">
+              <div style={{ float: "right" }}>
+                <div style={{ display: "inline-block", margin: "10px" }}>
+                  {this.getCloseButton()}
+                </div>
               </div>
             </div>
           </div>
