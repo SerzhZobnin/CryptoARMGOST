@@ -132,21 +132,21 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
                     dataKey="timestamp"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={130}
+                    width={150}
                     label={localize("EventsTable.date_and_time", locale)}
                   />
                   <Column
                     dataKey="operation"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={180}
+                    width={width * 0.2}
                     label={localize("EventsTable.operation", locale)}
                   />
                   <Column
                     dataKey="userName"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={120}
+                    width={width * 0.15}
                     label={localize("EventsTable.user_name", locale)}
                   />
                   <Column
@@ -163,7 +163,7 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
                     dataKey="operationObject"
                     disableSort
                     headerRenderer={this.headerRenderer}
-                    width={280}
+                    width={width * 0.6}
                     label={localize("EventsTable.operation_object", locale)}
                   />
                   <Column
@@ -192,7 +192,7 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
                     dataKey="level"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={70}
+                    width={width * 0.07}
                     label={localize("EventsTable.status", locale)}
                   />
                 </Table>

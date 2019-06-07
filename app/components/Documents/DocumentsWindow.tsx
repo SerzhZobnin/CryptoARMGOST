@@ -238,12 +238,12 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                   </div>
                 </div>
                 {
-                  (signer) ? <SignerInfo signer={signer} style={{fontSize: "75%"}}/> :
+                  (signer) ? <SignerInfo signer={signer} style={{ fontSize: "75%" }} /> :
                     <div className="col s12">
                       <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
                         <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
                           {localize("Settings.Choose", locale)}
-                    </a>
+                        </a>
                       </Link>
                     </div>
                 }
@@ -276,7 +276,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                       <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
                         <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
                           {localize("Settings.Choose", locale)}
-                    </a>
+                        </a>
                       </Link>
                     </div>
                 }
