@@ -1050,7 +1050,7 @@ class CertWindow extends React.Component<any, any> {
           </div>
 
         </div>
-        <Dialog isOpen={true}
+        <Dialog isOpen={this.state.showDialogInstallRootCertificate}
           header="Внимание!" body="Для установки корневых сертификатов требуются права администратора. Продолжить?"
           onYes={this.handleInstallTrustedCertificate} onNo={this.handleCloseDialogInstallRootCertificate} />
         <PasswordDialog value={this.state.password} onChange={this.handlePasswordChange} />
