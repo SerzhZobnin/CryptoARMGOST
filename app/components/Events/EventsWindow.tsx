@@ -66,7 +66,7 @@ class EventsWindow extends React.Component<IEventsWindowProps & IEventsWindowDis
         <div className="row">
           <div className="row halfbottom" />
 
-          <div className="col s10">
+          <div className="col" style={{ width: "calc(100% - 80px)" }}>
             <div className="input-field input-field-csr col s12 border_element find_box">
               <i className="material-icons prefix">search</i>
               <input
@@ -78,14 +78,14 @@ class EventsWindow extends React.Component<IEventsWindowProps & IEventsWindowDis
               <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
             </div>
           </div>
-          <div className="col s1">
-            <a className={"btn-small waves-effect waves-light"} onClick={this.handleShowModalFilterEvents}>
-              <i className={"material-icons " + classDefaultFilters}>filter_list</i>
+          <div className="col" style={{ width: "40px" }}>
+            <a onClick={this.handleShowModalFilterEvents}>
+              <i className="file-setting-item waves-effect material-icons secondary-content">filter_list</i>
             </a>
           </div>
-          <div className="col s1">
-            <a className={"nav-small-btn waves-effect waves-light"} data-activates="dropdown-btn-for-events" style={{ margin: 0 }}>
-              <i className="nav-small-icon material-icons context_menu">more_vert</i>
+          <div className="col" style={{ width: "40px" }}>
+            <a className="btn-floated" data-activates="dropdown-btn-for-events">
+              <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
             </a>
             <ul id="dropdown-btn-for-events" className="dropdown-content">
               <li><a onClick={this.handleReloadEvents}>{isArchiveLogFile ? localize("EventsTable.goto_current_logfile", locale) : localize("Common.update", locale)}</a></li>
