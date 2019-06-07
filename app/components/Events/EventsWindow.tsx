@@ -45,7 +45,7 @@ class EventsWindow extends React.Component<IEventsWindowProps & IEventsWindowDis
   }
 
   componentDidMount() {
-    $(".nav-small-btn, .file-setting-item").dropdown({
+    $(".btn-floated, .file-setting-item").dropdown({
       alignment: "left",
       belowOrigin: false,
       gutter: 0,
