@@ -234,6 +234,8 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
             <div className="row " />
             <div className="row " />
             <div className="row " />
+            <div className="row " />
+            <div className="row " />
             <div className="add-file-item-text">{localize("Settings.drag_drop", locale)}</div>
             <i className="material-icons large fullscreen">fullscreen</i>
           </div>

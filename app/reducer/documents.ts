@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { OrderedMap, OrderedSet, Record } from "immutable";
 import {
-  ARHIVE_DOCUMENTS, LOAD_ALL_DOCUMENTS, PACKAGE_DELETE_DOCUMENTS,
+  ADD_DOCUMENTS, ARHIVE_DOCUMENTS, LOAD_ALL_DOCUMENTS, PACKAGE_DELETE_DOCUMENTS,
   REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS, SELECT_ALL_DOCUMENTS,
   SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS,
 } from "../constants";
@@ -31,11 +31,19 @@ export default (documents = new DefaultReducerState(), action) => {
 
   switch (type) {
     case LOAD_ALL_DOCUMENTS + START:
+    case ADD_DOCUMENTS + START:
       return documents.set("loading", true);
 
     case LOAD_ALL_DOCUMENTS + SUCCESS:
       return documents
         .set("entities", arrayToMap(payload.documents, DocumentModel))
+        .set("loading", false)
+        .set("loaded", true)
+        .set("selected", new OrderedSet([]));
+
+    case ADD_DOCUMENTS + SUCCESS:
+      return documents
+        .update("entities", (entities) => arrayToMap(payload.documents, DocumentModel).merge(entities))
         .set("loading", false)
         .set("loaded", true)
         .set("selected", new OrderedSet([]));

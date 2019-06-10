@@ -1,14 +1,14 @@
 import * as fs from "fs";
 import * as path from "path";
 import {
-  ARHIVE_DOCUMENTS, DEFAULT_DOCUMENTS_PATH, DOCUMENTS_REVIEWED,
+  ADD_DOCUMENTS, ARHIVE_DOCUMENTS, DEFAULT_DOCUMENTS_PATH, DOCUMENTS_REVIEWED,
   FAIL, LOAD_ALL_DOCUMENTS,
   REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS, SELECT_ALL_DOCUMENTS,
   SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, VERIFY_SIGNATURE,
 } from "../constants";
-import { dirExists, extFile } from "../utils";
+import { dirExists, extFile, fileExists, md5 } from "../utils";
 
-interface IDocument {
+export interface IDocument {
   atime: Date;
   birthtime: Date;
   extension: string;
@@ -41,7 +41,7 @@ export function loadAllDocuments() {
               filename: file,
               filesize: stat.size,
               fullpath,
-              id: Math.random(),
+              id: md5(fullpath),
               mtime: stat.mtime,
             });
           }
@@ -51,6 +51,56 @@ export function loadAllDocuments() {
       dispatch({
         payload: { documents },
         type: LOAD_ALL_DOCUMENTS + SUCCESS,
+      });
+    }, 0);
+  };
+}
+
+export function addDocuments(documentsPaths: string[]) {
+  return (dispatch) => {
+    dispatch({
+      type: ADD_DOCUMENTS + START,
+    });
+
+    setTimeout(() => {
+      const documents: IDocument[] = [];
+
+      if (dirExists(DEFAULT_DOCUMENTS_PATH)) {
+        documentsPaths.forEach((uri) => {
+          const ourURI = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(uri));
+
+          try {
+            if (!fileExists(ourURI)) {
+              fs.writeFileSync(ourURI, fs.readFileSync(uri));
+            }
+
+            const fullpath = ourURI;
+            const extension = extFile(fullpath);
+            const stat = fs.statSync(fullpath);
+
+            if (!stat.isDirectory()) {
+              documents.push({
+                atime: stat.atime,
+                birthtime: stat.birthtime,
+                extension,
+                filename: path.basename(ourURI),
+                filesize: stat.size,
+                fullpath,
+                id: md5(fullpath),
+                mtime: stat.mtime,
+              });
+            }
+          } catch (e) {
+            dispatch({
+              type: ADD_DOCUMENTS + FAIL,
+            });
+          }
+        });
+      }
+
+      dispatch({
+        payload: { documents },
+        type: ADD_DOCUMENTS + SUCCESS,
       });
     }, 0);
   };

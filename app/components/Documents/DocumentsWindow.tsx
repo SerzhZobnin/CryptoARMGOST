@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import * as path from "path";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
@@ -8,7 +10,7 @@ import {
   removeAllFiles, removeAllRemoteFiles, selectFile,
   selectSignerCertificate, verifySignature,
 } from "../../AC";
-import { documentsReviewed } from "../../AC/documentsActions";
+import { addDocuments, documentsReviewed, IDocument } from "../../AC/documentsActions";
 import {
   arhiveDocuments, loadAllDocuments, removeAllDocuments,
   removeDocuments, selectAllDocuments, selectDocument,
@@ -26,7 +28,7 @@ import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/cons
 import * as jwt from "../../trusted/jwt";
 import { checkLicense } from "../../trusted/jwt";
 import * as trustedSign from "../../trusted/sign";
-import { dirExists, fileCoding, mapToArr } from "../../utils";
+import { dirExists, extFile, fileCoding, mapToArr, md5 } from "../../utils";
 import logger from "../../winstonLogger";
 import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
@@ -36,7 +38,10 @@ import DeleteDocuments from "./DeleteDocuments";
 import DocumentsTable from "./DocumentsTable";
 import FilterDocuments from "./FilterDocuments";
 
+const dialog = window.electron.remote.dialog;
+
 interface IDocumentsWindowProps {
+  addDocuments: (documents: string[]) => void;
   documents: any;
   documentsLoaded: boolean;
   documentsLoading: boolean;
@@ -131,7 +136,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
             <div className="row halfbottom">
               <div className="row halfbottom" />
               <div className="col" style={{ width: "40px", paddingLeft: "40px" }}>
-                <a >
+                <a onClick={this.addFiles.bind(this)}>
                   <i className="file-setting-item waves-effect material-icons secondary-content pulse">add</i>
                 </a>
               </div>
@@ -165,7 +170,16 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                 </div>
               </div>
             </div>
-            <DocumentsTable searchValue={this.state.searchValue} />
+            <div style={{ height: "calc(100% - 56px)", position: "relative" }}>
+              <div id="droppableZone" onDragEnter={(event: any) => this.dragEnterHandler(event)}
+                onDrop={(event: any) => this.dropHandler(event)}
+                onDragOver={(event: any) => this.dragOverHandler(event)}
+                onDragLeave={(event: any) => this.dragLeaveHandler(event)}>
+              </div>
+              <div onDragEnter={this.dropZoneActive.bind(this)}>
+                <DocumentsTable searchValue={this.state.searchValue} />
+              </div>
+            </div>
           </div>
           <div className="col s4 rightcol">
             <div className="row halfbottom" />
@@ -382,6 +396,109 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
   backView = () => {
     this.setState({ showSignatureInfo: false });
+  }
+
+  addFiles() {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { addDocuments } = this.props;
+
+    dialog.showOpenDialog(null, { properties: ["openFile", "multiSelections"] }, (selectedFiles: string[]) => {
+      if (selectedFiles) {
+        const documents: string[] = [];
+
+        selectedFiles.forEach((file) => {
+          const fullpath = file;
+          const stat = fs.statSync(fullpath);
+          if (!stat.isDirectory()) {
+            documents.push(fullpath);
+          }
+        });
+
+        addDocuments(documents);
+      }
+    });
+  }
+
+  dragLeaveHandler(event: any) {
+    event.target.classList.remove("draggedOver");
+
+    const zone = document.querySelector("#droppableZone");
+    if (zone) {
+      zone.classList.remove("droppableZone-active");
+    }
+  }
+
+  dragEnterHandler(event: any) {
+    event.target.classList.add("draggedOver");
+  }
+
+  dragOverHandler(event: any) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
+  directoryReader = (reader: any) => {
+    reader.readEntries((entries: any) => {
+      entries.forEach((entry: any) => {
+        this.scanFiles(entry);
+      });
+
+      if (entries.length === 100) {
+        this.directoryReader(reader);
+      }
+    });
+  }
+
+  scanFiles = (item: any) => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { addDocuments } = this.props;
+
+    if (item.isDirectory) {
+      const reader = item.createReader();
+
+      this.directoryReader(reader);
+    } else {
+      item.file((dropfile: any) => {
+        const documents: string[] = [];
+
+        const fullpath = dropfile.path;
+        const stat = fs.statSync(fullpath);
+
+        if (!stat.isDirectory()) {
+          documents.push(fullpath);
+        }
+
+        addDocuments(documents);
+      });
+    }
+  }
+
+  dropHandler = (event: any) => {
+    event.stopPropagation();
+    event.preventDefault();
+    event.target.classList.remove("draggedOver");
+
+    const zone = document.querySelector("#droppableZone");
+    if (zone) {
+      zone.classList.remove("droppableZone-active");
+    }
+
+    const items = event.dataTransfer.items;
+
+    for (const item of items) {
+      const entry = item.webkitGetAsEntry();
+
+      if (entry) {
+        this.scanFiles(entry);
+      }
+    }
+  }
+
+  dropZoneActive() {
+    const zone = document.querySelector("#droppableZone");
+    if (zone) {
+      zone.classList.add("droppableZone-active");
+    }
   }
 
   toggleDocumentsReviewed = () => {
@@ -627,7 +744,7 @@ export default connect((state) => {
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
 }, {
-    arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
+    addDocuments, arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
     filePackageSelect, filePackageDelete, packageSign, loadAllDocuments,
     removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
     selectAllDocuments, selectDocument, selectSignerCertificate,
