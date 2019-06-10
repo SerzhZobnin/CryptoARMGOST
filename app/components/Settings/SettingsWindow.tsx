@@ -75,10 +75,9 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
 
                     {
                       settings.default !== setting.id ?
-                        <div className="col s4 waves-effect waves-cryptoarm">
+                        <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.props.changeDefaultSettings(setting.id)}>
                           <div className="col s12 svg_icon">
-                            <a onClick={() => this.props.changeDefaultSettings(setting.id)}
-                              data-position="bottom">
+                            <a data-position="bottom">
                               <i className="material-icons certificate export" />
                             </a>
                           </div>
@@ -88,10 +87,9 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                         null
                     }
 
-                    <div className="col s4 waves-effect waves-cryptoarm">
+                    <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.props.history.push(LOCATION_SETTINGS_CONFIG)}>
                       <div className="col s12 svg_icon">
-                        <a onClick={() => this.props.history.push(LOCATION_SETTINGS_CONFIG)}
-                          data-position="bottom">
+                        <a data-position="bottom">
                           <i className="material-icons certificate export" />
                         </a>
                       </div>
@@ -100,10 +98,9 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
 
                     {
                       settings.default !== setting.id ?
-                        <div className="col s4 waves-effect waves-cryptoarm">
+                        <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.props.deleteSetting(setting.id)}>
                           <div className="col s12 svg_icon">
-                            <a onClick={() => this.props.deleteSetting(setting.id)}
-                              data-position="bottom">
+                            <a data-position="bottom">
                               <i className="material-icons certificate remove" />
                             </a>
                           </div>
@@ -117,17 +114,16 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                 :
                 <React.Fragment>
                   <div style={{ height: "calc(100vh - 110px)" }}>
-                  <BlockNotElements name={"active"} title={localize("Settings.setting_not_select", locale)} />
+                    <BlockNotElements name={"active"} title={localize("Settings.setting_not_select", locale)} />
                   </div>
                   <div className="row fixed-bottom-rightcolumn">
                     <div className="col s12">
                       <hr />
                     </div>
 
-                    <div className="col s4 waves-effect waves-cryptoarm">
+                    <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.props.createSettings()}>
                       <div className="col s12 svg_icon">
-                        <a onClick={() => this.props.createSettings()}
-                          data-position="bottom">
+                        <a data-position="bottom">
                           <i className="material-icons certificate remove" />
                         </a>
                       </div>

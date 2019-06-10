@@ -102,19 +102,17 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
               <div className="desktoplic_text_item">Управление лицензией КриптоАРМ ГОСТ</div>
               <hr />
               <div className="row" >
-                <div className="col s6 waves-effect waves-cryptoarm hover_outline">
+                <div className="col s6 waves-effect waves-cryptoarm hover_outline" onClick={this.showModalLicenseSetup}>
                   <div className="col s12 svg_icon">
-                    <a data-position="bottom"
-                      onClick={this.showModalLicenseSetup}>
+                    <a data-position="bottom">
                       <i className="material-icons license install" />
                     </a>
                   </div>
                   <div className="col s12 svg_icon_text">{localize("License.enter_key", locale)}</div>
                 </div>
-                <div className="col s6 waves-effect waves-cryptoarm hover_outline">
+                <div className="col s6 waves-effect waves-cryptoarm hover_outline" onClick={() => this.gotoLink(localize("License.link_buy_license", locale))}>
                   <div className="col s12 svg_icon">
-                    <a data-position="bottom"
-                      onClick={() => this.gotoLink(localize("License.link_buy_license", locale))}>
+                    <a data-position="bottom">
                       <i className="material-icons license buy" />
                     </a>
                   </div>
@@ -126,19 +124,17 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
               <div className="desktoplic_text_item">Управление лицензией КриптоПро CSP</div>
               <hr />
               <div className="row" >
-                <div className="col s6 waves-effect waves-cryptoarm hover_outline">
+                <div className="col s6 waves-effect waves-cryptoarm hover_outline" onClick={this.showModalLicenseCSPSetup}>
                   <div className="col s12 svg_icon">
-                    <a data-position="bottom"
-                      onClick={this.showModalLicenseCSPSetup}>
+                    <a data-position="bottom">
                       <i className="material-icons license install" />
                     </a>
                   </div>
                   <div className="col s12 svg_icon_text">{localize("License.enter_key", locale)}</div>
                 </div>
-                <div className="col s6 waves-effect waves-cryptoarm hover_outline">
+                <div className="col s6 waves-effect waves-cryptoarm hover_outline" onClick={() => this.gotoLink(localize("License.link_buy_license_csp", locale))}>
                   <div className="col s12 svg_icon">
-                    <a data-position="bottom"
-                      onClick={() => this.gotoLink(localize("License.link_buy_license_csp", locale))}>
+                    <a data-position="bottom">
                       <i className="material-icons license buy" />
                     </a>
                   </div>

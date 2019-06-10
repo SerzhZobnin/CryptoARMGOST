@@ -999,22 +999,18 @@ class CertWindow extends React.Component<any, any> {
                   <div className="col s12">
                     <hr />
                   </div>
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => certificate ? this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE) : this.handleShowModalByType(MODAL_EXPORT_CRL)}>
                     <div className="col s12 svg_icon">
-                      <a
-                        onClick={() => certificate ? this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE) : this.handleShowModalByType(MODAL_EXPORT_CRL)}
-                        data-position="bottom">
+                      <a data-position="bottom">
                         <i className="material-icons certificate export" />
                       </a>
                     </div>
                     <div className="col s12 svg_icon_text">{localize("Certificate.cert_export", locale)}</div>
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => certificate ? this.handleShowModalByType(MODAL_DELETE_CERTIFICATE) : this.handleShowModalByType(MODAL_DELETE_CRL)}>
                     <div className="col s12 svg_icon">
-                      <a
-                        onClick={() => certificate ? this.handleShowModalByType(MODAL_DELETE_CERTIFICATE) : this.handleShowModalByType(MODAL_DELETE_CRL)}
-                        data-position="bottom">
+                      <a data-position="bottom">
                         <i className="material-icons certificate remove" />
                       </a>
                     </div>
@@ -1023,11 +1019,9 @@ class CertWindow extends React.Component<any, any> {
 
                   {
                     certificate && certificate.category === REQUEST ?
-                      <div className="col s4 waves-effect waves-cryptoarm">
+                      <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleOpenCSRFolder}>
                         <div className="col s12 svg_icon">
-                          <a
-                            onClick={this.handleOpenCSRFolder}
-                            data-position="bottom">
+                          <a data-position="bottom">
                             <i className="material-icons certificate csrfolder" />
                           </a>
                         </div>
