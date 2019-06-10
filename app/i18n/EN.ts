@@ -179,6 +179,7 @@ export default {
     certs_request: "Certificate Enrollment Request",
     certs_root: "Trusted Root Certificates",
     certs_token: "External token/card certificates",
+    crls: "Certification revocation list",
     delete_certificate: "Delete certificate",
     export_cert: "Export the certificate",
     import_key: "Import the key",

@@ -20,7 +20,6 @@ import CloudCSP from "../CloudCSP/CloudCSP";
 import CRLDelete from "../CRL/CRLDelete";
 import CRLExport from "../CRL/CRLExport";
 import CRLInfo from "../CRL/CRLInfo";
-import CRLList from "../CRL/CRLList";
 import Dialog from "../Dialog";
 import Modal from "../Modal";
 import PasswordDialog from "../PasswordDialog";
@@ -969,9 +968,8 @@ class CertWindow extends React.Component<any, any> {
                       {(matches) =>
                         matches ? (
                           <div style={{ display: "flex" }}>
-                            <div style={{ flex: "1 1 auto", height: "calc(100vh - 140px)" }}>
-                              <CertificateList activeCert={this.handleActiveCert} operation="certificate" />
-                              <CRLList activeCert={this.handleActiveCRL} />
+                            <div style={{ flex: "1 1 auto" }}>
+                              <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} operation="certificate" />
                             </div>
                           </div>
                         ) :

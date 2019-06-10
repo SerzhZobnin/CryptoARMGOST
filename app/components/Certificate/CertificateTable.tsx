@@ -102,7 +102,7 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
     return (
       <React.Fragment>
         <div style={{ display: "flex" }}>
-          <div style={{ flex: "1 1 auto", height: "calc(100vh - 128px)" }}>
+          <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
             <AutoSizer>
               {({ height, width }) => (
                 <Table
