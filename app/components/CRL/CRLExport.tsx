@@ -36,22 +36,28 @@ class CRLExport extends React.Component<ICRLExportProps, ICRLExportState> {
     const { localize, locale } = this.context;
 
     return (
-      <div >
-        <div className="row">
-          <div className="col s12">
-            <span className="card-infos sub">
-              <div className="row" />
-              {this.getMessage()}
-            </span>
+      <div className="row halftop">
+        <div className="col s12">
+          <div className="content-wrapper tbody border_group">
+            <div className="row">
+              <div className="col s12">
+                <span className="card-infos sub">
+                  {this.getMessage()}
+                </span>
+              </div>
+            </div>
+            {this.getBody()}
           </div>
         </div>
-        {this.getBody()}
-        <div className="row">
-          <div className="col s2 offset-s6">
-            <a className={"waves-effect waves-light btn modal-close "} onClick={this.handleExport}>{localize("Export.export", locale)}</a>
-          </div>
-          <div className="col s3  offset-s1">
-            <a className={"waves-effect waves-light btn modal-close "} onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+
+        <div className="row halfbottom">
+          <div style={{ float: "right" }}>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className={"btn btn-text waves-effect waves-light modal-close "} onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+            </div>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className={"btn btn-outlined waves-effect waves-light modal-close"} onClick={this.handleExport}>{localize("Export.export", locale)}</a>
+            </div>
           </div>
         </div>
       </div>
@@ -72,7 +78,7 @@ class CRLExport extends React.Component<ICRLExportProps, ICRLExportState> {
     return (
       <React.Fragment>
         <div className="row">
-          <div className="col s6 card-infos sub">
+          <div className="col s12 card-infos sub">
             <EncodingTypeSelector EncodingValue={encodingType} handleChange={(encoding: string) => this.handleEncodingChange(encoding)} />
           </div>
         </div>
