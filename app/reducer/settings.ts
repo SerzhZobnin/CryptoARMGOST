@@ -140,12 +140,6 @@ export default (settings = new DefaultReducerState(), action) => {
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "sign", "signer"], payload.selected);
 
-    case REMOVE_ALL_CERTIFICATES:
-      return settings
-        .setIn(["entities", settings.active, "mtime"], new Date().getTime())
-        .setIn(["entities", settings.active, "sign", "signer"], "")
-        .setIn(["entities", settings.active, "encrypt", "recipients"], OrderedMap({}));
-
     case ADD_RECIPIENT_CERTIFICATE:
       if (!settings.active) {
         settings = settings.set("active", settings.default);
