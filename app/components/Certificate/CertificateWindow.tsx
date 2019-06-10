@@ -964,20 +964,11 @@ class CertWindow extends React.Component<any, any> {
               <div className={"collection " + VIEW}>
                 <div className="row">
                   <div className="col s12">
-                    <Media query="(max-width: 1020px)">
-                      {(matches) =>
-                        matches ? (
-                          <div style={{ display: "flex" }}>
-                            <div style={{ flex: "1 1 auto" }}>
-                              <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} operation="certificate" />
-                            </div>
-                          </div>
-                        ) :
-                          (
-                            <CertificateTable activeCert={this.handleActiveCert} certificate={this.state.certificate} operation="certificate" />
-                          )
-                      }
-                    </Media>
+                    <div style={{ display: "flex" }}>
+                      <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
+                        <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} operation="certificate" />
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />

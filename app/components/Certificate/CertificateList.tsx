@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import Media from "react-media";
 import { connect } from "react-redux";
 import { AutoSizer, List } from "react-virtualized";
 import { loadAllCertificates, verifyCertificate } from "../../AC";
@@ -9,7 +10,7 @@ import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
 import CRLListItem from "../CRL/CRLListItem";
 import ProgressBars from "../ProgressBars";
 import CertificateListItem from "./CertificateListItem";
-
+import CertificateListItemBigWidth from "./CertificateListItemBigWidth";
 
 const HEIGHT_MODAL = 356;
 const HEIGHT_FULL = 432;
@@ -165,14 +166,27 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
                           key={key}
                           style={style}
                         >
-                          <CertificateListItem
-                            key={cert.id}
-                            cert={cert}
-                            chooseCert={() => activeCert(cert)}
-                            operation={operation}
-                            isOpen={isItemOpened(cert.id.toString())}
-                            toggleOpen={toggleOpenItem(cert.id.toString())}
-                            style={style} />
+                          <Media query="(max-width: 1020px)">
+                            {(matches) =>
+                              matches ? (
+                                <CertificateListItem
+                                  key={cert.id}
+                                  cert={cert}
+                                  chooseCert={() => activeCert(cert)}
+                                  operation={operation}
+                                  isOpen={isItemOpened(cert.id.toString())}
+                                  toggleOpen={toggleOpenItem(cert.id.toString())}
+                                  style={style} />
+                              ) : <CertificateListItemBigWidth
+                                  key={cert.id}
+                                  cert={cert}
+                                  chooseCert={() => activeCert(cert)}
+                                  operation={operation}
+                                  isOpen={isItemOpened(cert.id.toString())}
+                                  toggleOpen={toggleOpenItem(cert.id.toString())}
+                                  style={style} />
+                            }
+                          </Media>
                         </ul>
                       );
                     }}
