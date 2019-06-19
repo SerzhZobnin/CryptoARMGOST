@@ -186,7 +186,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             </div> :
             <div className="col s12">
               <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
-                <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                <a onClick={() => {
+                  this.props.activeSetting(this.props.setting.id);
+                }}
+                  className="btn btn-outlined waves-effect waves-light"
+                  style={{ width: "100%" }}>
                   {localize("Settings.Choose", locale)}
                 </a>
               </Link>
