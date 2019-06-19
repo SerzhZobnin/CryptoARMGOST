@@ -649,9 +649,13 @@ class CertWindow extends React.Component<any, any> {
                   <hr />
                 </div>
                 <div className="col s12" style={{ padding: 0 }}>
-                  <CertificateInfo certificate={certificate} />
-                  <a className="collection-info chain-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
-                  <CertificateChainInfo certificate={certificate} key={"chain_" + certificate.id} style="" onClick={() => { return; }} />
+                  <div style={{ height: "calc(100vh - 150px)" }}>
+                    <div className="add-certs">
+                      <CertificateInfo certificate={certificate} />
+                      <a className="collection-info chain-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
+                      <CertificateChainInfo certificate={certificate} key={"chain_" + certificate.id} style="" onClick={() => { return; }} />
+                    </div>
+                  </div>
                 </div>
               </React.Fragment>
           }
