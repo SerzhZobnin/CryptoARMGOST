@@ -30,7 +30,7 @@ class ContainersList extends React.Component<any, any> {
     const activeSection = active ? "active" : "";
 
     return (
-      <li>
+      <li key={head}>
         <div className={`collapsible-header color ${activeSection}`}>
           {head}
         </div>

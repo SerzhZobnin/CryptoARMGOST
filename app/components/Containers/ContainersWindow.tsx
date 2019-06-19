@@ -237,7 +237,7 @@ class ContainersWindow extends React.Component<any, any> {
       return <ProgressBars />;
     }
 
-    if (container.certificateLoaded && !container.certificate) {
+    if (!container.certificateItem) {
       return <BlockNotElements name={"active"} title={localize("Containers.get_certificate_fail", locale)} />;
     }
 
