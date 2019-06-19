@@ -623,13 +623,13 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
     }
 
     return (
-      <div className="add-certs">
+      <div>
         <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
-        {cert}
-        {/* {
-          certificate && certificate.category === REQUEST ?
-            <RequestButtons onCopy={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)} /> : null
-        } */}
+        <div style={{ height: "calc(100vh - 150px)" }}>
+          <div className="add-certs">
+            {cert}
+          </div>
+        </div>
       </div>
     );
   }
