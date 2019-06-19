@@ -61,41 +61,13 @@ class MenuBar extends React.Component<any, IMenuBarState> {
       this.removeAllFiles();
     }
 
-    const state = ({
-      default: settings.default,
-      settings: settings.toJS(),
-    });
-
-    state.settings = mapToArr(settings.entities);
-
-    const newSettings = [];
-
-    for (let setting of state.settings) {
-      if (setting && setting.encrypt) {
-        setting = setting.setIn(["encrypt", "recipients"], mapToArr(setting.encrypt.recipients));
-      }
-
-      newSettings.push(setting);
-    }
-
-    state.settings = newSettings;
-
     for (const filePath of tempContentOfSignedFiles) {
       if (fileExists(filePath)) {
         fs.unlinkSync(filePath);
       }
     }
 
-    const sstate = JSON.stringify(state, null, 4);
-    fs.writeFile(SETTINGS_JSON, sstate, (err: any) => {
-      if (err) {
-        // tslint:disable-next-line:no-console
-        console.log(localize("Settings.write_file_failed", locale));
-      }
-      // tslint:disable-next-line:no-console
-      console.log(localize("Settings.write_file_ok", locale));
-      remote.getCurrentWindow().close();
-    });
+    remote.getCurrentWindow().close();
   }
 
   getTitle() {

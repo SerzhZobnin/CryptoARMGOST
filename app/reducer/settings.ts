@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
 import {
   ACTIVE_SETTING, ADD_RECIPIENT_CERTIFICATE, BASE64,
@@ -6,9 +7,9 @@ import {
   CHANGE_ENCRYPT_OUTFOLDER, CHANGE_LOCALE, CHANGE_SETTINGS_NAME,
   CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING, CHANGE_SIGNATURE_OUTFOLDER, CHANGE_SIGNATURE_TIMESTAMP,
   CREATE_SETTING, DELETE_RECIPIENT_CERTIFICATE, DELETE_SETTING,
-  REMOVE_ALL_CERTIFICATES, RU, SELECT_SIGNER_CERTIFICATE, TOGGLE_SAVE_TO_DOCUMENTS,
+  REMOVE_ALL_CERTIFICATES, RU, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_SAVE_TO_DOCUMENTS,
 } from "../constants";
-import { uuid } from "../utils";
+import { fileExists, mapToArr, uuid } from "../utils";
 
 export const RecipientModel = Record({
   certId: null,
@@ -55,11 +56,12 @@ export default (settings = new DefaultReducerState(), action) => {
     case CREATE_SETTING:
       const id = uuid();
 
-      return settings.setIn(["entities", id], new SettingsModel({
+      settings = settings.setIn(["entities", id], new SettingsModel({
         id,
         mtime: new Date().getTime(),
         name: `Настройка #${settings.entities.size + 1}`,
       }));
+      break;
 
     case ACTIVE_SETTING:
       return settings.set("active", payload.id);
@@ -69,97 +71,140 @@ export default (settings = new DefaultReducerState(), action) => {
         return settings;
       }
 
-      return settings.deleteIn(["entities", payload.id]);
+      settings = settings.deleteIn(["entities", payload.id]);
+      break;
 
     case CHANGE_DEFAULT_SETTINGS:
-      return settings.set("default", payload.id);
+      settings = settings.set("default", payload.id);
+      break;
 
     case TOGGLE_SAVE_TO_DOCUMENTS:
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "saveToDocuments"], payload.saveToDocuments);
+      break;
 
     case CHANGE_SETTINGS_NAME:
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "name"], payload.name);
+      break;
 
     case CHANGE_SIGNATURE_DETACHED:
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "sign", "detached"], payload.detached);
+      break;
 
     case CHANGE_SIGNATURE_ENCODING:
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "sign", "encoding"], payload.encoding);
+      break;
 
     case CHANGE_SIGNATURE_OUTFOLDER:
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "outfolder"], payload.outfolder);
+      break;
 
     case CHANGE_SIGNATURE_TIMESTAMP:
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "sign", "timestamp"], payload.timestamp);
+      break;
 
     case CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT:
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "encrypt", "archive"], payload.archive);
+      break;
 
     case CHANGE_DELETE_FILES_AFTER_ENCRYPT:
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "encrypt", "delete"], payload.del);
+      break;
 
     case CHANGE_ECRYPT_ENCODING:
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "encrypt", "encoding"], payload.encoding);
+      break;
 
     case CHANGE_ENCRYPT_OUTFOLDER:
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "outfolder"], payload.outfolder);
+      break;
 
     case CHANGE_LOCALE:
       settings = settings.set("active", settings.default);
 
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "locale"], payload.locale);
+      break;
 
     case SELECT_SIGNER_CERTIFICATE:
       if (!settings.active) {
         settings = settings.set("active", settings.default);
       }
 
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "sign", "signer"], payload.selected);
+      break;
 
     case ADD_RECIPIENT_CERTIFICATE:
       if (!settings.active) {
         settings = settings.set("active", settings.default);
       }
 
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "encrypt", "recipients", payload.certId], new RecipientModel({
           certId: payload.certId,
         }));
+      break;
 
     case DELETE_RECIPIENT_CERTIFICATE:
       if (!settings.active) {
         settings = settings.set("active", settings.default);
       }
 
-      return settings
+      settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .deleteIn(["entities", settings.active, "encrypt", "recipients", payload.recipient]);
+      break;
   }
+
+  const state = ({
+    default: settings.default,
+    settings: settings.toJS(),
+  });
+
+  state.settings = mapToArr(settings.entities);
+
+  const newSettings = [];
+
+  for (let setting of state.settings) {
+    if (setting && setting.encrypt) {
+      setting = setting.setIn(["encrypt", "recipients"], mapToArr(setting.encrypt.recipients));
+    }
+
+    newSettings.push(setting);
+  }
+
+  state.settings = newSettings;
+
+  const sstate = JSON.stringify(state, null, 4);
+  fs.writeFile(SETTINGS_JSON, sstate, (err: any) => {
+    if (err) {
+      // tslint:disable-next-line:no-console
+      console.log(err);
+    }
+  });
 
   return settings;
 };
