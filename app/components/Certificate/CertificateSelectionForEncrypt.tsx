@@ -594,19 +594,8 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
     });
   }
 
-  getCertificateOrCRLInfo() {
-    const { certificate } = this.state;
-    const { localize, locale } = this.context;
-
-    if (certificate) {
-      return this.getCertificateInfoBody();
-    } else {
-      return <BlockNotElements name={"active"} title={localize("Certificate.cert_not_select", locale)} />;
-    }
-  }
-
-  getCertificateInfoBody() {
-    const { activeCertInfoTab, certificate } = this.state;
+  getCertificateInfoBody(certificate: any) {
+    const { activeCertInfoTab } = this.state;
     const { localize, locale } = this.context;
 
     let cert: any = null;
@@ -625,13 +614,36 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
     }
 
     return (
-      <div className="add-certs">
-        <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
-        <div style={{ height: "calc(100vh - 150px)" }}>
-          <div className="add-certs">
-            {cert}
-          </div>
-        </div>
+      <div>
+        <Media query="(max-height: 870px)">
+          {(matches) =>
+            matches ? (
+              <React.Fragment>
+                <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
+                <div style={{ height: "calc(100vh - 150px)" }}>
+                  <div className="add-certs">
+                    {cert}
+                  </div>
+                </div>
+              </ React.Fragment>
+            ) :
+              <React.Fragment>
+                <div className="col s12">
+                  <div className="desktoplic_text_item">Сведения о сертификате:</div>
+                  <hr />
+                </div>
+                <div className="col s12" style={{ padding: 0 }}>
+                  <div style={{ height: "calc(100vh - 150px)" }}>
+                    <div className="add-certs">
+                      <CertificateInfo certificate={certificate} />
+                      <a className="collection-info chain-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
+                      <CertificateChainInfo certificate={certificate} key={"chain_" + certificate.id} style="" onClick={() => { return; }} />
+                    </div>
+                  </div>
+                </div>
+              </React.Fragment>
+          }
+        </Media>
       </div>
     );
   }
@@ -853,16 +865,21 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
                 <hr />
               </div>
               <div className="col s12">
-                <div style={{ height: "calc(100vh - 100px)" }}>
-                  <div className="add-certs">
-                    {(this.state.activeCertificate) ? <CertificateInfo certificate={this.state.activeCertificate} /> :
-                      <div>
-                        <RecipientsList onActive={this.handleActiveCert} handleRemoveRecipient={this.handleRemoveRecipient} recipients={this.state.selectedRecipients} />
-                      </div>
-                    }
-                    <BlockNotElements name={CHOOSE_VIEW} title={localize("Certificate.cert_not_select", locale)} />
+                {(this.state.activeCertificate) ?
+                  <div>
+                    <div style={{ height: "calc(100vh - 120px)" }}>
+                      {this.getCertificateInfoBody(this.state.activeCertificate)}
+                    </div>
                   </div>
-                </div>
+                  :
+                  <div style={{ height: "calc(100vh - 100px)" }}>
+                    <div className="add-certs">
+                      <RecipientsList onActive={this.handleActiveCert} handleRemoveRecipient={this.handleRemoveRecipient} recipients={this.state.selectedRecipients} />
+                      <BlockNotElements name={CHOOSE_VIEW} title={localize("Certificate.cert_not_select", locale)} />
+                    </div>
+                  </div>
+                }
+
               </div>
             </div>
             <div className="row fixed-bottom-rightcolumn">
