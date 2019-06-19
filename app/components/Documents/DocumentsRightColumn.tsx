@@ -303,7 +303,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
   }
 
   checkEnableOperationButton = (operation: string) => {
-    const { documents, isDocumentsReviewed, signer } = this.props;
+    const { documents, isDocumentsReviewed, signer, recipients } = this.props;
 
     if (!documents.length) {
       return false;
@@ -334,9 +334,13 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         return true;
 
       case ENCRYPT:
-        for (const document of documents) {
-          if (document.extension === "enc") {
-            return false;
+        if (!recipients || !recipients.length) {
+          return false;
+        } else {
+          for (const document of documents) {
+            if (document.extension === "enc") {
+              return false;
+            }
           }
         }
 

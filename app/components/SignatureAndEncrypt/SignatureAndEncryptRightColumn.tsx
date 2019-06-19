@@ -134,8 +134,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             <ul id="dropdown-btn-signer" className="dropdown-content">
               <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
                 <li><a onClick={() => {
-                    this.props.activeSetting(this.props.setting.id);
-                  }}>Заменить</a></li>
+                  this.props.activeSetting(this.props.setting.id);
+                }}>Заменить</a></li>
               </Link>
               <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
             </ul>
@@ -872,7 +872,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   checkEnableOperationButton = (operation: string) => {
-    const { activeFilesArr, isDocumentsReviewed, signer } = this.props;
+    const { activeFilesArr, isDocumentsReviewed, signer, recipients } = this.props;
 
     if (!activeFilesArr.length) {
       return false;
@@ -903,9 +903,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         return true;
 
       case ENCRYPT:
-        for (const document of activeFilesArr) {
-          if (document.extension === "enc") {
-            return false;
+        if (!recipients || !recipients.length) {
+          return false;
+        } else {
+          for (const document of activeFilesArr) {
+            if (document.extension === "enc") {
+              return false;
+            }
           }
         }
 
