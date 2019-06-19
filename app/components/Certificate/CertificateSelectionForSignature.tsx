@@ -797,8 +797,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
       return <ProgressBars />;
     }
 
-    const NAME = certificates.length < 1 ? "active" : "not-active";
-    const VIEW = certificates.length < 1 ? "not-active" : "";
+    const VIEW = certificates.size < 1 ? "not-active" : "";
 
     return (
       <div className="main">
@@ -852,12 +851,15 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
                   <div className="col s12">
                     <div style={{ display: "flex" }}>
                       <div style={{ flex: "1 1 auto", height: "calc(100vh - 140px)" }}>
-                        <CertificateList activeCert={this.handleActiveCert} operation="sign" />
+                        {
+                          certificates.size < 1 ?
+                            <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
+                            <CertificateList activeCert={this.handleActiveCert} operation="sign" />
+                        }
                       </div>
                     </div>
                   </div>
                 </div>
-                <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />
               </div>
             </div>
           </div>

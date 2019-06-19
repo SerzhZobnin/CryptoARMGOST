@@ -914,8 +914,7 @@ class CertWindow extends React.Component<any, any> {
       return <ProgressBars />;
     }
 
-    const NAME = certificates.length < 1 && crls.length < 1 ? "active" : "not-active";
-    const VIEW = certificates.length < 1 && crls.length < 1 ? "not-active" : "";
+    const VIEW = certificates.size < 1 && crls.length < 1 ? "not-active" : "";
 
     return (
       <div className="main">
@@ -969,12 +968,15 @@ class CertWindow extends React.Component<any, any> {
                   <div className="col s12">
                     <div style={{ display: "flex" }}>
                       <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
-                        <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} operation="certificate" />
+                        {
+                          certificates.size < 1 && crls.length < 1 ?
+                            <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
+                            <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} operation="certificate" />
+                        }
                       </div>
                     </div>
                   </div>
                 </div>
-                <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />
               </div>
             </div>
           </div>
