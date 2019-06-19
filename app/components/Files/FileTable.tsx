@@ -170,7 +170,7 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
                     dataKey="filename"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.4}
+                    width={width * 0.3}
                     label={localize("Documents.filename", locale)}
                   />
                   <Column
@@ -221,7 +221,7 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
                       );
                     }}
                     dataKey="filesize"
-                    width={width * 0.1}
+                    width={width * 0.2}
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     label={localize("Documents.filesize", locale)}
