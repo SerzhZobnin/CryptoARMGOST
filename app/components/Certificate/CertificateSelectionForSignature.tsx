@@ -1,4 +1,4 @@
-import { execFileSync } from "child_process";
+import { execFile } from "child_process";
 import * as os from "os";
 import PropTypes from "prop-types";
 import React from "react";
@@ -931,7 +931,13 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
       }
 
       if (fileExists(executablePath)) {
-        execFileSync(executablePath);
+        execFile(executablePath, (error, stdout, stderr) => {
+          if (error) {
+            console.log("execFile error", error);
+          }
+
+          console.log(stdout);
+        });
 
         return;
       }
