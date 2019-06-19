@@ -13,6 +13,7 @@ const dialog = window.electron.remote.dialog;
 interface ILicenseSetupModalProps {
   closeWindow: () => void;
   loadLicense: () => void;
+  onCancel?: () => void;
 }
 
 interface ILicenseSetupModalState {
@@ -37,6 +38,10 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
 
   componentDidMount() {
     $("input#input_file, textarea#input_key").characterCounter();
+  }
+
+  componentWillUnmount() {
+    this.handelCancel();
   }
 
   paste() {
@@ -162,10 +167,10 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
           <div className="col s12">
             <div className="content-wrapper tbody border_group">
               <div className="row halfbottom" />
-              <div className="col s12 license-key">
+              <div className="col s12">
                 <div className="input-field col s12 input-field-licence">
                   <i className="material-icons prefix key-prefix" style={{ left: "-10px" }}>vpn_key</i>
-                  <textarea id="input_key" className="materialize-textarea" value={this.state.license_key} onChange={function (e: any) {
+                  <input id="input_key" type="text" value={this.state.license_key} onChange={function (e: any) {
                     self.setState({ license_file: self.state.license_file, license_key: e.target.value });
                   }} />
                   <label htmlFor="input_key">{localize("License.entered_the_key", locale)}</label>
@@ -176,8 +181,9 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
               </div>
               <div className="col s12 or">
                 {localize("Common.or", locale)}
+                <div className="row halfbottom" />
               </div>
-              <div className="col s12 license-file">
+              <div className="col s12">
                 <div className="input-field col s12 input-field-licence">
                   <i className="material-icons prefix key-prefix" style={{ left: "-10px" }}>vpn_key</i>
                   <input id="input_file" type="text" value={this.state.license_file} onChange={function (e: any) {
@@ -198,7 +204,7 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
         <div className="row halfbottom">
           <div style={{ float: "right" }}>
             <div style={{ display: "inline-block", margin: "10px" }}>
-              <a className="btn btn-text waves-effect waves-light modal-close">{localize("Common.cancel", locale)}</a>
+              <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
             </div>
             <div style={{ display: "inline-block", margin: "10px" }}>
               <a className={"btn btn-outlined waves-effect waves-light modal-close " + disable} onClick={this.setupLicense.bind(this)}>{localize("Common.apply", locale)}</a>
@@ -208,6 +214,14 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
 
       </React.Fragment>
     );
+  }
+
+  handelCancel = () => {
+    const { onCancel } = this.props;
+
+    if (onCancel) {
+      onCancel();
+    }
   }
 }
 

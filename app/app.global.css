@@ -2016,7 +2016,7 @@ p.message_onlinelic{
     align-items: center;
     height: 100%;
 }
-.input-field-licence .key-prefix {
+.input-field-licence .key-prefix, .key-label {
   font-size: 20px;
   width: 20px;
   position: relative;

@@ -52,7 +52,7 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
               <div className="row" />
               <div className="row">
                 <div className="input-field col input-field-csr col s11">
-                  <i className="material-icons prefix key-prefix">vpn_key</i>
+                  <i className="material-icons prefix key-prefix key-label">vpn_key</i>
                   <input
                     id="license"
                     type="text"
