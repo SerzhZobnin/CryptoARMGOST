@@ -143,6 +143,11 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
               <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
             </a>
             <ul id="dropdown-btn-signer" className="dropdown-content">
+              <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
+                <li><a onClick={() => {
+                  this.props.activeSetting(this.props.setting.id);
+                }}>Заменить</a></li>
+              </Link>
               <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
             </ul>
           </div>
