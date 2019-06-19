@@ -815,7 +815,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
                     {
                       (Number(this.getCPCSPVersion().charAt(0)) < 5) ? null :
                         <li>
-                          <a onClick={() => this.handleShowModalByType(MODAL_CLOUD_CSP)}>
+                          <a onClick={this.importFromCloudCSP}>
                             {localize("CloudCSP.cert_import_from_cloudCSP", locale)}
                           </a>
                         </li>
