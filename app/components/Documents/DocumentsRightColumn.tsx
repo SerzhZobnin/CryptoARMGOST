@@ -35,7 +35,6 @@ import RecipientsList from "../RecipientsList";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 import SignerInfo from "../Signature/SignerInfo";
 import DeleteDocuments from "./DeleteDocuments";
-import DocumentsRightColumn from "./DocumentsRightColumn";
 import DocumentsTable from "./DocumentsTable";
 import FilterDocuments from "./FilterDocuments";
 
@@ -65,7 +64,7 @@ interface IDocumentsWindowState {
   showModalFilterDocments: boolean;
 }
 
-class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsWindowState> {
+class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocumentsWindowState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -99,232 +98,189 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     $(".tooltipped").tooltip("remove");
   }
 
-  componentWillReceiveProps(nextProps: IDocumentsWindowProps) {
-    const { documents, signatures } = this.props;
-
-    if (documents.length !== nextProps.documents.length || signatures.length !== nextProps.signatures.length) {
-      if (nextProps.documents && nextProps.documents.length === 1) {
-        if (nextProps.signatures && nextProps.signatures.length) {
-          const file = nextProps.documents[0];
-
-          const fileSignatures = nextProps.signatures.filter((signature: any) => {
-            return signature.fileId === file.id;
-          });
-
-          const showSignatureInfo = fileSignatures && fileSignatures.length > 0 ? true : false;
-
-          this.setState({ fileSignatures, file, showSignatureInfo });
-
-          return;
-        }
-      }
-    }
-
-    if (!documents || !documents.length || !nextProps.documents || !nextProps.documents.length || nextProps.documents.length > 1 || documents[0].id !== nextProps.documents[0].id) {
-      this.setState({ showSignatureInfo: false, signerCertificate: null });
-    }
-  }
-
   render() {
     const { localize, locale } = this.context;
     const { documents, isDefaultFilters, isDocumentsReviewed, recipients, setting, signer } = this.props;
     const { fileSignatures, file, showSignatureInfo } = this.state;
 
     return (
-      <div className="content-noflex">
-        <div className="row">
-          <div className="col s8 leftcol">
-            <div className="row halfbottom">
-              <div className="row halfbottom" />
-              <div className="col" style={{ width: "40px", paddingLeft: "40px" }}>
-                <a onClick={this.addFiles.bind(this)}>
-                  <i className="file-setting-item waves-effect material-icons secondary-content pulse">add</i>
-                </a>
-              </div>
-              <div className="col" style={{ width: "calc(100% - 140px)" }}>
-                <div className="input-field input-field-csr col s12 border_element find_box">
-                  <i className="material-icons prefix">search</i>
-                  <input
-                    id="search"
-                    type="search"
-                    placeholder={localize("EventsTable.search_in_doclist", locale)}
-                    value={this.state.searchValue}
-                    onChange={this.handleSearchValueChange} />
-                  <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
-                </div>
-              </div>
-              <div className="col" style={{ width: "40px" }}>
-                <a onClick={this.handleShowModalFilterDocuments}>
-                  <i className="file-setting-item waves-effect material-icons secondary-content">filter_list</i>
-                </a>
-              </div>
-              <div className="col" style={{ width: "40px" }}>
-                <div>
-                  <a className="btn-floated" data-activates="dropdown-btn-set-add-files">
-                    <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
-                  </a>
-                  <ul id="dropdown-btn-set-add-files" className="dropdown-content">
-                    <li><a onClick={this.handleReloadDocuments}>{localize("Common.update", locale)}</a></li>
-                    <li><a onClick={this.handleSelectAllDocuments}>{localize("Documents.selected_all", locale)}</a></li>
-                    <li><a onClick={this.handleOpenDocumentsFolder}>{localize("Documents.go_to_documents_folder", locale)}</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div style={{ height: "calc(100% - 56px)", position: "relative" }}>
-              <div id="droppableZone" onDragEnter={(event: any) => this.dragEnterHandler(event)}
-                onDrop={(event: any) => this.dropHandler(event)}
-                onDragOver={(event: any) => this.dragOverHandler(event)}
-                onDragLeave={(event: any) => this.dragLeaveHandler(event)}>
-              </div>
-              <div onDragEnter={this.dropZoneActive.bind(this)}>
-                <DocumentsTable searchValue={this.state.searchValue} />
-              </div>
-            </div>
-          </div>
-          <div className="col s4 rightcol">
-            <div className="row halfbottom" />
-
-            {(showSignatureInfo && fileSignatures) ?
-              (
-                <React.Fragment>
-                  <div className="col s12">
-                    <div className="desktoplic_text_item">{localize("Sign.sign_info", locale)}</div>
-                    <hr />
-                  </div>
-                  <div style={{ height: "calc(100vh - 100px)" }}>
-                    <div className="add-certs">
-                      <SignatureInfoBlock
-                        signatures={fileSignatures}
-                        file={file}
-                      />
-                    </div>
-                  </div>
-                  <div className="row fixed-bottom-rightcolumn">
-                    <div className="col s1 offset-s4">
-                      <a className="btn btn-text waves-effect waves-light" onClick={this.backView}>
-                        {"< НАЗАД"}
-                      </a>
-                    </div>
-                  </div>
-                </React.Fragment>
-              ) :
-              <DocumentsRightColumn />
-            }
-
-          </div>
-          {this.showModalFilterDocuments()}
-          {this.showModalDeleteDocuments()}
+      <React.Fragment>
+        <div className="col s10">
+          <div className="desktoplic_text_item">Настройки:</div>
+          <hr />
         </div>
-      </div>
-    );
-  }
+        <div className="col s2">
+          <div className="right import-col">
+            <a className="btn-floated" data-activates="dropdown-btn-settings">
+              <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+            </a>
+            <ul id="dropdown-btn-settings" className="dropdown-content">
+              <li><a onClick={() => {
+                this.props.activeSetting(this.props.setting.id);
+                this.props.history.push(LOCATION_SETTINGS_CONFIG);
+              }}>Изменить</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="col s12 valign-wrapper">
+          <div className="col s2">
+            <div className="setting" />
+          </div>
+          <div className="col s10" style={{ fontSize: "75%" }}>
+            <div className="collection-title">{setting.name}</div>
+          </div>
+        </div>
 
-  backView = () => {
-    this.setState({ showSignatureInfo: false });
-  }
+        <div className="row" />
 
-  addFiles() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { addDocuments } = this.props;
-
-    dialog.showOpenDialog(null, { properties: ["openFile", "multiSelections"] }, (selectedFiles: string[]) => {
-      if (selectedFiles) {
-        const documents: string[] = [];
-
-        selectedFiles.forEach((file) => {
-          const fullpath = file;
-          const stat = fs.statSync(fullpath);
-          if (!stat.isDirectory()) {
-            documents.push(fullpath);
-          }
-        });
-
-        addDocuments(documents);
-      }
-    });
-  }
-
-  dragLeaveHandler(event: any) {
-    event.target.classList.remove("draggedOver");
-
-    const zone = document.querySelector("#droppableZone");
-    if (zone) {
-      zone.classList.remove("droppableZone-active");
-    }
-  }
-
-  dragEnterHandler(event: any) {
-    event.target.classList.add("draggedOver");
-  }
-
-  dragOverHandler(event: any) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
-
-  directoryReader = (reader: any) => {
-    reader.readEntries((entries: any) => {
-      entries.forEach((entry: any) => {
-        this.scanFiles(entry);
-      });
-
-      if (entries.length === 100) {
-        this.directoryReader(reader);
-      }
-    });
-  }
-
-  scanFiles = (item: any) => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { addDocuments } = this.props;
-
-    if (item.isDirectory) {
-      const reader = item.createReader();
-
-      this.directoryReader(reader);
-    } else {
-      item.file((dropfile: any) => {
-        const documents: string[] = [];
-
-        const fullpath = dropfile.path;
-        const stat = fs.statSync(fullpath);
-
-        if (!stat.isDirectory()) {
-          documents.push(fullpath);
+        <div className="col s10">
+          <div className="desktoplic_text_item">{localize("Sign.signer_cert", locale)}</div>
+          <hr />
+        </div>
+        <div className="col s2">
+          <div className="right import-col">
+            <a className="btn-floated" data-activates="dropdown-btn-signer">
+              <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+            </a>
+            <ul id="dropdown-btn-signer" className="dropdown-content">
+              <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
+            </ul>
+          </div>
+        </div>
+        {
+          (signer) ? <SignerInfo signer={signer} style={{ fontSize: "75%" }} /> :
+            <div className="col s12">
+              <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
+                <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                  {localize("Settings.Choose", locale)}
+                </a>
+              </Link>
+            </div>
+        }
+        <div className="row" />
+        <div className="col s10">
+          <div className="desktoplic_text_item">Сертификаты шифрования:</div>
+          <hr />
+        </div>
+        <div className="col s2">
+          <div className="right import-col">
+            <a className="btn-floated" data-activates="dropdown-btn-encrypt">
+              <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+            </a>
+            <ul id="dropdown-btn-encrypt" className="dropdown-content">
+              <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
+                <li><a>{localize("Settings.add", locale)}</a></li>
+              </Link>
+              <li><a onClick={() => this.handleCleanRecipientsList()}>{localize("Common.clear", locale)}</a></li>
+            </ul>
+          </div>
+        </div>
+        {
+          (recipients && recipients.length) ?
+            <div style={{ height: "calc(100vh - 400px)" }}>
+              <div className="add-certs">
+                <RecipientsList recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
+              </div>
+            </div> :
+            <div className="col s12">
+              <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
+                <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                  {localize("Settings.Choose", locale)}
+                </a>
+              </Link>
+            </div>
         }
 
-        addDocuments(documents);
-      });
-    }
-  }
+        <div className="row fixed-bottom-rightcolumn" >
+          <div className="col s12">
+            <hr />
+          </div>
 
-  dropHandler = (event: any) => {
-    event.stopPropagation();
-    event.preventDefault();
-    event.target.classList.remove("draggedOver");
+          {
+            documents && documents.length ?
+              <div className="col s12">
+                <div className="input-checkbox">
+                  <input
+                    name={"filesview"}
+                    type="checkbox"
+                    id={"filesview"}
+                    className="filled-in"
+                    checked={isDocumentsReviewed}
+                    onClick={this.toggleDocumentsReviewed}
+                  />
+                  <label htmlFor={"filesview"} className="truncate">
+                    {localize("Sign.documents_reviewed", locale)}
+                  </label>
+                </div>
+                <div className="row halfbottom" />
+              </div> :
+              null
+          }
 
-    const zone = document.querySelector("#droppableZone");
-    if (zone) {
-      zone.classList.remove("droppableZone-active");
-    }
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
+            <div className="col s12 svg_icon">
+              <a data-position="bottom">
+                <i className="material-icons docmenu sign" />
+              </a>
+            </div>
+            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_sign", locale)}</div>
+          </div>
 
-    const items = event.dataTransfer.items;
+          <div className={`col s4 waves-effect waves-cryptoarm  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`} onClick={this.verifySign}>
+            <div className="col s12 svg_icon">
+              <a data-position="bottom"
+                data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                <i className="material-icons docmenu verifysign" />
 
-    for (const item of items) {
-      const entry = item.webkitGetAsEntry();
+              </a>
+            </div>
+            <div className="col s12 svg_icon_text">{"Проверить"}</div>
+          </div>
 
-      if (entry) {
-        this.scanFiles(entry);
-      }
-    }
-  }
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} onClick={this.unSign}>
+            <div className="col s12 svg_icon">
+              <a data-position="bottom">
+                <i className="material-icons docmenu removesign" />
+              </a>
+            </div>
+            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_removesign", locale)}</div>
+          </div>
 
-  dropZoneActive() {
-    const zone = document.querySelector("#droppableZone");
-    if (zone) {
-      zone.classList.add("droppableZone-active");
-    }
+          <div className="col s12">
+            <div className="row halfbottom" />
+          </div>
+
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`} onClick={this.encrypt}>
+            <div className="col s12 svg_icon">
+              <a data-position="bottom">
+                <i className="material-icons docmenu encrypt" />
+              </a>
+            </div>
+            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_enctypt", locale)}</div>
+          </div>
+
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} onClick={this.decrypt}>
+            <div className="col s12 svg_icon">
+              <a data-position="bottom">
+                <i className="material-icons docmenu decrypt" />
+              </a>
+            </div>
+            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_dectypt", locale)}</div>
+          </div>
+
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleRemoveFiles}>
+            <div className="col s12 svg_icon">
+              <a data-position="bottom"
+                data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                <i className="material-icons docmenu remove" />
+              </a>
+            </div>
+            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+          </div>
+
+        </div>
+      </React.Fragment>
+    );
   }
 
   toggleDocumentsReviewed = () => {
@@ -574,4 +530,4 @@ export default connect((state) => {
     filePackageSelect, filePackageDelete, packageSign, loadAllDocuments,
     removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
     selectAllDocuments, selectDocument, selectSignerCertificate,
-  })(DocumentsWindow);
+  })(DocumentsRightColumn);
