@@ -193,6 +193,7 @@ class CertificateExport extends React.Component<ICertificateExportProps, ICertif
           <div className="row">
             <div className="col s6 card-infos sub">
               <EncodingTypeSelector EncodingValue={encodingType} handleChange={(encoding: string) => this.handleEncodingChange(encoding)} />
+              <div className="row" />
             </div>
           </div>
         </React.Fragment>

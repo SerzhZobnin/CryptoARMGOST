@@ -80,6 +80,7 @@ class CRLExport extends React.Component<ICRLExportProps, ICRLExportState> {
         <div className="row">
           <div className="col s12 card-infos sub">
             <EncodingTypeSelector EncodingValue={encodingType} handleChange={(encoding: string) => this.handleEncodingChange(encoding)} />
+            <div className="row" />
           </div>
         </div>
       </React.Fragment>

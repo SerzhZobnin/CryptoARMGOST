@@ -824,6 +824,7 @@ i.material-icons.choosefolder {
 
 .tabs {
   height: 35px;
+  overflow-x: hidden;
 }
 
 .tabs .tab a{
@@ -3290,7 +3291,7 @@ svg:hover {
 
 .operations_group{
     box-shadow: 0 0 0 1px #b5b5b5;
-    height: 288px;
+    height: 298px;
 }
 
 .find_box{
