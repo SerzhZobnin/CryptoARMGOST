@@ -833,12 +833,16 @@ class CertWindow extends React.Component<any, any> {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { cloudCSPSettings, cloudCSPState, certificates } = this.props;
+    const { cloudCSPSettings, cloudCSPState, certificates, isLoading } = this.props;
     const { certificate, crl } = this.state;
     const { localize, locale } = this.context;
 
     if ((!prevState.certificate && certificate) || (!prevState.crl && crl)) {
       $(".nav-small-btn").dropdown();
+    }
+
+    if (prevProps.isLoading && !isLoading) {
+      $(".btn-floated").dropdown();
     }
 
     if (prevProps.cloudCSPState !== this.props.cloudCSPState) {
