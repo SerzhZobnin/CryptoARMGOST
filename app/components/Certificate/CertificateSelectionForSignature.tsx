@@ -30,7 +30,6 @@ import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
-import CertificateTable from "./CertificateTable";
 
 const OS_TYPE = os.type();
 
@@ -832,20 +831,11 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
               <div className={"collection " + VIEW}>
                 <div className="row">
                   <div className="col s12">
-                    <Media query="(max-width: 1020px)">
-                      {(matches) =>
-                        matches ? (
-                          <div style={{ display: "flex" }}>
-                            <div style={{ flex: "1 1 auto", height: "calc(100vh - 140px)" }}>
-                              <CertificateList activeCert={this.handleActiveCert} operation="sign" />
-                            </div>
-                          </div>
-                        ) :
-                          (
-                            <CertificateTable activeCert={this.handleActiveCert} certificate={this.state.certificate} operation="sign" />
-                          )
-                      }
-                    </Media>
+                    <div style={{ display: "flex" }}>
+                      <div style={{ flex: "1 1 auto", height: "calc(100vh - 140px)" }}>
+                        <CertificateList activeCert={this.handleActiveCert} operation="sign" />
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />
@@ -867,8 +857,8 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
             </div>
             <div className="row fixed-bottom-rightcolumn">
               <div className="col s6 offset-s1">
-                  <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
-                    ОТМЕНА
+                <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
+                  ОТМЕНА
                 </a>
               </div>
               <div className="col s2">

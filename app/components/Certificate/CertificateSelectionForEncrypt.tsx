@@ -34,7 +34,6 @@ import CertificateExport from "./CertificateExport";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
-import CertificateTable from "./CertificateTable";
 
 const OS_TYPE = os.type();
 
@@ -835,20 +834,11 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
               <div className={"collection " + VIEW}>
                 <div className="row">
                   <div className="col s12">
-                    <Media query="(max-width: 1020px)">
-                      {(matches) =>
-                        matches ? (
-                          <div style={{ display: "flex" }}>
-                            <div style={{ flex: "1 1 auto", height: "calc(100vh - 140px)" }}>
-                              <CertificateList activeCert={this.handleAddRecipient} operation="encrypt" />
-                            </div>
-                          </div>
-                        ) :
-                          (
-                            <CertificateTable activeCert={this.handleAddRecipient} certificate={this.state.certificate} operation="sign" />
-                          )
-                      }
-                    </Media>
+                    <div style={{ display: "flex" }}>
+                      <div style={{ flex: "1 1 auto", height: "calc(100vh - 140px)" }}>
+                        <CertificateList activeCert={this.handleAddRecipient} operation="encrypt" />
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />
@@ -864,15 +854,15 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
               </div>
               <div className="col s12">
                 <div style={{ height: "calc(100vh - 100px)" }}>
-                    <div className="add-certs">
-                      {(this.state.activeCertificate) ? <CertificateInfo certificate={this.state.activeCertificate} /> :
-                        <div>
-                          <RecipientsList onActive={this.handleActiveCert} handleRemoveRecipient={this.handleRemoveRecipient} recipients={this.state.selectedRecipients} />
-                        </div>
-                      }
-                      <BlockNotElements name={CHOOSE_VIEW} title={localize("Certificate.cert_not_select", locale)} />
-                    </div>
+                  <div className="add-certs">
+                    {(this.state.activeCertificate) ? <CertificateInfo certificate={this.state.activeCertificate} /> :
+                      <div>
+                        <RecipientsList onActive={this.handleActiveCert} handleRemoveRecipient={this.handleRemoveRecipient} recipients={this.state.selectedRecipients} />
+                      </div>
+                    }
+                    <BlockNotElements name={CHOOSE_VIEW} title={localize("Certificate.cert_not_select", locale)} />
                   </div>
+                </div>
               </div>
             </div>
             <div className="row fixed-bottom-rightcolumn">
@@ -884,14 +874,14 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
                 </div> :
                 <React.Fragment>
                   <div className="col s6 offset-s1">
-                      <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
-                        ОТМЕНА
+                    <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
+                      ОТМЕНА
                       </a>
                   </div>
                   <div className="col s2">
                     <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleChooseRecipients}>
                       {localize("Settings.Choose", locale)}
-                </a>
+                    </a>
                   </div>
                 </React.Fragment>
               }

@@ -31,7 +31,6 @@ import CertificateExport from "./CertificateExport";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
-import CertificateTable from "./CertificateTable";
 
 const OS_TYPE = os.type();
 
