@@ -11,6 +11,7 @@ const rectangleUnvalidStyle = {
 };
 
 interface IRecipientsListProps {
+  disabled: boolean;
   recipients: any[];
   onActive?: (recipient: any) => void;
   handleRemoveRecipient: (recipient: any) => void;
@@ -26,14 +27,16 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
   }
 
   render() {
-    const { recipients, verifyCertificate } = this.props;
+    const { disabled, recipients, verifyCertificate } = this.props;
 
     if (!recipients || !recipients.length) {
       return null;
     }
 
+    const disabledCN = disabled ? "disabled" : "";
+
     return (
-      <div className="choose-certs-view">
+      <div className={"choose-certs-view " + disabledCN}>
         <div className={"add-cert-collection collection "}>
           {recipients.map((recipient) => {
             let curStatusStyle;

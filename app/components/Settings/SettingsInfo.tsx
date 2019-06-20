@@ -133,9 +133,9 @@ export default class SettingsInfo extends React.Component<ISettingsInfoProps, {}
                 {"Сертификаты шифрования"}
               </div>
               {(recipients && recipients.length) ?
-                <div style={{ height: "calc(100vh - 490px)", fontSize: "125%" }}>
-                  <div className="add-certs disabled">
-                    <RecipientsList recipients={recipients} />
+                <div style={{ height: "calc(100vh - 500px)", fontSize: "125%" }}>
+                  <div className="add-certs">
+                    <RecipientsList recipients={recipients} disabled={true} />
                   </div>
                 </div> :
                 <div className="collection-title selectable-text">
