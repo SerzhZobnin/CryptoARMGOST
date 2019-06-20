@@ -44,17 +44,16 @@ class GeneralSettings extends React.Component<IEncryptSettingsProps, {}> {
       <div className="settings-content">
         <div className="row" />
         <div className="row">
-          <div className="input-field input-field-csr col s12">
+          <div className="input-field  col s12">
             <input
               id="name"
               type="text"
-              className="validate"
               name="name"
               value={name}
               onChange={this.handleInputNameChange}
               placeholder={localize("Settings.name", locale)}
             />
-            <label htmlFor="name">{localize("Settings.name", locale)}</label>
+            <label htmlFor="name" style={{color: "rgba(0,0,0,0.87)", fontSize: "14px"}}>{localize("Settings.name", locale)}</label>
           </div>
         </div>
         <CheckBoxWithLabel onClickCheckBox={this.handleSaveToDocumentsClick}

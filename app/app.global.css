@@ -197,7 +197,7 @@ body {
     overflow: auto;
     height: calc(100% - 35px);
     white-space: nowrap;
-    font-size: 75%;
+    font-size: 14px;
     width: 100%;
 }
 
