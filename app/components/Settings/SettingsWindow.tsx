@@ -96,6 +96,15 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                       <div className="col s12 svg_icon_text">{"Редактирвоать"}</div>
                     </div>
 
+                    <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.props.createSettings()}>
+                      <div className="col s12 svg_icon">
+                        <a data-position="bottom">
+                          <i className="material-icons certificate remove" />
+                        </a>
+                      </div>
+                      <div className="col s12 svg_icon_text">{"Создать"}</div>
+                    </div>
+
                     {
                       settings.default !== setting.id ?
                         <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.props.deleteSetting(setting.id)}>
