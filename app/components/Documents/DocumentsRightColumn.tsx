@@ -19,12 +19,14 @@ import {
   activeSetting,
 } from "../../AC/settingsActions";
 import {
-  DECRYPT, DEFAULT_DOCUMENTS_PATH, ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
+  DECRYPT, DEFAULT_DOCUMENTS_PATH, ENCRYPT, HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_MAIN, LOCATION_SETTINGS_CONFIG,
   REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
+import { activeFilesSelector, connectedSelector } from "../../selectors";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
 import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
+import * as trustedEncrypts from "../../trusted/encrypt";
 import * as jwt from "../../trusted/jwt";
 import { checkLicense } from "../../trusted/jwt";
 import * as trustedSign from "../../trusted/sign";
@@ -277,7 +279,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
             <div className="col s12 svg_icon_text">{localize("Documents.docmenu_dectypt", locale)}</div>
           </div>
 
-          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleRemoveFiles}>
+          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleClickDelete}>
             <div className="col s12 svg_icon">
               <a data-position="bottom"
                 data-tooltip={localize("Sign.sign_and_verify", locale)}>
@@ -286,7 +288,6 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
             </div>
             <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
           </div>
-
         </div>
       </React.Fragment>
     );
@@ -297,6 +298,434 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     const { documentsReviewed, isDocumentsReviewed } = this.props;
 
     documentsReviewed(!isDocumentsReviewed);
+  }
+
+  handleClickSign = () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { activeDocumentsArr, signer, lic_error } = this.props;
+    const { localize, locale } = this.context;
+
+    const licenseStatus = checkLicense();
+
+    if (licenseStatus !== true) {
+      $(".toast-jwtErrorLicense").remove();
+      Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
+
+      logger.log({
+        level: "error",
+        message: "No correct license",
+        operation: "Подпись",
+        operationObject: {
+          in: "License",
+          out: "Null",
+        },
+        userName: USER_NAME,
+      });
+
+      return;
+    }
+
+    if (activeDocumentsArr.length > 0) {
+      const key = window.PKISTORE.findKey(signer);
+
+      if (!key) {
+        $(".toast-key_not_found").remove();
+        Materialize.toast(localize("Sign.key_not_found", locale), 2000, "toast-key_not_found");
+
+        logger.log({
+          level: "error",
+          message: "Key not found",
+          operation: "Подпись",
+          operationObject: {
+            in: "Key",
+            out: "Null",
+          },
+          userName: USER_NAME,
+        });
+
+        return;
+      }
+
+      const cert = window.PKISTORE.getPkiObject(signer);
+
+      const filesForSign = [];
+      const filesForResign = [];
+
+      for (const file of activeDocumentsArr) {
+        if (file.fullpath.split(".").pop() === "sig") {
+          filesForResign.push(file);
+        } else {
+          filesForSign.push(file);
+        }
+      }
+
+      if (filesForSign && filesForSign.length) {
+        this.sign(filesForSign, cert, key);
+      }
+
+      if (filesForResign && filesForResign.length) {
+        this.resign(filesForResign, cert, key);
+      }
+    }
+  }
+
+  sign = (files: any, cert: any, key: any) => {
+    const { addDocuments, setting, signer } = this.props;
+    // tslint:disable-next-line:no-shadowed-variable
+    const { localize, locale } = this.context;
+    let res = true;
+
+    if (files.length > 0) {
+      const policies = ["noAttributes"];
+
+      const folderOut = setting.outfolder;
+      let format = trusted.DataFormat.PEM;
+
+      if (folderOut.length > 0) {
+        if (!dirExists(folderOut)) {
+          $(".toast-failed_find_directory").remove();
+          Materialize.toast(localize("Settings.failed_find_directory", locale), 2000, "toast-failed_find_directory");
+          return;
+        }
+      }
+
+      if (setting.sign.detached) {
+        policies.push("detached");
+      }
+
+      if (setting.sign.timestamp) {
+        policies.splice(0, 1);
+      }
+
+      if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
+        format = trusted.DataFormat.DER;
+      }
+
+      files.forEach((file) => {
+        const newPath = trustedSign.signFile(file.fullpath, cert, key, policies, format, folderOut);
+
+        if (newPath) {
+          addDocuments([newPath]);
+        } else {
+          res = false;
+        }
+      });
+
+      if (res) {
+        $(".toast-files_signed").remove();
+        Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
+      } else {
+        $(".toast-files_signed_failed").remove();
+        Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
+      }
+    }
+  }
+
+  resign = (files: any, cert: any, key: any) => {
+    const { setting } = this.props;
+    // tslint:disable-next-line:no-shadowed-variable
+    const { verifySignature } = this.props;
+    const { localize, locale } = this.context;
+
+    if (files.length > 0) {
+      const policies = ["noAttributes"];
+      const folderOut = setting.outfolder;
+      let format = trusted.DataFormat.PEM;
+      let res = true;
+
+      if (folderOut.length > 0) {
+        if (!dirExists(folderOut)) {
+          $(".toast-failed_find_directory").remove();
+          Materialize.toast(localize("Settings.failed_find_directory", locale), 2000, "toast-failed_find_directory");
+          return;
+        }
+      }
+
+      if (setting.sign.timestamp) {
+        policies.splice(0, 1);
+      }
+
+      if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
+        format = trusted.DataFormat.DER;
+      }
+
+      files.forEach((file) => {
+        const newPath = trustedSign.resignFile(file.fullpath, cert, key, policies, format, folderOut);
+
+        if (newPath) {
+          verifySignature(file.id);
+        } else {
+          res = false;
+        }
+      });
+
+      if (res) {
+        $(".toast-files_resigned").remove();
+        Materialize.toast(localize("Sign.files_resigned", locale), 2000, "toast-files_resigned");
+      } else {
+        $(".toast-files_resigned_failed").remove();
+        Materialize.toast(localize("Sign.files_resigned_failed", locale), 2000, "toast-files_resigned_failed");
+      }
+    }
+  }
+
+  unSign = () => {
+    const { activeDocumentsArr, setting } = this.props;
+    // tslint:disable-next-line:no-shadowed-variable
+    const { addDocuments } = this.props;
+    const { localize, locale } = this.context;
+
+    if (activeDocumentsArr.length > 0) {
+      const folderOut = setting.outfolder;
+      let res = true;
+
+      activeDocumentsArr.forEach((file) => {
+        const newPath = trustedSign.unSign(file.fullpath, folderOut);
+        if (newPath) {
+          addDocuments([newPath]);
+        } else {
+          res = false;
+        }
+      });
+
+      if (res) {
+        $(".toast-files_unsigned_ok").remove();
+        Materialize.toast(localize("Sign.files_unsigned_ok", locale), 2000, "toast-files_unsigned_ok");
+      } else {
+        $(".toast-files_unsigned_failed").remove();
+        Materialize.toast(localize("Sign.files_unsigned_failed", locale), 2000, "toast-files_unsigned_failed");
+      }
+    }
+  }
+
+  verifySign = () => {
+    const { activeDocumentsArr, signatures } = this.props;
+    // tslint:disable-next-line:no-shadowed-variable
+    const { verifySignature } = this.props;
+    const { localize, locale } = this.context;
+
+    let res = true;
+
+    activeDocumentsArr.forEach((file) => {
+      verifySignature(file.id);
+    });
+
+    signatures.forEach((signature: any) => {
+      for (const file of activeDocumentsArr) {
+        if (file.id === signature.fileId && !signature.status_verify) {
+          res = false;
+          break;
+        }
+      }
+    });
+
+    if (res) {
+      $(".toast-verify_sign_ok").remove();
+      Materialize.toast(localize("Sign.verify_sign_ok", locale), 2000, "toast-verify_sign_ok");
+    } else {
+      $(".toast-verify_sign_founds_errors").remove();
+      Materialize.toast(localize("Sign.verify_sign_founds_errors", locale), 2000, "toast-verify_sign_founds_errors");
+    }
+  }
+
+  encrypt = () => {
+    const { addDocuments, activeDocumentsArr, setting, deleteFile, recipients } = this.props;
+    const { localize, locale } = this.context;
+
+    if (activeDocumentsArr.length > 0) {
+      const certs = recipients;
+      const folderOut = setting.outfolder;
+      const policies = { deleteFiles: false, archiveFiles: false };
+
+      let format = trusted.DataFormat.PEM;
+      let res = true;
+
+      if (folderOut.length > 0) {
+        if (!dirExists(folderOut)) {
+          $(".toast-failed_find_directory").remove();
+          Materialize.toast(localize("Settings.failed_find_directory", locale), 2000, "toast-failed_find_directory");
+          return;
+        }
+      }
+
+      policies.deleteFiles = setting.encrypt.delete;
+      policies.archiveFiles = setting.encrypt.archive;
+
+      if (setting.encrypt.encoding !== localize("Settings.BASE", locale)) {
+        format = trusted.DataFormat.DER;
+      }
+
+      if (policies.archiveFiles) {
+        let outURI: string;
+        if (folderOut.length > 0) {
+          outURI = path.join(folderOut, localize("Encrypt.archive_name", locale));
+        } else {
+          outURI = path.join(HOME_DIR, localize("Encrypt.archive_name", locale));
+        }
+
+        const output = fs.createWriteStream(outURI);
+        const archive = window.archiver("zip");
+
+        output.on("close", () => {
+          $(".toast-files_archived").remove();
+          Materialize.toast(localize("Encrypt.files_archived", locale), 2000, "toast-files_archived");
+
+          if (policies.deleteFiles) {
+            activeDocumentsArr.forEach((file) => {
+              fs.unlinkSync(file.fullpath);
+            });
+          }
+
+          const newPath = trustedEncrypts.encryptFile(outURI, certs, policies, format, folderOut);
+          if (newPath) {
+            addDocuments([newPath]);
+          } else {
+            res = false;
+          }
+
+          if (res) {
+            $(".toast-files_encrypt").remove();
+            Materialize.toast(localize("Encrypt.files_encrypt", locale), 2000, "toast-files_encrypt");
+          } else {
+            $(".toast-files_encrypt_failed").remove();
+            Materialize.toast(localize("Encrypt.files_encrypt_failed", locale), 2000, "toast-files_encrypt_failed");
+          }
+        });
+
+        archive.on("error", () => {
+          $(".toast-files_archived_failed").remove();
+          Materialize.toast(localize("Encrypt.files_archived_failed", locale), 2000, "toast-files_archived_failed");
+        });
+
+        archive.pipe(output);
+
+        activeDocumentsArr.forEach((file) => {
+          archive.append(fs.createReadStream(file.fullpath), { name: file.filename });
+        });
+
+        archive.finalize();
+      } else {
+        activeDocumentsArr.forEach((file) => {
+          const newPath = trustedEncrypts.encryptFile(file.fullpath, certs, policies, format, folderOut);
+          if (newPath) {
+            addDocuments([newPath]);
+          } else {
+            res = false;
+          }
+        });
+
+        if (res) {
+          $(".toast-files_encrypt").remove();
+          Materialize.toast(localize("Encrypt.files_encrypt", locale), 2000, "toast-files_encrypt");
+        } else {
+          $(".toast-files_encrypt_failed").remove();
+          Materialize.toast(localize("Encrypt.files_encrypt_failed", locale), 2000, "toast-files_encrypt_failed");
+        }
+      }
+    }
+  }
+
+  decrypt = () => {
+    const { addDocuments, activeDocumentsArr, setting, licenseStatus, lic_error } = this.props;
+    const { localize, locale } = this.context;
+
+    if (licenseStatus !== true) {
+      $(".toast-jwtErrorLicense").remove();
+      Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
+
+      logger.log({
+        level: "error",
+        message: "No correct license",
+        operation: "Расшифрование",
+        operationObject: {
+          in: "License",
+          out: "Null",
+        },
+        userName: USER_NAME,
+      });
+
+      return;
+    }
+
+    if (activeDocumentsArr.length > 0) {
+      const folderOut = setting.outfolder;
+      let res = true;
+
+      if (folderOut.length > 0) {
+        if (!dirExists(folderOut)) {
+          $(".toast-failed_find_directory").remove();
+          Materialize.toast(localize("Settings.failed_find_directory", locale), 2000, "toast-failed_find_directory");
+          return;
+        }
+      }
+
+      const forDecryptInDSS = [];
+      const filesForDecryptInLocalCSP = [];
+
+      for (const file of activeDocumentsArr) {
+        let certWithKey: trusted.pki.Certificate;
+
+        try {
+          const uri = file.fullpath;
+          const format = fileCoding(uri);
+          const cipher = new trusted.pki.Cipher();
+          const ris = cipher.getRecipientInfos(uri, format);
+
+          let ri: trusted.cms.CmsRecipientInfo;
+          let haveLocalRecipient = false;
+          let haveDSSRecipient = false;
+          let dssRecipient;
+
+          for (let i = 0; i < ris.length; i++) {
+            ri = ris.items(i);
+
+            certWithKey = this.props.mapCertificates
+              .get("entities")
+              .find((item) => item.issuerName === ri.issuerName && item.serial === ri.serialNumber && item.key);
+
+            if (certWithKey) {
+              if (!certWithKey.service) {
+                haveLocalRecipient = true;
+                break;
+              } else {
+                haveDSSRecipient = true;
+                dssRecipient = certWithKey;
+              }
+            } else {
+              res = false;
+            }
+          }
+
+          if (haveLocalRecipient) {
+            filesForDecryptInLocalCSP.push(file);
+          } else if (haveDSSRecipient) {
+            forDecryptInDSS.push({ file, dssRecipient });
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
+      if (filesForDecryptInLocalCSP && filesForDecryptInLocalCSP.length) {
+        filesForDecryptInLocalCSP.forEach((file) => {
+          const newPath = trustedEncrypts.decryptFile(file.fullpath, folderOut);
+
+          if (newPath) {
+            addDocuments([newPath]);
+          } else {
+            res = false;
+          }
+        });
+
+        if (res) {
+          $(".toast-files_decrypt").remove();
+          Materialize.toast(localize("Encrypt.files_decrypt", locale), 2000, "toast-files_decrypt");
+        } else {
+          $(".toast-files_decrypt_failed").remove();
+          Materialize.toast(localize("Encrypt.files_decrypt_failed", locale), 2000, "toast-files_decrypt_failed");
+        }
+      }
+    }
   }
 
   handleCleanRecipientsList = () => {
@@ -367,153 +796,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     }
   }
 
-  showModalFilterDocuments = () => {
-    const { localize, locale } = this.context;
-    const { showModalFilterDocments } = this.state;
-
-    if (!showModalFilterDocments) {
-      return;
-    }
-
-    return (
-      <Modal
-        isOpen={showModalFilterDocments}
-        header={localize("Filters.filters_settings", locale)}
-        onClose={this.handleCloseModalFilterDocuments}>
-
-        <FilterDocuments onCancel={this.handleCloseModalFilterDocuments} />
-      </Modal>
-    );
-  }
-
-  showModalDeleteDocuments = () => {
-    const { localize, locale } = this.context;
-    const { documents } = this.props;
-    const { showModalDeleteDocuments } = this.state;
-
-    if (!documents || !showModalDeleteDocuments) {
-      return;
-    }
-
-    return (
-      <Modal
-        isOpen={showModalDeleteDocuments}
-        header={localize("Documents.delete_documents", locale)}
-        onClose={this.handleCloseModalDeleteDocuments}>
-
-        <DeleteDocuments
-          onCancel={this.handleCloseModalDeleteDocuments}
-          removeDocuments={this.handleClickDelete} />
-      </Modal>
-    );
-  }
-
-  handleClickSign = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { documents, filePackageSelect, removeAllFiles, removeAllRemoteFiles } = this.props;
-    removeAllFiles();
-    removeAllRemoteFiles();
-    filePackageSelect(documents);
-    this.openWindow(SIGN);
-  }
-
-  handleClickEncrypt = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { documents, filePackageSelect, removeAllFiles, removeAllRemoteFiles } = this.props;
-    removeAllFiles();
-    removeAllRemoteFiles();
-    filePackageSelect(documents);
-    this.openWindow(ENCRYPT);
-  }
-
   handleClickDelete = () => {
-    const { localize, locale } = this.context;
-    const { documents } = this.props;
-    const count = documents.length;
-
-    removeDocuments(documents);
-    this.handleReloadDocuments();
-
-    const message = localize("Documents.documents_deleted1", locale) + count + localize("Documents.documents_deleted2", locale);
-    Materialize.toast(message, 2000, "toast-remove_documents");
-
-    this.handleCloseModalDeleteDocuments();
-  }
-
-  openWindow = (operation: string) => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { changeLocation } = this.props;
-
-    switch (operation) {
-      case SIGN:
-      case VERIFY:
-        changeLocation(LOCATION_MAIN);
-        return;
-
-      case ENCRYPT:
-      case DECRYPT:
-        changeLocation(LOCATION_MAIN);
-        return;
-
-      default:
-        return;
-    }
-  }
-
-  handleSearchValueChange = (ev: any) => {
-    this.setState({ searchValue: ev.target.value });
-  }
-
-  handleShowModalFilterDocuments = () => {
-    this.setState({ showModalFilterDocments: true });
-  }
-
-  handleCloseModalFilterDocuments = () => {
-    this.setState({ showModalFilterDocments: false });
-  }
-
-  handleShowModalDeleteDocuments = () => {
-    this.setState({ showModalDeleteDocuments: true });
-  }
-
-  handleCloseModalDeleteDocuments = () => {
-    this.setState({ showModalDeleteDocuments: false });
-  }
-
-  handleReloadDocuments = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { documentsLoading, loadAllDocuments, removeAllDocuments } = this.props;
-    removeAllDocuments();
-    if (!documentsLoading) {
-      loadAllDocuments();
-    }
-  }
-
-  handleArhiveDocuments = () => {
-    const { localize, locale } = this.context;
-    const { documents } = this.props;
-    let arhiveName: string = "";
-
-    const date = new Date();
-    // tslint:disable-next-line:quotemark
-    // tslint:disable-next-line:max-line-length
-    const dateNow = ("0" + date.getDate()).slice(-2) + "." + ("0" + (date.getMonth() + 1)).slice(-2) + "." + date.getFullYear() + "_" + ("0" + date.getHours()).slice(-2) + "." + ("0" + date.getMinutes()).slice(-2) + "." + ("0" + date.getSeconds()).slice(-2);
-    arhiveName = "arhive_" + dateNow + ".zip";
-    arhiveDocuments(documents, arhiveName);
-    this.handleReloadDocuments();
-    const message = localize("Documents.documents_arhive", locale) + arhiveName;
-    Materialize.toast(message, 2000, "toast-arhive_documents");
-  }
-
-  handleSelectAllDocuments = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { selectAllDocuments } = this.props;
-
-    selectAllDocuments();
-  }
-
-  handleOpenDocumentsFolder = () => {
-    window.electron.shell.openItem(DEFAULT_DOCUMENTS_PATH);
+    this.props.handleClickDelete();
   }
 }
 
@@ -525,12 +809,15 @@ export default connect((state) => {
   });
 
   return {
+    activeDocumentsArr: selectedDocumentsSelector(state),
     documents: selectedDocumentsSelector(state),
     documentsLoaded: state.events.loaded,
     documentsLoading: state.events.loading,
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     isDocumentsReviewed: state.files.documentsReviewed,
+    licenseStatus: state.license.status,
     lic_error: state.license.lic_error,
+    mapCertificates: state.certificates,
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
@@ -540,7 +827,7 @@ export default connect((state) => {
   };
 }, {
     addDocuments, arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
-    filePackageSelect, filePackageDelete, packageSign, loadAllDocuments,
+    filePackageSelect, filePackageDelete, verifySignature, packageSign, loadAllDocuments,
     removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
     selectAllDocuments, selectDocument, selectSignerCertificate,
   })(DocumentsRightColumn);

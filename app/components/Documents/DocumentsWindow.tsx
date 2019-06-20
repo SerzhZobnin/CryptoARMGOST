@@ -60,7 +60,10 @@ interface IDocumentsWindowProps {
 }
 
 interface IDocumentsWindowState {
+  packageSignResult: any;
   searchValue: string;
+  signatures: any;
+  signedPackage: any;
   showModalDeleteDocuments: boolean;
   showModalFilterDocments: boolean;
 }
@@ -100,6 +103,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
   }
 
   componentWillReceiveProps(nextProps: IDocumentsWindowProps) {
+    const { localize, locale } = this.context;
     const { documents, signatures } = this.props;
 
     if (documents.length !== nextProps.documents.length || signatures.length !== nextProps.signatures.length) {
@@ -122,6 +126,16 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
     if (!documents || !documents.length || !nextProps.documents || !nextProps.documents.length || nextProps.documents.length > 1 || documents[0].id !== nextProps.documents[0].id) {
       this.setState({ showSignatureInfo: false, signerCertificate: null });
+    }
+
+    if (!this.props.signedPackage && nextProps.signedPackage) {
+      if (nextProps.packageSignResult) {
+        $(".toast-files_signed").remove();
+        Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
+      } else {
+        $(".toast-files_signed_failed").remove();
+        Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
+      }
     }
   }
 
@@ -209,7 +223,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                   </div>
                 </React.Fragment>
               ) :
-              <DocumentsRightColumn />
+              <DocumentsRightColumn handleClickDelete={this.handleShowModalDeleteDocuments}/>
             }
 
           </div>
@@ -562,11 +576,13 @@ export default connect((state) => {
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     isDocumentsReviewed: state.files.documentsReviewed,
     lic_error: state.license.lic_error,
+    packageSignResult: state.signatures.packageSignResult,
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
     setting: state.settings.getIn(["entities", state.settings.default]),
     signatures,
+    signedPackage: state.signatures.signedPackage,
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
 }, {
