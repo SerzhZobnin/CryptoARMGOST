@@ -96,7 +96,10 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                       <div className="col s12 svg_icon_text">{"Редактирвоать"}</div>
                     </div>
 
-                    <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.props.createSettings()}>
+                    <div className="col s4 waves-effect waves-cryptoarm" onClick={() => {
+                      this.props.createSettings();
+                      this.props.history.push(LOCATION_SETTINGS_CONFIG);
+                    }}>
                       <div className="col s12 svg_icon">
                         <a data-position="bottom">
                           <i className="material-icons certificate remove" />
@@ -130,7 +133,10 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                       <hr />
                     </div>
 
-                    <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.props.createSettings()}>
+                    <div className="col s4 waves-effect waves-cryptoarm" onClick={() => {
+                      this.props.createSettings();
+                      this.props.history.push(LOCATION_SETTINGS_CONFIG);
+                    }}>
                       <div className="col s12 svg_icon">
                         <a data-position="bottom">
                           <i className="material-icons certificate remove" />

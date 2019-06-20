@@ -61,6 +61,7 @@ export default (settings = new DefaultReducerState(), action) => {
         mtime: new Date().getTime(),
         name: `Настройка #${settings.entities.size + 1}`,
       }));
+      settings = settings.set("active", id);
       break;
 
     case ACTIVE_SETTING:
