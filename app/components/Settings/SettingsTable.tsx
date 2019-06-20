@@ -13,6 +13,7 @@ import SortIndicator from "../Sort/SortIndicator";
 type TSortDirection = "ASC" | "DESC" | undefined;
 
 interface ISettingsTableProps {
+  defaultSettingId: string;
   settingsMap: any;
   isLoaded: boolean;
   isLoading: boolean;
@@ -73,7 +74,7 @@ class SettingsTable extends React.Component<ISettingsTableProps & ISettingsTable
 
   render() {
     const { locale, localize } = this.context;
-    const { isLoading, searchValue } = this.props;
+    const { defaultSettingId, isLoading, searchValue } = this.props;
     const { disableHeader, foundSettings, scrollToIndex, sortBy, sortDirection, sortedList } = this.state;
 
     if (isLoading) {
@@ -113,23 +114,35 @@ class SettingsTable extends React.Component<ISettingsTableProps & ISettingsTable
                     dataKey="name"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.7}
+                    width={width * 0.6}
                     label={localize("Settings.name", locale)}
                   />
                   <Column
-                    cellRenderer={({ cellData }) => {
-                      return (new Date(cellData)).toLocaleDateString(locale, {
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "numeric",
-                        month: "numeric",
-                        year: "numeric",
-                      });
+                    cellRenderer={({ cellData, rowData }) => {
+                      return (
+                        <div className="row nobottom valign-wrapper">
+                          <div className="col s10">
+                            <div className="truncate">{
+                              (new Date(cellData)).toLocaleDateString(locale, {
+                                day: "numeric",
+                                hour: "numeric",
+                                minute: "numeric",
+                                month: "numeric",
+                                year: "numeric",
+                              })
+                            }
+                            </div>
+                          </div>
+                          <div className="col s2">
+                            {rowData.id === defaultSettingId ? <i class="material-icons valid">grade</i> : null}
+                          </div>
+                        </div>
+                      );
                     }}
                     dataKey="mtime"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.3}
+                    width={width * 0.4}
                     label={localize("Settings.date_of_change", locale)}
                   />
                 </Table>
@@ -283,5 +296,6 @@ class SettingsTable extends React.Component<ISettingsTableProps & ISettingsTable
 }
 
 export default connect((state) => ({
+  defaultSettingId: state.settings.default,
   settingsMap: state.settings.entities,
 }), { loadAllEvents, removeAllEvents })(SettingsTable);
