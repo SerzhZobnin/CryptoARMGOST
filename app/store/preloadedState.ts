@@ -49,6 +49,7 @@ if (fileExists(SETTINGS_JSON)) {
         };
       }
     } catch (e) {
+      console.log("error", e);
       odata = {};
     }
   }

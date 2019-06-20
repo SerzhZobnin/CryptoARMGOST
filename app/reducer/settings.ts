@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
 import {
-  ACTIVE_SETTING, ADD_RECIPIENT_CERTIFICATE, BASE64,
+  ACTIVE_SETTING, ADD_RECIPIENT_CERTIFICATE, APPLY_SETTINGS, BASE64,
   CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT, CHANGE_DEFAULT_SETTINGS,
   CHANGE_DELETE_FILES_AFTER_ENCRYPT, CHANGE_DSS_AUTH_URL, CHANGE_DSS_REST_URL, CHANGE_ECRYPT_ENCODING,
   CHANGE_ENCRYPT_OUTFOLDER, CHANGE_LOCALE, CHANGE_SETTINGS_NAME,
@@ -62,6 +62,12 @@ export default (settings = new DefaultReducerState(), action) => {
         name: `Настройка #${settings.entities.size + 1}`,
       }));
       settings = settings.set("active", id);
+      break;
+
+    case APPLY_SETTINGS:
+      settings = settings
+        .setIn(["entities", settings.active, "mtime"], new Date().getTime())
+        .setIn(["entities", settings.active], payload.settings);
       break;
 
     case ACTIVE_SETTING:
@@ -180,32 +186,35 @@ export default (settings = new DefaultReducerState(), action) => {
       break;
   }
 
-  const state = ({
-    default: settings.default,
-    settings: settings.toJS(),
-  });
+  if (type === APPLY_SETTINGS || type === SELECT_SIGNER_CERTIFICATE ||
+    type === ADD_RECIPIENT_CERTIFICATE || type === DELETE_RECIPIENT_CERTIFICATE) {
+    const state = ({
+      default: settings.default,
+      settings: settings.toJS(),
+    });
 
-  state.settings = mapToArr(settings.entities);
+    state.settings = mapToArr(settings.entities);
 
-  const newSettings = [];
+    const newSettings = [];
 
-  for (let setting of state.settings) {
-    if (setting && setting.encrypt) {
-      setting = setting.setIn(["encrypt", "recipients"], mapToArr(setting.encrypt.recipients));
+    for (let setting of state.settings) {
+      if (setting && setting.encrypt) {
+        setting = setting.setIn(["encrypt", "recipients"], mapToArr(setting.encrypt.recipients));
+      }
+
+      newSettings.push(setting);
     }
 
-    newSettings.push(setting);
+    state.settings = newSettings;
+
+    const sstate = JSON.stringify(state, null, 4);
+    fs.writeFile(SETTINGS_JSON, sstate, (err: any) => {
+      if (err) {
+        // tslint:disable-next-line:no-console
+        console.log(err);
+      }
+    });
   }
-
-  state.settings = newSettings;
-
-  const sstate = JSON.stringify(state, null, 4);
-  fs.writeFile(SETTINGS_JSON, sstate, (err: any) => {
-    if (err) {
-      // tslint:disable-next-line:no-console
-      console.log(err);
-    }
-  });
 
   return settings;
 };
