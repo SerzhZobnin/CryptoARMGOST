@@ -304,9 +304,12 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
     const search = searchValue.toLowerCase();
 
     arr.forEach((document: any, index: number) => {
-      if (document.filename.toLowerCase().match(search)) {
+      try{
+        if (document.filename.toLowerCase().match(search)) {
         foundDocuments.push(index);
-      }
+      }}
+      catch(e)
+      {return true }
     });
 
     if (!foundDocuments.length) {

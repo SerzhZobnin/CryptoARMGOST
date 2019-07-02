@@ -288,7 +288,7 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
     const search = searchValue.toLowerCase();
 
     arr.forEach((event: any, index: number) => {
-      if (event.userName.toLowerCase().match(search) ||
+      try{if (event.userName.toLowerCase().match(search) ||
         event.operationObject.in.toLowerCase().match(search) ||
         event.operationObject.out.toLowerCase().match(search) ||
         event.level.toLowerCase().match(search) ||
@@ -302,7 +302,10 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
         event.operation.toLowerCase().match(search)) {
 
         foundEvents.push(index);
-      }
+      }}
+      catch(e){return true}
+
+
     });
 
     if (!foundEvents.length) {
