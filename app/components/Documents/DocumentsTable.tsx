@@ -305,11 +305,11 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
 
     arr.forEach((document: any, index: number) => {
       try{
-        if (document.filename.toLowerCase().match(search)) {
+      if (document.filename.toLowerCase().match(search)) {
         foundDocuments.push(index);
-      }}
-      catch(e)
-      {return true }
+      }
+    }
+    catch(e){}
     });
 
     if (!foundDocuments.length) {

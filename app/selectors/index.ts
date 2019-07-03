@@ -3,7 +3,6 @@ import {
   ALL, ENCRYPTED, SIGNED,
 } from "../constants";
 import { mapToArr } from "../utils";
-import { REFUSED } from "dns";
 
 export const certificatesGetter = (state) => state.certificates.entities;
 export const containersGetter = (state) => state.containers.entities;
@@ -49,8 +48,8 @@ export const filteredCertificatesSelector = createSelector(certificatesGetter, f
   });
 
   return сertificatesByOperations.filter((certificate) => {
-    try{ return (
-
+    try{
+    return (
       certificate.hash.toLowerCase().match(search) ||
       certificate.issuerFriendlyName.toLowerCase().match(search) ||
       certificate.subjectFriendlyName.toLowerCase().match(search) ||
@@ -60,8 +59,7 @@ export const filteredCertificatesSelector = createSelector(certificatesGetter, f
       certificate.organizationName.toLowerCase().match(search) ||
       certificate.signatureAlgorithm.toLowerCase().match(search)
     );}
-    catch(e) {return true}
-
+    catch(e){return true}
   });
 });
 
@@ -96,10 +94,15 @@ export const filteredContainersSelector = createSelector(containersGetter, filte
   let containersArr = mapToArr(containers);
 
   return containersArr.filter((container) => {
-    try{return (
-      container.name.toLowerCase().match(search)
-    );}
-    catch(e){return true}
+    try{
+      return (
+        container.name.toLowerCase().match(search)
+      );
+    }
+    catch(e){
+      return true
+    }
+
   });
 });
 

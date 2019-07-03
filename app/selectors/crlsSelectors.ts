@@ -25,15 +25,14 @@ export const filteredCrlsSelector = createSelector(crlsGetter, filtersGetter, (c
   });
 
   return arrCrls.filter((crl: any) => {
-    try {return (
+    try{
+    return (
       crl.hash.toLowerCase().match(search) ||
       crl.issuerFriendlyName.toLowerCase().match(search) ||
       crl.lastUpdate.toLowerCase().match(search) ||
       crl.nextUpdate.toLowerCase().match(search) ||
       crl.signatureAlgorithm.toLowerCase().match(search)
     );}
-    catch(e)
-    {return true }
-
+    catch(e){return true}
   });
 });
