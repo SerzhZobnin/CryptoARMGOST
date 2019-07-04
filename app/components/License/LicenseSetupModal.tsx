@@ -50,7 +50,7 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
     $("#input_key").trigger("autoresize");
   }
 
-  setupLicense() {
+  setupLicense = () => {
     const { localize, locale } = this.context;
     const { license_key, license_file } = this.state;
     // tslint:disable-next-line:no-shadowed-variable
@@ -136,7 +136,7 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
       }
     }
 
-    this.props.closeWindow();
+    this.handelCancel();
   }
 
   openLicenseFile() {
@@ -207,7 +207,7 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
               <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
             </div>
             <div style={{ display: "inline-block", margin: "10px" }}>
-              <a className={"btn btn-outlined waves-effect waves-light modal-close " + disable} onClick={this.setupLicense.bind(this)}>{localize("Common.apply", locale)}</a>
+              <a className={"btn btn-outlined waves-effect waves-light modal-close " + disable} onClick={this.setupLicense}>{localize("Common.apply", locale)}</a>
             </div>
           </div>
         </div>
