@@ -41,7 +41,6 @@ export function applySettings(settings: any) {
   };
 }
 
-console.log("true");
 export function toggleSaveToDocuments(saveToDocuments: boolean) {
 
   return (dispatch: (action: {}) => void) => {

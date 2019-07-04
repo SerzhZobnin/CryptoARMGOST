@@ -26,12 +26,11 @@ if (fileExists(SETTINGS_JSON)) {
           ...setting,
           encrypt,
           id: setting.id,
-          sign: new SignModel(setting.sign),
           outfolder: setting.outfolder,
-          saveToDocuments: setting.saveToDocuments
+          saveToDocuments: setting.saveToDocuments,
+          sign: new SignModel(setting.sign),
         }));
-        console.log(setting.saveToDocuments)
-        console.log(setting.outfolder)
+
         for (const recipient of setting.encrypt.recipients) {
           settingsMap = settingsMap.setIn(["entities", setting.id, "encrypt", "recipients", recipient.certId], new RecipientModel({
             certId: recipient.certId,

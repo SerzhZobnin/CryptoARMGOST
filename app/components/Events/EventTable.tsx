@@ -288,24 +288,25 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
     const search = searchValue.toLowerCase();
 
     arr.forEach((event: any, index: number) => {
-      try{
-      if (event.userName.toLowerCase().match(search) ||
-        event.operationObject.in.toLowerCase().match(search) ||
-        event.operationObject.out.toLowerCase().match(search) ||
-        event.level.toLowerCase().match(search) ||
-        (new Date(event.timestamp)).toLocaleDateString(locale, {
-          day: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          month: "numeric",
-          year: "numeric",
-        }).toLowerCase().match(search) ||
-        event.operation.toLowerCase().match(search)) {
+      try {
+        if (event.userName.toLowerCase().match(search) ||
+          event.operationObject.in.toLowerCase().match(search) ||
+          event.operationObject.out.toLowerCase().match(search) ||
+          event.level.toLowerCase().match(search) ||
+          (new Date(event.timestamp)).toLocaleDateString(locale, {
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            month: "numeric",
+            year: "numeric",
+          }).toLowerCase().match(search) ||
+          event.operation.toLowerCase().match(search)) {
 
-        foundEvents.push(index);
+          foundEvents.push(index);
+        }
+      } catch (e) {
+        //
       }
-    }
-    catch(e){}
     });
 
     if (!foundEvents.length) {

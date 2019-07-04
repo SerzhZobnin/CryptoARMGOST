@@ -249,12 +249,13 @@ class SettingsTable extends React.Component<ISettingsTableProps & ISettingsTable
     const search = searchValue.toLowerCase();
 
     arr.forEach((setting: any, index: number) => {
-      try{
-      if (setting.name.toLowerCase().match(search)) {
-        foundSettings.push(index);
-      }
-    }
-    catch(e){}
+      try {
+        if (setting.name.toLowerCase().match(search)) {
+          foundSettings.push(index);
+        }
+      } catch (e) {
+        //
+       }
     });
 
     if (!foundSettings.length) {

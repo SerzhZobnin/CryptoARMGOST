@@ -48,18 +48,19 @@ export const filteredCertificatesSelector = createSelector(certificatesGetter, f
   });
 
   return сertificatesByOperations.filter((certificate) => {
-    try{
-    return (
-      certificate.hash.toLowerCase().match(search) ||
-      certificate.issuerFriendlyName.toLowerCase().match(search) ||
-      certificate.subjectFriendlyName.toLowerCase().match(search) ||
-      certificate.serial.toLowerCase().match(search) ||
-      certificate.notAfter.toString().toLowerCase().match(search) ||
-      certificate.notBefore.toString().toLowerCase().match(search) ||
-      certificate.organizationName.toLowerCase().match(search) ||
-      certificate.signatureAlgorithm.toLowerCase().match(search)
-    );}
-    catch(e){return true}
+    try {
+      return (
+        certificate.hash.toLowerCase().match(search) ||
+        certificate.issuerFriendlyName.toLowerCase().match(search) ||
+        certificate.subjectFriendlyName.toLowerCase().match(search) ||
+        certificate.serial.toLowerCase().match(search) ||
+        certificate.notAfter.toString().toLowerCase().match(search) ||
+        certificate.notBefore.toString().toLowerCase().match(search) ||
+        certificate.organizationName.toLowerCase().match(search) ||
+        certificate.signatureAlgorithm.toLowerCase().match(search)
+      );
+    }
+    catch (e) { return true }
   });
 });
 
@@ -94,13 +95,12 @@ export const filteredContainersSelector = createSelector(containersGetter, filte
   let containersArr = mapToArr(containers);
 
   return containersArr.filter((container) => {
-    try{
+    try {
       return (
         container.name.toLowerCase().match(search)
       );
-    }
-    catch(e){
-      return true
+    } catch (e) {
+      return true;
     }
 
   });
