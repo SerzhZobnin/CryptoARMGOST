@@ -4,7 +4,7 @@ import {
   ADD_DOCUMENTS, ARHIVE_DOCUMENTS, DEFAULT_DOCUMENTS_PATH, DOCUMENTS_REVIEWED,
   FAIL, LOAD_ALL_DOCUMENTS,
   REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS, SELECT_ALL_DOCUMENTS,
-  SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, VERIFY_SIGNATURE,
+  SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, UNSELECT_DOCUMENT, VERIFY_SIGNATURE,
 } from "../constants";
 import { dirExists, extFile, fileExists, md5 } from "../utils";
 
@@ -116,6 +116,13 @@ export function selectDocument(uid: number) {
   return {
     payload: { uid },
     type: SELECT_DOCUMENT,
+  };
+}
+
+export function unselectDocument(uid: number) {
+  return {
+    payload: { uid },
+    type: UNSELECT_DOCUMENT,
   };
 }
 

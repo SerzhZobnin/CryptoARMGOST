@@ -10,7 +10,7 @@ import {
   removeAllFiles, removeAllRemoteFiles, selectFile,
   selectSignerCertificate, verifySignature,
 } from "../../AC";
-import { addDocuments, documentsReviewed, IDocument } from "../../AC/documentsActions";
+import { addDocuments, documentsReviewed, IDocument, unselectAllDocuments, unselectDocument } from "../../AC/documentsActions";
 import {
   arhiveDocuments, loadAllDocuments, removeAllDocuments,
   removeDocuments, selectAllDocuments, selectDocument,
@@ -56,6 +56,7 @@ interface IDocumentsWindowProps {
   removeAllRemoteFiles: () => void;
   selectAllDocuments: () => void;
   selectDocument: (uid: number) => void;
+  unselectDocument: (uid: number) => void;
   removeDocuments: (documents: any) => void;
   arhiveDocuments: (documents: any, arhiveName: string) => void;
 }
@@ -371,7 +372,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
   }
 
   sign = (files: any, cert: any, key: any) => {
-    const { addDocuments, setting, signer } = this.props;
+    const { addDocuments, setting, signer, unselectD } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { localize, locale } = this.context;
     let res = true;
@@ -407,6 +408,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
 
         if (newPath) {
           addDocuments([newPath]);
+          this.props.unselectDocument(file.id);
         } else {
           res = false;
         }
@@ -484,6 +486,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         const newPath = trustedSign.unSign(file.fullpath, folderOut);
         if (newPath) {
           addDocuments([newPath]);
+          this.props.unselectDocument(file.id);
         } else {
           res = false;
         }
@@ -580,6 +583,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
           const newPath = trustedEncrypts.encryptFile(outURI, certs, policies, format, folderOut);
           if (newPath) {
             addDocuments([newPath]);
+            this.props.unselectDocument(file.id);
           } else {
             res = false;
           }
@@ -610,6 +614,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
           const newPath = trustedEncrypts.encryptFile(file.fullpath, certs, policies, format, folderOut);
           if (newPath) {
             addDocuments([newPath]);
+            this.props.unselectDocument(file.id);
           } else {
             res = false;
           }
@@ -713,6 +718,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
 
           if (newPath) {
             addDocuments([newPath]);
+            this.props.unselectDocument(file.id);
           } else {
             res = false;
           }
@@ -830,5 +836,6 @@ export default connect((state) => {
     addDocuments, arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
     filePackageSelect, filePackageDelete, verifySignature, packageSign, loadAllDocuments,
     removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
+    unselectAllDocuments, unselectDocument,
     selectAllDocuments, selectDocument, selectSignerCertificate,
   })(DocumentsRightColumn);

@@ -3,7 +3,7 @@ import { OrderedMap, OrderedSet, Record } from "immutable";
 import {
   ADD_DOCUMENTS, ARHIVE_DOCUMENTS, LOAD_ALL_DOCUMENTS, PACKAGE_DELETE_DOCUMENTS,
   REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS, SELECT_ALL_DOCUMENTS,
-  SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS,
+  SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, UNSELECT_DOCUMENT,
 } from "../constants";
 import { arrayToMap, fileExists } from "../utils";
 
@@ -69,6 +69,9 @@ export default (documents = new DefaultReducerState(), action) => {
         ? selected.remove(payload.uid)
         : selected.add(payload.uid),
       );
+
+    case UNSELECT_DOCUMENT:
+      return documents.update("selected", (selected) => selected.remove(payload.uid));
 
     case SELECT_ALL_DOCUMENTS:
       const allDocumentsId: number[] = [];
