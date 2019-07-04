@@ -41,9 +41,9 @@ export default {
     send: "Отправить",
     support: "Техническая поддержка",
     username: "Имя",
-    version: "1.5.2",
+    version: "2.0.0",
     version_app: "Версия приложения",
-    version_full: "Версия продукта: 1.5.2",
+    version_full: "Версия продукта: 2.0.0",
   },
   Agreement: {
     Agreement: "СОГЛАШЕНИЕ",
