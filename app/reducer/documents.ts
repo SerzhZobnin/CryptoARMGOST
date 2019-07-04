@@ -42,11 +42,18 @@ export default (documents = new DefaultReducerState(), action) => {
         .set("selected", new OrderedSet([]));
 
     case ADD_DOCUMENTS + SUCCESS:
-      return documents
+      documents = documents
         .update("entities", (entities) => arrayToMap(payload.documents, DocumentModel).merge(entities))
         .set("loading", false)
-        .set("loaded", true)
-        .set("selected", new OrderedSet([]));
+        .set("loaded", true);
+
+      for (const doc of payload.documents) {
+        documents = documents.update("selected", (selected) => selected.has(doc.id)
+          ? selected.remove(doc.id)
+          : selected.add(doc.id));
+      }
+
+      return documents;
 
     case REMOVE_ALL_DOCUMENTS:
       return documents = new DefaultReducerState();
