@@ -333,9 +333,13 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
     const search = searchValue.toLowerCase();
 
     arr.forEach((document: any, index: number) => {
-      if (document.filename.toLowerCase().match(search)) {
-        foundDocuments.push(index);
+      try{
+        if (document.filename.toLowerCase().match(search)) {
+          foundDocuments.push(index);
+        }
       }
+      catch(e){}
+
     });
 
     if (!foundDocuments.length) {

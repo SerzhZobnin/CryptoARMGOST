@@ -338,11 +338,15 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
 
   handleSaveToDocumentsClick = () => {
     const { settings } = this.state;
-
+    const directory = settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder
     this.setState({
       settings: settings
+        .setIn(["outfolder"], directory)
         .setIn(["saveToDocuments"], !settings.saveToDocuments),
+
+
     });
+
   }
 
   handleEncodingChange = (encoding: string) => {

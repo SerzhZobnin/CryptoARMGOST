@@ -48,6 +48,7 @@ export const filteredCertificatesSelector = createSelector(certificatesGetter, f
   });
 
   return сertificatesByOperations.filter((certificate) => {
+    try{
     return (
       certificate.hash.toLowerCase().match(search) ||
       certificate.issuerFriendlyName.toLowerCase().match(search) ||
@@ -57,7 +58,8 @@ export const filteredCertificatesSelector = createSelector(certificatesGetter, f
       certificate.notBefore.toString().toLowerCase().match(search) ||
       certificate.organizationName.toLowerCase().match(search) ||
       certificate.signatureAlgorithm.toLowerCase().match(search)
-    );
+    );}
+    catch(e){return true}
   });
 });
 
@@ -92,9 +94,15 @@ export const filteredContainersSelector = createSelector(containersGetter, filte
   let containersArr = mapToArr(containers);
 
   return containersArr.filter((container) => {
-    return (
-      container.name.toLowerCase().match(search)
-    );
+    try{
+      return (
+        container.name.toLowerCase().match(search)
+      );
+    }
+    catch(e){
+      return true
+    }
+
   });
 });
 
