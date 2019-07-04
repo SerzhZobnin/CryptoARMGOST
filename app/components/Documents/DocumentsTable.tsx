@@ -67,9 +67,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
     // tslint:disable-next-line:no-shadowed-variable
     const { isLoaded, isLoading, loadAllDocuments, removeAllDocuments } = this.props;
 
-    removeAllDocuments();
-
-    if (!isLoading) {
+    if (!isLoading && !isLoaded) {
       loadAllDocuments();
     }
   }
@@ -87,13 +85,6 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
     if (prevProps.searchValue && !this.props.searchValue) {
       this.setState({ foundDocuments: [] });
     }
-  }
-
-  componentWillUnmount() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { unselectAllDocuments } = this.props;
-
-    unselectAllDocuments();
   }
 
   render() {
