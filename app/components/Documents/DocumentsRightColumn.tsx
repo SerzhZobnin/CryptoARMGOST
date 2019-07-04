@@ -117,10 +117,11 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
               <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
             </a>
             <ul id="dropdown-btn-settings" className="dropdown-content">
-              <li><a onClick={() => {
-                this.props.activeSetting(this.props.setting.id);
-                this.props.history.push(LOCATION_SETTINGS_CONFIG);
-              }}>Изменить</a></li>
+              <Link to={LOCATION_SETTINGS_CONFIG}>
+                <li><a onClick={() => {
+                  this.props.activeSetting(this.props.setting.id);
+                }}>Изменить</a></li>
+              </Link>
             </ul>
           </div>
         </div>
