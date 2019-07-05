@@ -109,13 +109,13 @@ io.on(CONNECTION, (socket) => {
 const addLicenseToStore = (id: string, license: string) => {
   if (license) {
     if (checkLicense(license)) {
-      try {
+     /* try {
         if (trusted.utils.Jwt.addLicense(license)) {
           store.dispatch({ type: ADD_LICENSE, payload: { id, license } });
         }
       } catch (e) {
         console.log("error", e);
-      }
+      }*/
     }
   }
 };

@@ -143,12 +143,7 @@ class CertificateChainInfo extends React.Component<any, any> {
     const certificate = certItem.object ? certItem.object : certItem.x509 ? tcert : window.PKISTORE.getPkiObject(certItem);
 
     try {
-      if (certItem.provider && certItem.provider === "SYSTEM") {
-        const chain = new trusted.pki.Chain();
-        return chain.buildChain(certificate, window.TRUSTEDCERTIFICATECOLLECTION);
-      } else {
-        return trusted.utils.Csp.buildChain(certificate);
-      }
+      return trusted.utils.Csp.buildChain(certificate);
     } catch (e) {
       return null;
     }
@@ -156,13 +151,7 @@ class CertificateChainInfo extends React.Component<any, any> {
 
   verifyCertificateChain = (cert: trusted.pki.Certificate, provider: string) => {
     try {
-      if (provider === "SYSTEM") {
-        const chain = new trusted.pki.Chain();
-        const chainForVerify = chain.buildChain(cert, window.TRUSTEDCERTIFICATECOLLECTION);
-        return chain.verifyChain(chainForVerify, null);
-      } else {
-        return trusted.utils.Csp.verifyCertificateChain(cert);
-      }
+      return trusted.utils.Csp.verifyCertificateChain(cert);
     } catch (e) {
       return null;
     }

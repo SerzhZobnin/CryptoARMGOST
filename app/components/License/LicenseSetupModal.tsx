@@ -103,24 +103,14 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
         }
 
         try {
-          trusted.utils.Jwt.addLicense(key);
+          // trusted.utils.Jwt.addLicense(key);
+          throw new Error("TODO trusted.utils.Jwt.addLicense");
         } catch (e) {
           console.log("error", e);
         }
 
         window.sudo.exec(command, options, function (error: any) {
           if (!error) {
-            trusted.common.OpenSSL.stop();
-            trusted.common.OpenSSL.run();
-
-            if (process.platform === "win32") {
-              try {
-                crypto_module.loadConfig(npath.join(DEFAULT_PATH, "./config/openssl.cfg"));
-              } catch (e) {
-                // error
-              }
-            }
-
             loadLicense();
 
             $(".toast-lic_key_setup").remove();

@@ -22,7 +22,7 @@ require("../server/socketManager");
 
 const remote = window.electron.remote;
 if (remote.getGlobal("sharedObject").logcrypto) {
-  window.logger = trusted.utils.Logger.start(TRUSTED_CRYPTO_LOG);
+  window.logger = trusted.common.Logger.start(TRUSTED_CRYPTO_LOG);
 }
 
 interface IMenuBarState {

@@ -342,7 +342,6 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
     const { licenseStatus, lic_error } = this.props;
 
-    const key = new trusted.pki.Key();
     const exts = new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
     const OS_TYPE = os.type();
@@ -353,7 +352,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     let oid;
     let ext;
 
-    if (licenseStatus !== true) {
+    /*if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
       Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
 
@@ -369,7 +368,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       });
 
       return;
-    }
+    }*/
 
     if (!this.verifyFields()) {
       $(".toast-required_fields").remove();
@@ -466,7 +465,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
         case ALG_GOST12_256:
         case ALG_GOST12_512:
           pkeyopt.push(`container:${containerName}`);
-          keyPair = key.generate(algorithm, pkeyopt);
+          // keyPair = key.generate(algorithm, pkeyopt);
           break;
         default:
           return;
@@ -505,9 +504,9 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
     certReq.subject = atrs;
     certReq.version = 0;
-    certReq.publicKey = keyPair;
     certReq.extensions = exts;
-    certReq.sign(keyPair);
+    certReq.pubKeyAlgorithm = algorithm;
+    certReq.containerName = containerName;
 
     if (!fs.existsSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"))) {
       fs.mkdirSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"), { mode: 0o700 });
@@ -519,17 +518,13 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       //
     }
 
-    if (OS_TYPE === "Windows_NT") {
-      providerType = PROVIDER_MICROSOFT;
-    } else {
-      providerType = PROVIDER_CRYPTOPRO;
-    }
+    providerType = PROVIDER_CRYPTOPRO;
 
     if (selfSigned) {
       const cert = new trusted.pki.Certificate(certReq);
       cert.serialNumber = randomSerial();
       cert.notAfter = 60 * 60 * 24 * 365; // 365 days in sec
-      cert.sign(keyPair);
+      cert.sign();
 
       logger.log({
         certificate: cert.subjectName,
@@ -615,7 +610,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       const cert = new trusted.pki.Certificate(certReq);
       cert.serialNumber = randomSerial();
       cert.notAfter = 60; // 60 sec
-      cert.sign(keyPair);
+      cert.sign();
 
       window.PKISTORE.importCertificate(cert, providerType, (err: Error) => {
         if (err) {

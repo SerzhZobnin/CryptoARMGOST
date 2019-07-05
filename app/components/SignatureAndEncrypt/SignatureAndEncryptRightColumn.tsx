@@ -301,7 +301,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { activeFilesArr, signer, lic_error } = this.props;
     const { localize, locale } = this.context;
 
-    const licenseStatus = checkLicense();
+    /*const licenseStatus = checkLicense();
 
     if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
@@ -319,28 +319,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       });
 
       return;
-    }
+    }*/
 
     if (activeFilesArr.length > 0) {
-      const key = window.PKISTORE.findKey(signer);
-
-      if (!key) {
-        $(".toast-key_not_found").remove();
-        Materialize.toast(localize("Sign.key_not_found", locale), 2000, "toast-key_not_found");
-
-        logger.log({
-          level: "error",
-          message: "Key not found",
-          operation: "Подпись",
-          operationObject: {
-            in: "Key",
-            out: "Null",
-          },
-          userName: USER_NAME,
-        });
-
-        return;
-      }
 
       const cert = window.PKISTORE.getPkiObject(signer);
 
@@ -356,16 +337,16 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       }
 
       if (filesForSign && filesForSign.length) {
-        this.sign(filesForSign, cert, key);
+        this.sign(filesForSign, cert);
       }
 
       if (filesForResign && filesForResign.length) {
-        this.resign(filesForResign, cert, key);
+        this.resign(filesForResign, cert);
       }
     }
   }
 
-  sign = (files: IFile[], cert: any, key: any) => {
+  sign = (files: IFile[], cert: any) => {
     const { setting, signer } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { packageSign } = this.props;
@@ -397,11 +378,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         format = trusted.DataFormat.DER;
       }
 
-      packageSign(files, cert, key, policies, format, folderOut);
+      packageSign(files, cert, policies, format, folderOut);
     }
   }
 
-  resign = (files: IFile[], cert: any, key: any) => {
+  resign = (files: IFile[], cert: any) => {
     const { connections, connectedList, setting, uploader } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { deleteFile, selectFile } = this.props;
@@ -430,7 +411,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       }
 
       files.forEach((file) => {
-        const newPath = trustedSign.resignFile(file.fullpath, cert, key, policies, format, folderOut);
+        const newPath = trustedSign.resignFile(file.fullpath, cert, policies, format, folderOut);
 
         if (newPath) {
           if (file.socket) {
@@ -713,7 +694,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { connectedList, connections, activeFilesArr, setting, deleteFile, selectFile, licenseStatus, lic_error } = this.props;
     const { localize, locale } = this.context;
 
-    if (licenseStatus !== true) {
+    /*if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
       Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
 
@@ -729,7 +710,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       });
 
       return;
-    }
+    }*/
 
     if (activeFilesArr.length > 0) {
       const folderOut = setting.outfolder;
@@ -753,7 +734,12 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           const uri = file.fullpath;
           const format = fileCoding(uri);
           const cipher = new trusted.pki.Cipher();
-          const ris = cipher.getRecipientInfos(uri, format);
+
+          const haveLocalRecipient = true;
+          const haveDSSRecipient = false;
+          const dssRecipient = undefined;
+
+        /*  const ris = cipher.getRecipientInfos(uri, format);
 
           let ri: trusted.cms.CmsRecipientInfo;
           let haveLocalRecipient = false;
@@ -778,7 +764,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             } else {
               res = false;
             }
-          }
+          }*/
 
           if (haveLocalRecipient) {
             filesForDecryptInLocalCSP.push(file);

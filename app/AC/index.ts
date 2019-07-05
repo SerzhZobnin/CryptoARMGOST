@@ -62,7 +62,6 @@ interface INormalizedSignInfo {
 export function packageSign(
   files: IFile[],
   cert: trusted.pki.Certificate,
-  key: trusted.pki.Key,
   policies: string[],
   format: trusted.DataFormat,
   folderOut: string,
@@ -81,7 +80,7 @@ export function packageSign(
       const { connections, remoteFiles } = state;
 
       files.forEach((file) => {
-        const newPath = signs.signFile(file.fullpath, cert, key, policies, format, folderOut);
+        const newPath = signs.signFile(file.fullpath, cert, policies, format, folderOut);
         if (newPath) {
           signedFileIdPackage.push(file.id);
           if (!file.socket) {
@@ -317,13 +316,7 @@ export function verifyCertificate(certificateId: string) {
     let certificateStatus = false;
 
     try {
-      if (certItem.provider === "SYSTEM") {
-        const chain = new trusted.pki.Chain();
-        const chainForVerify = chain.buildChain(certificate, window.TRUSTEDCERTIFICATECOLLECTION);
-        certificateStatus = chain.verifyChain(chainForVerify, null);
-      } else {
-        certificateStatus = trusted.utils.Csp.verifyCertificateChain(certificate);
-      }
+      certificateStatus = trusted.utils.Csp.verifyCertificateChain(certificate);
     } catch (e) {
       certificateStatus = false;
     }

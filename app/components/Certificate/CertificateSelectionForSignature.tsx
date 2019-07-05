@@ -99,7 +99,8 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
             for (const hcert of cloudCSPState.certificates) {
               if (hcert) {
                 try {
-                  trusted.utils.Csp.installCertificateFromCloud(hcert.x509, cloudCSPSettings.authURL, cloudCSPSettings.restURL, hcert.id);
+                  throw new Error("TODO add function installCertificateFromCloud");
+                  /*trusted.utils.Csp.installCertificateFromCloud(hcert.x509, cloudCSPSettings.authURL, cloudCSPSettings.restURL, hcert.id);
 
                   testCount++;
 
@@ -113,7 +114,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
                       out: "Null",
                     },
                     userName: USER_NAME,
-                  });
+                  });*/
                 } catch (err) {
                   logger.log({
                     certificate: hcert.subjectName,
@@ -276,14 +277,14 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
     let container = "";
 
     let certificate: trusted.pki.Certificate;
-    let crl: trusted.pki.Crl;
+    let crl: trusted.pki.CRL;
     let providerType: string;
 
     try {
       certificate = trusted.pki.Certificate.load(path, format);
     } catch (e) {
       try {
-        crl = trusted.pki.Crl.load(path, format);
+        crl = trusted.pki.CRL.load(path, format);
         this.crlImport(crl, path);
         return;
       } catch (e) {
@@ -488,7 +489,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
     }
   }
 
-  crlImport = (crl: trusted.pki.Crl, crlFilePath?: string) => {
+  crlImport = (crl: trusted.pki.CRL, crlFilePath?: string) => {
     const { localize, locale } = this.context;
     // tslint:disable-next-line:no-shadowed-variable
     const { isLoading, loadAllCertificates, removeAllCertificates } = this.props;
@@ -602,10 +603,10 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
     const self = this;
 
     const P12_PATH = event[0].path;
-    let p12: trusted.pki.Pkcs12 | undefined;
+    let p12: trusted.pki.PKCS12 | undefined;
 
     try {
-      p12 = trusted.pki.Pkcs12.load(P12_PATH);
+      p12 = trusted.pki.PKCS12.load(P12_PATH);
     } catch (e) {
       p12 = undefined;
     }

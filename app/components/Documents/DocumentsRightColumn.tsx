@@ -307,7 +307,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     const { activeDocumentsArr, signer, lic_error } = this.props;
     const { localize, locale } = this.context;
 
-    const licenseStatus = checkLicense();
+    /*const licenseStatus = checkLicense();
 
     if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
@@ -325,10 +325,10 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       });
 
       return;
-    }
+    }*/
 
     if (activeDocumentsArr.length > 0) {
-      const key = window.PKISTORE.findKey(signer);
+      /*const key = window.PKISTORE.findKey(signer);
 
       if (!key) {
         $(".toast-key_not_found").remove();
@@ -346,7 +346,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         });
 
         return;
-      }
+      }*/
 
       const cert = window.PKISTORE.getPkiObject(signer);
 
@@ -362,16 +362,16 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       }
 
       if (filesForSign && filesForSign.length) {
-        this.sign(filesForSign, cert, key);
+        this.sign(filesForSign, cert);
       }
 
       if (filesForResign && filesForResign.length) {
-        this.resign(filesForResign, cert, key);
+        this.resign(filesForResign, cert);
       }
     }
   }
 
-  sign = (files: any, cert: any, key: any) => {
+  sign = (files: any, cert: any) => {
     const { addDocuments, setting, signer, unselectD } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { localize, locale } = this.context;
@@ -404,7 +404,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       }
 
       files.forEach((file) => {
-        const newPath = trustedSign.signFile(file.fullpath, cert, key, policies, format, folderOut);
+        const newPath = trustedSign.signFile(file.fullpath, cert, policies, format, folderOut);
 
         if (newPath) {
           addDocuments([newPath]);
@@ -424,7 +424,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     }
   }
 
-  resign = (files: any, cert: any, key: any) => {
+  resign = (files: any, cert: any) => {
     const { setting } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { verifySignature } = this.props;
@@ -453,7 +453,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       }
 
       files.forEach((file) => {
-        const newPath = trustedSign.resignFile(file.fullpath, cert, key, policies, format, folderOut);
+        const newPath = trustedSign.resignFile(file.fullpath, cert, policies, format, folderOut);
 
         if (newPath) {
           verifySignature(file.id);
@@ -635,7 +635,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     const { addDocuments, activeDocumentsArr, setting, licenseStatus, lic_error } = this.props;
     const { localize, locale } = this.context;
 
-    if (licenseStatus !== true) {
+    /*if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
       Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
 
@@ -651,7 +651,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       });
 
       return;
-    }
+    }*/
 
     if (activeDocumentsArr.length > 0) {
       const folderOut = setting.outfolder;
@@ -669,13 +669,14 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       const filesForDecryptInLocalCSP = [];
 
       for (const file of activeDocumentsArr) {
-        let certWithKey: trusted.pki.Certificate;
+         try {
+          const haveLocalRecipient = true;
+          const haveDSSRecipient = false;
+          const dssRecipient = undefined;
 
-        try {
-          const uri = file.fullpath;
-          const format = fileCoding(uri);
-          const cipher = new trusted.pki.Cipher();
-          const ris = cipher.getRecipientInfos(uri, format);
+          filesForDecryptInLocalCSP.push(file);
+
+          /*const ris = cipher.getRecipientInfos(uri, format);
 
           let ri: trusted.cms.CmsRecipientInfo;
           let haveLocalRecipient = false;
@@ -700,7 +701,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
             } else {
               res = false;
             }
-          }
+          }*/
 
           if (haveLocalRecipient) {
             filesForDecryptInLocalCSP.push(file);

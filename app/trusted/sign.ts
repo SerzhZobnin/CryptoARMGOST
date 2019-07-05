@@ -65,7 +65,7 @@ export function setDetachedContent(cms: trusted.cms.SignedData, uri: string, sho
   }
 }
 
-export function signFile(uri: string, cert: trusted.pki.Certificate, key: trusted.pki.Key, policies: any, format: trusted.DataFormat, folderOut: string) {
+export function signFile(uri: string, cert: trusted.pki.Certificate, policies: any, format: trusted.DataFormat, folderOut: string) {
   let outURI: string;
 
   if (folderOut.length > 0) {
@@ -90,12 +90,11 @@ export function signFile(uri: string, cert: trusted.pki.Certificate, key: truste
   try {
     const sd: trusted.cms.SignedData = new trusted.cms.SignedData();
     sd.policies = policies;
-    sd.createSigner(cert, key);
     sd.content = {
       type: trusted.cms.SignedDataContentType.url,
       data: uri,
     };
-    sd.sign();
+    sd.sign(cert);
     sd.save(outURI, format);
 
     sd.freeContent();
@@ -134,7 +133,7 @@ export function signFile(uri: string, cert: trusted.pki.Certificate, key: truste
   return outURI;
 }
 
-export function resignFile(uri: string, cert: trusted.pki.Certificate, key: trusted.pki.Key, policies: any, format: trusted.DataFormat, folderOut: string) {
+export function resignFile(uri: string, cert: trusted.pki.Certificate, policies: any, format: trusted.DataFormat, folderOut: string) {
   let outURI: string;
 
   if (folderOut.length > 0) {
@@ -173,9 +172,9 @@ export function resignFile(uri: string, cert: trusted.pki.Certificate, key: trus
     if (sd.isDetached()) {
       policies.push("detached");
 
-      if (!(sd = setDetachedContent(sd, uri))) {
-        return;
-      }
+      // if (!(sd = setDetachedContent(sd, uri))) {
+      //   return;
+      // }
 
       sd.policies = ["noSignerCertificateVerify"];
 
@@ -185,8 +184,7 @@ export function resignFile(uri: string, cert: trusted.pki.Certificate, key: trus
     }
 
     sd.policies = policies;
-    sd.createSigner(cert, key);
-    sd.sign();
+    sd.sign(cert);
     sd.save(outURI, format);
   } catch (err) {
     logger.log({
@@ -311,15 +309,15 @@ export function verifySign(cms: trusted.cms.SignedData): boolean {
   let res: boolean = false;
 
   try {
-    let signers: trusted.cms.SignerCollection;
-    let signerCert: trusted.pki.Certificate = undefined;
-    let signer: trusted.cms.Signer;
-    let signerId: trusted.cms.SignerId;
-    let signerCertItems: trusted.pkistore.PkiItem[];
-    let certs: trusted.pki.CertificateCollection = new trusted.pki.CertificateCollection();
+    // let signers: trusted.cms.SignerCollection;
+    // let signerCert: trusted.pki.Certificate = undefined;
+    // let signer: trusted.cms.Signer;
+    // let signerId: trusted.cms.SignerId;
+    // let signerCertItems: trusted.pkistore.PkiItem[];
+    // let certs: trusted.pki.CertificateCollection = new trusted.pki.CertificateCollection();
 
-    signers = cms.signers();
-    certs = cms.certificates();
+   // signers = cms.signers();
+   /* certs = cms.certificates();
 
     for (let i = 0; i < signers.length; i++) {
       signer = signers.items(i);
@@ -335,9 +333,9 @@ export function verifySign(cms: trusted.cms.SignedData): boolean {
           break;
         }
       }
-    }
+    }*/
 
-    res = cms.verify(certs);
+    res = cms.verify();
     return res;
   } catch (e) {
     $(".toast-verify_sign_failed").remove();
@@ -356,14 +354,14 @@ export function verifySignerCert(cert: trusted.pki.Certificate): boolean {
 
 export function getSignPropertys(cms: trusted.cms.SignedData) {
   try {
-    let signers: trusted.cms.SignerCollection;
+    // let signers: trusted.cms.SignerCollection;
     let signerCert: trusted.pki.Certificate;
-    let signer: trusted.cms.Signer;
-    let signerId: trusted.cms.SignerId;
+    // let signer: trusted.cms.Signer;
+    // let signerId: trusted.cms.SignerId;
     let signerCertItems: trusted.pkistore.PkiItem[];
     let certificates: trusted.pki.CertificateCollection;
     let ch: trusted.pki.CertificateCollection;
-    let chain: trusted.pki.Chain;
+    // let chain: trusted.pki.Chain;
     let cert: trusted.pki.Certificate;
     let certificatesSignStatus: boolean;
     let certSignStatus: boolean;
@@ -371,12 +369,12 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
     let result: any = [];
     let certSign: any = [];
 
-    chain = new trusted.pki.Chain();
+    // chain = new trusted.pki.Chain();
 
-    signers = cms.signers();
+    //signers = cms.signers();
     certificates = cms.certificates();
 
-    for (let i = 0; i < signers.length; i++) {
+    /*for (let i = 0; i < signers.length; i++) {
       signer = signers.items(i);
       signerId = signer.signerId;
 
@@ -406,10 +404,10 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
         $(".toast-signercert_not_found").remove();
         Materialize.toast(localize("Sign.signercert_not_found", window.locale), 2000, "toast-signercert_not_found");
       }
-    }
+    }*/
 
     let curRes: any;
-    for (let i: number = 0; i < signers.length; i++) {
+   /* for (let i: number = 0; i < signers.length; i++) {
       certificatesSignStatus = true;
       signer = signers.items(i);
       cert = signer.certificate;
@@ -497,7 +495,7 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
       curRes.status_verify = certificatesSignStatus && signerStatus,
 
         result.push(curRes);
-    }
+    }*/
 
     return result;
   } catch (e) {
