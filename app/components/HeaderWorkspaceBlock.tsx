@@ -14,8 +14,8 @@ class HeaderWorkspaceBlock extends React.Component<IHeaderWorkspaceBlockProps, a
 
     if (icon && onСlickBtn) {
       return (<li className="right">
-        <a className="nav-small-btn waves-effect waves-light" onClick={onСlickBtn.bind(this)}>
-          <i className="nav-small-icon material-icons">{icon}</i>
+        <a onClick={onСlickBtn.bind(this)} style={{padding: "0px"}}>
+          <i className="file-setting-item waves-effect material-icons secondary-content pulse active" style={{color: "white"}}>{icon}</i>
         </a>
       </li>);
     } else {

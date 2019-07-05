@@ -1,16 +1,16 @@
 import * as fs from "fs";
 import { OrderedMap, OrderedSet, Record } from "immutable";
 import {
-  ARHIVE_DOCUMENTS, LOAD_ALL_DOCUMENTS, PACKAGE_DELETE_DOCUMENTS,
+  ADD_DOCUMENTS, ARHIVE_DOCUMENTS, LOAD_ALL_DOCUMENTS, PACKAGE_DELETE_DOCUMENTS,
   REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS, SELECT_ALL_DOCUMENTS,
-  SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS,
+  SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, UNSELECT_DOCUMENT,
 } from "../constants";
 import { arrayToMap, fileExists } from "../utils";
 
 const DocumentModel = Record({
   atime: null,
   birthtime: null,
-  extname: null,
+  extension: null,
   filename: null,
   filesize: null,
   fullpath: null,
@@ -31,6 +31,7 @@ export default (documents = new DefaultReducerState(), action) => {
 
   switch (type) {
     case LOAD_ALL_DOCUMENTS + START:
+    case ADD_DOCUMENTS + START:
       return documents.set("loading", true);
 
     case LOAD_ALL_DOCUMENTS + SUCCESS:
@@ -39,6 +40,20 @@ export default (documents = new DefaultReducerState(), action) => {
         .set("loading", false)
         .set("loaded", true)
         .set("selected", new OrderedSet([]));
+
+    case ADD_DOCUMENTS + SUCCESS:
+      documents = documents
+        .update("entities", (entities) => arrayToMap(payload.documents, DocumentModel).merge(entities))
+        .set("loading", false)
+        .set("loaded", true);
+
+      for (const doc of payload.documents) {
+        documents = documents.update("selected", (selected) => selected.has(doc.id)
+          ? selected.remove(doc.id)
+          : selected.add(doc.id));
+      }
+
+      return documents;
 
     case REMOVE_ALL_DOCUMENTS:
       return documents = new DefaultReducerState();
@@ -54,6 +69,9 @@ export default (documents = new DefaultReducerState(), action) => {
         ? selected.remove(payload.uid)
         : selected.add(payload.uid),
       );
+
+    case UNSELECT_DOCUMENT:
+      return documents.update("selected", (selected) => selected.remove(payload.uid));
 
     case SELECT_ALL_DOCUMENTS:
       const allDocumentsId: number[] = [];

@@ -9,13 +9,13 @@ interface IFileRedux {
   filename: string;
   fullpath: string;
   id: number;
-  lastModifiedDate: Date;
+  mtime: Date;
   socket: string;
 }
 
 interface IFileIconProps {
   file: IFileRedux;
-  verifySignature: (id: number) => void;
+  verifySignature: (id: number, showOpenDialogForDetached?: boolean) => void;
 }
 
 class FileIcon extends React.Component<IFileIconProps, {}> {
@@ -29,7 +29,7 @@ class FileIcon extends React.Component<IFileIconProps, {}> {
         const signs = this.props.signatures.getIn(["entities", file.id]);
 
         if (!signs) {
-          this.props.verifySignature(file.id);
+          this.props.verifySignature(file.id, false);
         }
       }
 
@@ -49,7 +49,7 @@ class FileIcon extends React.Component<IFileIconProps, {}> {
         const signs = this.props.signatures.getIn(["entities", file.id]);
 
         if (!signs) {
-          this.props.verifySignature(file.id);
+          this.props.verifySignature(file.id, false);
         }
       }
 
@@ -68,12 +68,8 @@ class FileIcon extends React.Component<IFileIconProps, {}> {
     const { file } = this.props;
 
     return (
-      <div className="row nobottom">
-        <div className="valign-wrapper">
-          <div className="col s12">
-            <i className={this.getFileIconByExtname(file.extension, file.id) + " icon_file_type"} />
-          </div>
-        </div>
+      <div>
+        <i className={this.getFileIconByExtname(file.extension, file.id) + " icon_file_type"} style={this.props.style} />
       </div>
     );
   }

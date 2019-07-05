@@ -5,7 +5,7 @@ import {
   ACTIVE_CONTAINER, ACTIVE_FILE, ADD_RECIPIENT_CERTIFICATE,
   CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT,
   CHANGE_DELETE_FILES_AFTER_ENCRYPT, CHANGE_ECRYPT_ENCODING,
-  CHANGE_ENCRYPT_OUTFOLDER, CHANGE_LOCALE,
+  CHANGE_ENCRYPT_OUTFOLDER, CHANGE_LOCALE, CHANGE_SETTINGS_NAME,
   CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING, CHANGE_SIGNATURE_OUTFOLDER,
   CHANGE_SIGNATURE_TIMESTAMP, DEFAULT_DOCUMENTS_PATH,
   DELETE_FILE, DELETE_RECIPIENT_CERTIFICATE, FAIL,
@@ -32,7 +32,7 @@ export function changeLocation(location: string) {
 interface IFile {
   id: number;
   filename: string;
-  lastModifiedDate: Date;
+  mtime: Date;
   fullpath: string;
   extension: string | undefined;
   active: boolean;
@@ -62,7 +62,6 @@ interface INormalizedSignInfo {
 export function packageSign(
   files: IFile[],
   cert: trusted.pki.Certificate,
-  key: trusted.pki.Key,
   policies: string[],
   format: trusted.DataFormat,
   folderOut: string,
@@ -81,7 +80,7 @@ export function packageSign(
       const { connections, remoteFiles } = state;
 
       files.forEach((file) => {
-        const newPath = signs.signFile(file.fullpath, cert, key, policies, format, folderOut);
+        const newPath = signs.signFile(file.fullpath, cert, policies, format, folderOut);
         if (newPath) {
           signedFileIdPackage.push(file.id);
           if (!file.socket) {
@@ -216,9 +215,10 @@ export function filePackageSelect(files: IFilePath[]) {
           extension,
           extra,
           filename: path.basename(fullpath),
+          filesize: stat.size,
           fullpath,
           id: Date.now() + Math.random(),
-          lastModifiedDate: stat.birthtime,
+          mtime: stat.birthtime,
           remoteId,
           size: stat.size,
           socket,
@@ -316,13 +316,7 @@ export function verifyCertificate(certificateId: string) {
     let certificateStatus = false;
 
     try {
-      if (certItem.provider === "SYSTEM") {
-        const chain = new trusted.pki.Chain();
-        const chainForVerify = chain.buildChain(certificate, window.TRUSTEDCERTIFICATECOLLECTION);
-        certificateStatus = chain.verifyChain(chainForVerify, null);
-      } else {
-        certificateStatus = trusted.utils.Csp.verifyCertificateChain(certificate);
-      }
+      certificateStatus = trusted.utils.Csp.verifyCertificateChain(certificate);
     } catch (e) {
       certificateStatus = false;
     }
@@ -373,7 +367,7 @@ export function loadAllContainers() {
         containers: filteredContainers,
         type: LOAD_ALL_CONTAINERS + SUCCESS,
       });
-    }, 0);
+    }, 200);
   };
 }
 
@@ -393,25 +387,34 @@ export function getCertificateFromContainer(container: number) {
     setTimeout(() => {
       const { containers } = getState();
       const cont = containers.getIn(["entities", container]);
-      const certificate = trusted.utils.Csp.getCertificateFromContainer(cont.name, 75);
-      const certificateItem = {
-        hash: certificate.thumbprint,
-        issuerFriendlyName: certificate.issuerFriendlyName,
-        key: "1",
-        notAfter: certificate.notAfter,
-        organizationName: certificate.organizationName,
-        publicKeyAlgorithm: certificate.publicKeyAlgorithm,
-        serial: certificate.serialNumber,
-        signatureAlgorithm: certificate.signatureAlgorithm,
-        signatureDigestAlgorithm: certificate.signatureDigestAlgorithm,
-        subjectFriendlyName: certificate.subjectFriendlyName,
-        subjectName: null,
-      };
+      let certificate;
 
-      dispatch({
-        payload: { container, certificate, certificateItem },
-        type: GET_CERTIFICATE_FROM_CONTAINER + SUCCESS,
-      });
+      try {
+        certificate = trusted.utils.Csp.getCertificateFromContainer(cont.name, 75);
+        const certificateItem = {
+          hash: certificate.thumbprint,
+          issuerFriendlyName: certificate.issuerFriendlyName,
+          key: "1",
+          notAfter: certificate.notAfter,
+          organizationName: certificate.organizationName,
+          publicKeyAlgorithm: certificate.publicKeyAlgorithm,
+          serial: certificate.serialNumber,
+          signatureAlgorithm: certificate.signatureAlgorithm,
+          signatureDigestAlgorithm: certificate.signatureDigestAlgorithm,
+          subjectFriendlyName: certificate.subjectFriendlyName,
+          subjectName: null,
+        };
+
+        dispatch({
+          payload: { container, certificate, certificateItem },
+          type: GET_CERTIFICATE_FROM_CONTAINER + SUCCESS,
+        });
+      } catch (e) {
+        dispatch({
+          payload: { container },
+          type: GET_CERTIFICATE_FROM_CONTAINER + FAIL,
+        });
+      }
     }, 0);
   };
 }
@@ -423,7 +426,7 @@ export function activeContainer(container: number) {
   };
 }
 
-export function selectFile(fullpath: string, name?: string, lastModifiedDate?: Date, size?: number, remoteId?: string, socket?: string) {
+export function selectFile(fullpath: string, name?: string, mtime?: Date, size?: number, remoteId?: string, socket?: string) {
   let stat;
 
   if (!fileExists(fullpath)) {
@@ -432,7 +435,7 @@ export function selectFile(fullpath: string, name?: string, lastModifiedDate?: D
     };
   }
 
-  if (!lastModifiedDate || !size) {
+  if (!mtime || !size) {
     stat = fs.statSync(fullpath);
   }
 
@@ -441,9 +444,9 @@ export function selectFile(fullpath: string, name?: string, lastModifiedDate?: D
     extension,
     filename: name ? name : path.basename(fullpath),
     fullpath,
-    lastModifiedDate: lastModifiedDate ? lastModifiedDate : (stat ? stat.birthtime : undefined),
+    mtime: mtime ? mtime : (stat ? stat.birthtime : undefined),
     remoteId,
-    size: size ? size : (stat ? stat.size : undefined),
+    filesize: size ? size : (stat ? stat.size : undefined),
     socket,
   };
 
@@ -468,7 +471,7 @@ export function deleteFile(fileId: number) {
   };
 }
 
-export function verifySignature(fileId: string, svsURL?: string) {
+export function verifySignature(fileId: string, showOpenDialogForDetached: boolean = true, svsURL?: string) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     const state = getState();
     const { connections, documents, files } = state;
@@ -486,7 +489,7 @@ export function verifySignature(fileId: string, svsURL?: string) {
 
       if (cms.isDetached()) {
         // tslint:disable-next-line:no-conditional-assignment
-        if (!(cms = signs.setDetachedContent(cms, file.fullpath))) {
+        if (!(cms = signs.setDetachedContent(cms, file.fullpath, showOpenDialogForDetached))) {
           throw new Error(("err"));
         }
       }
@@ -513,6 +516,7 @@ export function verifySignature(fileId: string, svsURL?: string) {
           fileId,
           ...info,
           id: Math.random(),
+          verifyingTime: new Date().getTime(),
         };
       });
 
@@ -583,79 +587,6 @@ export function verifySignature(fileId: string, svsURL?: string) {
   };
 }
 
-export function changeSignatureEncoding(encoding: string) {
-  return {
-    payload: { encoding },
-    type: CHANGE_SIGNATURE_ENCODING,
-  };
-}
-
-export function changeSignatureDetached(detached: boolean) {
-  return {
-    payload: { detached },
-    type: CHANGE_SIGNATURE_DETACHED,
-  };
-}
-
-export function changeSignatureTimestamp(timestamp: boolean) {
-  return {
-    payload: { timestamp },
-    type: CHANGE_SIGNATURE_TIMESTAMP,
-  };
-}
-
-export function toggleSaveToDocuments(saveToDocuments: boolean) {
-  return (dispatch: (action: {}) => void) => {
-    if (saveToDocuments) {
-      dispatch(changeSignatureOutfolder(DEFAULT_DOCUMENTS_PATH));
-      dispatch(changeEncryptOutfolder(DEFAULT_DOCUMENTS_PATH));
-    } else {
-      dispatch(changeSignatureOutfolder(""));
-      dispatch(changeEncryptOutfolder(""));
-    }
-
-    dispatch({
-      payload: { saveToDocuments },
-      type: TOGGLE_SAVE_TO_DOCUMENTS,
-    });
-  };
-}
-
-export function changeSignatureOutfolder(outfolder: string) {
-  return {
-    payload: { outfolder },
-    type: CHANGE_SIGNATURE_OUTFOLDER,
-  };
-}
-
-export function changeEncryptEncoding(encoding: string) {
-  return {
-    payload: { encoding },
-    type: CHANGE_ECRYPT_ENCODING,
-  };
-}
-
-export function changeDeleteFilesAfterEncrypt(del: boolean) {
-  return {
-    payload: { del },
-    type: CHANGE_DELETE_FILES_AFTER_ENCRYPT,
-  };
-}
-
-export function changeArchiveFilesBeforeEncrypt(archive: boolean) {
-  return {
-    payload: { archive },
-    type: CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT,
-  };
-}
-
-export function changeEncryptOutfolder(outfolder: string) {
-  return {
-    payload: { outfolder },
-    type: CHANGE_ENCRYPT_OUTFOLDER,
-  };
-}
-
 export function addRecipientCertificate(certId: number) {
   return {
     payload: { certId },
@@ -667,12 +598,5 @@ export function deleteRecipient(recipient: number) {
   return {
     payload: { recipient },
     type: DELETE_RECIPIENT_CERTIFICATE,
-  };
-}
-
-export function changeLocale(locale: string) {
-  return {
-    payload: { locale },
-    type: CHANGE_LOCALE,
   };
 }

@@ -45,14 +45,14 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
     const disabledClass = license && this.validateLicense(license) ? "" : "disabled";
 
     return (
-      <div className="modal_license_csp">
+      <React.Fragment>
         <div className="row halftop">
           <div className="col s12">
-            <div className="content-wrapper">
+            <div className="content-wrapper tbody border_group">
               <div className="row" />
               <div className="row">
                 <div className="input-field col input-field-csr col s11">
-                  <i className="material-icons prefix key-prefix">vpn_key</i>
+                  <i className="material-icons prefix key-prefix key-label">vpn_key</i>
                   <input
                     id="license"
                     type="text"
@@ -67,8 +67,8 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
                   </label>
                 </div>
                 <div className="col s1">
-                  <a className="nav-small-btn waves-effect" onClick={this.paste}>
-                    <i className="nav-small-icon material-icons">content_copy</i>
+                  <a onClick={this.paste}>
+                    <i className="file-setting-item waves-effect material-icons secondary-content pulse active">content_copy</i>
                   </a>
                 </div>
               </div>
@@ -78,14 +78,17 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
 
         <div className="row halfbottom" />
 
-        <div className="row">
-          <div className="col s2 offset-s9">
-            <a className={"waves-effect waves-light btn modal-close btn_modal " + disabledClass} onClick={this.handleApplyLicense}>
-              {localize("Common.apply", locale)}
-            </a>
+        <div className="row halfbottom">
+          <div style={{ float: "right" }}>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+            </div>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className={"btn btn-outlined waves-effect waves-light modal-close " + disabledClass} onClick={this.handleApplyLicense}>{localize("Common.apply", locale)}</a>
+            </div>
           </div>
         </div>
-      </div>
+      </React.Fragment>
     );
   }
 

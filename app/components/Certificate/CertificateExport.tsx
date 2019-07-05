@@ -63,58 +63,67 @@ class CertificateExport extends React.Component<ICertificateExportProps, ICertif
     const disabledExportKey = isHaveExportablePrivateKey ? false : true;
 
     return (
-      <div >
-        <div className="row">
-          <div className="col s12">
-            <span className="card-infos sub">
-              <div className="row" />
-              {this.getMessage()}
+      <div className="row halftop">
+        <div className="col s12">
+          <div className="content-wrapper tbody border_group">
+            <div className="row">
+              <div className="col s12">
+                <span className="card-infos sub">
+                  <div className="row" />
+                  {this.getMessage()}
+                </span>
+              </div>
+            </div>
+            <div className="row nobottom">
+              <div className="col s12">
+                <span className="card-title sub">
+                  {localize("Export.export_private_key_with_certificate", locale)}?
             </span>
-          </div>
-        </div>
-        <div className="row nobottom">
-          <div className="col s12">
-            <span className="card-title sub">
-              {localize("Export.export_private_key_with_certificate", locale)}?
+              </div>
+            </div>
+            <div className="row">
+              <div className="col s12">
+                <form action="#">
+                  <p>
+                    <input name="exportKey" type="radio" id="isExportPrivateKey" disabled={disabledExportKey}
+                      checked={this.state.exportPrivateKey}
+                      onClick={() => this.handleExportPrivateKey(true)} />
+                    <label htmlFor="isExportPrivateKey" >
+                      {localize("Export.export_private_key", locale)}
+                    </label>
+                  </p>
+                  <p>
+                    <input name="exportKey" type="radio" id="isNotExportPrivateKey"
+                      checked={!this.state.exportPrivateKey}
+                      onClick={() => this.handleExportPrivateKey(false)} />
+                    <label htmlFor="isNotExportPrivateKey">
+                      {localize("Export.no_export_private_key", locale)}
+                    </label>
+                  </p>
+                </form>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col s12">
+                <span className="card-title sub">
+                  {exportPrivateKey ? localize("Export.export_set_password", locale) : localize("Export.export_set_encoding", locale)}:
             </span>
+              </div>
+            </div>
+            {this.getBody()}
           </div>
         </div>
-        <div className="row">
-          <div className="col s12">
-            <form action="#">
-              <p>
-                <input name="exportKey" type="radio" id="isExportPrivateKey" disabled={disabledExportKey}
-                  checked={this.state.exportPrivateKey}
-                  onClick={() => this.handleExportPrivateKey(true)} />
-                <label htmlFor="isExportPrivateKey" >
-                  {localize("Export.export_private_key", locale)}
-                </label>
-              </p>
-              <p>
-                <input name="exportKey" type="radio" id="isNotExportPrivateKey"
-                  checked={!this.state.exportPrivateKey}
-                  onClick={() => this.handleExportPrivateKey(false)} />
-                <label htmlFor="isNotExportPrivateKey">
-                  {localize("Export.no_export_private_key", locale)}
-                </label>
-              </p>
-            </form>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col s12">
-            <span className="card-title sub">
-              {exportPrivateKey ? localize("Export.export_set_password", locale) : localize("Export.export_set_encoding", locale)}:
-            </span>
-          </div>
-        </div>
-        {this.getBody()}
-        <div className="row">
-          <div className="col s2 offset-s6">
-            <a className={"waves-effect waves-light btn modal-close " + disabled} onClick={this.handleExport}>{localize("Export.export", locale)}</a>
-          </div>
-          <div className="col s3  offset-s1">
-            <a className={"waves-effect waves-light btn modal-close "} onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+
+        <div className="row halfbottom" />
+
+        <div className="row halfbottom">
+          <div style={{ float: "right" }}>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className={"btn btn-text waves-effect waves-light modal-close "} onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+            </div>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className={"btn btn-outlined waves-effect waves-light modal-close " + disabled} onClick={this.handleExport}>{localize("Export.export", locale)}</a>
+            </div>
           </div>
         </div>
       </div>
@@ -184,6 +193,7 @@ class CertificateExport extends React.Component<ICertificateExportProps, ICertif
           <div className="row">
             <div className="col s6 card-infos sub">
               <EncodingTypeSelector EncodingValue={encodingType} handleChange={(encoding: string) => this.handleEncodingChange(encoding)} />
+              <div className="row" />
             </div>
           </div>
         </React.Fragment>

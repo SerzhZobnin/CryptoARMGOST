@@ -8,7 +8,7 @@ import { loadAllCertificates, removeAllCertificates } from "../../AC";
 import {
   ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, DEFAULT_CSR_PATH, HOME_DIR,
   KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
-  PROVIDER_CRYPTOPRO, PROVIDER_MICROSOFT, PROVIDER_SYSTEM, REQUEST, REQUEST_TEMPLATE_ADDITIONAL,
+  PROVIDER_CRYPTOPRO,  PROVIDER_SYSTEM, REQUEST, REQUEST_TEMPLATE_ADDITIONAL,
   REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
 import * as jwt from "../../trusted/jwt";
@@ -202,7 +202,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
             {activeSubjectNameInfoTab ?
               <div className="col s12 ">
-                <div className="content-wrapper z-depth-1 tbody">
+                <div className="content-wrapper z-depth-1 tbody" style={{height: "400px"}}>
                   <div className="content-item-relative">
                     <div className="row halfbottom" />
                     <SubjectNameInfo
@@ -253,29 +253,29 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
             <div className="row halfbottom" />
 
-            <div className="row">
-              <div className="col s7">
-                <input
-                  name="selfSigned"
-                  className="filled-in"
-                  type="checkbox"
-                  id="selfSigned"
-                  checked={selfSigned}
-                  onChange={this.toggleSelfSigned}
-                />
-                <label htmlFor="selfSigned">
-                  {localize("CSR.create_selfSigned", locale)}
-                </label>
+            <div className="row halfbottom">
+              <div style={{ float: "left" }}>
+                <div style={{ display: "inline-block", margin: "10px" }}>
+                  <input
+                    name="selfSigned"
+                    className="filled-in"
+                    type="checkbox"
+                    id="selfSigned"
+                    checked={selfSigned}
+                    onChange={this.toggleSelfSigned}
+                  />
+                  <label htmlFor="selfSigned">
+                    {localize("CSR.create_selfSigned", locale)}
+                  </label>
+                </div>
               </div>
 
-              <div className="col s5">
-                <div className="row">
-                  <div className="col s6">
-                    <a className={"waves-effect waves-light btn modal-close"} onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
-                  </div>
-                  <div className="col s6">
-                    <a className={"waves-effect waves-light btn"} onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
-                  </div>
+              <div style={{ float: "right" }}>
+                <div style={{ display: "inline-block", margin: "10px" }}>
+                  <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+                </div>
+                <div style={{ display: "inline-block", margin: "10px" }}>
+                  <a className="btn btn-outlined waves-effect waves-light modal-close" onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
                 </div>
               </div>
             </div>
@@ -342,7 +342,6 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
     const { licenseStatus, lic_error } = this.props;
 
-    const key = new trusted.pki.Key();
     const exts = new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
     const OS_TYPE = os.type();
@@ -353,7 +352,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     let oid;
     let ext;
 
-    if (licenseStatus !== true) {
+    /*if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
       Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
 
@@ -369,7 +368,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       });
 
       return;
-    }
+    }*/
 
     if (!this.verifyFields()) {
       $(".toast-required_fields").remove();
@@ -460,19 +459,13 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     ext = new trusted.pki.Extension(oid, "critical,CA:false");
     exts.push(ext);
 
-    if (template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_ADDITIONAL || REQUEST_TEMPLATE_KEP_FIZ) {
-      oid = new trusted.pki.Oid("1.2.643.100.111");
-      ext = new trusted.pki.Extension(oid, `ASN1:FORMAT:UTF8,UTF8String:КриптоПро CSP (версия ${this.getCPCSPVersion()})`);
-      exts.push(ext);
-    }
-
     try {
       switch (algorithm) {
         case ALG_GOST2001:
         case ALG_GOST12_256:
         case ALG_GOST12_512:
           pkeyopt.push(`container:${containerName}`);
-          keyPair = key.generate(algorithm, pkeyopt);
+          // keyPair = key.generate(algorithm, pkeyopt);
           break;
         default:
           return;
@@ -511,9 +504,9 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
     certReq.subject = atrs;
     certReq.version = 0;
-    certReq.publicKey = keyPair;
     certReq.extensions = exts;
-    certReq.sign(keyPair);
+    certReq.pubKeyAlgorithm = algorithm;
+    certReq.containerName = containerName;
 
     if (!fs.existsSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"))) {
       fs.mkdirSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"), { mode: 0o700 });
@@ -525,17 +518,13 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       //
     }
 
-    if (OS_TYPE === "Windows_NT") {
-      providerType = PROVIDER_MICROSOFT;
-    } else {
-      providerType = PROVIDER_CRYPTOPRO;
-    }
+    providerType = PROVIDER_CRYPTOPRO;
 
     if (selfSigned) {
       const cert = new trusted.pki.Certificate(certReq);
       cert.serialNumber = randomSerial();
       cert.notAfter = 60 * 60 * 24 * 365; // 365 days in sec
-      cert.sign(keyPair);
+      cert.sign();
 
       logger.log({
         certificate: cert.subjectName,
@@ -551,7 +540,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
       try {
         if (OS_TYPE === "Windows_NT") {
-          window.PKISTORE.importCertificate(cert, PROVIDER_MICROSOFT, (err: Error) => {
+          window.PKISTORE.importCertificate(cert, PROVIDER_CRYPTOPRO, (err: Error) => {
             if (err) {
               Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
             }
@@ -621,7 +610,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       const cert = new trusted.pki.Certificate(certReq);
       cert.serialNumber = randomSerial();
       cert.notAfter = 60; // 60 sec
-      cert.sign(keyPair);
+      cert.sign();
 
       window.PKISTORE.importCertificate(cert, providerType, (err: Error) => {
         if (err) {
@@ -655,11 +644,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
     let providerType: string;
 
-    if (OS_TYPE === "Windows_NT") {
-      providerType = PROVIDER_MICROSOFT;
-    } else {
-      providerType = PROVIDER_CRYPTOPRO;
-    }
+    providerType = PROVIDER_CRYPTOPRO;
 
     window.PKISTORE.importCertificationRequest(csr, providerType, contName, (err: Error) => {
       if (err) {

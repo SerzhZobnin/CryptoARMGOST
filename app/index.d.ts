@@ -18,7 +18,6 @@ interface Window {
     LICENSE_PATH: string;
     PLATFORM: string;
     SETTINGS_JSON: string;
-    SERVICES_JSON: string;
     TRUSTED_CRYPTO_LOG: string;
     fs: any;
     os: any;

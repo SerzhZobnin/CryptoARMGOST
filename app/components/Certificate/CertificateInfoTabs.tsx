@@ -31,7 +31,7 @@ class CertificateInfoTabs extends React.Component<ICertificateInfoTabsProps, any
 
     return (
       <div className="row">
-        <ul id="tabs-swipe-demo" className="tabs">
+        <ul id="tabs-swipe-demo" className="tabs" style={{background: "none"}}>
           <li className="tab col s6">
             <a className="cert-info active" onClick={() => activeCertInfoTab(true)} style={tabHeaderStyle}>
               {localize("Certificate.cert_info", locale)}

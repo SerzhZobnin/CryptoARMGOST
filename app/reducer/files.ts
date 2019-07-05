@@ -12,9 +12,10 @@ const FileModel = Record({
   extension: null,
   extra: null,
   filename: null,
+  filesize: null,
   fullpath: null,
   id: null,
-  lastModifiedDate: null,
+  mtime: null,
   remoteId: null,
   socket: null,
 });

@@ -19,10 +19,10 @@ class Footer extends React.Component<{}, {}> {
         <div className="page-footer mainfooter">
           <div className="footer-copyright">
             <div className="row">
-              <div className="col s1">
+              <div className="col s1 l1">
                 <i className="ctlogo" />
               </div>
-              <div className="col s11">
+              <div className="col s11 l11">
                 <div className="copyright">
                   <div className="white-text text-lighten-3">
                     {localize("About.company_name", locale)}<br />{localize("About.copyright", locale)}

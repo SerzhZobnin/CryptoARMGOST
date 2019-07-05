@@ -82,12 +82,6 @@ export function encryptFile(uri: string, certs: trusted.pkistore.PkiItem[], poli
 export function decryptFile(uri: string, folderOut: string): string {
   let format: trusted.DataFormat;
   let cipher: trusted.pki.Cipher;
-  let ris: trusted.cms.CmsRecipientInfoCollection;
-  let ri: trusted.cms.CmsRecipientInfo;
-  let certs: trusted.pkistore.PkiItem[];
-  let item: trusted.pkistore.PkiItem;
-  let certWithKey: trusted.pki.Certificate;
-  let key: trusted.pki.Key;
   let outURI: string;
 
   if (folderOut.length > 0) {
@@ -111,38 +105,6 @@ export function decryptFile(uri: string, folderOut: string): string {
   try {
     format = fileCoding(uri);
     cipher = new trusted.pki.Cipher();
-    ris = cipher.getRecipientInfos(uri, format);
-
-    for (let i = 0; i < ris.length; i++) {
-      ri = ris.items(i);
-
-      certs = window.PKISTORE.find({
-        issuerName: ri.issuerName,
-        serial: ri.serialNumber,
-      });
-
-      for (let i = 0; i < certs.length; i++) {
-        item = certs[i];
-        if (key = window.PKISTORE.findKey(item)) {
-          certWithKey = window.PKISTORE.getPkiObject(item);
-          break;
-        }
-      }
-
-      if (certWithKey) {
-        break;
-      }
-    }
-
-    if (!certWithKey) {
-      $(".toast-search_decrypt_cert_failed").remove();
-      Materialize.toast(localize("Encrypt.search_decrypt_cert_failed", window.locale), 2000, "toast-search_decrypt_cert_failed");
-
-      throw new Error("No have certificate with key");
-    }
-
-    cipher.recipientCert = certWithKey;
-    cipher.privKey = key;
 
     cipher.decrypt(uri, outURI, format);
 

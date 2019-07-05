@@ -11,6 +11,7 @@ const SignatureModel = Record({
   signingTime: null,
   status_verify: null,
   subject: null,
+  verifyingTime: null,
 });
 
 const DefaultReducerState = Record({

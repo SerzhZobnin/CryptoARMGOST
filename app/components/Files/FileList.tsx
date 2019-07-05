@@ -2,7 +2,7 @@ import { is } from "immutable";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { List } from "react-virtualized";
+import { AutoSizer, List } from "react-virtualized";
 import { activeFile, deleteFile, selectTempContentOfSignedFiles } from "../../AC";
 import { ENCRYPT, SIGN } from "../../constants";
 import { loadingRemoteFilesSelector } from "../../selectors";
@@ -19,7 +19,7 @@ interface IFileRedux {
   filename: string;
   fullpath: string;
   id: number;
-  lastModifiedDate: Date;
+  mtime: Date;
   socket: string;
 }
 
@@ -96,16 +96,24 @@ class FileList extends React.Component<IFilelistProps, {}> {
     const { files, loadingFiles } = this.props;
 
     return (
-      <List
-        rowCount={files.length + loadingFiles.length}
-        height={this.getListHeight()}
-        width={377}
-        overscanRowCount={5}
-        rowHeight={45}
-        rowRenderer={this.rowRenderer}
-        files={loadingFiles.concat(files)}
-        style={{ outline: "none" }}
-      />
+      <div style={{ display: "flex" }}>
+        <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
+          <AutoSizer>
+            {({ height, width }) => (
+              <List
+                rowCount={files.length + loadingFiles.length}
+                height={height}
+                width={width}
+                overscanRowCount={5}
+                rowHeight={45}
+                rowRenderer={this.rowRenderer}
+                files={loadingFiles.concat(files)}
+                style={{ outline: "none" }}
+              />
+            )}
+          </AutoSizer>
+        </div>
+      </div>
     );
   }
 

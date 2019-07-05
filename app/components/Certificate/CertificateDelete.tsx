@@ -1,12 +1,8 @@
-import fs from "fs";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { deleteServiceCertificate } from "../../AC/servicesActions";
-import { SERVICES_JSON, USER_NAME } from "../../constants";
-import { mapToArr } from "../../utils";
+import { USER_NAME } from "../../constants";
 import logger from "../../winstonLogger";
-import { IService } from "../Services/types";
 
 interface ICertificateDeleteProps {
   certificate: any;
@@ -15,7 +11,6 @@ interface ICertificateDeleteProps {
   onCancel?: () => void;
   reloadCertificates: () => void;
   reloadContainers: () => void;
-  services: IService[];
 }
 
 interface ICertificateDeleteState {
@@ -79,18 +74,23 @@ class CertificateDelete extends React.Component<ICertificateDeleteProps, ICertif
 
     return (
       <React.Fragment>
-        <div className="row">
-          {body}
+        <div className="row halftop">
+          <div className="col s12">
+            <div className="content-wrapper tbody border_group">
+              {body}
+            </div>
+          </div>
         </div>
-        <div className="row">
-          <div className="col s5 offset-s7">
-            <div className="row nobottom">
-              <div className="col s6">
-                <a className={"waves-effect waves-light btn modal-close"} onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
-              </div>
-              <div className="col s6">
-                <a className="waves-effect waves-light btn modal-close" onClick={this.handleDeleteCertificateAndContainer}>{localize("Common.delete", locale)}</a>
-              </div>
+
+        <div className="row halfbottom" />
+
+        <div className="row halfbottom">
+          <div style={{ float: "right" }}>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+            </div>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className="btn btn-outlined waves-effect waves-light modal-close" onClick={this.handleDeleteCertificateAndContainer}>{localize("Common.delete", locale)}</a>
             </div>
           </div>
         </div>
@@ -158,37 +158,7 @@ class CertificateDelete extends React.Component<ICertificateDeleteProps, ICertif
       }
     }
 
-    if (certificate.service) {
-      deleteServiceCertificate(certificate.id);
-
-      const state = {
-        certificates: mapToArr(certificates.filter((scertificate) => scertificate.service && scertificate.serviceId && scertificate.id !== certificate.id)),
-        services: this.props.services,
-      };
-
-      const sstate = JSON.stringify(state, null, 4);
-
-      fs.writeFile(SERVICES_JSON, sstate, (err: any) => {
-        if (err) {
-          // tslint:disable-next-line:no-console
-          console.log("error save services");
-        }
-        // tslint:disable-next-line:no-console
-        console.log("success save services");
-      });
-
-      logger.log({
-        certificate: certificate.subjectName,
-        level: "info",
-        message: "",
-        operation: "Удаление сертификата",
-        operationObject: {
-          in: "CN=" + certificate.subjectFriendlyName,
-          out: "Null",
-        },
-        userName: USER_NAME,
-      });
-    } else if (!window.PKISTORE.deleteCertificate(certificate)) {
+    if (!window.PKISTORE.deleteCertificate(certificate)) {
       $(".toast-cert_delete_failed").remove();
       Materialize.toast(localize("Certificate.cert_delete_failed", locale), 2000, "toast-cert_delete_failed");
 
@@ -219,5 +189,4 @@ class CertificateDelete extends React.Component<ICertificateDeleteProps, ICertif
 
 export default connect((state) => ({
   certificates: state.certificates.entities,
-  services: mapToArr(state.services.entities),
-}), { deleteServiceCertificate })(CertificateDelete);
+}))(CertificateDelete);

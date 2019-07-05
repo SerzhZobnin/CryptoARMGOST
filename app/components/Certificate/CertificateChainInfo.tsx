@@ -1,7 +1,5 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { CRYPTOPRO_DSS } from "../../constants";
-import { MEGAFON } from "../../service/megafon/constants";
 
 class CertificateChainInfo extends React.Component<any, any> {
   static contextTypes = {
@@ -98,15 +96,7 @@ class CertificateChainInfo extends React.Component<any, any> {
         if (j === 0) {
           curKeyStyle = certificate.key.length > 0 ? "key " : "";
           if (curKeyStyle) {
-            if (certificate.service) {
-              if (certificate.service === MEGAFON) {
-                curKeyStyle += "megafonkey";
-              } else if (certificate.service === CRYPTOPRO_DSS) {
-                curKeyStyle += "dsskey";
-              }
-            } else {
-              curKeyStyle += "localkey";
-            }
+            curKeyStyle += "localkey";
           }
         }
 
@@ -126,8 +116,9 @@ class CertificateChainInfo extends React.Component<any, any> {
                 </div>
               </div>
               <div className="col s1">
-                <div className={curKeyStyle + " "}></div>
-                <div className={curStatusStyle + " "}></div>
+                <div className="row nobottom">
+                  <div className={curStatusStyle + " "} style={{marginLeft: "-15px"}}/>
+                </div>
               </div>
             </div>
           </div>);
@@ -152,12 +143,7 @@ class CertificateChainInfo extends React.Component<any, any> {
     const certificate = certItem.object ? certItem.object : certItem.x509 ? tcert : window.PKISTORE.getPkiObject(certItem);
 
     try {
-      if (certItem.provider && certItem.provider === "SYSTEM") {
-        const chain = new trusted.pki.Chain();
-        return chain.buildChain(certificate, window.TRUSTEDCERTIFICATECOLLECTION);
-      } else {
-        return trusted.utils.Csp.buildChain(certificate);
-      }
+      return trusted.utils.Csp.buildChain(certificate);
     } catch (e) {
       return null;
     }
@@ -165,13 +151,7 @@ class CertificateChainInfo extends React.Component<any, any> {
 
   verifyCertificateChain = (cert: trusted.pki.Certificate, provider: string) => {
     try {
-      if (provider === "SYSTEM") {
-        const chain = new trusted.pki.Chain();
-        const chainForVerify = chain.buildChain(cert, window.TRUSTEDCERTIFICATECOLLECTION);
-        return chain.verifyChain(chainForVerify, null);
-      } else {
-        return trusted.utils.Csp.verifyCertificateChain(cert);
-      }
+      return trusted.utils.Csp.verifyCertificateChain(cert);
     } catch (e) {
       return null;
     }

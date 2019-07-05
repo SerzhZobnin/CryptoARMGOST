@@ -1,15 +1,16 @@
 import { is } from "immutable";
 import PropTypes from "prop-types";
 import React from "react";
+import Media from "react-media";
 import { connect } from "react-redux";
 import { activeFile, deleteFile, filePackageDelete, filePackageSelect, selectFile } from "../../AC";
 import { SIGN } from "../../constants";
 import { loadingRemoteFilesSelector } from "../../selectors";
 import { mapToArr } from "../../utils";
+import FileList from "../Files/FileList";
+import FileTable from "../Files/FileTable";
 import ProgressBars from "../ProgressBars";
-import FileList from "./FileList";
-
-const dialog = window.electron.remote.dialog;
+import FileTableSmall from "./FileTableSmall";
 
 const appBarStyle = {
   width: "calc(100% - 85px)",
@@ -17,7 +18,7 @@ const appBarStyle = {
 
 interface IFile {
   lastModified: number;
-  lastModifiedDate: Date;
+  mtime: Date;
   name: string;
   path: string;
   size: number;
@@ -39,7 +40,7 @@ interface IFileRedux {
   filename: string;
   fullpath: string;
   id: number;
-  lastModifiedDate: Date;
+  mtime: Date;
   remoteId: string;
   socket: string;
 }
@@ -61,7 +62,7 @@ interface IFileSelectorProps {
   operation: string;
   loadingFiles: IRemoteFile[];
   files: IFileRedux[];
-  selectFile: (fullpath: string, name?: string, lastModifiedDate?: Date, size?: number) => void;
+  selectFile: (fullpath: string, name?: string, mtime?: Date, size?: number) => void;
   selectedFilesPackage: boolean;
   selectingFilesPackage: boolean;
   filePackageSelect: (files: IFilePath[]) => void;
@@ -85,13 +86,17 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
   }
 
   shouldComponentUpdate(nextProps: IFileSelectorProps) {
-    const { files, loadingFiles, selectingFilesPackage } = this.props;
+    const { files, loadingFiles, searchValue, selectingFilesPackage } = this.props;
 
     if (selectingFilesPackage !== nextProps.selectingFilesPackage) {
       return true;
     }
 
     if (loadingFiles.length !== nextProps.loadingFiles.length) {
+      return true;
+    }
+
+    if (searchValue !== nextProps.searchValue) {
       return true;
     }
 
@@ -114,23 +119,6 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
     }
 
     return false;
-  }
-
-  addFiles() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { filePackageSelect } = this.props;
-
-    dialog.showOpenDialog(null, { properties: ["openFile", "multiSelections"] }, (selectedFiles: string[]) => {
-      if (selectedFiles) {
-        const pack: IFilePath[] = [];
-
-        selectedFiles.forEach((file) => {
-          pack.push({fullpath: file});
-        });
-
-        filePackageSelect(pack);
-      }
-    });
   }
 
   dragLeaveHandler(event: any) {
@@ -173,7 +161,7 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
       this.directoryReader(reader);
     } else {
       item.file((dropfile: IFile) => {
-        selectFile(dropfile.path, dropfile.name, dropfile.lastModifiedDate, dropfile.size);
+        selectFile(dropfile.path, dropfile.name, dropfile.mtime, dropfile.size);
       });
     }
   }
@@ -206,81 +194,11 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
     }
   }
 
-  selectedAll() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { files, activeFile } = this.props;
-
-    for (const file of files) {
-      activeFile(file.id);
-    }
-  }
-
-  removeSelectedAll() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { files, activeFile } = this.props;
-
-    for (const file of files) {
-      activeFile(file.id, false);
-    }
-  }
-
-  removeAllFiles() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { filePackageDelete, files } = this.props;
-
-    const filePackage: number[] = [];
-
-    for (const file of files) {
-      filePackage.push(file.id);
-    }
-
-    filePackageDelete(filePackage);
-  }
-
   render() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { files, operation } = this.props;
-
-    const active = files.length > 0 ? "active" : "not-active";
-    const operationSign = operation === SIGN ? "operation_sign" : "";
-
     return (
-      <div className={`file-content-height ${active} ${operationSign}`}>
-        <div id="file-content" className="content-wrapper z-depth-1">
-          {this.getHeader()}
-          {this.getBody()}
-        </div>
+      <div>
+        {this.getBody()}
       </div>
-    );
-  }
-
-  getHeader() {
-    const { localize, locale } = this.context;
-    const { files } = this.props;
-
-    const active = files.length > 0 ? "active" : "not-active";
-    const disabled = files.length > 0 ? "" : "disabled";
-    const classDisabled = this.getDisabled() ? "disabled" : "";
-
-    return (
-      <nav className="app-bar-content">
-        <ul className="app-bar-items">
-          <li className="app-bar-item" style={appBarStyle}><span>{localize("Settings.add_files", locale)}</span></li>
-          <li className="right">
-            <a className={"nav-small-btn waves-effect waves-light " + active + " " + classDisabled} onClick={this.addFiles.bind(this)}>
-              <i className="material-icons nav-small-icon">add</i>
-            </a>
-            <a className={"nav-small-btn waves-effect waves-light " + disabled + classDisabled} data-activates="dropdown-btn-set-add-files">
-              <i className="nav-small-icon material-icons">more_vert</i>
-            </a>
-            <ul id="dropdown-btn-set-add-files" className="dropdown-content">
-              <li><a onClick={this.selectedAll.bind(this)}>{localize("Settings.selected_all", locale)}</a></li>
-              <li><a onClick={this.removeSelectedAll.bind(this)}>{localize("Settings.remove_selected", locale)}</a></li>
-              <li><a onClick={this.removeAllFiles.bind(this)}>{localize("Settings.remove_all_files", locale)}</a></li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
     );
   }
 
@@ -294,7 +212,7 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
 
     const active = files.length > 0 || loadingFiles.length > 0 ? "active" : "not-active";
     const collection = files.length > 0 || loadingFiles.length > 0 ? "collection" : "";
-    const  disabled = this.getDisabled();
+    const disabled = this.getDisabled();
 
     return (
       <div className="add">
@@ -310,18 +228,28 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
         }
         <div onDragEnter={this.dropZoneActive.bind(this)}>
           <div className={"add-file-item " + active} id="items-hidden">
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <a className="add-file-but waves-effect waves-light btn-large" id="fileSelect" onClick={this.addFiles.bind(this)}>{localize("Settings.choose_files", locale)}</a>
+            <div className="row " />
+            <div className="row " />
+            <div className="row " />
+            <div className="row " />
+            <div className="row " />
+            <div className="row " />
+            <div className="row " />
+            <div className="row " />
             <div className="add-file-item-text">{localize("Settings.drag_drop", locale)}</div>
             <i className="material-icons large fullscreen">fullscreen</i>
           </div>
-          <div className={collection}>
-            <FileList operation={this.props.operation} />
+          <div className={collection} >
+            <Media query="(max-width: 1020px)">
+              {(matches) =>
+                matches ? (
+                  <FileTableSmall operation={this.props.operation} searchValue={this.props.searchValue}/>
+                ) :
+                  (
+                    <FileTable operation={this.props.operation} searchValue={this.props.searchValue}/>
+                  )
+              }
+            </Media>
           </div>
         </div>
       </div>
@@ -354,4 +282,4 @@ export default connect((state) => {
     selectedFilesPackage: state.files.selectedFilesPackage,
     selectingFilesPackage: state.files.selectingFilesPackage,
   };
-}, { activeFile, deleteFile, filePackageSelect, filePackageDelete, selectFile })(FileSelector);
+}, { activeFile, deleteFile, selectFile })(FileSelector);

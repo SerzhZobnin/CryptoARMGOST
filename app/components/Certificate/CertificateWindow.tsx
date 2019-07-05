@@ -1,30 +1,30 @@
+import { execFile } from "child_process";
 import * as os from "os";
 import PropTypes from "prop-types";
 import React from "react";
+import Media from "react-media";
 import { connect } from "react-redux";
 import { loadAllCertificates, loadAllContainers, removeAllCertificates, removeAllContainers } from "../../AC";
 import { resetCloudCSP } from "../../AC/cloudCspActions";
+import { changeSearchValue } from "../../AC/searchActions";
 import {
   ADDRESS_BOOK, CA, DEFAULT_CSR_PATH, PROVIDER_CRYPTOPRO,
-  PROVIDER_MICROSOFT, REQUEST, ROOT, USER_NAME,
+  REQUEST, ROOT, USER_NAME,
 } from "../../constants";
 import { filteredCertificatesSelector } from "../../selectors";
 import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
-import { fileCoding } from "../../utils";
+import { fileCoding, fileExists } from "../../utils";
 import logger from "../../winstonLogger";
 import BlockNotElements from "../BlockNotElements";
 import CloudCSP from "../CloudCSP/CloudCSP";
 import CRLDelete from "../CRL/CRLDelete";
 import CRLExport from "../CRL/CRLExport";
 import CRLInfo from "../CRL/CRLInfo";
-import CRLList from "../CRL/CRLList";
 import Dialog from "../Dialog";
 import Modal from "../Modal";
 import PasswordDialog from "../PasswordDialog";
 import ProgressBars from "../ProgressBars";
 import CertificateRequest from "../Request/CertificateRequest";
-import RequestButtons from "../Request/RequestButtons";
-import { ToolBarWithSearch } from "../ToolBarWithSearch";
 import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateDelete from "./CertificateDelete";
 import CertificateExport from "./CertificateExport";
@@ -65,6 +65,10 @@ class CertWindow extends React.Component<any, any> {
       showModalExportCRL: false,
       showModalExportCertifiacte: false,
     });
+  }
+
+  componentDidMount() {
+    $(".btn-floated").dropdown();
   }
 
   handleShowModalByType = (typeOfModal: string) => {
@@ -200,14 +204,14 @@ class CertWindow extends React.Component<any, any> {
     let container = "";
 
     let certificate: trusted.pki.Certificate;
-    let crl: trusted.pki.Crl;
+    let crl: trusted.pki.CRL;
     let providerType: string;
 
     try {
       certificate = trusted.pki.Certificate.load(path, format);
     } catch (e) {
       try {
-        crl = trusted.pki.Crl.load(path, format);
+        crl = trusted.pki.CRL.load(path, format);
         this.crlImport(crl, path);
         return;
       } catch (e) {
@@ -222,11 +226,7 @@ class CertWindow extends React.Component<any, any> {
     const bCA = certificate.isCA;
     const selfSigned = certificate.isSelfSigned;
 
-    if (OS_TYPE === "Windows_NT") {
-      providerType = PROVIDER_MICROSOFT;
-    } else {
-      providerType = PROVIDER_CRYPTOPRO;
-    }
+    providerType = PROVIDER_CRYPTOPRO;
 
     try {
       container = trusted.utils.Csp.getContainerNameByCertificate(certificate);
@@ -315,7 +315,7 @@ class CertWindow extends React.Component<any, any> {
     if (OS_TYPE === "Windows_NT") {
       const storeName = isSelfSigned ? ROOT : CA;
 
-      window.PKISTORE.importCertificate(importingCertificate, PROVIDER_MICROSOFT, (err: Error) => {
+      window.PKISTORE.importCertificate(importingCertificate, PROVIDER_CRYPTOPRO, (err: Error) => {
         if (err) {
 
           logger.log({
@@ -412,7 +412,7 @@ class CertWindow extends React.Component<any, any> {
     }
   }
 
-  crlImport = (crl: trusted.pki.Crl, crlFilePath?: string) => {
+  crlImport = (crl: trusted.pki.CRL, crlFilePath?: string) => {
     const { localize, locale } = this.context;
     // tslint:disable-next-line:no-shadowed-variable
     const { isLoading, loadAllCertificates, removeAllCertificates } = this.props;
@@ -425,7 +425,7 @@ class CertWindow extends React.Component<any, any> {
     }
 
     if (OS_TYPE === "Windows_NT") {
-      window.PKISTORE.importCrl(crl, PROVIDER_MICROSOFT, (err: Error) => {
+      window.PKISTORE.importCrl(crl, PROVIDER_CRYPTOPRO, (err: Error) => {
         if (err) {
           logger.log({
             certificate: crl.issuerFriendlyName,
@@ -526,10 +526,10 @@ class CertWindow extends React.Component<any, any> {
     const self = this;
 
     const P12_PATH = event[0].path;
-    let p12: trusted.pki.Pkcs12 | undefined;
+    let p12: trusted.pki.PKCS12 | undefined;
 
     try {
-      p12 = trusted.pki.Pkcs12.load(P12_PATH);
+      p12 = trusted.pki.PKCS12.load(P12_PATH);
     } catch (e) {
       p12 = undefined;
     }
@@ -619,18 +619,43 @@ class CertWindow extends React.Component<any, any> {
         <React.Fragment>
           <a className="collection-info chain-info-blue">{localize("Certificate.cert_chain_status", locale)}</a>
           <div className="collection-info chain-status">{certificate.status ? localize("Certificate.cert_chain_status_true", locale) : localize("Certificate.cert_chain_status_false", locale)}</div>
-          <a className="collection-info cert-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
+          <a className="collection-info chain-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
           <CertificateChainInfo certificate={certificate} key={"chain_" + certificate.id} style="" onClick={() => { return; }} />
         </React.Fragment>
       );
     }
 
     return (
-      <div className="add-certs">
-        <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
-        <div className="add-certs-item">
-          {cert}
-        </div>
+      <div>
+        <Media query="(max-height: 870px)">
+          {(matches) =>
+            matches ? (
+              <React.Fragment>
+                <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
+                <div style={{ height: "calc(100vh - 150px)" }}>
+                  <div className="add-certs">
+                    {cert}
+                  </div>
+                </div>
+              </ React.Fragment>
+            ) :
+              <React.Fragment>
+                <div className="col s12">
+                  <div className="desktoplic_text_item">Сведения о сертификате:</div>
+                  <hr />
+                </div>
+                <div className="col s12" style={{ padding: 0 }}>
+                  <div style={{ height: "calc(100vh - 150px)" }}>
+                    <div className="add-certs">
+                      <CertificateInfo certificate={certificate} />
+                      <a className="collection-info chain-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
+                      <CertificateChainInfo certificate={certificate} key={"chain_" + certificate.id} style="" onClick={() => { return; }} />
+                    </div>
+                  </div>
+                </div>
+              </React.Fragment>
+          }
+        </Media>
       </div>
     );
   }
@@ -640,9 +665,7 @@ class CertWindow extends React.Component<any, any> {
 
     return (
       <div className="add-certs">
-        <div className="add-certs-item">
-          <CRLInfo crl={crl} />
-        </div>
+        <CRLInfo crl={crl} />
       </div>
     );
   }
@@ -805,9 +828,18 @@ class CertWindow extends React.Component<any, any> {
     );
   }
 
-  componentDidUpdate(prevProps) {
-    const { cloudCSPSettings, cloudCSPState, certificates } = this.props;
+  componentDidUpdate(prevProps, prevState) {
+    const { cloudCSPSettings, cloudCSPState, certificates, isLoading } = this.props;
+    const { certificate, crl } = this.state;
     const { localize, locale } = this.context;
+
+    if ((!prevState.certificate && certificate) || (!prevState.crl && crl)) {
+      $(".nav-small-btn").dropdown();
+    }
+
+    if (prevProps.isLoading && !isLoading) {
+      $(".btn-floated").dropdown();
+    }
 
     if (prevProps.cloudCSPState !== this.props.cloudCSPState) {
       if (cloudCSPState.loaded) {
@@ -825,7 +857,8 @@ class CertWindow extends React.Component<any, any> {
             for (const hcert of cloudCSPState.certificates) {
               if (hcert) {
                 try {
-                  trusted.utils.Csp.installCertificateFromCloud(hcert.x509, cloudCSPSettings.authURL, cloudCSPSettings.restURL, hcert.id);
+                  throw new Error("TODO add function installCertificateFromCloud");
+                  /*trusted.utils.Csp.installCertificateFromCloud(hcert.x509, cloudCSPSettings.authURL, cloudCSPSettings.restURL, hcert.id);
 
                   testCount++;
 
@@ -839,7 +872,7 @@ class CertWindow extends React.Component<any, any> {
                       out: "Null",
                     },
                     userName: USER_NAME,
-                  });
+                  });*/
                 } catch (err) {
                   logger.log({
                     certificate: hcert.subjectName,
@@ -874,7 +907,7 @@ class CertWindow extends React.Component<any, any> {
   }
 
   render() {
-    const { certificates, crls, isLoading, isLoadingFromDSS } = this.props;
+    const { certificates, crls, isLoading, isLoadingFromDSS, searchValue } = this.props;
     const { certificate, crl } = this.state;
     const { localize, locale } = this.context;
 
@@ -882,96 +915,129 @@ class CertWindow extends React.Component<any, any> {
       return <ProgressBars />;
     }
 
-    const ACTIVE_CERTIFICATE_REQUEST = certificate && certificate.category === REQUEST ? "active" : "not-active";
-    const NAME = certificates.length < 1 && crls.length < 1 ? "active" : "not-active";
-    const VIEW = certificates.length < 1 && crls.length < 1 ? "not-active" : "";
-    const DISABLED = certificate || crl ? "" : "disabled";
+    const VIEW = certificates.size < 1 && crls.length < 1 ? "not-active" : "";
 
     return (
       <div className="main">
         <div className="content">
-          <div className="col s6 m6 l6 content-item-height">
-            <div className="cert-content-item">
-              <div className="content-wrapper z-depth-1">
-                <ToolBarWithSearch operation="certificate" disable=""
-                  reloadCertificates={this.handleReloadCertificates}
-                  handleShowModalCertificateRequest={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)}
-                  handleShowModalCloudCSP={() => this.handleShowModalByType(MODAL_CLOUD_CSP)}
-                  rightBtnAction={
-                    (event: any) => {
-                      this.handleCertificateImport(event.target.files);
+          <div className="col s8 leftcol">
+            <div className="row">
+              <div className="row halfbottom" />
+              <div className="col" style={{ width: "calc(100% - 80px)" }}>
+                <div className="input-field input-field-csr col s12 border_element find_box">
+                  <i className="material-icons prefix">search</i>
+                  <input
+                    id="search"
+                    type="search"
+                    placeholder={localize("Certificate.search_in_certificates_list", locale)}
+                    value={searchValue}
+                    onChange={this.handleSearchValueChange} />
+                  <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
+                </div>
+              </div>
+              <div className="col" style={{ width: "40px" }}>
+                <a onClick={this.handleReloadCertificates}>
+                  <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
+                </a>
+              </div>
+              <div className="col" style={{ width: "40px" }}>
+                <div>
+                  <a className="btn-floated" data-activates="dropdown-btn-import">
+                    <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                  </a>
+                  <ul id="dropdown-btn-import" className="dropdown-content">
+                    <li><a onClick={this.certImport}>{localize("Certificate.cert_import_from_file", locale)}</a></li>
+                    {
+                      (Number(this.getCPCSPVersion().charAt(0)) < 5) ? null :
+                        <li>
+                          <a onClick={this.importFromCloudCSP}>
+                            {localize("CloudCSP.cert_import_from_cloudCSP", locale)}
+                          </a>
+                        </li>
                     }
-                  } />
-                <div className="add-certs">
-                  <div className="add-certs-item">
-                    <div className={"add-cert-collection collection " + VIEW}>
-                      <CertificateList activeCert={this.handleActiveCert} operation="certificate" />
-                      <CRLList activeCert={this.handleActiveCRL} />
+                    <li><a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)}>{localize("CSR.create_request", locale)}</a></li>
+                  </ul>
+                  <input type="file" id="choose-cert" value="" onChange={(event: any) => {
+                    this.handleCertificateImport(event.target.files);
+                  }} />
+                </div>
+              </div>
+            </div>
+            <div className="add-certs">
+              <div className={"collection " + VIEW}>
+                <div className="row">
+                  <div className="col s12">
+                    <div style={{ display: "flex" }}>
+                      <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
+                        {
+                          certificates.size < 1 && crls.length < 1 ?
+                            <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
+                            <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} operation="certificate" />
+                        }
+                      </div>
                     </div>
-                    <BlockNotElements name={NAME} title={localize("Certificate.cert_not_found", locale)} />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="col s6 m6 l6 content-item-height">
-            <div className={"cert-content-item-height " + ACTIVE_CERTIFICATE_REQUEST}>
-              <div className="content-wrapper z-depth-1">
-                <nav className="app-bar-cert">
-                  <ul className="app-bar-items">
-                    <li className="cert-bar-text">
-                      {this.getTitle()}
-                    </li>
-                    <li className="right">
-                      <a className={"nav-small-btn waves-effect waves-light " + DISABLED} data-activates="dropdown-btn-for-cert">
-                        <i className="nav-small-icon material-icons cert-settings">more_vert</i>
-                      </a>
-                      <ul id="dropdown-btn-for-cert" className="dropdown-content">
-                        {
-                          certificate ?
-                            <React.Fragment>
-                              <li><a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE)}>{localize("Certificate.cert_export", locale)}</a></li>
-                              <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CERTIFICATE)}>{localize("Common.delete", locale)}</a></li>
-                            </React.Fragment>
-                            : null
-                        }
-                        {
-                          certificate && certificate.category === REQUEST ?
-                            <li>
-                              <a onClick={this.handleOpenCSRFolder}>
-                                {localize("CSR.go_to_csr_folder", locale)}
-                              </a>
-                            </li>
-                            :
-                            null
-                        }
-                        {
-                          crl ?
-                            <li>
-                              <a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CRL)}>{localize("Certificate.cert_export", locale)}</a>
-                              <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CRL)}>{localize("Common.delete", locale)}</a></li>
-                            </li>
-                            :
-                            null
-                        }
-                      </ul>
-                    </li>
-                  </ul>
-                </nav>
-                {this.getCertificateOrCRLInfo()}
-                {this.showModalDeleteCertificate()}
-                {this.showModalExportCertificate()}
-                {this.showModalExportCRL()}
-                {this.showModalDeleteCrl()}
-                {this.showModalCertificateRequest()}
-                {this.showModalCloudCSP()}
+          <div className="col s4 rightcol">
+            <div className="row halfbottom" />
+            <div className="row">
+              <div className="col s12">
+                <div style={{ height: "calc(100vh - 110px)" }}>
+                  {this.getCertificateOrCRLInfo()}
+                </div>
               </div>
-              {
-                certificate && certificate.category === REQUEST ?
-                  <RequestButtons onCopy={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)} /> : null
-              }
             </div>
+            {
+              certificate || crl ?
+                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "70px" }}>
+                  <div className="col s12">
+                    <hr />
+                  </div>
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => certificate ? this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE) : this.handleShowModalByType(MODAL_EXPORT_CRL)}>
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons certificate export" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Certificate.cert_export", locale)}</div>
+                  </div>
+
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => certificate ? this.handleShowModalByType(MODAL_DELETE_CERTIFICATE) : this.handleShowModalByType(MODAL_DELETE_CRL)}>
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons certificate remove" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+                  </div>
+
+                  {
+                    certificate && certificate.category === REQUEST ?
+                      <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleOpenCSRFolder}>
+                        <div className="col s12 svg_icon">
+                          <a data-position="bottom">
+                            <i className="material-icons certificate csrfolder" />
+                          </a>
+                        </div>
+                        <div className="col s12 svg_icon_text">{localize("CSR.go_to_csr_folder", locale)}</div>
+                      </div> :
+                      null
+                  }
+                </div>
+                : null
+            }
+
+            {this.showModalDeleteCertificate()}
+            {this.showModalExportCertificate()}
+            {this.showModalExportCRL()}
+            {this.showModalDeleteCrl()}
+            {this.showModalCertificateRequest()}
+            {this.showModalCloudCSP()}
           </div>
+
         </div>
         <Dialog isOpen={this.state.showDialogInstallRootCertificate}
           header="Внимание!" body="Для установки корневых сертификатов требуются права администратора. Продолжить?"
@@ -981,19 +1047,144 @@ class CertWindow extends React.Component<any, any> {
     );
   }
 
+  handleSearchValueChange = (ev: any) => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { changeSearchValue } = this.props;
+    changeSearchValue(ev.target.value);
+  }
+
+  certImport = () => {
+    const CLICK_EVENT = document.createEvent("MouseEvents");
+
+    CLICK_EVENT.initEvent("click", true, true);
+    document.querySelector("#choose-cert").dispatchEvent(CLICK_EVENT);
+  }
+
+  importFromCloudCSP = () => {
+    if (os.type() === "Windows_NT") {
+      let executablePath = "C:\\Program Files (x86)\\Common Files\\Crypto Pro\\Shared\\cptools.exe";
+
+      if (os.arch() !== "x64") {
+        executablePath = "C:\\Program Files\\Common Files\\Crypto Pro\\Shared\\cptools.exe";
+      }
+
+      if (fileExists(executablePath)) {
+        execFile(executablePath, (error, stdout, stderr) => {
+          if (error) {
+            console.log("execFile error", error);
+          }
+
+          console.log(stdout);
+        });
+
+        return;
+      }
+    }
+
+    this.props.handleShowModalCloudCSP();
+  }
+
+  getSelectedCertificate = () => {
+    const { certificate, crl } = this.state;
+    const { localize, locale } = this.context;
+
+    const DISABLED = certificate || crl ? "" : "disabled";
+
+    if (certificate) {
+      const status = certificate.status;
+      let curStatusStyle;
+
+      if (status) {
+        curStatusStyle = "cert_status_ok";
+      } else {
+        curStatusStyle = "cert_status_error";
+      }
+
+      return (
+        <div className="row">
+          <div className="row halfbottom" />
+          <div className="col s10">
+            <div className="desktoplic_text_item">Сертификат:</div>
+            <hr />
+          </div>
+          <div className="col s2">
+            <div className="right import-col">
+              <a className={"nav-small-btn waves-effect waves-light " + DISABLED} data-activates="dropdown-btn-for-cert">
+                <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+              </a>
+              <ul id="dropdown-btn-for-cert" className="dropdown-content">
+                {
+                  certificate ?
+                    <React.Fragment>
+                      <li><a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE)}>{localize("Certificate.cert_export", locale)}</a></li>
+                      <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CERTIFICATE)}>{localize("Common.delete", locale)}</a></li>
+                    </React.Fragment>
+                    : null
+                }
+                {
+                  certificate && certificate.category === REQUEST ?
+                    <li>
+                      <a onClick={this.handleOpenCSRFolder}>
+                        {localize("CSR.go_to_csr_folder", locale)}
+                      </a>
+                    </li>
+                    :
+                    null
+                }
+                {
+                  crl ?
+                    <li>
+                      <a onClick={() => this.handleShowModalByType(MODAL_EXPORT_CRL)}>{localize("Certificate.cert_export", locale)}</a>
+                      <li><a onClick={() => this.handleShowModalByType(MODAL_DELETE_CRL)}>{localize("Common.delete", locale)}</a></li>
+                    </li>
+                    :
+                    null
+                }
+              </ul>
+            </div>
+          </div>
+          <div className="col s11">
+            <div className="col s1">
+              <div className={curStatusStyle} />
+            </div>
+            <div className="col s11">
+              <div className="desktoplic_text_item topitem truncate">{certificate.subjectFriendlyName}</div>
+              <div className="desktoplic_text_item topitem truncate">{certificate.issuerFriendlyName}</div>
+            </div>
+          </div>
+
+        </div>
+      );
+    } else {
+      return null;
+    }
+  }
+
   handleOpenCSRFolder = () => {
     window.electron.shell.openItem(DEFAULT_CSR_PATH);
+  }
+
+  getCPCSPVersion = () => {
+    try {
+      return trusted.utils.Csp.getCPCSPVersion();
+    } catch (e) {
+      return "";
+    }
   }
 }
 
 export default connect((state) => {
   return {
     certificates: filteredCertificatesSelector(state, { operation: "certificate" }),
-    cloudCSPSettings: state.settings.cloudCSP,
+    cloudCSPSettings: state.settings.getIn(["entities", state.settings.default]).cloudCSP,
     cloudCSPState: state.cloudCSP,
     containersLoading: state.containers.loading,
     crls: filteredCrlsSelector(state),
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
+    searchValue: state.filters.searchValue,
   };
-}, { loadAllCertificates, loadAllContainers, removeAllCertificates, removeAllContainers, resetCloudCSP })(CertWindow);
+}, {
+    changeSearchValue, loadAllCertificates, loadAllContainers,
+    removeAllCertificates, removeAllContainers, resetCloudCSP
+  })(CertWindow);

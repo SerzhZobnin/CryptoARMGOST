@@ -75,9 +75,8 @@ app.on('ready', async () => {
   app.commandLine.appendSwitch('ignore-certificate-errors');
 
   mainWindow = new BrowserWindow({
-    alwaysOnTop: false,
-    width: 800, height: 600,
-    resizable: false,
+    minWidth: 900, minHeight: 700,
+    width: 900, height: 700,
     frame: false,
     toolbar: false,
     show: false,

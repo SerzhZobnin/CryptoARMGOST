@@ -7,26 +7,19 @@
 
 /* Стили заголовка окна  */
 nav.app-bar {
-    height: 48px;
+    height: 35px;
 }
 
 nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
-  height: 48px;
-  line-height: 48px;
+  height: 35px;
+  line-height: 35px;
 }
 
 nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   display: block;
   font-size: 1.5rem;
-  height: 48px;
-  line-height: 48px;
-}
-
-.disabled{
-  box-shadow: none;
-  color: #9c3b23;
-  cursor: default;
-  pointer-events: none;
+  height: 35px;
+  line-height: 35px;
 }
 
 .cryptoarm-blue {
@@ -37,7 +30,15 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   background-color: #bf3817 !important;
 }
 
-.maximize-window-btn, .minimize-window-btn, .close-window-btn, .setting-window-btn, .menu-btn, .cert-setting-btn, .setting-btn  {
+.valid {
+  color: #4caf50 !important;
+}
+
+.unvalid {
+  color: #bf3817 !important;
+}
+
+.setting-window-btn, .cert-setting-btn, .setting-btn  {
     border-radius: 100%;
     overflow: hidden;
 }
@@ -113,13 +114,17 @@ nav .input-field input {
 
 .content {
     display:flex;
-    min-width: 800px;
-    min-height: 536px;
     border: 2px solid #bf3817;
     border-top: none;
     width: 100%;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     position: absolute;
+}
+.content-noflex {
+  border: 2px solid #bf3817;
+  width: 100%;
+  height: calc(100% - 35px);
+  position: absolute;
 }
 .content-tem {
     display: flex;
@@ -153,6 +158,20 @@ nav .input-field input {
     width: 100%;
     background-color: #ffffff;
 }
+
+.leftcol {
+  width: calc(100% - 350px) !important;
+  height: calc(100vh - 40px) !important;
+  overflow: auto;
+}
+
+.rightcol {
+  background-color: rgba(242,245,245,0.8);
+  float: right !important;
+  min-height: calc(100vh - 40px) !important;
+  width: 350px !important;
+}
+
 /*html-main*/
 html {
     -webkit-user-select: none;
@@ -166,8 +185,9 @@ body {
     padding: 0;
     height: 100%;
     font-size: 18px;
-    min-height: 600px;
-    min-width: 800px;
+    min-height: 700px;
+    min-width: 900px;
+    width: 100% !important;
 }
 #container, .main {
     /* height: 100%; */
@@ -175,15 +195,15 @@ body {
 }
 .settings-content {
     overflow: auto;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     white-space: nowrap;
-    font-size: 75%;
+    font-size: 14px;
     width: 100%;
 }
 
 .sign-info-content {
     overflow: auto;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     white-space: nowrap;
     border-top: 2px solid #ffffff;
     width: 100%;
@@ -216,7 +236,6 @@ body {
 }
 #directory {
     margin: 0;
-    width: calc(100% - 50px);
 }
 .sign-set-add-folder {
     width: 100%
@@ -237,7 +256,6 @@ body {
 }
 .collection-title, .collection-info {
     padding-left: 0;
-    color: black;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -250,8 +268,11 @@ body {
     height: 36px;
     width: 36px;
     text-align: center;
-    color: black;
+    color: rgba(0,0,0,0.6);
     line-height: 36px;
+}
+.material-icons.secondary-content.file-setting-item:hover {
+  color: rgba(0,0,0,1);
 }
 .file-setting-item:hover {
     background-color: rgba(0,0,0,0.1);
@@ -332,7 +353,7 @@ body {
     color: black;
 }
 .collection .collection-item.active {
-    background-color: lightgray;
+    background-color: #CEE2FF;
 }
 /*----------------------*/
 [type="checkbox"].filled-in+label:after {
@@ -436,7 +457,7 @@ body {
 }
 /*----------------------*/
 #droppableZone {
-    height: 100%;
+    height: calc(100vh - 110px);
     width: 100%;
     position: absolute;
     display: flex;
@@ -456,7 +477,7 @@ body {
 }
 .add {
     width: 100%;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     position: relative;
     border-top: 2px solid #ffffff;
 }
@@ -539,8 +560,8 @@ div::-webkit-scrollbar-thumb {
 .app-bar-content {
     background-color: lightgray;
     box-shadow: none;
-    height: 48px;
-    line-height: 48px;
+    height: 35px;
+    line-height: 35px;
 }
 
 .input-checkbox label {
@@ -563,6 +584,53 @@ div::-webkit-scrollbar-thumb {
     text-overflow: ellipsis;
     overflow: hidden;
     font-size: 60%;
+}
+
+.btn-text {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0 15px 0 15px;
+  border-width: 1px;
+  overflow: hidden;
+  vertical-align: middle;
+  border-radius: 4px;
+  color: #bf3817;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.btn-outlined {
+  background-color: transparent;
+  border-style: solid;
+  box-shadow: none;
+  padding: 0 15px 0 15px;
+  border-width: 1px;
+  overflow: hidden;
+  vertical-align: middle;
+  border-radius: 4px;
+  color: #bf3817;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.btn-outlined:hover, .btn-text:hover  {
+  background-color: #e4dedc;
+  box-shadow: none;
+}
+
+.fixed-bottom-rightcolumn {
+  position: fixed;
+  bottom: 15px;
+  padding-top: 15px;
+  margin-bottom: 0;
+  right: 0;
+  width: inherit;
 }
 
 .choose-btn:hover{
@@ -593,12 +661,19 @@ div::-webkit-scrollbar-thumb {
     height: 36px;
 }
 
+.setting {
+  background: url(./resources/image/setting.svg);
+  background-size: 100%;
+  height: 32px;
+  width: 32px;
+  text-align: center;
+}
 
 
 /*-------------------------------Стили главного меню------------------*/
 .side-nav {
     height: 100%;
-    width: 240px;
+    width: 250px;
     border: 2px solid #bf3817;
     overflow: hidden;
 }
@@ -615,114 +690,61 @@ div::-webkit-scrollbar-thumb {
   width: 48px;
 }
 
-i.material-icons.left.sign {
+i.material-icons.left {
   display: block;
   text-indent: -9999px;
   width: 24px;
   height: 24px;
-  background: url(./resources/image/sign_menu_icon.svg);
   background-size: 24px 24px;
   margin-top: 7px;
+}
+
+i.material-icons.left.sign {
+  background: url(./resources/image/sign_menu_icon.svg);
 }
 
 i.material-icons.left.encrypt {
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
   background: url(./resources/image/encrypt_menu_icon.svg);
-  background-size: 24px 24px;
-  margin-top: 7px;
 }
 
 i.material-icons.left.cert {
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
   background: url(./resources/image/cert_menu_icon.svg);
-  background-size: 24px 24px;
-  margin-top: 7px;
 }
 
 i.material-icons.left.about {
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
-  background: url(./resources/image/about_menu_icon.svg);
-  background-size: 24px 24px;
-  margin-top: 7px;
+  background: url(./resources/image/about_menu_icon.svg);;
 }
 
 i.material-icons.left.agreement{
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
   background: url(./resources/image/agreement_menu_icon.svg);
-  background-size: 24px 24px;
-  margin-top: 7px;
 }
 
 i.material-icons.left.keystore{
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
   background: url(./resources/image/key_store_menu_icon.svg);
-  background-size: 24px 24px;
-  margin-top: 7px;
+}
+
+i.material-icons.left.settings{
+  background: url(./resources/image/setting_menu_icon.svg);
 }
 
 i.material-icons.left.license{
-    display: block;
-    text-indent: -9999px;
-    width: 24px;
-    height: 24px;
     background: url(./resources/image/license_menu_icon.svg);
-    background-size: 24px 24px;
-    margin-top: 7px;
   }
 
   i.material-icons.left.exit{
-    display: block;
-    text-indent: -9999px;
-    width: 24px;
-    height: 24px;
     background: url(./resources/image/exit_menu_icon.svg);
-    background-size: 24px 24px;
-    margin-top: 7px;
   }
 
   i.material-icons.left.journal {
-    display: block;
-    text-indent: -9999px;
-    width: 24px;
-    height: 24px;
     background: url(./resources/image/journal_menu_icon.svg);
-    background-size: 24px 24px;
-    margin-top: 7px;
   }
 
   i.material-icons.left.document {
-    display: block;
-    text-indent: -9999px;
-    width: 24px;
-    height: 24px;
     background: url(./resources/image/document_menu_icon.svg);
-    background-size: 24px 24px;
-    margin-top: 7px;
   }
 
   i.material-icons.left.dss {
-    display: block;
-    text-indent: -9999px;
-    width: 24px;
-    height: 24px;
     background: url(./resources/image/dss_menu_icon.svg);
-    background-size: 24px 24px;
-    margin-top: 7px;
   }
 
 /*-------------------------------Стили списка файлов------------------*/
@@ -787,13 +809,7 @@ i.material-icons.choosefolder {
   height: 24px;
   background: url(./resources/image/folder_shoose_icon.svg);
   background-size: 24px 24px;
-  margin-left: 12px;
-  margin-top: 5px;
-}
-
-.lang {
-  border-radius: 100%;
-  overflow: hidden;
+  margin-top: 15px;
 }
 
 .triangle-down {
@@ -808,6 +824,7 @@ i.material-icons.choosefolder {
 
 .tabs {
   height: 35px;
+  overflow-x: hidden;
 }
 
 .tabs .tab a{
@@ -845,7 +862,7 @@ i.material-icons.choosefolder {
 .cert-window-content {
     display:flex;
     width: 100%;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     border-top: none;
 }
 .add-cert-content {
@@ -889,16 +906,15 @@ nav .cert-seacrh label i {
 }
 .add-certs {
     width: 100%;
-    height: calc(100% - 48px);
+    height: calc(100% - 70px);
     position: relative;
     overflow: auto;
-    border-top: 2px solid #ffffff;
     z-index: 2;
 }
 
 .add-certs-cervices {
   width: 100%;
-  height: calc(100% - 48px);
+  height: calc(100% - 35px);
   position: relative;
   overflow: auto;
   border-top: 2px solid #ffffff;
@@ -933,7 +949,7 @@ nav .cert-seacrh label i {
     display: none;
 }
 .cert-info {
-    color: gray;
+    color: rgba(0,0,0,0.6);
 }
 
 .cert-info-blue {
@@ -1002,7 +1018,6 @@ nav .cert-seacrh label i {
     color: black;
     height: 40px;
     width: 40px;
-    padding: 0 10px;
     font-size: 20px;
     line-height: 40px;
 }
@@ -1024,11 +1039,9 @@ nav .cert-seacrh label i {
     padding-left: 0px;
     color: black;
     min-height: 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid lightgrey;
 }
-.choose-certs-view .collection-item.avatar.certs-collection {
-    cursor: default;
-}
+
 .cert-content-item {
     height: 100%;
     width: 100%;
@@ -1071,7 +1084,7 @@ nav .cert-seacrh label i {
 }
 .cert-view-main {
     overflow: auto;
-    height: calc(100% - 48px);
+    height: calc(100% - 35px);
     display: flex;
     align-items: center;
 }
@@ -1141,6 +1154,8 @@ nav .cert-seacrh label i {
 
 .modal {
   max-height: 87% !important ;
+  width:  87%;
+  max-width: 900px;
 }
 
 .nooverflow {
@@ -1478,15 +1493,12 @@ display: inline-block;
 
 .about{
     margin-top: 1px;
-    width: 800px;
-    height: 600px;
+    width: 900px;
+    height: 700px;
     background: url(./resources/image/geo_gray.png);
 }
 
 .license_background{
-    margin-top: 1px;
-    width: 800px;
-    height: 600px;
     background: url(./resources/image/geo_gray.png);
 }
 
@@ -1508,14 +1520,6 @@ display: inline-block;
 .card{
     background-color: rgba(255,255,255,0.8);
     color:gray;
-}
-
-.card.infoapp {
-  height: 532px;
-}
-
-.card.contact {
-  height: 447px;
 }
 
 span.card-title {
@@ -1732,20 +1736,6 @@ h6.contact-title {
   background: url(./resources/image/files/file_file.png) no-repeat;
 }
 
-.type_icon.MEGAFON{
-  background: url(./resources/image/services/megafon.png) no-repeat;
-}
-
-.type_icon.CRYPTOPRO_DSS{
-  background: url(./resources/image/services/dss.png) no-repeat;
-  margin-left: 5px;
-}
-
-.type_icon.CRYPTOPRO_SVS{
-  background: url(./resources/image/services/svs.png) no-repeat;
-  margin-left: 5px;
-}
-
 #file-avatar {
   height: 40px;
   width: 32px;
@@ -1900,6 +1890,20 @@ a.menuheaderlink:hover {
   background-size: 16px 16px;
 }
 
+.status_ok_icon{
+  width: 30px;
+  height: 30px;
+  background: url(./resources/image/status_ok.svg);
+  background-size: 30px 30px;
+}
+
+.status_error_icon{
+  width: 30px;
+  height: 30px;
+  background: url(./resources/image/status_error.svg);
+  background-size: 30px 30px;
+}
+
 .status_ok{
   position: absolute;
   right: 60px;
@@ -2012,7 +2016,7 @@ p.message_onlinelic{
     align-items: center;
     height: 100%;
 }
-.input-field-licence .key-prefix {
+.input-field-licence .key-prefix, .key-label {
   font-size: 20px;
   width: 20px;
   position: relative;
@@ -2054,7 +2058,6 @@ p.message_onlinelic{
 #get-password {
   top: 30% !important;
   width: 60%;
-  height: 20%;
   border: 2px solid #9c3b23;
   overflow: hidden;
 }
@@ -2064,7 +2067,7 @@ p.message_onlinelic{
 }
 
 .password-modal-content {
-  height: calc(100% - 48px);
+  height: calc(100% - 35px);
   padding: 10px;
   font-size: 80%;
 }
@@ -2160,7 +2163,7 @@ a.cert-back-btn.waves-effect.waves-light {
 
 .preloader-content {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2187,7 +2190,7 @@ a.cert-back-btn.waves-effect.waves-light {
 
 /*---------Слайдер главной страницы----------*/
 .main-window-workspace {
-    height: calc(100% - 116px);
+    height: calc(100% - 68px);
 }
 .main-window .slider .slides {
     background-color: #ffffff;
@@ -2196,8 +2199,7 @@ a.cert-back-btn.waves-effect.waves-light {
     position: relative;
 }
 .main-window {
-    /* height: 100%; */
-    height: 600px;
+    height: 100%;
 }
 .slider .indicators .indicator-item {
   width: 12px;
@@ -2501,24 +2503,10 @@ a.cert-back-btn.waves-effect.waves-light {
   background: url(./resources/image/key.svg);
 }
 
-.megafonkey {
-  background: url(./resources/image/services/megafon.png);
-}
-
-.dsskey {
-  background: url(./resources/image/services/dss_key.svg);
-  background-repeat: no-repeat;
-}
-
 .key {
     background-size: 100%;
     height: 16px;
     width: 16px;
-    position: absolute;
-    margin-left: 340px;
-    top: 26px;
-    padding-left: 0px;
-    left: -2px;
 }
 
 .short {
@@ -2530,87 +2518,21 @@ a.cert-back-btn.waves-effect.waves-light {
 }
 
 .cert_status_ok {
-    background: url(./resources/image/cert_status_ok.svg);
+    background: url(./resources/image/cert_ok_full.svg);
     background-size: 100%;
-    height: 20px;
-    width: 20px;
-    position: absolute;
-    margin-left: 336px;
-    top: 2px;
-    padding-left: 0px;
-    left: 0px;
+    height: 32px;
+    width: 32px;
+    text-align: center;
 }
 
 .cert_status_error {
-    background: url(./resources/image/cert_status_error.svg);
+    background: url(./resources/image/cert_error_full.svg);
     background-size: 100%;
-    height: 20px;
-    width: 20px;
-    position: absolute;
-    margin-left: 336px;
-    top: 2px;
-    padding-left: 0px;
-    left: 0px;
+    height: 32px;
+    width: 32px;
+    text-align: center;
 }
 
-.cert_status_ok.short {
-    margin-left: 285px;
-}
-
-.cert_status_error.short {
-    margin-left: 285px;
-}
-
-.cert_status_ok.long{
-    margin-left: 355px;
-}
-
-.cert_status_error.long {
-    margin-left: 355px;
-}
-
-.key.long{
-    margin-left: 359px;
-}
-
-/*---------------вход по сертификату---------------*/
-.reg-cert-content {
-    height: calc(100% - 120px);
-    width: 100%;
-    padding: 0 60px;
-    display: flex;
-}
-.reg-cert-list {
-    height: 100%;
-    width: 50%;
-    background-color: rgba(255, 255,255, 0.3);
-    margin-right: 0.75rem;
-    border: 2px solid #ffffff;
-    overflow: auto;
-}
-.reg-cert-info-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 50%;
-    align-items: center;
-}
-.reg-cert-info {
-    height: 85%;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.3);
-    border: 2px solid #ffffff;
-    overflow: auto;
-}
-.enter-with-cert {
-    font-size: 60%;
-    color: #000000;
-    background-color: #ffffff;
-    margin: 0.75rem 0;
-}
-.enter-with-cert:hover {
-    background-color: #ffffff;
-}
 .block {
     display: flex;
     justify-content: center;
@@ -2621,74 +2543,8 @@ a.cert-back-btn.waves-effect.waves-light {
 .block.not-active {
     display: none;
 }
-.reg-cert-collection {
-    margin: 0;
-}
-.reg-cert-collection.not-active {
-    display: none;
-}
-.reg-certs-collection.collection-item.avatar {
-    padding: 5px 10px;
-    background: none;
-}
-.reg-certs-collection.collection-item.avatar:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-.reg-collection-title {
-    font-size: 120%;
-}
-.reg-collection-title, .reg-collection-info {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.collection-item.avatar.reg-certs-collection.active {
-    background: rgba(255, 255, 255, 0.3);
-}
 .collection .collection-item {
     background: none;
-}
-.text-white {
-    color: #ffffff
-}
-.text-gray {
-    color: lightgray;
-}
-#login, #password {
-    border: 1px solid #ffffff;
-    margin: 0;
-    font-size: 100%;
-    box-shadow: none;
-    padding: 0 10px;
-        width: 290px;
-}
-.login-content {
-    margin: 0 220px;
-    height: calc(100% - 120px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.login-field, .pass-field {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-.material-icons.login-icon {
-    font-size: 40px;
-}
-.reg-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-.enabled-indicators {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    height: 30px;
-    z-index: 3;
 }
 
 /*-------------------Dialog------------------------*/
@@ -2706,8 +2562,12 @@ a.cert-back-btn.waves-effect.waves-light {
     display: flex;
 }
 .dialog-content {
+    background-color: #fafafa;
     font-size: 80%;
-    width: 300px;
+    width: 400px;
+}
+.dialog-shadow {
+  box-shadow: 0 16px 28px 0 rgba(0,0,0,0.22), 0 25px 55px 0 rgba(0,0,0,0.21);
 }
 .dialog-bar {
     height: 35px;
@@ -2738,6 +2598,7 @@ a.cert-back-btn.waves-effect.waves-light {
 i.material-icons.left.chain_1 {
   background: url(./resources/image/chain_1.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2748,6 +2609,7 @@ i.material-icons.left.chain_1 {
 i.material-icons.left.chain_2 {
   background: url(./resources/image/chain_2.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2758,6 +2620,7 @@ i.material-icons.left.chain_2 {
 i.material-icons.left.chain_3 {
   background: url(./resources/image/chain_3.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2768,6 +2631,7 @@ i.material-icons.left.chain_3 {
 i.material-icons.left.chain_4 {
   background: url(./resources/image/chain_4.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2778,6 +2642,7 @@ i.material-icons.left.chain_4 {
 i.material-icons.left.chain_5 {
   background: url(./resources/image/chain_5.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2788,6 +2653,7 @@ i.material-icons.left.chain_5 {
 i.material-icons.left.chain_6 {
   background: url(./resources/image/chain_6.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2798,6 +2664,7 @@ i.material-icons.left.chain_6 {
 i.material-icons.left.chain_7 {
   background: url(./resources/image/chain_7.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2808,6 +2675,7 @@ i.material-icons.left.chain_7 {
 i.material-icons.left.chain_8 {
   background: url(./resources/image/chain_8.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2818,6 +2686,7 @@ i.material-icons.left.chain_8 {
 i.material-icons.left.chain_9 {
   background: url(./resources/image/chain_9.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2828,6 +2697,7 @@ i.material-icons.left.chain_9 {
 i.material-icons.left.chain_10 {
   background: url(./resources/image/chain_10.png);
   margin-top: 10px;
+  margin-left: -5px;
   display: block;
   text-indent: -9999px;
   width: 24px;
@@ -2857,7 +2727,6 @@ i.material-icons.left.chain_10 {
 }
 .collection .collection-item .collection-title.si-title,
 .collection .collection-item .collection-info.si-info {
-    margin-left: 45px;
     padding: 0;
     height: 15px;
     line-height: 15px;
@@ -2923,7 +2792,7 @@ i.material-icons.left.chain_10 {
     float:left;
     background: #0262aa;
     left: 0px;
-    margin-left: 21px;
+    margin-left: 17px;
     margin-top: 36px;
     height: 18px;
     width: 2px;
@@ -3059,8 +2928,6 @@ a.hlink {
     left: 10px;
     right: 10px;
     bottom: 10px;
-    width: 780px;
-    height: 530px;
 }
 
 .input-field.col.s12.noborder {
@@ -3123,6 +2990,10 @@ a.help_paragraf {
 
 a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
     left: 10px;
+}
+
+.waves-effect.waves-cryptoarm .waves-ripple{
+  background-color: #e4dedc;
 }
 
 .alert_ok_icon {
@@ -3331,18 +3202,11 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
 }
 
 .tbody {
-  height: 380px;
   overflow: auto;
 }
 
 .content-item-relative {
   position: relative;
-}
-
-@media only screen and (max-width: 992px) {
-  .modal {
-    width: 85%;
-  }
 }
 
 svg:hover {
@@ -3372,9 +3236,9 @@ svg:hover {
   .icon_file_type {
     background-size: 100% !important;
     left: 5px;
-    height: 40px !important;
-    width: 40px !important;
-    position: absolute !important;
+    height: 36px !important;
+    width: 36px !important;
+    position: absolute;
     top: 2px !important;
   }
 
@@ -3418,7 +3282,6 @@ svg:hover {
 
 .border_group{
     box-shadow: 0 0 0 1px rgb(227, 227, 228);
-    height: 352px;
 }
 
 .border_group_cloud{
@@ -3428,11 +3291,11 @@ svg:hover {
 
 .operations_group{
     box-shadow: 0 0 0 1px #b5b5b5;
-    height: 288px;
+    height: 298px;
 }
 
 .find_box{
-    height: 28px;
+    height: 30px;
 }
 
 .close{
@@ -3464,93 +3327,101 @@ svg:hover {
     padding-top: 2px!important;
 }
 /*-------------Documents---------------*/
-i.material-icons.docmenu_sign {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu {
+    background-size: 25px 25px !important;
+    width: 25px;
+    height: 25px;
+  }
+
+  i.material-icons.docmenu.sign {
     background: url(./resources/image/docmenu_sign.svg);
-    background-size: 32px 32px;
-    margin-left: 14px;
   }
 
-  i.material-icons.docmenu_verifysign {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.verifysign {
     background: url(./resources/image/docmenu_verifysign.svg);
-    background-size: 32px 32px;
-    margin-left: 20px;
   }
 
-  i.material-icons.docmenu_removesign {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.removesign {
     background: url(./resources/image/docmenu_removesign.svg);
-    background-size: 32px 32px;
-    margin-left: 20px;
   }
 
-  i.material-icons.docmenu_encrypt {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.encrypt {
     background: url(./resources/image/docmenu_encrypt.svg);
-    background-size: 32px 32px;
-    margin-left: 22px;
   }
 
-  i.material-icons.docmenu_decrypt {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.decrypt {
     background: url(./resources/image/docmenu_decrypt.svg);
-    background-size: 32px 32px;
-    margin-left: 22px;
   }
 
-  i.material-icons.docmenu_arhiver {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.arhiver {
     background: url(./resources/image/docmenu_arhiver.svg);
-    background-size: 32px 32px;
-    margin-left: 22px;
   }
 
-  i.material-icons.docmenu_remove {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+  i.material-icons.docmenu.remove {
     background: url(./resources/image/docmenu_remove.svg);
-    background-size: 32px 32px;
-    margin-left: 7px;
+  }
+
+  i.material-icons.license.install {
+    background: url(./resources/image/operations/add_lic.svg);
+    background-size: 40px 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  i.material-icons.license.buy {
+    background: url(./resources/image/operations/buy_lic.svg);
+    background-size: 40px 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  i.material-icons.certificate {
+    background-size: 36px 36px !important;
+    width: 36px;
+    height: 36px;
+  }
+
+  i.material-icons.certificate.export {
+    background: url(./resources/image/operations/export_cert.svg);
+  }
+
+  i.material-icons.certificate.import {
+    background: url(./resources/image/operations/import_cert.svg);
+  }
+
+  i.material-icons.certificate.remove {
+    background: url(./resources/image/operations/delete.svg);
+  }
+
+  i.material-icons.certificate.csrfolder {
+    background: url(./resources/image/folder_icon.svg);
   }
 
   .col.s10prt{
      width:12%;
   }
 
-  .row.docmenu{
+  .svg_icon_text {
     margin-bottom: 2px;
     font-size: 12px;
-    color: black;
+    color: rgba(0,0,0,0.87);
     text-align: center;
+  }
+
+  .svg_icon {
+    text-align: center;
+  }
+
+  .hover_outline:hover {
+    outline: 1px solid #bf3817;
   }
 
   .disabled_docs{
     box-shadow: none;
-    color: #9F9F9F !important;
+    color: rgba(0,0,0,0.38) !important;
     cursor: default;
     pointer-events: none;
-    opacity: 0.3;
+    opacity: 0.38;
   }
 
   i.material-icons.key_container {

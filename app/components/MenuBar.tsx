@@ -4,15 +4,17 @@ import React from "react";
 import { connect } from "react-redux";
 import { filePackageDelete } from "../AC";
 import {
-  LOCATION_ABOUT, LOCATION_CERTIFICATES, LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
-  LOCATION_ENCRYPT, LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SERVICES,
-  LOCATION_SIGN, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
+  LOCATION_ABOUT, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
+  LOCATION_CERTIFICATES,
+  LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
+  LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SETTINGS,
+  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
 } from "../constants";
 import { connectedSelector, loadingRemoteFilesSelector } from "../selectors";
 import { CANCELLED } from "../server/constants";
 import { fileExists, mapToArr } from "../utils";
 import Diagnostic from "./Diagnostic/Diagnostic";
-import LocaleSelect from "./LocaleSelect";
+import LocaleSelect from "./Settings/LocaleSelect";
 import SideMenu from "./SideMenu";
 
 // tslint:disable-next-line:no-var-requires
@@ -20,14 +22,32 @@ require("../server/socketManager");
 
 const remote = window.electron.remote;
 if (remote.getGlobal("sharedObject").logcrypto) {
-  window.logger = trusted.utils.Logger.start(TRUSTED_CRYPTO_LOG);
+  window.logger = trusted.common.Logger.start(TRUSTED_CRYPTO_LOG);
 }
 
-class MenuBar extends React.Component<any, {}> {
+interface IMenuBarState {
+  isMaximized: boolean;
+}
+
+class MenuBar extends React.Component<any, IMenuBarState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
+
+  constructor(props: any) {
+    super(props);
+    this.state = ({
+      isMaximized: false,
+    });
+  }
+
+  maximizeWindow() {
+    const window = remote.getCurrentWindow();
+    window.isMaximized() ? window.unmaximize() : window.maximize();
+
+    this.setState({ isMaximized: !this.state.isMaximized });
+  }
 
   minimizeWindow() {
     remote.getCurrentWindow().minimize();
@@ -35,43 +55,19 @@ class MenuBar extends React.Component<any, {}> {
 
   closeWindow() {
     const { localize, locale } = this.context;
-    const { cloudCSPSettings, encSettings, recipients,
-       saveToDocuments, signSettings, signer, tempContentOfSignedFiles } = this.props;
+    const { settings, tempContentOfSignedFiles } = this.props;
 
     if (this.isFilesFromSocket()) {
       this.removeAllFiles();
     }
 
-    const state = ({
-      recipients,
-      settings: {
-        cloudCSP: cloudCSPSettings,
-        encrypt: encSettings,
-        locale,
-        saveToDocuments,
-        sign: signSettings,
-      },
-      signers: {
-        signer,
-      },
-    });
-
-    for (const filePath of tempContentOfSignedFiles ) {
+    for (const filePath of tempContentOfSignedFiles) {
       if (fileExists(filePath)) {
         fs.unlinkSync(filePath);
       }
     }
 
-    const sstate = JSON.stringify(state, null, 4);
-    fs.writeFile(SETTINGS_JSON, sstate, (err: any) => {
-      if (err) {
-        // tslint:disable-next-line:no-console
-        console.log(localize("Settings.write_file_failed", locale));
-      }
-      // tslint:disable-next-line:no-console
-      console.log(localize("Settings.write_file_ok", locale));
-      remote.getCurrentWindow().close();
-    });
+    remote.getCurrentWindow().close();
   }
 
   getTitle() {
@@ -81,34 +77,40 @@ class MenuBar extends React.Component<any, {}> {
 
     switch (pathname) {
       case LOCATION_ABOUT:
-        return localize("About.about", locale);
+        return `${localize("About.about", locale)} - ${localize("About.product_NAME", locale)}`;
+
+      case LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT:
+        return `${localize("Certificate.certificate_selection_for_encrypt", locale)} - ${localize("About.product_NAME", locale)}`;
+
+      case LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE:
+        return `${localize("Certificate.certificate_selection_for_signature", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_CERTIFICATES:
-        return localize("Certificate.certs", locale);
+        return `${localize("Certificate.certs", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_CONTAINERS:
-        return localize("Containers.containers", locale);
-
-      case LOCATION_ENCRYPT:
-        return localize("Encrypt.encrypt_and_decrypt", locale);
+        return `${localize("Containers.containers", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_LICENSE:
-        return localize("License.license", locale);
+        return `${localize("License.license", locale)} - ${localize("About.product_NAME", locale)}`;
 
-      case LOCATION_SIGN:
-        return localize("Sign.sign_and_verify", locale);
+      case LOCATION_SETTINGS:
+        return `${localize("Settings.settings", locale)} - ${localize("About.product_NAME", locale)}`;
 
-      case LOCATION_SERVICES:
-        return localize("Services.Services", locale);
+      case LOCATION_SETTINGS_CONFIG:
+        return `${localize("Settings.settings_config", locale)} - ${localize("About.product_NAME", locale)}`;
+
+      case LOCATION_SETTINGS_SELECT:
+        return `${localize("Settings.settings_select", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_DOCUMENTS:
-        return localize("Documents.documents", locale);
+        return `${localize("Documents.documents", locale)} - ${localize("About.product_NAME", locale)}`;
 
       case LOCATION_EVENTS:
-        let title = localize("Events.operations_log", locale);
+        let title = `${localize("Events.operations_log", locale)} - ${localize("About.product_NAME", locale)}`;
 
         if (isArchiveLog && eventsDateFrom && eventsDateTo) {
-          title += " [" +
+          title = localize("Events.operations_log", locale) + " [" +
             (new Date(eventsDateFrom)).toLocaleDateString(locale, {
               day: "numeric",
               hour: "numeric",
@@ -122,12 +124,12 @@ class MenuBar extends React.Component<any, {}> {
               minute: "numeric",
               month: "numeric",
               year: "numeric",
-            }) + "]";
+            }) + "] - " + localize("About.product_NAME", locale);
         }
         return title;
 
       default:
-        return localize("About.product_NAME", locale);
+        return `${localize("SignAndEncrypt.sign_and_encrypt", locale)} - ${localize("About.product_NAME", locale)}`;
     }
   }
 
@@ -159,12 +161,17 @@ class MenuBar extends React.Component<any, {}> {
                     <LocaleSelect />
                   </li>
                   <li>
-                    <a className="minimize-window-btn waves-effect waves-light" onClick={this.minimizeWindow.bind(this)}>
+                    <a className="waves-effect waves-light" onClick={this.minimizeWindow.bind(this)}>
                       <i className="material-icons">remove</i>
                     </a>
                   </li>
                   <li>
-                    <a className="close-window-btn waves-effect waves-light" onClick={this.closeWindow.bind(this)}>
+                    <a className="waves-effect waves-light" onClick={this.maximizeWindow.bind(this)}>
+                      <i className="material-icons">{this.state.isMaximized ? "filter_none" : "crop_square"}</i>
+                    </a>
+                  </li>
+                  <li>
+                    <a className="waves-effect waves-light" onClick={this.closeWindow.bind(this)}>
                       <i className="material-icons">close</i>
                     </a>
                   </li>
@@ -229,20 +236,20 @@ class MenuBar extends React.Component<any, {}> {
 
 export default connect((state, ownProps) => {
   return {
-    cloudCSPSettings: state.settings.cloudCSP,
+    cloudCSPSettings: state.settings.getIn(["entities", state.settings.default]).cloudCSP,
     connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
-    encSettings: state.settings.encrypt,
+    encSettings: state.settings.getIn(["entities", state.settings.default]).encrypt,
     eventsDateFrom: state.events.dateFrom,
     eventsDateTo: state.events.dateTo,
     files: mapToArr(state.files.entities),
     isArchiveLog: state.events.isArchive,
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     location: ownProps.location,
-    recipients: mapToArr(state.recipients.entities),
-    saveToDocuments: state.settings.saveToDocuments,
-    signSettings: state.settings.sign,
-    signer: state.signers.signer,
+    saveToDocuments: state.settings.getIn(["entities", state.settings.default]).saveToDocuments,
+    settingsName: state.settings.getIn(["entities", state.settings.default]).name,
+    settings: state.settings,
+    signSettings: state.settings.getIn(["entities", state.settings.default]).sign,
     tempContentOfSignedFiles: state.files.tempContentOfSignedFiles,
   };
 }, { filePackageDelete })(MenuBar);

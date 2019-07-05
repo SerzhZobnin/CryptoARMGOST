@@ -3,8 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import {
   LOCATION_CERTIFICATES, LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
-  LOCATION_ENCRYPT, LOCATION_EVENTS,
-  LOCATION_LICENSE, LOCATION_SERVICES, LOCATION_SIGN,
+  LOCATION_EVENTS, LOCATION_MAIN, LOCATION_SETTINGS,
 } from "../constants";
 
 const remote = window.electron.remote;
@@ -35,24 +34,14 @@ class SideMenu extends React.Component<{}, {}> {
           </div>
         </nav>
         <div className="row">
-          <Link to={LOCATION_DOCUMENTS}>
-            {localize("Documents.Documents", locale)}
-            <i className="material-icons left document">library_books</i>
-          </Link>
-
-          <Link to={LOCATION_SERVICES}>
-            {localize("Services.SERVICES", locale)}
-            <i className="material-icons left dss">dss</i>
-          </Link>
-
-          <Link to={LOCATION_SIGN}>
-            {localize("Sign.Sign", locale)}
+          <Link to={LOCATION_MAIN}>
+            {localize("SignAndEncrypt.SignAndEncrypt", locale)}
             <i className="material-icons left sign">mode_edit</i>
           </Link>
 
-          <Link to={LOCATION_ENCRYPT}>
-            {localize("Encrypt.Encrypt", locale)}
-            <i className="material-icons left encrypt">enhanced_encryption</i>
+          <Link to={LOCATION_DOCUMENTS}>
+            {localize("Documents.Documents", locale)}
+            <i className="material-icons left document">library_books</i>
           </Link>
 
           <Link to={LOCATION_CERTIFICATES}>
@@ -65,6 +54,11 @@ class SideMenu extends React.Component<{}, {}> {
             <i className="material-icons left keystore">library_books</i>
           </Link>
 
+          <Link to={LOCATION_SETTINGS}>
+            {localize("Settings.Settings", locale)}
+            <i className="material-icons left settings">library_books</i>
+          </Link>
+
           <Link to={LOCATION_EVENTS}>
             {localize("Events.Operations_log", locale)}
             <i className="material-icons left journal">help</i>
@@ -73,14 +67,15 @@ class SideMenu extends React.Component<{}, {}> {
         <div className="row">
           <div className="menu-elements">
             <div className="row">
-              <Link className={"bordered--top"} to="/about">
+              <hr />
+              <Link to="/about">
                 {localize("About.About", locale)}
                 <i className="material-icons left about">about</i>
               </Link>
-              <Link to={LOCATION_LICENSE}>
-                {localize("License.License", locale)}
+              <a onClick={() => window.electron.shell.openExternal(localize("Help.link_user_guide", locale))}>
+                {localize("Help.Help", locale)}
                 <i className="material-icons left license">license</i>
-              </Link>
+              </a>
               <Link to="/" onClick={() => {
                 remote.getGlobal("sharedObject").isQuiting = true;
                 remote.getCurrentWindow().close();

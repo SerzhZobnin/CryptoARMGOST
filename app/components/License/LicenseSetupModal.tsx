@@ -13,6 +13,7 @@ const dialog = window.electron.remote.dialog;
 interface ILicenseSetupModalProps {
   closeWindow: () => void;
   loadLicense: () => void;
+  onCancel?: () => void;
 }
 
 interface ILicenseSetupModalState {
@@ -39,13 +40,17 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
     $("input#input_file, textarea#input_key").characterCounter();
   }
 
+  componentWillUnmount() {
+    this.handelCancel();
+  }
+
   paste() {
     $("#input_key").focus();
     document.execCommand("paste");
     $("#input_key").trigger("autoresize");
   }
 
-  setupLicense() {
+  setupLicense = () => {
     const { localize, locale } = this.context;
     const { license_key, license_file } = this.state;
     // tslint:disable-next-line:no-shadowed-variable
@@ -98,24 +103,14 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
         }
 
         try {
-          trusted.utils.Jwt.addLicense(key);
+          // trusted.utils.Jwt.addLicense(key);
+          throw new Error("TODO trusted.utils.Jwt.addLicense");
         } catch (e) {
           console.log("error", e);
         }
 
-        window.sudo.exec(command, options, function(error: any) {
+        window.sudo.exec(command, options, function (error: any) {
           if (!error) {
-            trusted.common.OpenSSL.stop();
-            trusted.common.OpenSSL.run();
-
-            if (process.platform === "win32") {
-              try {
-                crypto_module.loadConfig(npath.join(DEFAULT_PATH, "./config/openssl.cfg"));
-              } catch (e) {
-                // error
-              }
-            }
-
             loadLicense();
 
             $(".toast-lic_key_setup").remove();
@@ -131,7 +126,7 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
       }
     }
 
-    this.props.closeWindow();
+    this.handelCancel();
   }
 
   openLicenseFile() {
@@ -157,44 +152,66 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
     const disable = this.state.license_file || this.state.license_key ? "" : "disabled";
 
     return (
-      <div id="add-licence-key" className="modal licence-modal">
-        <div className="licence-modal-main">
-          <HeaderWorkspaceBlock text={localize("License.enter_key", locale)} new_class="modal-bar" icon="close" onСlickBtn={this.props.closeWindow.bind(this)} />
-          <div className="licence-modal-content">
-            <div className="license-key">
-              <div className="input-field col s6 input-field-licence">
-                <i className="material-icons prefix key-prefix">vpn_key</i>
-                <textarea id="input_key" className="materialize-textarea" value={this.state.license_key} onChange={function (e: any) {
-                  self.setState({ license_file: self.state.license_file, license_key: e.target.value });
-                }} />
-                <label htmlFor="input_key">{localize("License.entered_the_key", locale)}</label>
-                <a className="nav-small-btn waves-effect" onClick={this.paste.bind(this)}>
-                  <i className="nav-small-icon material-icons">content_copy</i>
-                </a>
+      <React.Fragment>
+        <div className="row halftop">
+          <div className="col s12">
+            <div className="content-wrapper tbody border_group">
+              <div className="row halfbottom" />
+              <div className="col s12">
+                <div className="input-field col s12 input-field-licence">
+                  <i className="material-icons prefix key-prefix" style={{ left: "-10px" }}>vpn_key</i>
+                  <input id="input_key" type="text" value={this.state.license_key} onChange={function (e: any) {
+                    self.setState({ license_file: self.state.license_file, license_key: e.target.value });
+                  }} />
+                  <label htmlFor="input_key">{localize("License.entered_the_key", locale)}</label>
+                  <a onClick={this.paste.bind(this)}>
+                    <i className="file-setting-item waves-effect material-icons secondary-content pulse active">content_copy</i>
+                  </a>
+                </div>
               </div>
-            </div>
-            <div className="or">
-              {localize("Common.or", locale)}
-            </div>
-            <div className="license-file">
-              <div className="input-field col s6 input-field-licence">
-                <i className="material-icons prefix key-prefix">vpn_key</i>
-                <input id="input_file" type="text" value={this.state.license_file} onChange={function (e: any) {
-                  self.setState({ license_file: e.target.value, license_key: self.state.license_key });
-                }} />
-                <label htmlFor="input_file">{localize("License.lic_file_choose", locale)}</label>
-                <a className="nav-small-btn waves-effect" onClick={this.openLicenseFile.bind(this)}>
-                  <i className="nav-small-icon material-icons">insert_drive_file</i>
-                </a>
+              <div className="col s12 or">
+                {localize("Common.or", locale)}
+                <div className="row halfbottom" />
               </div>
-            </div>
-            <div className="license-btn">
-              <a className={"waves-effect waves-light btn " + disable} onClick={this.setupLicense.bind(this)}>{localize("Common.apply", locale)}</a>
+              <div className="col s12">
+                <div className="input-field col s12 input-field-licence">
+                  <i className="material-icons prefix key-prefix" style={{ left: "-10px" }}>vpn_key</i>
+                  <input id="input_file" type="text" value={this.state.license_file} onChange={function (e: any) {
+                    self.setState({ license_file: e.target.value, license_key: self.state.license_key });
+                  }} />
+                  <label htmlFor="input_file">{localize("License.lic_file_choose", locale)}</label>
+                  <a onClick={this.openLicenseFile.bind(this)}>
+                    <i className="file-setting-item waves-effect material-icons secondary-content pulse active">insert_drive_file</i>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+
+        <div className="row halfbottom" />
+
+        <div className="row halfbottom">
+          <div style={{ float: "right" }}>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+            </div>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className={"btn btn-outlined waves-effect waves-light modal-close " + disable} onClick={this.setupLicense}>{localize("Common.apply", locale)}</a>
+            </div>
+          </div>
+        </div>
+
+      </React.Fragment>
     );
+  }
+
+  handelCancel = () => {
+    const { onCancel } = this.props;
+
+    if (onCancel) {
+      onCancel();
+    }
   }
 }
 

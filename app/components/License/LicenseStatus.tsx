@@ -112,50 +112,23 @@ class LicenseStatus extends React.Component<ILicenseStatusProps, {}> {
     }
 
     if (viewStatus === "correct") {
-      style = { color: "green" };
-      styleRow = { border: "2px solid green", padding: "5px" };
+      style = { color: "#4caf50" };
       return (
-        <React.Fragment>
-          <div className="row">
-            <div className="col s6">
-              <div style={styleRow}>
-                <div className="desktoplic_text_item topitem" style={style}>{messageStatus}</div>
-                <LicenseInfoField title={localize("License.lic_status", locale)} info={messageExpired} style={style} />
-              </div>
-            </div>
-            <div className="col s3">
-              <a className="waves-effect waves-light btn add-licence-modal-btn" href="#add-licence-key" {...settings}>
-                {localize("License.Enter_Key", locale)}
-              </a>
-            </div>
-            <div className="col s3">
-              <ButtonWithExternalLink externalLink={localize("License.link_buy_license", locale)} externalName={localize("License.Buy_license", locale)} />
-            </div>
-          </div>
-        </React.Fragment>
+          <React.Fragment>
+            <div className="desktoplic_text_item bottomitem">{localize("License.lic_status", locale)}</div>
+            <div className="desktoplic_text_item topitem" style={{color: "green"}}>{messageStatus}</div>
+            <LicenseInfoField info={messageExpired} style={style} />
+          </React.Fragment>
+
       );
     } else {
       style = { color: "red" };
-      styleRow = { border: "2px solid red", padding: "5px" };
       return (
-        <React.Fragment>
-          <div className="row">
-            <div className="col s6">
-              <div style={styleRow}>
-                <div className="desktoplic_text_item topitem" style={style}>{messageStatus}</div>
-                <LicenseInfoField title={localize("License.lic_status", locale)} info={messageExpired} style={style} styleRow={styleRow} />
-              </div>
-            </div>
-            <div className="col s3">
-              <a className="waves-effect waves-light btn add-licence-modal-btn" href="#add-licence-key" {...settings}>
-                {localize("License.Enter_Key", locale)}
-              </a>
-            </div>
-            <div className="col s3">
-              <ButtonWithExternalLink externalLink={localize("License.link_buy_license", locale)} externalName={localize("License.Buy_license", locale)} />
-            </div>
-          </div>
-        </React.Fragment>
+          <React.Fragment>
+            <div className="desktoplic_text_item bottomitem">{localize("License.lic_status", locale)}</div>
+            <div className="desktoplic_text_item topitem" style={style}>{messageStatus}</div>
+            <LicenseInfoField info={messageExpired} style={style} />
+          </React.Fragment>
       );
     }
   }

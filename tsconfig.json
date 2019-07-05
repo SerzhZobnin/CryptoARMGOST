@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "*": ["types/*"] },
     "jsx": "react",
     "target": "ES6",
     "allowSyntheticDefaultImports": true,

@@ -1,10 +1,11 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { SERVICES_JSON, SETTINGS_JSON } from "../constants";
-import { CertificateModel, DefaultReducerState as DefaultCertificatesReducerState } from "../reducer/certificates";
-import { DefaultReducerState as DefaultRecipientsReducerState, RecipientModel } from "../reducer/recipients";
-import { DefaultReducerState as DefaultServicesReducerState, ServiceModel, SettingsModel } from "../reducer/services";
-import { fileExists } from "../utils";
+import { SETTINGS_JSON } from "../constants";
+import {
+  DefaultReducerState as DefaultSettingsState, EncryptModel,
+  RecipientModel, SettingsModel as GlobalSettingsModel, SignModel,
+} from "../reducer/settings";
+import { fileExists, mapToArr } from "../utils";
 
 let odata = {};
 
@@ -13,17 +14,35 @@ if (fileExists(SETTINGS_JSON)) {
 
   if (data) {
     try {
-      let recipientsMap = new DefaultRecipientsReducerState();
-
       odata = JSON.parse(data);
 
-      for (const recipient of odata.recipients) {
-        recipientsMap = recipientsMap.setIn(["entities", recipient.certId], new RecipientModel({
-          certId: recipient.certId,
+      let settingsMap = new DefaultSettingsState();
+
+      for (const setting of odata.settings) {
+        let encrypt = new EncryptModel(setting.encrypt);
+        encrypt = encrypt.setIn(["recipients"], OrderedMap({}));
+
+        settingsMap = settingsMap.setIn(["entities", setting.id], new GlobalSettingsModel({
+          ...setting,
+          encrypt,
+          id: setting.id,
+          outfolder: setting.outfolder,
+          saveToDocuments: setting.saveToDocuments,
+          sign: new SignModel(setting.sign),
         }));
+
+        for (const recipient of setting.encrypt.recipients) {
+          settingsMap = settingsMap.setIn(["entities", setting.id, "encrypt", "recipients", recipient.certId], new RecipientModel({
+            certId: recipient.certId,
+          }));
+        }
       }
 
-      odata.recipients = recipientsMap;
+      if (odata.default && settingsMap) {
+        settingsMap = settingsMap.set("default", odata.default);
+      }
+
+      odata.settings = settingsMap;
 
       if (odata.settings && !odata.settings.cloudCSP) {
         odata.settings.cloudCSP = {
@@ -32,40 +51,8 @@ if (fileExists(SETTINGS_JSON)) {
         };
       }
     } catch (e) {
+      console.log("error", e);
       odata = {};
-    }
-  }
-}
-
-if (fileExists(SERVICES_JSON)) {
-  const services = fs.readFileSync(SERVICES_JSON, "utf8");
-
-  if (services) {
-    try {
-      let servicesMap = new DefaultServicesReducerState();
-      let certificatesMap = new DefaultCertificatesReducerState();
-
-      const data = JSON.parse(services);
-
-      for (const service of data.services) {
-        let mservice = new ServiceModel({ ...service });
-        mservice = mservice.setIn(["settings"], new SettingsModel({ ...service.settings }));
-        servicesMap = servicesMap.setIn(["entities", service.id], mservice);
-      }
-
-      odata.services = servicesMap;
-
-      if (data.certificates) {
-        for (const certificate of data.certificates) {
-          certificatesMap = certificatesMap.setIn(["entities", certificate.id], new CertificateModel({ ...certificate }));
-        }
-
-        odata.certificates = certificatesMap;
-      }
-
-    } catch (e) {
-      odata.services = {};
-      odata.certificates = {};
     }
   }
 }

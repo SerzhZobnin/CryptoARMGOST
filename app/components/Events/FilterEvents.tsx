@@ -389,15 +389,18 @@ class FilterEvents extends React.Component<IFilterEventsProps, IEventsFilters> {
         <div className="row halfbottom" />
 
         <div className="row">
-          <div className="col s3">
-            <a className={"waves-effect waves-light btn btn_modal"} onClick={this.handleResetFilters}>{localize("Common.reset", locale)}</a>
-          </div>
-          <div className="col s5 offset-s4">
-            <div className="col s6">
-              <a className={"waves-effect waves-light btn modal-close btn_modal"} onClick={this.handleApplyFilters}>{localize("Common.apply", locale)}</a>
+          <div style={{ float: "left" }}>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className={"btn btn-text waves-effect waves-light"} onClick={this.handleResetFilters}>{localize("Common.reset", locale)}</a>
             </div>
-            <div className="col s6">
-              <a className={"waves-effect waves-light btn modal-close btn_modal"} onClick={this.handelCancel}>{localize("Common.close", locale)}</a>
+
+          </div>
+          <div style={{ float: "right" }}>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className={"btn btn-text waves-effect waves-light modal-close"} onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+            </div>
+            <div style={{ display: "inline-block", margin: "10px" }}>
+              <a className={"btn btn-outlined waves-effect waves-light modal-close"} onClick={this.handleApplyFilters}>{localize("Common.apply", locale)}</a>
             </div>
           </div>
         </div>

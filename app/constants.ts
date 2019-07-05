@@ -2,10 +2,12 @@ export const ADD_EVENT = "ADD_EVENT";
 export const LOAD_ALL_EVENTS = "LOAD_ALL_EVENTS";
 export const REMOVE_ALL_EVENTS = "REMOVE_ALL_EVENTS";
 
+export const ADD_DOCUMENTS = "ADD_DOCUMENTS";
 export const LOAD_ALL_DOCUMENTS = "LOAD_ALL_DOCUMENTS";
 export const PACKAGE_DELETE_DOCUMENTS = "PACKAGE_DELETE_DOCUMENTS";
 export const REMOVE_ALL_DOCUMENTS = "REMOVE_ALL_DOCUMENTS";
 export const SELECT_DOCUMENT = "SELECT_DOCUMENT";
+export const UNSELECT_DOCUMENT = "UNSELECT_DOCUMENT";
 export const UNSELECT_ALL_DOCUMENTS = "UNSELECT_ALL_DOCUMENTS";
 export const SELECT_ALL_DOCUMENTS = "SELECT_ALL_DOCUMENTS";
 
@@ -31,6 +33,7 @@ export const VERIFY = "VERIFY";
 export const UNSIGN = "UNSIGN";
 export const ENCRYPT = "ENCRYPT";
 export const DECRYPT = "DECRYPT";
+export const REMOVE = "REMOVE";
 export const CERTIFICATE_GENERATION = "CERTIFICATE_GENERATION";
 export const CSR_GENERATION = "CSR_GENERATION";
 export const CERTIFICATE_IMPORT = "CERTIFICATE_IMPORT";
@@ -67,6 +70,12 @@ export const CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT = "CHANGE_ARCHIVE_FILES_BEFORE_
 export const CHANGE_ENCRYPT_OUTFOLDER = "CHANGE_ENCRYPT_OUTFOLDER";
 
 export const TOGGLE_SAVE_TO_DOCUMENTS = "TOGGLE_SAVE_TO_DOCUMENTS";
+export const CHANGE_SETTINGS_NAME = "CHANGE_SETTINGS_NAME";
+export const CREATE_SETTING = "CREATE_SETTING";
+export const APPLY_SETTINGS = "APPLY_SETTINGS";
+export const ACTIVE_SETTING = "ACTIVE_SETTING";
+export const DELETE_SETTING = "DELETE_SETTING";
+export const CHANGE_DEFAULT_SETTINGS = "CHANGE_DEFAULT_SETTINGS";
 
 export const PACKAGE_SELECT_FILE = "PACKAGE_SELECT_FILE";
 export const PACKAGE_DELETE_FILE = "PACKAGE_DELETE_FILE";
@@ -108,7 +117,6 @@ export const CA = "CA";
 export const REQUEST = "Request";
 
 export const PROVIDER_SYSTEM = "PROVIDER_SYSTEM";
-export const PROVIDER_MICROSOFT = "PROVIDER_MICROSOFT";
 export const PROVIDER_CRYPTOPRO = "PROVIDER_CRYPTOPRO";
 
 export const DEFAULT_PATH: string = window.DEFAULT_PATH;
@@ -121,7 +129,6 @@ export const PLATFORM: string = window.PLATFORM;
 export const TMP_DIR: string = window.TMP_DIR;
 export const LICENSE_PATH = window.LICENSE_PATH;
 export const SETTINGS_JSON = window.SETTINGS_JSON;
-export const SERVICES_JSON = window.SERVICES_JSON;
 export const TRUSTED_CRYPTO_LOG = window.TRUSTED_CRYPTO_LOG;
 export const APP_LOG_FILE = window.APP_LOG_FILE;
 export const APP_ERRORS_LOG_FILE = window.APP_ERRORS_LOG_FILE;
@@ -151,15 +158,19 @@ export const REMOVE_CONNECTION = "REMOVE_CONNECTION";
 export const SET_CONNECTED = "SET_CONNECTED";
 export const SET_DISCONNECTED = "SET_DISCONNECTED";
 
-export const LOCATION_SIGN = "/sign";
-export const LOCATION_ENCRYPT = "/encrypt";
+export const LOCATION_MAIN = "/";
 export const LOCATION_CERTIFICATES = "/certificate";
+export const LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE = "/certificateForSignature";
+export const LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT = "/certificateForEncrypt";
 export const LOCATION_CONTAINERS = "/containers";
 export const LOCATION_DOCUMENTS = "/documents";
 export const LOCATION_ABOUT = "/about";
 export const LOCATION_LICENSE = "/license";
 export const LOCATION_EVENTS = "/events";
 export const LOCATION_SERVICES = "/services";
+export const LOCATION_SETTINGS = "/settings";
+export const LOCATION_SETTINGS_CONFIG = "/settings_config";
+export const LOCATION_SETTINGS_SELECT = "/settings_select";
 
 export const KEY_USAGE_SIGN = "sign";
 export const KEY_USAGE_ENCIPHERMENT  = "encipherment";
@@ -175,13 +186,7 @@ export const CHANGE_DSS_REST_URL = "CHANGE_DSS_REST_URL";
 export const GET_CERTIFICATES_FROM_DSS = "GET_CERTIFICATES_FROM_DSS";
 export const RESET_CLOUD_CSP = "RESET_CLOUD_CSP";
 
-export const ADD_SERVICE = "ADD_SERVICE";
 export const ADD_SERVICE_CERTIFICATE = "ADD_SERVICE_CERTIFICATE";
 export const DELETE_SERVICE = "DELETE_SERVICE";
-export const CHANGE_SERVICE_SETTINGS = "CHANGE_SERVICE_SETTINGS";
-export const CHANGE_SERVICE_NAME = "CHANGE_SERVICE_NAME";
 
-export const CRYPTOPRO_DSS = "CRYPTOPRO_DSS";
 export const CRYPTOPRO_DSS_NAME = "КриптоПро DSS";
-export const CRYPTOPRO_SVS = "CRYPTOPRO_SVS";
-export const CRYPTOPRO_SVS_NAME = "КриптоПро SVS 2.0";

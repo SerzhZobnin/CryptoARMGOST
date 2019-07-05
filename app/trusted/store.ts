@@ -2,7 +2,7 @@ import * as os from "os";
 import * as path from "path";
 import {
   ADDRESS_BOOK, CA, MY,
-  PROVIDER_CRYPTOPRO, PROVIDER_MICROSOFT, PROVIDER_SYSTEM,
+  PROVIDER_CRYPTOPRO, PROVIDER_SYSTEM,
   REQUEST, ROOT,
 } from "../constants";
 import { DEFAULT_CERTSTORE_PATH, TMP_DIR, USER_NAME } from "../constants";
@@ -13,32 +13,24 @@ const OS_TYPE = os.type();
 export class Store {
   // tslint:disable:variable-name
   _items: any[];
-  _providerSystem: trusted.pkistore.Provider_System | undefined;
   _providerCryptopro: trusted.pkistore.ProviderCryptopro | undefined;
-  _providerMicrosoft: trusted.pkistore.ProviderMicrosoft | undefined;
   _store: trusted.pkistore.PkiStore;
-  _rv: trusted.pki.Revocation | undefined;
 
   constructor() {
     this._store = new trusted.pkistore.PkiStore(DEFAULT_CERTSTORE_PATH + "/cash.json");
 
-    if (OS_TYPE === "Windows_NT") {
-      this._providerMicrosoft = new trusted.pkistore.ProviderMicrosoft();
-      this._store.addProvider(this._providerMicrosoft.handle);
-    } else {
-      try {
-        this._providerCryptopro = new trusted.pkistore.ProviderCryptopro();
-        this._store.addProvider(this._providerCryptopro.handle);
-      } catch (e) {
-        // tslint:disable-next-line:no-console
-        console.log(`Error init CryptoPro \n ${e}`);
-      }
+    try {
+      this._providerCryptopro = new trusted.pkistore.ProviderCryptopro();
+      this._store.addProvider(this._providerCryptopro.handle);
+    } catch (e) {
+      // tslint:disable-next-line:no-console
+      console.log(`Error init CryptoPro \n ${e}`);
     }
 
     this._items = [];
 
     this._items = this._items.concat(this._store.find({
-      provider: ["CRYPTOPRO", "MICROSOFT"],
+      provider: ["CRYPTOPRO"],
       type: ["CERTIFICATE", "CRL"],
     }));
   }
@@ -74,12 +66,6 @@ export class Store {
     let provider;
 
     switch (providerType) {
-      case PROVIDER_SYSTEM:
-        provider = this._providerSystem;
-        break;
-      case PROVIDER_MICROSOFT:
-        provider = this._providerMicrosoft;
-        break;
       case PROVIDER_CRYPTOPRO:
         provider = this._providerCryptopro;
         break;
@@ -103,39 +89,20 @@ export class Store {
   handleImportCertificate(certificate: trusted.pki.Certificate | Buffer, store: trusted.pkistore.PkiStore, provider: any, callback: any, category?: string, contName?: string) {
     const cert = certificate instanceof trusted.pki.Certificate ? certificate : trusted.pki.Certificate.import(certificate);
 
-    if (provider instanceof trusted.pkistore.Provider_System) {
-      const uri = store.addCert(provider.handle, MY, cert);
-      const newItem = provider.objectToPkiItem(uri);
+    const bCA = cert.isCA;
+    const selfSigned = cert.isSelfSigned;
+    const hasKey = /*provider.hasPrivateKey(cert)*/ true;
 
-      const items: native.PKISTORE.IPkiItem[] = [];
-      let isNewItem = true;
-
-      for (const item of items) {
-        if (item.hash === newItem.hash) {
-          isNewItem = false;
-          break;
-        }
-      }
-
-      if (isNewItem) {
-        this._items.push(newItem);
-      }
+    if (category) {
+      store.addCert(provider.handle, category, cert, contName, 75);
     } else {
-      const bCA = cert.isCA;
-      const selfSigned = cert.isSelfSigned;
-      const hasKey = provider.hasPrivateKey(cert);
-
-      if (category) {
-        store.addCert(provider.handle, category, cert, contName, 75);
-      } else {
-        if (hasKey) {
-          store.addCert(provider.handle, MY, cert, contName, 75);
-        } else if (!hasKey && !bCA) {
-          store.addCert(provider.handle, ADDRESS_BOOK, cert, contName, 75);
-        } else if (bCA) {
-          if (OS_TYPE === "Windows_NT") {
-            selfSigned ? store.addCert(provider.handle, ROOT, cert, contName, 75) : store.addCert(provider.handle, CA, cert, contName, 75);
-          }
+      if (hasKey) {
+        store.addCert(provider.handle, MY, cert, contName, 75);
+      } else if (!hasKey && !bCA) {
+        store.addCert(provider.handle, ADDRESS_BOOK, cert, contName, 75);
+      } else if (bCA) {
+        if (OS_TYPE === "Windows_NT") {
+          selfSigned ? store.addCert(provider.handle, ROOT, cert, contName, 75) : store.addCert(provider.handle, CA, cert, contName, 75);
         }
       }
     }
@@ -143,16 +110,10 @@ export class Store {
     return callback();
   }
 
-  importCrl(crl: trusted.pki.Crl, providerType: string = PROVIDER_SYSTEM, done = (err?: Error) => { return; }): void {
+  importCrl(crl: trusted.pki.CRL, providerType: string = PROVIDER_SYSTEM, done = (err?: Error) => { return; }): void {
     let provider;
 
     switch (providerType) {
-      case PROVIDER_SYSTEM:
-        provider = this._providerSystem;
-        break;
-      case PROVIDER_MICROSOFT:
-        provider = this._providerMicrosoft;
-        break;
       case PROVIDER_CRYPTOPRO:
         provider = this._providerCryptopro;
         break;
@@ -164,7 +125,7 @@ export class Store {
       Materialize.toast(`Provider ${providerType} not init`, 2000, "toast-not_init_provider");
     }
 
-    this.handleImportCrl(crl, this._store, provider, function(err: Error) {
+    this.handleImportCrl(crl, this._store, provider, function (err: Error) {
       if (err) {
         done(err);
       } else {
@@ -173,7 +134,7 @@ export class Store {
     });
   }
 
-  handleImportCrl(crl: trusted.pki.Crl, store: trusted.pkistore.PkiStore, provider: any, callback: any) {
+  handleImportCrl(crl: trusted.pki.CRL, store: trusted.pkistore.PkiStore, provider: any, callback: any) {
     if (OS_TYPE === "Windows_NT") {
       store.addCrl(provider.handle, CA, crl);
     }
@@ -185,12 +146,6 @@ export class Store {
     let provider;
 
     switch (certificate.provider) {
-      case "SYSTEM":
-        provider = this._providerSystem;
-        break;
-      case "MICROSOFT":
-        provider = this._providerMicrosoft;
-        break;
       case "CRYPTOPRO":
         provider = this._providerCryptopro;
         break;
@@ -242,12 +197,6 @@ export class Store {
     let provider;
 
     switch (crl.provider) {
-      case "SYSTEM":
-        provider = this._providerSystem;
-        break;
-      case "MICROSOFT":
-        provider = this._providerMicrosoft;
-        break;
       case "CRYPTOPRO":
         provider = this._providerCryptopro;
         break;
@@ -304,102 +253,6 @@ export class Store {
     newItem = provider.objectToPkiItem(uri);
 
     this._items.push(newItem);
-  }
-
-  /**
-   * Search crl for certificate in local store
-   */
-  getCrlLocal(cert: any): any {
-    if (!this._rv) {
-      this._rv = new trusted.pki.Revocation();
-    }
-
-    return this._rv.getCrlLocal(cert, this._store);
-  }
-
-  /**
-   * Find key for PkiItem
-   * @param  {native.PKISTORE.PkiItem} objectWithKey
-   * @return {native.PKISTORE.PkiItem}
-   */
-  findKey(objectWithKey: any) {
-    let keyItem: any;
-
-    if (OS_TYPE === "Windows_NT") {
-      if (objectWithKey.provider === "MICROSOFT") {
-        try {
-          if (this._providerMicrosoft) {
-            keyItem = this._providerMicrosoft.getKey(this._store.getItem(objectWithKey));
-          }
-        } catch (err) {
-          // const JWT_RES: number = jwt.checkLicense();
-          // if (JWT_RES) {
-          //   $(".toast-jwt_error").remove();
-          //   Materialize.toast(jwt.getErrorMessage(JWT_RES), 4000, "toast-jwt_error");
-          //   return;
-          // }
-        }
-
-        if (!keyItem) {
-          return;
-        } else {
-          return keyItem;
-        }
-      }
-    } else {
-      if (objectWithKey.provider === "CRYPTOPRO") {
-        try {
-          if (this._providerCryptopro) {
-            keyItem = this._providerCryptopro.getKey(this._store.getItem(objectWithKey));
-          }
-        } catch (err) {
-          // const JWT_RES: number = jwt.checkLicense();
-          // if (JWT_RES) {
-          //   $(".toast-jwt_error").remove();
-          //   Materialize.toast(jwt.getErrorMessage(JWT_RES), 4000, "toast-jwt_error");
-          //   return;
-          // }
-        }
-
-        if (!keyItem) {
-          return;
-        } else {
-          return keyItem;
-        }
-      }
-    }
-
-    for (let i: number = 0, c: number = this._items.length; i < c; i++) {
-      let result: number = 1;
-
-      if (this._items[i].hash === objectWithKey.hash) {
-        result = 1;
-      } else {
-        result = 0;
-        continue;
-      }
-
-      if (result) {
-        let keyHash: string = "";
-
-        if (this._items[i].key) {
-          keyHash = this._items[i].key;
-        } else {
-          return;
-        }
-
-        for (let j: number = 0; j < this._items.length; j++) {
-          if ((this._items[j].type === "KEY") &&
-            (this._items[j].hash === keyHash)) {
-            keyItem = this._items[j];
-            break;
-          }
-        }
-        break;
-      }
-    }
-
-    return this._store.getItem(keyItem);
   }
 
   /**

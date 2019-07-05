@@ -16,8 +16,8 @@ export const filteredDocumentsSelector = createSelector(documentsGetter, filters
       (dateFrom ? (new Date(document.mtime)).getTime() >= (new Date(dateFrom)).getTime() : true) &&
       (dateTo ? (new Date(document.mtime)).getTime() <= (new Date(dateTo.setHours(23, 59, 59, 999))).getTime() : true) &&
       (
-        types[ENCRYPTED] && document.extname === ".enc" ||
-        types[SIGNED] && document.extname === ".sig" ||
+        types[ENCRYPTED] && document.extension === "enc" ||
+        types[SIGNED] && document.extension === "sig" ||
         (
           !types[ENCRYPTED] && !types[SIGNED]
         )

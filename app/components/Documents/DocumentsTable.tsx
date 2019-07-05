@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { Column, Table } from "react-virtualized";
+import { AutoSizer, Column, Table } from "react-virtualized";
 import {
   loadAllDocuments, removeAllDocuments, selectDocument,
   unselectAllDocuments,
@@ -67,9 +67,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
     // tslint:disable-next-line:no-shadowed-variable
     const { isLoaded, isLoading, loadAllDocuments, removeAllDocuments } = this.props;
 
-    removeAllDocuments();
-
-    if (!isLoading) {
+    if (!isLoading && !isLoaded) {
       loadAllDocuments();
     }
   }
@@ -89,13 +87,6 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
     }
   }
 
-  componentWillUnmount() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { unselectAllDocuments } = this.props;
-
-    unselectAllDocuments();
-  }
-
   render() {
     const { locale, localize } = this.context;
     const { isLoading, searchValue } = this.props;
@@ -111,89 +102,96 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
 
     return (
       <React.Fragment>
-        <Table
-          ref="Table"
-          disableHeader={disableHeader}
-          height={400}
-          width={780}
-          headerHeight={30}
-          noRowsRenderer={this.noRowsRenderer}
-          headerClassName={"headerColumn"}
-          rowHeight={45}
-          rowClassName={this.rowClassName}
-          onRowClick={this.handleOnRowClick}
-          onRowsRendered={this.handleOnRowsRendered}
-          overscanRowCount={3}
-          rowGetter={rowGetter}
-          rowCount={sortedList.size}
-          scrollToIndex={scrollToIndex}
-          sort={this.sort}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-        >
-          <Column
-            cellRenderer={({ cellData, rowData }) => {
-              return (
-                <FileIcon file={{extension: extFile(rowData.filename), id: rowData.id}} key={rowData.id} />
-              );
-            }}
-            dataKey="extname"
-            disableSort={false}
-            headerRenderer={this.headerRenderer}
-            width={50}
-            label={localize("Documents.type", locale)}
-          />
-          <Column
-            cellRenderer={({ cellData }) => {
-              return (new Date(cellData)).toLocaleDateString(locale, {
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                month: "numeric",
-                year: "numeric",
-              });
-            }}
-            dataKey="mtime"
-            disableSort={false}
-            headerRenderer={this.headerRenderer}
-            width={150}
-            label={localize("Documents.mdate", locale)}
-          />
-          <Column
-            dataKey="filename"
-            disableSort={false}
-            headerRenderer={this.headerRenderer}
-            width={480}
-            label={localize("Documents.filename", locale)}
-          />
-          <Column
-            cellRenderer={({ cellData, rowData }) => {
-              return (
-                <div className="row nobottom">
-                  <div className="col s12">
-                    <div className="truncate">{this.bytesToSize(cellData)}</div>
-                  </div>
+        <div style={{ display: "flex" }}>
+          <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
+            <AutoSizer>
+              {({ height, width }) => (
+                <Table
+                  ref="Table"
+                  disableHeader={disableHeader}
+                  height={height}
+                  width={width}
+                  headerHeight={30}
+                  noRowsRenderer={this.noRowsRenderer}
+                  headerClassName={"headerColumn"}
+                  rowHeight={45}
+                  rowClassName={this.rowClassName}
+                  onRowClick={this.handleOnRowClick}
+                  overscanRowCount={3}
+                  rowGetter={rowGetter}
+                  rowCount={sortedList.size}
+                  scrollToIndex={scrollToIndex}
+                  sort={this.sort}
+                  sortBy={sortBy}
+                  sortDirection={sortDirection}
+                >
+                  <Column
+                    cellRenderer={({ cellData, rowData }) => {
+                      return (
+                        <FileIcon file={{ extension: extFile(rowData.filename), id: rowData.id }} key={rowData.id} />
+                      );
+                    }}
+                    dataKey="extension"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={50}
+                    label={localize("Documents.type", locale)}
+                  />
+                  <Column
+                    cellRenderer={({ cellData }) => {
+                      return (new Date(cellData)).toLocaleDateString(locale, {
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                      });
+                    }}
+                    dataKey="mtime"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={150}
+                    label={localize("Documents.mdate", locale)}
+                  />
+                  <Column
+                    dataKey="filename"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={width * 0.5}
+                    label={localize("Documents.filename", locale)}
+                  />
+                  <Column
+                    cellRenderer={({ cellData, rowData }) => {
+                      return (
+                        <div className="row nobottom">
+                          <div className="col s12">
+                            <div className="truncate">{this.bytesToSize(cellData)}</div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                    dataKey="filesize"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={width * 0.2}
+                    label={localize("Documents.filesize", locale)}
+                  />
+                </Table>
+              )}
+            </AutoSizer>
+            {searchValue && foundDocuments.length ?
+              <div className="card navigationToolbar valign-wrapper">
+                <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToFirstOfFoud}>first_page</i>
+                <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToBefore}>navigate_before</i>
+                <div style={{ color: "black" }}>
+                  {foundDocuments.indexOf(scrollToIndex) + 1}/{foundDocuments.length}
                 </div>
-              );
-            }}
-            dataKey="filesize"
-            disableSort={false}
-            headerRenderer={this.headerRenderer}
-            width={100}
-            label={localize("Documents.filesize", locale)}
-          />
-        </Table>
-        {searchValue && foundDocuments.length ?
-          <div className="card navigationToolbar valign-wrapper">
-            <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToFirstOfFoud}>first_page</i>
-            <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToBefore}>navigate_before</i>
-            <div style={{ color: "black" }}>
-              {foundDocuments.indexOf(scrollToIndex) + 1}/{foundDocuments.length}
-            </div>
-            <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToNext}>navigate_next</i>
-            <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToLastOfFoud}>last_page</i>
-          </div> :
-          null}
+                <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToNext}>navigate_next</i>
+                <i className={"small material-icons cryptoarm-blue waves-effect " + classDisabledNavigation} onClick={this.handleScrollToLastOfFoud}>last_page</i>
+              </div> :
+              null}
+          </div>
+        </div>
       </React.Fragment>
     );
   }
@@ -265,7 +263,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
       let rowClassName = index % 2 === 0 ? "evenRow " : "oddRow ";
 
       if (selectedDocuments.includes(this.getDatum(this.state.sortedList, index))) {
-        rowClassName += "selectedEvent";
+        rowClassName += "selectedRow";
       } else if (foundDocuments.indexOf(index) >= 0) {
         rowClassName += "foundEvent";
       }
@@ -297,9 +295,13 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
     const search = searchValue.toLowerCase();
 
     arr.forEach((document: any, index: number) => {
-      if (document.filename.toLowerCase().match(search)) {
-        foundDocuments.push(index);
-      }
+      try {
+        if (document.filename.toLowerCase().match(search)) {
+          foundDocuments.push(index);
+        }
+      } catch (e) {
+        //
+       }
     });
 
     if (!foundDocuments.length) {
@@ -335,7 +337,10 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
   noRowsRenderer = () => {
     const { locale, localize } = this.context;
 
-    return <div className={"noRows"}>{localize("EventsTable.no_rows", locale)}</div>;
+    return <div className={"add-file-item not-active"} id="items-hidden">
+      <div className="add-file-item-text">{localize("Settings.drag_drop", locale)}</div>
+      <i className="material-icons large fullscreen">fullscreen</i>
+    </div>;
   }
 
   scrollToRow = (index: number) => {

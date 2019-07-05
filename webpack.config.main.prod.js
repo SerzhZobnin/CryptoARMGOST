@@ -9,7 +9,7 @@ import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import baseConfig from './webpack.config.base';
 
 export default merge.smart(baseConfig, {
-  devtool: 'source-map',
+  devtool: process.env.NODE_ENV === "development" ? "source-map" : "none",
 
   target: 'electron-main',
 

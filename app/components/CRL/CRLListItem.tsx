@@ -11,7 +11,6 @@ const rectangleUnvalidStyle = {
 
 interface ICertificateListItemProps {
   chooseCert: () => void;
-  selectedCert: (event: any) => void;
   operation: string;
   isOpen: boolean;
   toggleOpen: () => void;

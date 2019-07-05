@@ -1,4 +1,3 @@
-/// <reference types="node" />
 declare namespace trusted {
     /**
      *
@@ -10,81 +9,8 @@ declare namespace trusted {
         PEM = 1
     }
 }
-declare namespace trusted {
-    /**
-     *
-     * @export
-     * @enum {number}
-     */
-    enum CryptoMethod {
-        SYMMETRIC = 0,
-        ASSYMETRIC = 1
-    }
-}
-declare namespace trusted {
-    /**
-     * Public exponent values
-     *
-     * @export
-     * @enum {number}
-     */
-    enum PublicExponent {
-        RSA_3 = 0,
-        RSA_F4 = 1
-    }
-}
-declare namespace trusted {
-    /**
-     *
-     * @export
-     * @enum {number}
-     */
-    enum LoggerLevel {
-        NULL = 0,
-        ERROR = 1,
-        WARNING = 2,
-        INFO = 4,
-        DEBUG = 8,
-        TRACE = 16,
-        OPENSSL = 32,
-        ALL = 63
-    }
-}
 declare namespace native {
     namespace PKI {
-        class Key {
-            generate(algorithm: string, pkeyopts?: string[]): Key;
-            readPrivateKey(filename: string, format: trusted.DataFormat, password: string): any;
-            readPublicKey(filename: string, format: trusted.DataFormat): any;
-            writePrivateKey(filename: string, format: trusted.DataFormat, password: string): any;
-            writePublicKey(filename: string, format: trusted.DataFormat): any;
-            compare(key: Key): number;
-            duplicate(): Key;
-        }
-        class Algorithm {
-            constructor(name?: string);
-            getTypeId(): OID;
-            getName(): string;
-            duplicate(): Algorithm;
-            isDigest(): boolean;
-        }
-        class Attribute {
-            duplicate(): Attribute;
-            export(): Buffer;
-            values(): AttributeValueCollection;
-            getAsnType(): number;
-            setAsnType(type: number): void;
-            getTypeId(): OID;
-            setTypeId(oid: OID): void;
-        }
-        class AttributeValueCollection {
-            constructor(alg: Algorithm);
-            push(val: Buffer): void;
-            pop(): void;
-            removeAt(index: number): void;
-            items(index: number): Buffer;
-            length(): number;
-        }
         class OID {
             constructor(value?: string);
             getLongName(): string;
@@ -105,14 +31,39 @@ declare namespace native {
             pop(): void;
             removeAt(index: number): void;
         }
+        class CRL {
+            getVersion(): number;
+            getIssuerName(): string;
+            getIssuerFriendlyName(): string;
+            getLastUpdate(): string;
+            getNextUpdate(): string;
+            getThumbprint(): Buffer;
+            getSignatureAlgorithm(): string;
+            getSignatureDigestAlgorithm(): string;
+            getAuthorityKeyid(): Buffer;
+            getCrlNumber(): number;
+            load(filename: string, dataFormat?: trusted.DataFormat): void;
+            import(raw: Buffer, dataFormat: trusted.DataFormat): void;
+            save(filename: string, dataFormat: trusted.DataFormat): void;
+            export(dataFormat: trusted.DataFormat): Buffer;
+            compare(crl: CRL): number;
+            equals(crl: CRL): boolean;
+            duplicate(): CRL;
+            hash(digestName: string): Buffer;
+        }
+        class CrlCollection {
+            items(index: number): CRL;
+            length(): number;
+            push(crl: CRL): void;
+            pop(): void;
+            removeAt(index: number): void;
+        }
         class Certificate {
             constructor(param?: PKI.Certificate | PKI.CertificationRequest);
             getSubjectFriendlyName(): string;
-            getIssuerFriendlyName(): string;
             getSubjectName(): string;
-            setSubjectName(x509name: string): void;
+            getIssuerFriendlyName(): string;
             getIssuerName(): string;
-            setIssuerName(x509name: string): void;
             getNotAfter(): string;
             setNotAfter(offsetSec?: number): void;
             getNotBefore(): string;
@@ -121,7 +72,6 @@ declare namespace native {
             setSerialNumber(serial: string): void;
             getThumbprint(): Buffer;
             getVersion(): number;
-            setVersion(version: number): void;
             getType(): number;
             getKeyUsage(): number;
             getSignatureAlgorithm(): string;
@@ -130,11 +80,9 @@ declare namespace native {
             getOrganizationName(): string;
             getOCSPUrls(): string[];
             getCAIssuersUrls(): string[];
-            getExtensions(): ExtensionCollection;
-            setExtensions(exts: ExtensionCollection): void;
             isSelfSigned(): boolean;
             isCA(): boolean;
-            sign(key: Key, digest?: string): void;
+            sign(): void;
             load(filename: string, dataFormat?: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             save(filename: string, dataFormat: trusted.DataFormat): void;
@@ -144,19 +92,6 @@ declare namespace native {
             duplicate(): Certificate;
             hash(digestName: string): Buffer;
         }
-        class Revoked {
-            getSerialNumber(): string;
-            getRevocationDate(): string;
-            getReason(): string;
-            duplicate(): Revoked;
-        }
-        class RevokedCollection {
-            items(index: number): Revoked;
-            length(): number;
-            push(rv: Revoked): void;
-            pop(): void;
-            removeAt(index: number): void;
-        }
         class CertificateCollection {
             items(index: number): Certificate;
             length(): number;
@@ -164,44 +99,12 @@ declare namespace native {
             pop(): void;
             removeAt(index: number): void;
         }
-        class CRL {
-            getEncoded(): Buffer;
-            getSignature(): Buffer;
-            getVersion(): number;
-            getIssuerName(): string;
-            getIssuerFriendlyName(): string;
-            getLastUpdate(): string;
-            getNextUpdate(): string;
-            getCertificate(): Certificate;
-            getThumbprint(): Buffer;
-            getSignatureAlgorithm(): string;
-            getSignatureDigestAlgorithm(): string;
-            getAuthorityKeyid(): string;
-            getCrlNumber(): string;
-            getRevoked(): RevokedCollection;
-            load(filename: string, dataFormat: trusted.DataFormat): void;
-            import(raw: Buffer, dataFormat: trusted.DataFormat): void;
-            save(filename: string, dataFormat: trusted.DataFormat): void;
-            export(dataFormat: trusted.DataFormat): Buffer;
-            compare(crl: CRL): number;
-            equals(crl: CRL): boolean;
-            hash(digestName: string): Buffer;
-            duplicate(): CRL;
-        }
-        class CrlCollection {
-            items(index: number): CRL;
-            length(): number;
-            push(crl: CRL): void;
-            pop(): void;
-            removeAt(index: number): void;
-        }
-        class CertificationRequestInfo {
-            getSubject(): string;
-            setSubject(x509name: string): void;
-            getPublicKey(): Key;
-            setPublicKey(key: Key): void;
-            getVersion(): number;
-            setVersion(version: number): void;
+        class Cipher {
+            constructor();
+            setProvAlgorithm(name: string): void;
+            encrypt(filenameSource: string, filenameEnc: string, format: trusted.DataFormat): void;
+            decrypt(filenameEnc: string, filenameDec: string, format: trusted.DataFormat): void;
+            addRecipientsCerts(certs: CertificateCollection): void;
         }
         interface INameField {
             /**
@@ -214,65 +117,78 @@ declare namespace native {
             value: string;
         }
         class CertificationRequest {
-            constructor(csrinfo?: PKI.CertificationRequestInfo);
-            load(filename: string, dataFormat?: trusted.DataFormat): void;
+            constructor();
             save(filename: string, dataFormat?: trusted.DataFormat): void;
-            getSubject(): string;
             setSubject(x509name: string | INameField[]): void;
-            getPublicKey(): Key;
-            setPublicKey(key: Key): void;
             getVersion(): number;
             setVersion(version: number): void;
-            getExtensions(): ExtensionCollection;
             setExtensions(exts: ExtensionCollection): void;
-            sign(key: Key, digest?: string): void;
-            verify(): boolean;
-            getPEMString(): Buffer;
-            toCertificate(days: number, key: Key): Certificate;
+            setContainerName(x509name: string): void;
+            getContainerName(): string;
+            setPubKeyAlgorithm(PubKeyAlgorithm: string): void;
+            getPubKeyAlgorithm(): string;
+            setExportableFlag(ExportableFlag: boolean): void;
+            getExportableFlag(): boolean;
         }
-        class CSR {
-            constructor(name: string, key: PKI.Key, digest: string);
-            save(filename: string, dataFormat: trusted.DataFormat): void;
-            getEncodedHEX(): Buffer;
-        }
-        class Cipher {
-            constructor();
-            setCryptoMethod(method: trusted.CryptoMethod): void;
-            encrypt(filenameSource: string, filenameEnc: string, format: trusted.DataFormat): void;
-            decrypt(filenameEnc: string, filenameDec: string, format?: trusted.DataFormat): void;
-            addRecipientsCerts(certs: CertificateCollection): void;
-            setPrivKey(rkey: Key): void;
-            setRecipientCert(rcert: Certificate): void;
-            setPass(password: string): void;
-            setDigest(digest: string): void;
-            setIV(iv: string): void;
-            setKey(key: string): void;
-            setSalt(salt: string): void;
-            getSalt(): Buffer;
-            getIV(): Buffer;
-            getKey(): Buffer;
-            getAlgorithm(): string;
-            getMode(): string;
-            getDigestAlgorithm(): string;
-            getRecipientInfos(filenameEnc: string, format: trusted.DataFormat): CMS.CmsRecipientInfoCollection;
-        }
-        class Chain {
-            buildChain(cert: Certificate, certs: CertificateCollection): CertificateCollection;
-            verifyChain(chain: CertificateCollection, crls: CrlCollection): boolean;
-        }
-        class Revocation {
-            getCrlLocal(cert: Certificate, store: PKISTORE.PkiStore): any;
-            getCrlDistPoints(cert: Certificate): string[];
-            checkCrlTime(crl: CRL): boolean;
-            downloadCRL(distPoints: string[], path: string, done: (err: Error, crl: PKI.CRL) => void): void;
-        }
-        class Pkcs12 {
-            getCertificate(password: string): Certificate;
-            getKey(password: string): Key;
-            getCACertificates(password: string): CertificateCollection;
+        class PKCS12 {
             load(filename: string): void;
             save(filename: string): void;
-            create(cert: Certificate, key: Key, ca: CertificateCollection, password: string, name: string): Pkcs12;
+        }
+    }
+    namespace UTILS {
+        interface IContainerName {
+            container: string;
+            unique: string;
+            fqcnA: string;
+            fqcnW: string;
+        }
+        class Csp {
+            isGost2001CSPAvailable(): boolean;
+            isGost2012_256CSPAvailable(): boolean;
+            isGost2012_512CSPAvailable(): boolean;
+            checkCPCSPLicense(): boolean;
+            getCPCSPLicense(): string;
+            getCPCSPVersion(): string;
+            getCPCSPVersionPKZI(): string;
+            getCPCSPVersionSKZI(): string;
+            getCPCSPSecurityLvl(): string;
+            enumProviders(): object[];
+            enumContainers(type?: number, provName?: string): IContainerName[];
+            getCertificateFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
+            getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
+            installCertificateFromContainer(contName: string, provType: number, provName?: string): void;
+            installCertificateToContainer(cert: PKI.Certificate, contName: string, provType: number, provName?: string): void;
+            deleteContainer(contName: string, provType: number, provName?: string): void;
+            buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
+            verifyCertificateChain(cert: PKI.Certificate): boolean;
+            isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
+            certToPkcs12(cert: PKI.Certificate, exportPrivateKey: boolean, password?: string): PKI.PKCS12;
+            importPkcs12(p12: PKI.PKCS12, password?: string): void;
+        }
+        class ModuleInfo {
+            getModuleVersion(): string;
+            getModuleName(): string;
+        }
+        class Tools {
+            stringFromBase64(instr: string, flag?: number): string;
+            stringToBase64(instr: string, flag?: number): string;
+        }
+        class Jwt {
+            createHeader(alg: string): string;
+            createPayload(aud: string, sub: string, core: number, nbf: number, iss: string, exp: number, iat: number, jti: string, desc: string): string;
+            createJWTToken(header: string, payload: string, privateKey: string): string;
+            verifyJWTToken(jwtToken: string, publicKey: string): string;
+        }
+        class Dlv {
+            licenseValidateFormat(lic: string): boolean;
+            checkLicense(lic: string): string;
+        }
+    }
+    namespace COMMON {
+        class Logger {
+            start(filename: string, level: trusted.LoggerLevel): void;
+            stop(): void;
+            clear(): void;
         }
     }
     namespace CMS {
@@ -286,54 +202,11 @@ declare namespace native {
             load(filename: string, dataFormat?: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             save(filename: string, dataFormat: trusted.DataFormat): void;
-            export(dataFormat: trusted.DataFormat): Buffer;
+            export(dataFormat?: trusted.DataFormat): Buffer;
             getCertificates(): PKI.CertificateCollection;
-            getSigners(): SignerCollection;
             isDetached(): boolean;
-            createSigner(cert: PKI.Certificate, key: PKI.Key): Signer;
-            addCertificate(cert: PKI.Certificate): void;
-            verify(certs?: PKI.CertificateCollection): boolean;
-            sign(): void;
-        }
-        class SignerCollection {
-            items(index: number): Signer;
-            length(): number;
-        }
-        class Signer {
-            setCertificate(cert: PKI.Certificate): void;
-            getCertificate(): PKI.Certificate;
-            getSignature(): Buffer;
-            getSignatureAlgorithm(): PKI.Algorithm;
-            getDigestAlgorithm(): PKI.Algorithm;
-            getSignerId(): SignerId;
-            getSignedAttributes(): SignerAttributeCollection;
-            getUnsignedAttributes(): SignerAttributeCollection;
-            getSigningTime(): string;
             verify(): boolean;
-            verifyContent(v: Buffer): boolean;
-        }
-        class SignerId {
-            getSerialNumber(): string;
-            getIssuerName(): string;
-            getKeyId(): string;
-        }
-        class SignerAttributeCollection {
-            length(): number;
-            push(attr: PKI.Attribute): void;
-            removeAt(index: number): void;
-            items(index: number): PKI.Attribute;
-        }
-        class CmsRecipientInfo {
-            getIssuerName(): string;
-            getSerialNumber(): Buffer;
-            ktriCertCmp(cert: PKI.Certificate): number;
-        }
-        class CmsRecipientInfoCollection {
-            length(): number;
-            push(ri: CmsRecipientInfo): void;
-            removeAt(index: number): void;
-            pop(): void;
-            items(index: number): CmsRecipientInfo;
+            sign(certs: PKI.Certificate): void;
         }
     }
     namespace PKISTORE {
@@ -407,35 +280,16 @@ declare namespace native {
         abstract class Provider {
             type: string;
         }
-        class Provider_System extends Provider {
-            constructor(folder: string);
-            objectToPkiItem(pathr: string): IPkiItem;
-        }
         class ProviderMicrosoft extends Provider {
             constructor();
-            getKey(cert: PKI.Certificate): PKI.Key;
-            hasPrivateKey(cert: PKI.Certificate): boolean;
         }
         class ProviderCryptopro extends Provider {
             constructor();
-            getKey(cert: PKI.Certificate): PKI.Key;
-            hasPrivateKey(cert: PKI.Certificate): boolean;
-        }
-        class ProviderTSL extends Provider {
-            constructor(url: string);
         }
         class PkiStore {
             constructor(json: string);
             getCash(): CashJson;
-            /**
-             * Возвращает набор элементов по фильтру
-             * - если фильтр пустой, возвращает все элементы
-             */
             find(filter?: Filter): IPkiItem[];
-            /**
-             * Возвращает ключ по фильтру
-             * - фильтр задается относительно элементов, которые могут быть связаны с ключом
-             */
             findKey(filter: Filter): IPkiItem;
             /**
              * Возвращает объект из структуры
@@ -445,8 +299,6 @@ declare namespace native {
             addProvider(provider: Provider): void;
             addCert(provider: Provider, category: string, cert: PKI.Certificate, contName?: string, provType?: number): string;
             addCrl(provider: Provider, category: string, crl: PKI.CRL): string;
-            addKey(provider: Provider, key: PKI.Key, password: string): string;
-            addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;
             deleteCert(provider: Provider, category: string, cert: PKI.Certificate): void;
             deleteCrl(provider: Provider, category: string, crl: PKI.CRL): void;
         }
@@ -497,63 +349,6 @@ declare namespace native {
             setSignatureAlgorithm(signatureAlgorithm: string): void;
             setSignatureDigestAlgorithm(signatureDigestAlgorithm: string): void;
             setPublicKeyAlgorithm(publicKeyAlgorithm: string): void;
-        }
-    }
-    namespace UTILS {
-        interface IContainerName {
-            container: string;
-            unique: string;
-            fqcnA: string;
-            fqcnW: string;
-        }
-        class Jwt {
-            addLicense(data: string): boolean;
-            deleteLicense(data: string): boolean;
-            checkLicense(data?: string): number;
-            checkTrialLicense(): number;
-            getExpirationTime(data?: string): number;
-            getTrialExpirationTime(): number;
-            createTrialLicense(): number;
-        }
-        class Cerber {
-            sign(modulePath: string, cert: PKI.Certificate, key: PKI.Key): void;
-            verify(modulePath: string, cacerts?: PKI.CertificateCollection): object;
-        }
-        class Logger {
-            start(filename: string, level: trusted.LoggerLevel): void;
-            stop(): void;
-            clear(): void;
-        }
-        class Csp {
-            isGost2001CSPAvailable(): boolean;
-            isGost2012_256CSPAvailable(): boolean;
-            isGost2012_512CSPAvailable(): boolean;
-            checkCPCSPLicense(): boolean;
-            getCPCSPLicense(): string;
-            getCPCSPVersion(): string;
-            getCPCSPVersionPKZI(): string;
-            getCPCSPVersionSKZI(): string;
-            getCPCSPSecurityLvl(): string;
-            enumProviders(): object[];
-            enumContainers(type?: number, provName?: string): IContainerName[];
-            getCertificateFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
-            getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
-            installCertificateFromCloud(cert: PKI.Certificate, authURL: string, restURL: string, certificateID: number): void;
-            installCertificateFromContainer(contName: string, provType: number, provName?: string): void;
-            installCertificateToContainer(cert: PKI.Certificate, contName: string, provType: number, provName?: string): void;
-            deleteContainer(contName: string, provType: number, provName?: string): void;
-            buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
-            verifyCertificateChain(cert: PKI.Certificate): boolean;
-            isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
-            certToPkcs12(cert: PKI.Certificate, exportPrivateKey: boolean, password?: string): PKI.Pkcs12;
-            importPkcs12(p12: PKI.Pkcs12, password?: string): void;
-        }
-    }
-    namespace COMMON {
-        class OpenSSL {
-            run(): void;
-            stop(): void;
-            printErrors(): string;
         }
     }
 }
@@ -611,342 +406,156 @@ declare namespace trusted.core {
         removeAt(index: number): void;
     }
 }
-declare namespace trusted.common {
+declare namespace trusted.cms {
+    enum SignedDataContentType {
+        url = 0,
+        buffer = 1
+    }
+    interface ISignedDataContent {
+        type: SignedDataContentType;
+        data: string | Buffer;
+    }
     /**
-     * OpenSSL helper class
+     * Wrap CMS_ContentInfo
      *
      * @export
-     * @class OpenSSL
-     * @extends {BaseObject<native.COMMON.OpenSSL>}
+     * @class SignedData
+     * @extends {BaseObject<native.CMS.SignedData>}
      */
-    class OpenSSL extends BaseObject<native.COMMON.OpenSSL> {
+    class SignedData extends BaseObject<native.CMS.SignedData> {
         /**
-         * Load engines and add algorithms
+         * Load signed data from file location
          *
          * @static
-         * @returns {void}
+         * @param {string} filename File location
+         * @param {DataFormat} [format] PEM | DER
+         * @returns {SignedData}
          *
-         * @memberOf OpenSSL
+         * @memberOf SignedData
          */
-        static run(): void;
+        static load(filename: string, format?: DataFormat): SignedData;
         /**
-         * Cleanup openssl objects and free errors
+         * Load signed data from memory
          *
          * @static
-         * @returns {void}
+         * @param {Buffer} buffer
+         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT]
+         * @returns {SignedData}
          *
-         * @memberOf OpenSSL
+         * @memberOf SignedData
          */
-        static stop(): void;
+        static import(buffer: Buffer, format?: DataFormat): SignedData;
+        private prContent;
         /**
-         * Print OpenSSL error stack
-         *
-         * @static
-         * @returns {string}
-         *
-         * @memberOf OpenSSL
-         */
-        static printErrors(): string;
-        /**
-         * Creates an instance of OpenSSL.
+         * Creates an instance of SignedData.
          *
          *
-         * @memberOf OpenSSL
+         * @memberOf SignedData
          */
         constructor();
-    }
-}
-declare namespace trusted.utils {
-    /**
-     * Download file
-     *
-     * @param {string} url Url to remote file
-     * @param {string} path Path for save in local system
-     * @param {Function} done callback function
-     */
-    function download(url: string, path: string, done: (err: Error, url?: string, path?: string) => void): void;
-}
-declare namespace trusted.utils {
-    /**
-     * JSON Web Token (JWT)
-     * Uses only with CTGOSTCP
-     *
-     * @export
-     * @class Jwt
-     * @extends {BaseObject<native.JWT.Jwt>}
-     */
-    class Jwt extends BaseObject<native.UTILS.Jwt> {
         /**
-         * Add jwt license to store
-         * License must be correct
+         * Return content of signed data
          *
-         * @static
-         * @param {string} license license token in JWT format
+         * @type {ISignedDataContent}
+         * @memberOf SignedData
+         */
+        /**
+        * Set content v to signed data
+        *
+        *
+        * @memberOf SignedData
+        */
+        content: ISignedDataContent;
+        /**
+        * Return sign policys
+        *
+        * @type {Array<string>}
+        * @memberOf SignedData
+        */
+        /**
+        * Set sign policies
+        *
+        *
+        * @memberOf SignedData
+        */
+        policies: string[];
+        /**
+         *  Free signed content
+         *
+         * @returns {void}
+         * @memberof SignedData
+         */
+        freeContent(): void;
+        /**
+         * Return true if sign detached
+         *
          * @returns {boolean}
-         * @memberof Jwt
-         */
-        static addLicense(license: string): boolean;
-        /**
-         * Delete jwt license from store
          *
-         * @static
-         * @param {string} license license token
+         * @memberOf SignedData
+         */
+        isDetached(): boolean;
+        /**
+         * Return certificates collection or certificate by index (if request)
+         *
+         * @param {number} [index]
+         * @returns {*}
+         *
+         * @memberOf SignedData
+         */
+        certificates(index?: number): any;
+        /**
+         * Load sign from file location
+         *
+         * @param {string} filename File location
+         * @param {DataFormat} [format] PEM | DER
+         *
+         * @memberOf SignedData
+         */
+        load(filename: string, format?: DataFormat): void;
+        /**
+         * Load sign from memory
+         *
+         * @param {Buffer} buffer
+         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         *
+         * @memberOf SignedData
+         */
+        import(buffer: Buffer, format?: DataFormat): void;
+        /**
+         * Save sign to memory
+         *
+         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @returns {Buffer}
+         *
+         * @memberOf SignedData
+         */
+        export(format?: DataFormat): Buffer;
+        /**
+         * Write sign to file
+         *
+         * @param {string} filename File location
+         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         *
+         * @memberOf SignedData
+         */
+        save(filename: string, format: DataFormat): void;
+        /**
+         * Verify signature
+         *
          * @returns {boolean}
-         * @memberof Jwt
+         *
+         * @memberOf SignedData
          */
-        static deleteLicense(license: string): boolean;
+        verify(): boolean;
         /**
-         * Verify jwt license file
-         * Return 0 if license correct
+         * Create sign
          *
-         * @static
-         * @returns {number}
+         * @param {Certificate} [certs] Certificate
+         * @param {boolean} isDetached Certificate
          *
-         * @memberOf Jwt
+         * @memberOf SignedData
          */
-        static checkLicense(data?: string): number;
-        /**
-         * Verify jwt license file
-         * Return 0 if license correct
-         *
-         * @static
-         * @returns {number}
-         *
-         * @memberOf Jwt
-         */
-        static checkTrialLicense(): number;
-        /**
-         * Get time Expiration
-         *
-         * @returns {number}
-         *
-         * @memberOf Jwt
-         */
-        static getExpirationTime(data: string): number;
-        /**
-         * Get time Expiration
-         *
-         * @returns {number}
-         *
-         * @memberOf Jwt
-         */
-        static getTrialExpirationTime(): number;
-        /**
-         * Create Trial License
-         *
-         * @returns {number}
-         *
-         * @memberOf Jwt
-         */
-        static createTrialLicense(): number;
-        /**
-         * Creates an instance of Jwt.
-         *
-         *
-         * @memberOf Jwt
-         */
-        constructor();
-        /**
-         * Verify jwt license file
-         * Return 0 if license correct
-         *
-         * @returns {number}
-         *
-         * @memberOf Jwt
-         */
-        checkLicense(data?: string): number;
-        /**
-         * Verify jwt license file
-         * Return 0 if license correct
-         *
-         * @returns {number}
-         *
-         * @memberOf Jwt
-         */
-        checkTrialLicense(): number;
-        /**
-         * Get time Expiration
-         *
-         * @returns {number}
-         *
-         * @memberOf Jwt
-         */
-        getExpirationTime(data: string): number;
-        /**
-         * Get time Expiration
-         *
-         * @returns {number}
-         *
-         * @memberOf Jwt
-         */
-        getTrialExpirationTime(): number;
-        /**
-         * Create Trial License
-         *
-         * @returns {number}
-         *
-         * @memberOf Jwt
-         */
-        createTrialLicense(): number;
-    }
-}
-declare namespace trusted.utils {
-    /**
-     * Wrap logger class
-     *
-     * @export
-     * @class Logger
-     * @extends {BaseObject<native.UTILS.Logger>}
-     */
-    class Logger extends BaseObject<native.UTILS.Logger> {
-        /**
-         * Start write log to a file
-         *
-         * @static
-         * @param {string} filename
-         * @param {LoggerLevel} [level=DEFAULT_LOGGER_LEVEL]
-         * @returns {Logger}
-         *
-         * @memberOf Logger
-         */
-        static start(filename: string, level?: LoggerLevel): Logger;
-        /**
-         * Creates an instance of Logger.
-         *
-         * @memberOf Logger
-         */
-        constructor();
-        /**
-         * Start write log to a file
-         *
-         * @param {string} filename
-         * @param {LoggerLevel} [level=DEFAULT_LOGGER_LEVEL]
-         * @returns {void}
-         *
-         * @memberOf Logger
-         */
-        start(filename: string, level?: LoggerLevel): void;
-        /**
-         * Stop write log file
-         *
-         * @returns {void}
-         *
-         * @memberOf Logger
-         */
-        stop(): void;
-        /**
-         * Clean exsisting log file
-         *
-         * @returns {void}
-         *
-         * @memberOf Logger
-         */
-        clear(): void;
-    }
-}
-declare const path: any;
-declare const crypto2: any;
-declare const fs2: any;
-declare const os: any;
-declare const OS_TYPE: any;
-declare const DEFAULT_IGNORE: string[];
-declare const DEFAULT_OUT_FILENAME = "cerber.lock";
-interface IVerifyStatus {
-    difModules: string[];
-    signature: boolean;
-}
-declare namespace trusted.utils {
-    /**
-     * App for sign and verify node packages
-     *
-     * @export
-     * @class Cerber
-     * @extends {BaseObject<native.UTILS.Cerber>}
-     */
-    class Cerber extends BaseObject<native.UTILS.Cerber> {
-        /**
-         * Sign package
-         *
-         * @static
-         * @param {string} modulePath Directory path
-         * @param {pki.Certificate} cert Signer certificate
-         * @param {pki.Key} key Signer private key
-         *
-         * @memberOf Cerber
-         */
-        static sign(modulePath: string, cert: pki.Certificate, key: pki.Key): void;
-        /**
-         * Verify package
-         *
-         * @static
-         * @param {string} modulePath Directory path
-         * @param {pki.CertificateCollection} [cacerts] CA certificates
-         * @param {string[]} [policies]
-         * @returns {IVerifyStatus}
-         *
-         * @memberOf Cerber
-         */
-        static verify(modulePath: string, cacerts?: pki.CertificateCollection, policies?: string[]): IVerifyStatus;
-        /**
-         * Return signer certificate info:
-         * issuername, organization, subjectname, thumbprint
-         *
-         * @static
-         * @param {string} modulePath
-         * @returns {string[]}
-         *
-         * @memberOf Cerber
-         */
-        static getSignersInfo(modulePath: string): string[];
-        /**
-         * Creates an instance of Cerber.
-         *
-         *
-         * @memberOf Cerber
-         */
-        constructor();
-        /**
-         * Sign package
-         *
-         * @param {string} modulePath Directory path
-         * @param {pki.Certificate} cert Signer certificate
-         * @param {pki.Key} key Signer private key
-         *
-         * @memberOf Cerber
-         */
-        sign(modulePath: string, cert: pki.Certificate, key: pki.Key): void;
-        /**
-         * Verify package
-         *
-         * @param {string} modulePath Directory path
-         * @param {pki.CertificateCollection} [cacerts] CA certificates
-         * @param {string[]} [policies]
-         * @returns {IVerifyStatus}
-         *
-         * @memberOf Cerber
-         */
-        verify(modulePath: string, cacerts?: pki.CertificateCollection, policies?: string[]): IVerifyStatus;
-        /**
-         * Return signer certificate info:
-         * issuername, organization, subjectname, thumbprint
-         *
-         * @param {string} modulePath
-         * @returns {string[]}
-         *
-         * @memberOf Cerber
-         */
-        getSignersInfo(modulePath: string): string[];
-        /**
-         * Get filenames and sha1 hashes
-         *
-         * @private
-         * @param {string} dir Directory path
-         * @param {string} [relative] Subdirectory
-         * @returns {string[]} module_name#sha1_hash
-         *
-         * @memberOf Cerber
-         */
-        private rehash;
+        sign(cert: pki.Certificate): void;
     }
 }
 declare namespace trusted.utils {
@@ -1014,12 +623,12 @@ declare namespace trusted.utils {
         static getCPCSPVersionSKZI(): string;
         static getCPCSPSecurityLvl(): string;
         /**
-         * Enumerate available CSP
-         *
-         * @static
-         * @returns {object[]} {type: nuber, name: string}
-         * @memberof Csp
-         */
+                * Enumerate available CSP
+                *
+                * @static
+                * @returns {object[]} {type: nuber, name: string}
+                * @memberof Csp
+                */
         static enumProviders(): object[];
         /**
          * Enumerate conainers
@@ -1041,19 +650,6 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static getCertificateFromContainer(contName: string, provType: number, provName?: string): pki.Certificate;
-        /**
-         * Set cloud certificate to store
-         * Only for CryptoPro CSP 5
-         *
-         * @static
-         * @param {pki.Certificate} cert
-         * @param {string} authURL Authorization server
-         * @param {string} restURL DSS server
-         * @param {number} certificateID Certificate ID on DSS
-         * @returns {void}
-         * @memberof Csp
-         */
-        static installCertificateFromCloud(cert: pki.Certificate, authURL: string, restURL: string, certificateID: number): void;
         static installCertificateFromContainer(contName: string, provType: number, provName?: string): void;
         static installCertificateToContainer(cert: pki.Certificate, contName: string, provType: number, provName?: string): void;
         static deleteContainer(contName: string, provType: number, provName?: string): void;
@@ -1086,20 +682,20 @@ declare namespace trusted.utils {
          * @param {pki.Certificate} cert
          * @param {boolean} exportPrivateKey
          * @param {string} [password]
-         * @returns {pki.Pkcs12}
+         * @returns {pki.PKCS12}
          * @memberof Csp
          */
-        static certToPkcs12(cert: pki.Certificate, exportPrivateKey: boolean, password?: string): pki.Pkcs12;
+        static certToPkcs12(cert: pki.Certificate, exportPrivateKey: boolean, password?: string): pki.PKCS12;
         /**
          * Import PFX to store
          *
          * @static
-         * @param {pki.Pkcs12} p12
+         * @param {pki.PKCS12} p12
          * @param {string} [password]
          * @returns {void}
          * @memberof Csp
          */
-        static importPkcs12(p12: pki.Pkcs12, password?: string): void;
+        static importPkcs12(p12: pki.PKCS12, password?: string): void;
         /**
          * Creates an instance of Csp.
          *
@@ -1109,124 +705,155 @@ declare namespace trusted.utils {
         constructor();
     }
 }
-declare namespace trusted.pki {
+declare namespace trusted.utils {
     /**
-     * Key usage flags
+     * ModuleInfo class
      *
      * @export
-     * @enum {number}
+     * @class ModuleInfo
+     * @extends {BaseObject<native.UTILS.ModuleInfo>}
      */
-    enum KeyUsageFlags {
-        DigitalSignature = 128,
-        NonRepudiation = 64,
-        KeyEncipherment = 32,
-        DataEncipherment = 16,
-        KeyAgreement = 8,
-        KeyCertSign = 4,
-        CrlSign = 2,
-        EncipherOnly = 1,
-        DecipherOnly = 32768
+    class ModuleInfo extends BaseObject<native.UTILS.ModuleInfo> {
+        /**
+         * Return module version
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf ModuleInfo
+         */
+        readonly version: string;
+        /**
+         * Return module name
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf ModuleInfo
+         */
+        readonly name: string;
+        /**
+         * Creates an instance of ModuleInfo.
+         *
+         *
+         * @memberOf ModuleInfo
+         */
+        constructor();
     }
 }
-declare namespace trusted.pki {
+declare namespace trusted.utils {
     /**
-     * Wrap EVP_PKEY
+     * Tools class
      *
      * @export
-     * @class Key
-     * @extends {BaseObject<native.PKI.Key>}
+     * @class Tools
+     * @extends {BaseObject<native.UTILS.Tools>}
      */
-    class Key extends BaseObject<native.PKI.Key> {
+    class Tools extends BaseObject<native.UTILS.Tools> {
+        constructor();
+        stringFromBase64(instr: string, flag: number): string;
+        stringToBase64(instr: string, flag: number): string;
+    }
+}
+declare namespace trusted.utils {
+    /**
+     * Download file
+     *
+     * @param {string} url Url to remote file
+     * @param {string} path Path for save in local system
+     * @param {Function} done callback function
+     */
+    function download(url: string, path: string, done: (err: Error, url?: string, path?: string) => void): void;
+}
+declare namespace trusted.utils {
+    /**
+     * JSON Web Token (JWT)
+     * Uses only with CTGOSTCP
+     *
+     * @export
+     * @class Jwt
+     * @extends {BaseObject<native.JWT.Jwt>}
+     */
+    class Jwt extends BaseObject<native.UTILS.Jwt> {
         /**
-         * Load private key from file
+         * Creates an instance of Jwt.
          *
-         * @static
-         * @param {string} filename File path
-         * @param {DataFormat} format PEM | DER
-         * @param {string} password
-         * @returns {Key}
          *
-         * @memberOf Key
+         * @memberOf Jwt
          */
-        static readPrivateKey(filename: string, format: DataFormat, password: string): Key;
+        constructor();
         /**
-         * Load public key from file
+         * Create Header JWT
+         * Return 0 if license correct
          *
-         * @static
-         * @param {string} filename File path
-         * @param {DataFormat} format PEM | DER
-         * @returns {Key}
-         *
-         * @memberOf Key
-         */
-        static readPublicKey(filename: string, format: DataFormat): Key;
-        /**
-         * Creates an instance of Key.
-         * @param {native.PKI.Key} [param]
-         *
-         * @memberOf Key
-         */
-        constructor(param?: native.PKI.Key);
-        /**
-         * Generate key
-         *
-         * @param {string} algorithm
-         * @param {string[]} [pkeyopts]
-         * @returns {Key}
-         * @memberof Key
-         */
-        generate(algorithm: string, pkeyopts?: string[]): Key;
-        /**
-         * Load private key from file
-         *
-         * @param {string} filename File path
-         * @param {DataFormat} format PEM | DER
-         * @param {string} password
-         * @returns {Key}
-         *
-         * @memberOf Key
-         */
-        readPrivateKey(filename: string, format: DataFormat, password: string): Key;
-        /**
-         * Write private key to file
-         *
-         * @param {string} filename File path
-         * @param {DataFormat} format PEM | DER
-         * @param {string} password Set for encrypt
-         * @returns {*}
-         *
-         * @memberOf Key
-         */
-        writePrivateKey(filename: string, format: DataFormat, password: string): any;
-        /**
-         * Read public key from file
-         *
-         * @param {string} filename File path
-         * @param {DataFormat} format PEM | DER
-         * @returns {Key}
-         *
-         * @memberOf Key
-         */
-        readPublicKey(filename: string, format: DataFormat): Key;
-        /**
-         * Write public key to file
-         *
-         * @param {string} filename File path
-         * @param {DataFormat} format PEM | DER
-         * @returns {*}
-         *
-         * @memberOf Key
-         */
-        writePublicKey(filename: string, format: DataFormat): any;
-        /**
-         * Compare keys
-         *
-         * @param {Key} key Key for compare
          * @returns {number}
          *
-         * @memberOf Key
+         * @memberOf Jwt
          */
-        compare(key: Key): number;
+        createHeader(alg: string): string;
+        /**
+         * Create Payload JWT
+         * Return 0 if license correct
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        createPayload(aud: string, sub: string, core: number, nbf: number, iss: string, exp: number, iat: number, jti: string, desc: string): string;
+        /**
+         * Create JWT Token
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        createJWTToken(header: string, payload: string, privateKey: string): string;
+        /**
+         * Verify JWT Token
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        verifyJWTToken(jwtToken: string, publicKey: string): string;
+    }
+}
+declare namespace trusted.utils {
+    /**
+     * JSON Web Token (DLV)
+     * Uses only with CTGOSTCP
+     *
+     * @export
+     * @class Dlv
+     * @extends {BaseObject<native.DLV.DLV>}
+     */
+    class Dlv extends BaseObject<native.UTILS.Dlv> {
+        /**
+         * Add dlv license to store
+         * License must be correct
+         *
+         * @static
+         * @param {string} license license token in DLV format
+         * @returns {boolean}
+         * @memberof Dlv
+         */
+        constructor();
+        /**
+         * Verify dlv license file
+         * Return 0 if license correct
+         *
+         * @returns {number}
+         *
+         * @memberOf Dlv
+         */
+        licenseValidateFormat(lic: string): boolean;
+        /**
+         * Verify dlv license file
+         * Return 0 if license correct
+         *
+         * @returns {number}
+         *
+         * @memberOf Dlv
+         */
+        checkLicense(lic: string): string;
     }
 }
 declare namespace trusted.pki {
@@ -1269,195 +896,6 @@ declare namespace trusted.pki {
          * @memberOf Oid
          */
         readonly shortName: string;
-    }
-}
-declare namespace trusted.pki {
-    /**
-     * Wrap X509_ALGOR
-     *
-     * @export
-     * @class Algorithm
-     * @extends {BaseObject<native.PKI.Algorithm>}
-     */
-    class Algorithm extends BaseObject<native.PKI.Algorithm> {
-        /**
-         * Creates an instance of Algorithm.
-         * @param {(native.PKI.Algorithm | string)} [param]
-         *
-         * @memberOf Algorithm
-         */
-        constructor(param?: native.PKI.Algorithm | string);
-        /**
-         * Return algorithm name
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf Algorithm
-         */
-        readonly name: string;
-        /**
-         * Return algorithm OID
-         *
-         * @readonly
-         * @type {Oid}
-         * @memberOf Algorithm
-         */
-        readonly typeId: Oid;
-        /**
-         * Return algorithm duplicat
-         *
-         * @returns {Algorithm}
-         *
-         * @memberOf Algorithm
-         */
-        duplicate(): Algorithm;
-        /**
-         * Return true if it digest algorithm
-         *
-         * @returns {boolean}
-         *
-         * @memberOf Algorithm
-         */
-        isDigest(): boolean;
-    }
-}
-declare namespace trusted.pki {
-    /**
-     * Wrap X509_ATTRIBUTE
-     *
-     * @export
-     * @class Attribute
-     * @extends {BaseObject<native.PKI.Attribute>}
-     */
-    class Attribute extends BaseObject<native.PKI.Attribute> {
-        /**
-         * Creates an instance of Attribute.
-         * @param {native.PKI.Attribute} [param]
-         *
-         * @memberOf Attribute
-         */
-        constructor(param?: native.PKI.Attribute);
-        /**
-         * Return ASN1 type of attribute
-         *
-         * @type {number}
-         * @memberOf Attribute
-         */
-        /**
-        * Set ASN1 type
-        *
-        * @param {number} value ASN1 type
-        *
-        * @memberOf Attribute
-        */
-        asnType: number;
-        /**
-         * Return attribute OID
-         *
-         * @type {Oid}
-         * @memberOf Attribute
-         */
-        /**
-        * Set attribute OID
-        *
-        * @param {Oid} oid
-        *
-        * @memberOf Attribute
-        */
-        typeId: Oid;
-        /**
-         * Return attribute duplicat
-         *
-         * @returns {Attribute}
-         *
-         * @memberOf Attribute
-         */
-        duplicate(): Attribute;
-        /**
-         * Return attribute in DER
-         *
-         * @returns {*}
-         *
-         * @memberOf Attribute
-         */
-        export(): any;
-        /**
-         * Return attribute by index
-         *
-         * @param {number} index
-         * @returns {Buffer}
-         *
-         * @memberOf Attribute
-         */
-        values(index: number): Buffer;
-        /**
-         * Return attributes collection
-         *
-         * @returns {AttributeValueCollection}
-         *
-         * @memberOf Attribute
-         */
-        values(): AttributeValueCollection;
-    }
-}
-declare namespace trusted.pki {
-    /**
-     * Collection of Attribute
-     *
-     * @export
-     * @class AttributeValueCollection
-     * @extends {BaseObject<native.PKI.AttributeValueCollection>}
-     * @implements {core.ICollectionWrite}
-     */
-    class AttributeValueCollection extends BaseObject<native.PKI.AttributeValueCollection> implements core.ICollectionWrite {
-        /**
-         * Creates an instance of AttributeValueCollection.
-         *
-         * @param {native.PKI.AttributeValueCollection} handle
-         *
-         * @memberOf AttributeValueCollection
-         */
-        constructor(handle: native.PKI.AttributeValueCollection);
-        /**
-         * Return collection length
-         *
-         * @readonly
-         * @type {number}
-         * @memberOf AttributeValueCollection
-         */
-        readonly length: number;
-        /**
-         * Add new element to collection
-         *
-         * @param {Buffer} val
-         *
-         * @memberOf AttributeValueCollection
-         */
-        push(val: Buffer): void;
-        /**
-         * Remove last element from collection
-         *
-         *
-         * @memberOf AttributeValueCollection
-         */
-        pop(): void;
-        /**
-         * Remove element by index from collection
-         *
-         * @param {number} index
-         *
-         * @memberOf AttributeValueCollection
-         */
-        removeAt(index: number): void;
-        /**
-         * Return element by index from collection
-         *
-         * @param {number} index
-         * @returns {Buffer}
-         *
-         * @memberOf AttributeValueCollection
-         */
-        items(index: number): Buffer;
     }
 }
 declare namespace trusted.pki {
@@ -1601,7 +1039,7 @@ declare namespace trusted.pki {
         static download(urls: string[], pathForSave: string, done: (err: Error, certificate: Certificate) => void): void;
         /**
          * Creates an instance of Certificate.
-         * @param {native.PKI.Certificate} [param]
+         * @param {native.PKI.Certificate | native.PKI.CertificationRequest} [param]
          *
          * @memberOf Certificate
          */
@@ -1613,14 +1051,7 @@ declare namespace trusted.pki {
          * @type {number}
          * @memberOf Certificate
          */
-        /**
-        * Set version certificate
-        *
-        * @param {number} version
-        *
-        * @memberof Certificate
-        */
-        version: number;
+        readonly version: number;
         /**
          * Return serial number of certificate
          *
@@ -1629,11 +1060,11 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         /**
-        * Set serial number
+        * Return serial number of certificate
         *
-        * if serial empty generate random
-        *
-        * @memberof Certificate
+        * @readonly
+        * @type {string}
+        * @memberOf Certificate
         */
         serialNumber: string;
         /**
@@ -1664,17 +1095,10 @@ declare namespace trusted.pki {
          * Return issuer name
          *
          * @readonly
-         * @type {string | native.PKI.INameField[]}
+         * @type {string}
          * @memberOf Certificate
          */
-        /**
-        * Sets the issuer
-        *
-        * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
-        *
-        * @memberof Certificate
-        */
-        issuerName: string | native.PKI.INameField[];
+        readonly issuerName: string;
         /**
          * Return CN from subject name
          *
@@ -1687,17 +1111,10 @@ declare namespace trusted.pki {
          * Return subject name
          *
          * @readonly
-         * @type {string | native.PKI.INameField[]}
+         * @type {string}
          * @memberOf Certificate
          */
-        /**
-        * Sets the subject
-        *
-        * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
-        *
-        * @memberof Certificate
-        */
-        subjectName: string | native.PKI.INameField[];
+        readonly subjectName: string;
         /**
          * Return Not Before date
          *
@@ -1719,7 +1136,7 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         /**
-        * Set not before. Use offset in sec
+        * Set not after. Use offset in sec
         *
         * @memberof Certificate
         */
@@ -1781,21 +1198,6 @@ declare namespace trusted.pki {
          */
         readonly CAIssuersUrls: string[];
         /**
-         * Rerutn extensions
-         *
-         * @readonly
-         * @type {ExtensionCollection}
-         * @memberof Certificate
-         */
-        /**
-        * Set extensions
-        *
-        * @param {ExtensionCollection} exts
-        *
-        * @memberof Certificate
-        */
-        extensions: pki.ExtensionCollection;
-        /**
          * Return true is a certificate is self signed
          *
          * @readonly
@@ -1811,6 +1213,12 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         readonly isCA: boolean;
+        /**
+         * Signs certificate using the given private key
+         *
+         * @memberof Certificate
+         */
+        sign(): void;
         /**
          * Compare certificates
          *
@@ -1846,14 +1254,6 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         duplicate(): Certificate;
-        /**
-         * Signs certificate using the given private key
-         *
-         * @param {Key} key private key to sign
-         * @param {string} [digest] message digest to use (if not set, use default for key)
-         * @memberof Certificate
-         */
-        sign(key: Key, digest?: string): void;
         /**
          * Load certificate from file location
          *
@@ -1961,31 +1361,12 @@ declare namespace trusted.pki {
      */
     class CertificationRequest extends BaseObject<native.PKI.CertificationRequest> {
         /**
-         * Load request from file
-         *
-         * @static
-         * @param {string} filename File location
-         * @param {DataFormat} [format] PEM | DER
-         *
-         * @memberOf CertificationRequest
-         */
-        static load(filename: string, format?: DataFormat): CertificationRequest;
-        /**
          * Creates an instance of CertificationRequest.
          * @param {native.PKI.CertificationRequest} [param]
          *
          * @memberOf CertificationRequest
          */
-        constructor(param?: native.PKI.CertificationRequest);
-        /**
-         * Load request from file
-         *
-         * @param {string} filename File location
-         * @param {DataFormat} [format] PEM | DER
-         *
-         * @memberOf CertificationRequest
-         */
-        load(filename: string, format?: DataFormat): void;
+        constructor();
         /**
          * Write request to file
          *
@@ -1996,36 +1377,14 @@ declare namespace trusted.pki {
          */
         save(filename: string, dataFormat?: DataFormat): void;
         /**
-         * Rerutn subject name
+         * Sets the subject of this certification request.
          *
-         * @readonly
-         * @type {string}
-         * @memberof CertificationRequest
+         * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
+         *
+         * @memberOf CertificationRequest
          */
-        /**
-        * Sets the subject of this certification request.
-        *
-        * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
-        *
-        * @memberOf CertificationRequest
-        */
         subject: string | native.PKI.INameField[];
         /**
-         * Rerutn subject public key
-         *
-         * @readonly
-         * @type {Key}
-         * @memberof CertificationRequest
-         */
-        /**
-        *  Set public key
-        *
-        *  @param {Key} pubkey Public key
-        *
-        * @memberOf CertificationRequest
-        */
-        publicKey: Key;
-        /**
          * Rerutn version
          *
          * @readonly
@@ -2041,250 +1400,120 @@ declare namespace trusted.pki {
         */
         version: number;
         /**
-         * Rerutn extensions
+         * Set extensions
          *
-         * @readonly
-         * @type {ExtensionCollection}
-         * @memberof CertificationRequest
+         * @param {ExtensionCollection} exts
+         *
+         * @memberOf CertificationRequest
          */
-        /**
-        * Set extensions
-        *
-        * @param {ExtensionCollection} exts
-        *
-        * @memberOf CertificationRequest
-        */
         extensions: pki.ExtensionCollection;
         /**
-         * Signs request using the given private key
-         *
-         * @param {Key} key private key to sign
-         * @param {string} [digest] message digest to use (if not set, use default for key)
-         * @memberof CertificationRequest
-         */
-        sign(key: Key, digest?: string): void;
-        /**
-         * Verify request
-         *
-         * @returns {boolean}
-         *
-         * @memberOf CertificationRequest
-         */
-        verify(): boolean;
-        /**
-         * Return request in PEM format
-         *
-         * @readonly
-         * @type {Buffer}
-         * @memberOf CertificationRequest
-         */
-        readonly PEMString: Buffer;
-        /**
-         * Create X509 certificate from request
-         *
-         * @param {number} days
-         * @param {Key} key
-         * @returns {Certificate}
-         * @memberof CertificationRequest
-         */
-        toCertificate(days: number, key: Key): Certificate;
-    }
-}
-declare namespace trusted.pki {
-    /**
-     * Wrap X509_REQ_INFO
-     *
-     * @export
-     * @class CertificationRequestInfo
-     * @extends {BaseObject<native.PKI.CertificationRequestInfo>}
-     */
-    class CertificationRequestInfo extends BaseObject<native.PKI.CertificationRequestInfo> {
-        /**
-         * Creates an instance of CertificationRequestInfo.
-         * @param {native.PKI.CertificationRequestInfo} [param]
-         *
-         * @memberOf CertificationRequestInfo
-         */
-        constructor(param?: native.PKI.CertificationRequestInfo);
-        /**
-         * Rerutn subject name
+         * Rerutn containerName
          *
          * @readonly
          * @type {string}
-         * @memberof CertificationRequestInfo
+         * @memberof CertificationRequest
          */
         /**
-        * Sets the subject of this certification request.
+        * Set containerName
         *
-        * @param {string} x509name Example "/C=US/O=Test/CN=example.com"
-        *
-        * @memberOf CertificationRequestInfo
+        * @readonly
+        * @type {string}
+        * @memberof CertificationRequest
         */
-        subject: string;
+        containerName: string;
         /**
-         * Rerutn subject public key
+         * Rerutn PubKeyAlgorithm
          *
          * @readonly
-         * @type {Key}
-         * @memberof CertificationRequestInfo
+         * @type {string}
+         * @memberof CertificationRequest
          */
         /**
-        *  Set public key
+        * Set PubKeyAlgorithm
         *
-        *  @param {Key} pubkey Public key
-        *
-        * @memberOf CertificationRequestInfo
+        * @readonly
+        * @type {string}
+        * @memberof CertificationRequest
         */
-        publicKey: Key;
+        pubKeyAlgorithm: string;
         /**
-         * Rerutn version
+         * Rerutn exportableFlag
          *
          * @readonly
-         * @type {number}
-         * @memberof CertificationRequestInfo
+         * @type {boolean}
+         * @memberof CertificationRequest
          */
         /**
-        * Set version certificate
+        * Set exportableFlag
         *
-        * @param {number} version
-        *
-        * @memberOf CertificationRequestInfo
+        * @readonly
+        * @type {boolean}
+        * @memberof CertificationRequest
         */
-        version: number;
+        exportableFlag: boolean;
     }
 }
 declare namespace trusted.pki {
     /**
-     * Revocatiom provaider
+     * Wrap CRL
      *
      * @export
-     * @class Revocation
-     * @extends {BaseObject<native.PKI.Revocation>}
-     */
-    class Revocation extends BaseObject<native.PKI.Revocation> {
-        /**
-         * Creates an instance of Revocation.
-         *
-         *
-         * @memberOf Revocation
-         */
-        constructor();
-        /**
-         *  Search crl for certificate in local store
-         *
-         * @param {Certificate} cert
-         * @param {PkiStore} store Local store
-         * @returns {*}
-         *
-         * @memberOf Revocation
-         */
-        getCrlLocal(cert: Certificate, store: pkistore.PkiStore): any;
-        /**
-         * Return array of distribution points for certificate
-         *
-         * @param {Certificate} cert
-         * @returns {Array<string>}
-         *
-         * @memberOf Revocation
-         */
-        getCrlDistPoints(cert: Certificate): string[];
-        /**
-         * Check validate CRL time
-         *
-         * @param {Crl} crl
-         * @returns {boolean}
-         *
-         * @memberOf Revocation
-         */
-        checkCrlTime(crl: Crl): boolean;
-        /**
-         * Download CRl
-         *
-         * @param {Array<string>} distPoints Distribution points
-         * @param {string} pathForSave File path
-         * @param {Function} done callback
-         *
-         * @memberOf Revocation
-         */
-        downloadCRL(distPoints: string[], pathForSave: string, done: (err: Error, crl: Crl) => void): void;
-    }
-}
-declare namespace trusted.pki {
-    /**
-     * Wrap X509_CRL
-     *
-     * @export
-     * @class Crl
+     * @class CRL
      * @extends {BaseObject<native.PKI.CRL>}
      */
-    class Crl extends BaseObject<native.PKI.CRL> {
+    class CRL extends BaseObject<native.PKI.CRL> {
         /**
-         * Load CRL from File location
+         * Load CRL from file
          *
          * @static
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
-         * @returns {Crl}
+         * @param {DataFormat} [format] PEM | DER
+         * @returns {CRL}
          *
-         * @memberOf Crl
+         * @memberOf CRL
          */
-        static load(filename: string, format?: DataFormat): Crl;
+        static load(filename: string, format?: DataFormat): CRL;
         /**
          * Load CRL from memory
          *
          * @static
          * @param {Buffer} buffer
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT]
-         * @returns {Crl}
+         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @returns {CRL}
          *
-         * @memberOf Crl
+         * @memberOf CRL
          */
-        static import(buffer: Buffer, format?: DataFormat): Crl;
+        static import(buffer: Buffer, format?: DataFormat): CRL;
         /**
-         * Creates an instance of Crl.
+         * Creates an instance of CRL.
          * @param {native.PKI.CRL} [param]
          *
-         * @memberOf Crl
+         * @memberOf Certificate
          */
         constructor(param?: native.PKI.CRL);
-        /**
-         * Return CRL in DER format
-         *
-         * @readonly
-         * @type {Buffer}
-         * @memberOf Crl
-         */
-        readonly encoded: Buffer;
-        /**
-         * Return signature
-         *
-         * @readonly
-         * @type {Buffer}
-         * @memberOf Crl
-         */
-        readonly signature: Buffer;
         /**
          * Return version of CRL
          *
          * @readonly
          * @type {number}
-         * @memberOf Crl
+         * @memberOf Certificate
          */
         readonly version: number;
         /**
-         * Return issuer name
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf Crl
-         */
+        * Return issuer name
+        *
+        * @readonly
+        * @type {string}
+        * @memberOf CRL
+        */
         readonly issuerName: string;
         /**
          * Return CN from issuer name
          *
          * @readonly
          * @type {string}
-         * @memberOf Crl
+         * @memberOf CRL
          */
         readonly issuerFriendlyName: string;
         /**
@@ -2292,7 +1521,7 @@ declare namespace trusted.pki {
          *
          * @readonly
          * @type {Date}
-         * @memberOf Crl
+         * @memberOf CRL
          */
         readonly lastUpdate: Date;
         /**
@@ -2300,7 +1529,7 @@ declare namespace trusted.pki {
          *
          * @readonly
          * @type {Date}
-         * @memberOf Crl
+         * @memberOf CRL
          */
         readonly nextUpdate: Date;
         /**
@@ -2308,7 +1537,7 @@ declare namespace trusted.pki {
          *
          * @readonly
          * @type {string}
-         * @memberOf Crl
+         * @memberOf CRL
          */
         readonly thumbprint: string;
         /**
@@ -2316,7 +1545,7 @@ declare namespace trusted.pki {
          *
          * @readonly
          * @type {string}
-         * @memberOf Crl
+         * @memberOf CRL
          */
         readonly signatureAlgorithm: string;
         /**
@@ -2324,7 +1553,7 @@ declare namespace trusted.pki {
          *
          * @readonly
          * @type {string}
-         * @memberOf Crl
+         * @memberOf CRL
          */
         readonly signatureDigestAlgorithm: string;
         /**
@@ -2332,32 +1561,24 @@ declare namespace trusted.pki {
          *
          * @readonly
          * @type {string}
-         * @memberOf Crl
+         * @memberOf CRL
          */
         readonly authorityKeyid: string;
         /**
          * Return CRL number
          *
          * @readonly
-         * @type {string}
-         * @memberOf Crl
+         * @type {number}
+         * @memberOf CRL
          */
-        readonly crlNumber: string;
-        /**
-         * Return revoced collection
-         *
-         * @readonly
-         * @type {native.PKI.RevokedCollection}
-         * @memberOf Crl
-         */
-        readonly revoked: RevokedCollection;
+        readonly crlNumber: number;
         /**
          * Load CRL from file
          *
          * @param {string} filename File location
          * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
          *
-         * @memberOf Crl
+         * @memberOf CRL
          */
         load(filename: string, format?: DataFormat): void;
         /**
@@ -2366,7 +1587,7 @@ declare namespace trusted.pki {
          * @param {Buffer} buffer
          * @param {DataFormat} [format=DEFAULT_DATA_FORMAT]
          *
-         * @memberOf Crl
+         * @memberOf CRL
          */
         import(buffer: Buffer, format?: DataFormat): void;
         /**
@@ -2375,7 +1596,7 @@ declare namespace trusted.pki {
          * @param {DataFormat} [format=DEFAULT_DATA_FORMAT]
          * @returns {Buffer}
          *
-         * @memberOf Crl
+         * @memberOf CRL
          */
         export(format?: DataFormat): Buffer;
         /**
@@ -2384,158 +1605,49 @@ declare namespace trusted.pki {
          * @param {string} filename File location
          * @param {DataFormat} [dataFormat=DEFAULT_DATA_FORMAT]
          *
-         * @memberOf Crl
+         * @memberOf CRL
          */
         save(filename: string, dataFormat?: DataFormat): void;
         /**
          * Compare CRLs
          *
-         * @param {Crl} crl CRL for compare
+         * @param {CRL} crl CRL for compare
          * @returns {number}
          *
-         * @memberOf Crl
+         * @memberOf CRL
          */
-        compare(crl: Crl): number;
+        compare(crl: CRL): number;
         /**
          * Compare CRLs
          *
-         * @param {Crl} crl CRL for compare
+         * @param {CRL} crl CRL for compare
          * @returns {boolean}
          *
-         * @memberOf Crl
+         * @memberOf CRL
          */
-        equals(crl: Crl): boolean;
+        equals(crl: CRL): boolean;
         /**
          * Return CRL hash
          *
          * @param {string} [algorithm="sha1"]
          * @returns {String}
          *
-         * @memberOf Crl
+         * @memberOf CRL
          */
         hash(algorithm?: string): string;
         /**
          * Return CRL duplicat
          *
-         * @returns {Crl}
+         * @returns {CRL}
          *
-         * @memberOf Crl
+         * @memberOf CRL
          */
-        duplicate(): Crl;
+        duplicate(): CRL;
     }
 }
 declare namespace trusted.pki {
     /**
-     * Wrap X509_REVOKED
-     *
-     * @export
-     * @class Revoked
-     * @extends {BaseObject<native.PKI.Revoked>}
-     */
-    class Revoked extends BaseObject<native.PKI.Revoked> {
-        /**
-         * Creates an instance of Revoked.
-         * @param {native.PKI.Revoked} [param]
-         *
-         * @memberOf Revoked
-         */
-        constructor(param?: native.PKI.Revoked);
-        /**
-         * Return serial nuber
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf Revoked
-         */
-        readonly serialNumber: string;
-        /**
-         * Return revocation date
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf Revoked
-         */
-        readonly revocationDate: string;
-        /**
-         * Return reason
-         *
-         * @readonly
-         * @type {number}
-         * @memberOf Revoked
-         */
-        readonly reason: string;
-        /**
-         * Return Revoked duplicat
-         *
-         * @returns {Revoked}
-         *
-         * @memberOf Revoked
-         */
-        duplicate(): Revoked;
-    }
-}
-declare namespace trusted.pki {
-    /**
-     * Collection of Revoked
-     *
-     * @export
-     * @class RevokedCollection
-     * @extends {BaseObject<native.PKI.RevokedCollection>}
-     * @implements {core.ICollectionWrite}
-     */
-    class RevokedCollection extends BaseObject<native.PKI.RevokedCollection> implements core.ICollectionWrite {
-        /**
-         * Creates an instance of RevokedCollection.
-         * @param {native.PKI.RevokedCollection} [param]
-         *
-         * @memberOf RevokedCollection
-         */
-        constructor(param?: native.PKI.RevokedCollection);
-        /**
-         * Return element by index from collection
-         *
-         * @param {number} index
-         * @returns {Revoked}
-         *
-         * @memberOf RevokedCollection
-         */
-        items(index: number): Revoked;
-        /**
-         * Return collection length
-         *
-         * @readonly
-         * @type {number}
-         * @memberOf RevokedCollection
-         */
-        readonly length: number;
-        /**
-         * Add new element to collection
-         *
-         * @param {Revoked} revoked
-         *
-         * @memberOf RevokedCollection
-         */
-        push(rv: Revoked): void;
-        /**
-         * Remove last element from collection
-         *
-         *
-         * @memberOf RevokedCollection
-         */
-        pop(): void;
-        /**
-         * Remove element by index from collection
-         *
-         * @param {number} index
-         *
-         * @memberOf RevokedCollection
-         */
-        removeAt(index: number): void;
-    }
-}
-declare namespace trusted.pki {
-    /**
-     * Collection of Crl
+     * Collection of CRL
      *
      * @export
      * @class CrlCollection
@@ -2554,11 +1666,11 @@ declare namespace trusted.pki {
          * Return element by index from collection
          *
          * @param {number} index
-         * @returns {Crl}
+         * @returns {CRL}
          *
          * @memberOf CrlCollection
          */
-        items(index: number): Crl;
+        items(index: number): CRL;
         /**
          * Return collection length
          *
@@ -2570,11 +1682,11 @@ declare namespace trusted.pki {
         /**
          * Add new element to collection
          *
-         * @param {Crl} crl
+         * @param {CRL} cert
          *
          * @memberOf CrlCollection
          */
-        push(crl: Crl): void;
+        push(crl: CRL): void;
         /**
          * Remove last element from collection
          *
@@ -2590,44 +1702,6 @@ declare namespace trusted.pki {
          * @memberOf CrlCollection
          */
         removeAt(index: number): void;
-    }
-}
-declare namespace trusted.pki {
-    /**
-     * Chain of certificates
-     *
-     * @export
-     * @class Chain
-     * @extends {BaseObject<native.PKI.Chain>}
-     */
-    class Chain extends BaseObject<native.PKI.Chain> {
-        /**
-         * Creates an instance of Chain.
-         *
-         *
-         * @memberOf Chain
-         */
-        constructor();
-        /**
-         * Build chain
-         *
-         * @param {Certificate} cert Last certificate in chain
-         * @param {CertificateCollection} certs All certificates where search issuer certificates
-         * @returns {CertificateCollection}
-         *
-         * @memberOf Chain
-         */
-        buildChain(cert: Certificate, certs: CertificateCollection): CertificateCollection;
-        /**
-         * Verify chain (crl collection if need check revocation)
-         *
-         * @param {CertificateCollection} chain Certificates collection
-         * @param {CrlCollection} crls Crl collection
-         * @returns {boolean}
-         *
-         * @memberOf Chain
-         */
-        verifyChain(chain: CertificateCollection, crls: CrlCollection): boolean;
     }
 }
 declare namespace trusted.pki {
@@ -2647,13 +1721,13 @@ declare namespace trusted.pki {
          */
         constructor();
         /**
-         * Set crypto method
+         * Set provider algorithm(GOST)
          *
-         * @param method SYMMETRIC or ASSIMETRIC
+         * @param method gost2001, gost2012_256 or gost2012_512
          *
          * @memberOf Cipher
          */
-        cryptoMethod: CryptoMethod;
+        ProvAlgorithm: string;
         /**
          * Encrypt data
          *
@@ -2682,663 +1756,50 @@ declare namespace trusted.pki {
          * @memberOf Cipher
          */
         recipientsCerts: CertificateCollection;
-        /**
-         * Set private key
-         *
-         * @param {Key} key
-         *
-         * @memberOf Cipher
-         */
-        privKey: Key;
-        /**
-         * Set recipient certificate
-         *
-         * @param {Certificate} rcert
-         *
-         * @memberOf Cipher
-         */
-        recipientCert: Certificate;
-        password: string;
-        digest: string;
-        readonly riv: Buffer;
-        iv: string;
-        readonly rkey: Buffer;
-        key: string;
-        readonly rsalt: Buffer;
-        salt: string;
-        readonly algorithm: string;
-        readonly mode: string;
-        readonly dgst: string;
-        /**
-         * Return recipient infos
-         *
-         * @param {string} filenameEnc File path
-         * @param {DataFormat} format DataFormat.PEM | DataFormat.DER
-         * @returns {CmsRecipientInfoCollection}
-         *
-         * @memberOf Cipher
-         */
-        getRecipientInfos(filenameEnc: string, format: DataFormat): cms.CmsRecipientInfoCollection;
     }
 }
 declare namespace trusted.pki {
     /**
-     * PKCS#12 (PFX)
+     * Wrap PKCS12
      *
      * @export
-     * @class Pkcs12
-     * @extends {BaseObject<native.PKI.Pkcs12>}
+     * @class PKCS12
+     * @extends {BaseObject<native.PKI.PKCS12>}
      */
-    class Pkcs12 extends BaseObject<native.PKI.Pkcs12> {
+    class PKCS12 extends BaseObject<native.PKI.PKCS12> {
         /**
-         * Load pkcs12 from file
+         * Load PKCS12 from file
          *
          * @static
          * @param {string} filename File location
-         * @returns {Pkcs12}
+         * @returns {PKCS12}
          *
-         * @memberOf Pkcs12
+         * @memberOf PKCS12
          */
-        static load(filename: string): Pkcs12;
+        static load(filename: string): PKCS12;
         /**
-         * Creates an instance of Pkcs12.
-         * @param {native.PKI.Pkcs12} [param]
+         * Creates an instance of PKCS12.
+         * @param {native.PKI.PKCS12} [param]
          *
-         * @memberOf Pkcs12
+         * @memberOf Certificate
          */
-        constructor(param?: native.PKI.Pkcs12);
+        constructor(param?: native.PKI.PKCS12);
         /**
-         * Return certificate
-         *
-         * @param {string} password
-         * @returns {Certificate}
-         *
-         * @memberOf Pkcs12
-         */
-        certificate(password: string): Certificate;
-        /**
-         * Return private key
-         *
-         * @param {string} password
-         * @returns {Key}
-         *
-         * @memberOf Pkcs12
-         */
-        key(password: string): Key;
-        /**
-         * Return CA certificates (not client certificates)
-         *
-         * @param {string} password
-         * @returns {CertificateCollection}
-         *
-         * @memberOf Pkcs12
-         */
-        ca(password: string): CertificateCollection;
-        /**
-         * Load pkcs12 from file
+         * Load PKCS12 from file
          *
          * @param {string} filename File location
          *
-         * @memberOf Pkcs12
+         * @memberOf PKCS12
          */
         load(filename: string): void;
         /**
-         * Write pkcs12 to file
+         * Write PKCS12 to file
          *
          * @param {string} filename File location
          *
-         * @memberOf Pkcs12
+         * @memberOf PKCS12
          */
         save(filename: string): void;
-        /**
-         * Create PKCS12 structure
-         *
-         * @param {Certificate} cert
-         * @param {Key} key Private key
-         * @param {CertificateCollection} ca
-         * @param {string} password
-         * @param {string} name Friendly name
-         * @returns {Pkcs12}
-         *
-         * @memberOf Pkcs12
-         */
-        create(cert: Certificate, key: Key, ca: CertificateCollection, password: string, name: string): Pkcs12;
-    }
-}
-declare namespace trusted.cms {
-    /**
-     * Wrap CMS_RecipientInfo
-     *
-     * @export
-     * @class CmsRecipientInfo
-     * @extends {BaseObject<native.CMS.CmsRecipientInfo>}
-     */
-    class CmsRecipientInfo extends BaseObject<native.CMS.CmsRecipientInfo> {
-        /**
-         * Creates an instance of CmsRecipientInfo.
-         * @param {native.CMS.CmsRecipientInfo} [param]
-         *
-         * @memberOf CmsRecipientInfo
-         */
-        constructor(param?: native.CMS.CmsRecipientInfo);
-        /**
-         *  Return full issuer name
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf CmsRecipientInfo
-         */
-        readonly issuerName: string;
-        /**
-         * Return serial number
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf CmsRecipientInfo
-         */
-        readonly serialNumber: string;
-        /**
-         * Compares the certificate cert against the CMS_RecipientInfo structure
-         *
-         * @param {Certificate} cert
-         * @returns {number}
-         *
-         * @memberOf CmsRecipientInfo
-         */
-        ktriCertCmp(cert: pki.Certificate): number;
-    }
-}
-declare namespace trusted.cms {
-    /**
-     * Collection of CmsRecipientInfo
-     *
-     * @export
-     * @class CmsRecipientInfoCollection
-     * @extends {BaseObject<native.CMS.CmsRecipientInfoCollection>}
-     * @implements {core.ICollectionWrite}
-     */
-    class CmsRecipientInfoCollection extends BaseObject<native.CMS.CmsRecipientInfoCollection> implements core.ICollectionWrite {
-        /**
-         * Creates an instance of CmsRecipientInfoCollection.
-         * @param {native.CMS.CmsRecipientInfoCollection} [param]
-         *
-         * @memberOf CmsRecipientInfoCollection
-         */
-        constructor(param?: native.CMS.CmsRecipientInfoCollection);
-        /**
-         * Return element by index from collection
-         *
-         * @param {number} index
-         * @returns {CmsRecipientInfo}
-         *
-         * @memberOf CmsRecipientInfoCollection
-         */
-        items(index: number): CmsRecipientInfo;
-        /**
-         * Return collection length
-         *
-         * @readonly
-         * @type {number}
-         * @memberOf CmsRecipientInfoCollection
-         */
-        readonly length: number;
-        /**
-         * Add new element to collection
-         *
-         * @param {CmsRecipientInfo} ri
-         *
-         * @memberOf CmsRecipientInfoCollection
-         */
-        push(ri: CmsRecipientInfo): void;
-        /**
-         * Remove last element from collection
-         *
-         *
-         * @memberOf CmsRecipientInfoCollection
-         */
-        pop(): void;
-        /**
-         * Remove element by index from collection
-         *
-         * @param {number} index
-         *
-         * @memberOf CmsRecipientInfoCollection
-         */
-        removeAt(index: number): void;
-    }
-}
-declare namespace trusted.cms {
-    /**
-     * Wrap signer identifier information (keyidentifier, issuer name and serial number)
-     *
-     * @export
-     * @class SignerId
-     * @extends {BaseObject<native.CMS.SignerId>}
-     */
-    class SignerId extends BaseObject<native.CMS.SignerId> {
-        /**
-         * Creates an instance of SignerId.
-         * @param {native.CMS.SignerId} [param]
-         *
-         * @memberOf SignerId
-         */
-        constructor(param?: native.CMS.SignerId);
-        /**
-         * Return full issuer name
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf SignerId
-         */
-        readonly issuerName: string;
-        /**
-         * Return serial number
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf SignerId
-         */
-        readonly serialNumber: string;
-        /**
-         * Return keyidentifier
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf SignerId
-         */
-        readonly keyId: string;
-    }
-}
-declare namespace trusted.cms {
-    /**
-     * Wrap CMS_SignerInfo
-     *
-     * @export
-     * @class Signer
-     * @extends {BaseObject<native.CMS.Signer>}
-     */
-    class Signer extends BaseObject<native.CMS.Signer> {
-        /**
-         * Creates an instance of Signer.
-         *
-         * @param {native.CMS.Signer} handle
-         *
-         * @memberOf Signer
-         */
-        constructor(handle: native.CMS.Signer);
-        /**
-         * Return signer certificate
-         *
-         * @type {Certificate}
-         * @memberOf Signer
-         */
-        /**
-        * Set signer certificate
-        * Error if cert no signer
-        *
-        * @param cert Certificate
-        *
-        * @memberOf Signer
-        */
-        certificate: pki.Certificate;
-        /**
-         * Return digest algorithm
-         *
-         * @readonly
-         * @type {Algorithm}
-         * @memberOf Signer
-         */
-        readonly digestAlgorithm: Algorithm;
-        /**
-         * Return signer identifier information
-         *
-         * @readonly
-         * @type {SignerId}
-         * @memberOf Signer
-         */
-        readonly signerId: SignerId;
-        /**
-         * Return signing time from signed attributes
-         *
-         * @readonly
-         * @type {Date}
-         * @memberof Signer
-         */
-        readonly signingTime: Date;
-        /**
-         * Verify signer content
-         *
-         * @param {ISignedDataContent} v
-         * @returns {boolean}
-         *
-         * @memberOf Signer
-         */
-        verifyContent(v: ISignedDataContent): boolean;
-        /**
-         * Verify sign attributes
-         *
-         * @returns {boolean}
-         *
-         * @memberOf Signer
-         */
-        verify(): boolean;
-        /**
-         * Return signed attributes collection
-         *
-         * @returns {SignerAttributeCollection}
-         *
-         * @memberOf Signer
-         */
-        signedAttributes(): SignerAttributeCollection;
-        /**
-         * Return attribute by index
-         *
-         * @param {number} index
-         * @returns {Attribute}
-         *
-         * @memberOf Signer
-         */
-        signedAttributes(index: number): pki.Attribute;
-        /**
-         * Return unsigned attributes collection
-         *
-         * @returns {SignerAttributeCollection}
-         *
-         * @memberOf Signer
-         */
-        unsignedAttributes(): SignerAttributeCollection;
-        /**
-         * Return unsigned attribute by index
-         *
-         * @param {number} index
-         * @returns {Attribute}
-         *
-         * @memberOf Signer
-         */
-        unsignedAttributes(index: number): pki.Attribute;
-    }
-}
-declare namespace trusted.cms {
-    /**
-     * Collection of SignerAttribute
-     *
-     * @export
-     * @class SignerAttributeCollection
-     * @extends {BaseObject<native.CMS.SignerAttributeCollection>}
-     * @implements {ICollection}
-     */
-    class SignerAttributeCollection extends BaseObject<native.CMS.SignerAttributeCollection> implements core.ICollection {
-        /**
-         * Creates an instance of SignerAttributeCollection.
-         *
-         * @param {native.CMS.SignerAttributeCollection} nativeSigner
-         *
-         * @memberOf SignerAttributeCollection
-         */
-        constructor(nativeSigner: native.CMS.SignerAttributeCollection);
-        /**
-         * Return collection length
-         *
-         * @readonly
-         * @type {number}
-         * @memberOf SignerAttributeCollection
-         */
-        readonly length: number;
-        /**
-         * Add new element to collection
-         *
-         * @param {Attribute} attr
-         *
-         * @memberOf SignerAttributeCollection
-         */
-        push(attr: pki.Attribute): void;
-        /**
-         * Remove element by index from collection
-         *
-         * @param {number} index
-         *
-         * @memberOf SignerAttributeCollection
-         */
-        removeAt(index: number): void;
-        /**
-         *
-         * @param {number} index
-         * @returns {Attribute}
-         *
-         * @memberOf SignerAttributeCollection
-         */
-        /**
-         * Return element by index from collection
-         *
-         * @param {number} index
-         * @returns
-         *
-         * @memberOf SignerAttributeCollection
-         */
-        items(index: number): pki.Attribute;
-    }
-}
-declare namespace trusted.cms {
-    /**
-     * Collection of Signer
-     *
-     * @export
-     * @class SignerCollection
-     * @extends {BaseObject<native.CMS.SignerCollection>}
-     * @implements {Collection.ICollection}
-     */
-    class SignerCollection extends BaseObject<native.CMS.SignerCollection> implements core.ICollection {
-        /**
-         * Creates an instance of SignerCollection.
-         *
-         * @param {native.CMS.SignerCollection} nativeHandle
-         *
-         * @memberOf SignerCollection
-         */
-        constructor(nativeHandle: native.CMS.SignerCollection);
-        /**
-         * Return element by index from collection
-         *
-         * @param {number} index
-         * @returns {Signer}
-         *
-         * @memberOf SignerCollection
-         */
-        items(index: number): Signer;
-        /**
-         * Return collection length
-         *
-         * @readonly
-         * @type {number}
-         * @memberOf SignerCollection
-         */
-        readonly length: number;
-    }
-}
-declare namespace trusted.cms {
-    enum SignedDataContentType {
-        url = 0,
-        buffer = 1
-    }
-    interface ISignedDataContent {
-        type: SignedDataContentType;
-        data: string | Buffer;
-    }
-    /**
-     * Wrap CMS_ContentInfo
-     *
-     * @export
-     * @class SignedData
-     * @extends {BaseObject<native.CMS.SignedData>}
-     */
-    class SignedData extends BaseObject<native.CMS.SignedData> {
-        /**
-         * Load signed data from file location
-         *
-         * @static
-         * @param {string} filename File location
-         * @param {DataFormat} [format] PEM | DER
-         * @returns {SignedData}
-         *
-         * @memberOf SignedData
-         */
-        static load(filename: string, format?: DataFormat): SignedData;
-        /**
-         * Load signed data from memory
-         *
-         * @static
-         * @param {Buffer} buffer
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT]
-         * @returns {SignedData}
-         *
-         * @memberOf SignedData
-         */
-        static import(buffer: Buffer, format?: DataFormat): SignedData;
-        private prContent;
-        /**
-         * Creates an instance of SignedData.
-         *
-         *
-         * @memberOf SignedData
-         */
-        constructor();
-        /**
-         * Return content of signed data
-         *
-         * @type {ISignedDataContent}
-         * @memberOf SignedData
-         */
-        /**
-        * Set content v to signed data
-        *
-        *
-        * @memberOf SignedData
-        */
-        content: ISignedDataContent;
-        /**
-         * Return sign policys
-         *
-         * @type {Array<string>}
-         * @memberOf SignedData
-         */
-        /**
-        * Set sign policies
-        *
-        *
-        * @memberOf SignedData
-        */
-        policies: string[];
-        /**
-         *  Free signed content
-         *
-         * @returns {void}
-         * @memberof SignedData
-         */
-        freeContent(): void;
-        /**
-         * Return true if sign detached
-         *
-         * @returns {boolean}
-         *
-         * @memberOf SignedData
-         */
-        isDetached(): boolean;
-        /**
-         * Return certificate by index
-         *
-         * @param {number} index
-         * @returns {Certificate}
-         *
-         * @memberOf SignedData
-         */
-        certificates(index: number): pki.Certificate;
-        /**
-         * Return certificates collection
-         *
-         * @returns {CertificateCollection}
-         *
-         * @memberOf SignedData
-         */
-        certificates(): pki.CertificateCollection;
-        /**
-         * Return signer by index
-         *
-         * @param {number} index
-         * @returns {Signer}
-         *
-         * @memberOf SignedData
-         */
-        signers(index: number): Signer;
-        /**
-         * Return signers collection
-         *
-         * @returns {SignerCollection}
-         *
-         * @memberOf SignedData
-         */
-        signers(): SignerCollection;
-        /**
-         * Load sign from file location
-         *
-         * @param {string} filename File location
-         * @param {DataFormat} [format] PEM | DER
-         *
-         * @memberOf SignedData
-         */
-        load(filename: string, format?: DataFormat): void;
-        /**
-         * Load sign from memory
-         *
-         * @param {Buffer} buffer
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
-         *
-         * @memberOf SignedData
-         */
-        import(buffer: Buffer, format?: DataFormat): void;
-        /**
-         * Save sign to memory
-         *
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
-         * @returns {Buffer}
-         *
-         * @memberOf SignedData
-         */
-        export(format?: DataFormat): Buffer;
-        /**
-         * Write sign to file
-         *
-         * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
-         *
-         * @memberOf SignedData
-         */
-        save(filename: string, format?: DataFormat): void;
-        /**
-         * Create new signer
-         *
-         * @param {Certificate} cert Signer certificate
-         * @param {Key} key Private key for signer certificate
-         * @returns {Signer}
-         *
-         * @memberOf SignedData
-         */
-        createSigner(cert: pki.Certificate, key: pki.Key): Signer;
-        /**
-         * Verify signature
-         *
-         * @param {CertificateCollection} [certs] Certificate collection
-         * @returns {boolean}
-         *
-         * @memberOf SignedData
-         */
-        verify(certs?: pki.CertificateCollection): boolean;
-        /**
-         * Create sign
-         *
-         *
-         * @memberOf SignedData
-         */
-        sign(): void;
     }
 }
 declare namespace trusted.pkistore {
@@ -3386,88 +1847,6 @@ declare namespace trusted.pkistore {
      */
     class ProviderCryptopro extends BaseObject<native.PKISTORE.ProviderCryptopro> {
         constructor();
-        /**
-         * Return private key by certificate from CryptoPro store
-         *
-         * @param {Certificate} cert Certificate
-         * @returns
-         *
-         * @memberOf ProviderCryptopro
-         */
-        getKey(cert: pki.Certificate): pki.Key;
-        /**
-         * Ensure that the certificate's private key is available
-         *
-         * @param {Certificate} cert
-         * @returns {boolean}
-         *
-         * @memberOf ProviderCryptopro
-         */
-        hasPrivateKey(cert: pki.Certificate): boolean;
-    }
-}
-declare namespace trusted.pkistore {
-    /**
-     * Support Microsoft crypto provider (only windows platform)
-     *
-     * @export
-     * @class ProviderMicrosoft
-     * @extends {BaseObject<native.PKISTORE.ProviderMicrosoft>}
-     */
-    class ProviderMicrosoft extends BaseObject<native.PKISTORE.ProviderMicrosoft> {
-        /**
-         * Creates an instance of ProviderMicrosoft.
-         *
-         *
-         * @memberOf ProviderMicrosoft
-         */
-        constructor();
-        /**
-         * Return private key by certificate
-         *
-         * @param {Certificate} cert
-         * @returns
-         *
-         * @memberOf ProviderMicrosoft
-         */
-        getKey(cert: pki.Certificate): pki.Key;
-        /**
-         * Ensure that the certificate's private key is available
-         *
-         * @param {Certificate} cert
-         * @returns {boolean}
-         *
-         * @memberOf ProviderMicrosoft
-         */
-        hasPrivateKey(cert: pki.Certificate): boolean;
-    }
-}
-declare namespace trusted.pkistore {
-    /**
-     * Native crypto provider (work in local folders)
-     *
-     * @export
-     * @class Provider_System
-     * @extends {BaseObject<native.PKISTORE.Provider_System>}
-     */
-    class Provider_System extends BaseObject<native.PKISTORE.Provider_System> {
-        /**
-         * Creates an instance of Provider_System.
-         *
-         * @param {string} folder Path
-         *
-         * @memberOf Provider_System
-         */
-        constructor(folder: string);
-        /**
-         * Return PkiItem for pki object
-         *
-         * @param {string} path
-         * @returns {native.PKISTORE.IPkiItem}
-         *
-         * @memberOf Provider_System
-         */
-        objectToPkiItem(path: string): native.PKISTORE.IPkiItem;
     }
 }
 declare namespace trusted.pkistore {
@@ -3557,73 +1936,6 @@ declare namespace trusted.pkistore {
          */
         addProvider(provider: native.PKISTORE.Provider): void;
         /**
-         * Import certificste to local store
-         *
-         * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
-         * @param {string} category MY, OTHERS, TRUST, CRL
-         * @param {Certificate} cert Certificate
-         * @param {string} [contName] optional set container name
-         * @param {number} [provType]
-         * @returns {string}
-         *
-         * @memberOf PkiStore
-         */
-        addCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate, contName?: string, provType?: number): string;
-        /**
-         * Import CRL to local store
-         *
-         * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
-         * @param {string} category MY, OTHERS, TRUST, CRL
-         * @param {Crl} crl CRL
-         * @returns {string}
-         *
-         * @memberOf PkiStore
-         */
-        addCrl(provider: native.PKISTORE.Provider, category: string, crl: pki.Crl): string;
-        /**
-         * Import key to local store
-         *
-         * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
-         * @param {Key} key
-         * @param {string} password
-         * @returns {string}
-         *
-         * @memberOf PkiStore
-         */
-        addKey(provider: native.PKISTORE.Provider, key: pki.Key, password: string): string;
-        /**
-         * Import certificate request to local store
-         *
-         * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
-         * @param {string} category REQUEST
-         * @param {CertificationRequest} csr
-         * @returns {string}
-         *
-         * @memberOf PkiStore
-         */
-        addCsr(provider: native.PKISTORE.Provider, category: string, csr: pki.CertificationRequest): string;
-        /**
-         * Delete certificste from store
-         *
-         * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
-         * @param {string} category MY, OTHERS, TRUST, CRL
-         * @param {Certificate} cert Certificate
-         * @returns
-         *
-         * @memberOf PkiStore
-         */
-        deleteCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate): void;
-        /**
-         * Delete CRL from store
-         *
-         * @param {native.PKISTORE.Provider} provider
-         * @param {string} category
-         * @param {pki.Crl} crl
-         * @returns {void}
-         * @memberof PkiStore
-         */
-        deleteCrl(provider: native.PKISTORE.Provider, category: string, crl: pki.Crl): void;
-        /**
          * Find items in local store
          *
          * @param {native.PKISTORE.IFilter} [ifilter]
@@ -3651,6 +1963,122 @@ declare namespace trusted.pkistore {
          */
         getItem(item: native.PKISTORE.IPkiItem): any;
         readonly certs: pki.CertificateCollection;
+        /**
+        * Import certificste to local store
+        *
+        * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
+        * @param {string} category MY, OTHERS, TRUST, CRL
+        * @param {Certificate} cert Certificate
+        * @param {string} [contName] optional set container name
+        * @param {number} [provType]
+        * @returns {string}
+        *
+        * @memberOf PkiStore
+        */
+        addCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate, contName?: string, provType?: number): string;
+        /**
+        * Import CRL to local store
+        *
+        * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
+        * @param {string} category MY, OTHERS, TRUST, CRL
+        * @param {CRL} crl CRL
+        * @returns {string}
+        *
+        * @memberOf PkiStore
+        */
+        addCrl(provider: native.PKISTORE.Provider, category: string, crl: pki.CRL): string;
+        /**
+        * Delete certificste from store
+        *
+        * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
+        * @param {string} category MY, OTHERS, TRUST, CRL
+        * @param {Certificate} cert Certificate
+        * @returns
+        *
+        * @memberOf PkiStore
+        */
+        deleteCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate): void;
+        /**
+        * Delete CRL from store
+        *
+        * @param {native.PKISTORE.Provider} provider
+        * @param {string} category
+        * @param {pki.Crl} crl
+        * @returns {void}
+        * @memberof PkiStore
+        */
+        deleteCrl(provider: native.PKISTORE.Provider, category: string, crl: pki.CRL): void;
+    }
+}
+declare namespace trusted {
+    /**
+     *
+     * @export
+     * @enum {number}
+     */
+    enum LoggerLevel {
+        NULL = 0,
+        ERROR = 1,
+        WARNING = 2,
+        INFO = 4,
+        DEBUG = 8,
+        TRACE = 16,
+        CryptoPro = 32,
+        ALL = 63
+    }
+}
+declare namespace trusted.common {
+    /**
+     * Wrap logger class
+     *
+     * @export
+     * @class Logger
+     * @extends {BaseObject<native.COMMON.Logger>}
+     */
+    class Logger extends BaseObject<native.COMMON.Logger> {
+        /**
+         * Start write log to a file
+         *
+         * @static
+         * @param {string} filename
+         * @param {LoggerLevel} [level=DEFAULT_LOGGER_LEVEL]
+         * @returns {Logger}
+         *
+         * @memberOf Logger
+         */
+        static start(filename: string, level?: LoggerLevel): Logger;
+        /**
+         * Creates an instance of Logger.
+         *
+         * @memberOf Logger
+         */
+        constructor();
+        /**
+         * Start write log to a file
+         *
+         * @param {string} filename
+         * @param {LoggerLevel} [level=DEFAULT_LOGGER_LEVEL]
+         * @returns {void}
+         *
+         * @memberOf Logger
+         */
+        start(filename: string, level?: LoggerLevel): void;
+        /**
+         * Stop write log file
+         *
+         * @returns {void}
+         *
+         * @memberOf Logger
+         */
+        stop(): void;
+        /**
+         * Clean exsisting log file
+         *
+         * @returns {void}
+         *
+         * @memberOf Logger
+         */
+        clear(): void;
     }
 }
 declare module "trusted-crypto" {
