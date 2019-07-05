@@ -2,7 +2,7 @@ import * as os from "os";
 import * as path from "path";
 import {
   ADDRESS_BOOK, CA, MY,
-  PROVIDER_CRYPTOPRO, PROVIDER_MICROSOFT, PROVIDER_SYSTEM,
+  PROVIDER_CRYPTOPRO, PROVIDER_SYSTEM,
   REQUEST, ROOT,
 } from "../constants";
 import { DEFAULT_CERTSTORE_PATH, TMP_DIR, USER_NAME } from "../constants";
@@ -30,7 +30,7 @@ export class Store {
     this._items = [];
 
     this._items = this._items.concat(this._store.find({
-      provider: ["CRYPTOPRO", "MICROSOFT"],
+      provider: ["CRYPTOPRO"],
       type: ["CERTIFICATE", "CRL"],
     }));
   }

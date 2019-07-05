@@ -9,7 +9,7 @@ import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
 import {
   ADDRESS_BOOK, CA, DEFAULT_CSR_PATH, PROVIDER_CRYPTOPRO,
-  PROVIDER_MICROSOFT, REQUEST, ROOT, USER_NAME,
+  REQUEST, ROOT, USER_NAME,
 } from "../../constants";
 import { filteredCertificatesSelector } from "../../selectors";
 import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
@@ -226,11 +226,7 @@ class CertWindow extends React.Component<any, any> {
     const bCA = certificate.isCA;
     const selfSigned = certificate.isSelfSigned;
 
-    if (OS_TYPE === "Windows_NT") {
-      providerType = PROVIDER_MICROSOFT;
-    } else {
-      providerType = PROVIDER_CRYPTOPRO;
-    }
+    providerType = PROVIDER_CRYPTOPRO;
 
     try {
       container = trusted.utils.Csp.getContainerNameByCertificate(certificate);
@@ -319,7 +315,7 @@ class CertWindow extends React.Component<any, any> {
     if (OS_TYPE === "Windows_NT") {
       const storeName = isSelfSigned ? ROOT : CA;
 
-      window.PKISTORE.importCertificate(importingCertificate, PROVIDER_MICROSOFT, (err: Error) => {
+      window.PKISTORE.importCertificate(importingCertificate, PROVIDER_CRYPTOPRO, (err: Error) => {
         if (err) {
 
           logger.log({
@@ -429,7 +425,7 @@ class CertWindow extends React.Component<any, any> {
     }
 
     if (OS_TYPE === "Windows_NT") {
-      window.PKISTORE.importCrl(crl, PROVIDER_MICROSOFT, (err: Error) => {
+      window.PKISTORE.importCrl(crl, PROVIDER_CRYPTOPRO, (err: Error) => {
         if (err) {
           logger.log({
             certificate: crl.issuerFriendlyName,

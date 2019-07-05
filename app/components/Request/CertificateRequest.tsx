@@ -8,7 +8,7 @@ import { loadAllCertificates, removeAllCertificates } from "../../AC";
 import {
   ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, DEFAULT_CSR_PATH, HOME_DIR,
   KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
-  PROVIDER_CRYPTOPRO, PROVIDER_MICROSOFT, PROVIDER_SYSTEM, REQUEST, REQUEST_TEMPLATE_ADDITIONAL,
+  PROVIDER_CRYPTOPRO,  PROVIDER_SYSTEM, REQUEST, REQUEST_TEMPLATE_ADDITIONAL,
   REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
 import * as jwt from "../../trusted/jwt";
@@ -459,12 +459,6 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     ext = new trusted.pki.Extension(oid, "critical,CA:false");
     exts.push(ext);
 
-    if (template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_ADDITIONAL || REQUEST_TEMPLATE_KEP_FIZ) {
-      oid = new trusted.pki.Oid("1.2.643.100.111");
-      ext = new trusted.pki.Extension(oid, `ASN1:FORMAT:UTF8,UTF8String:КриптоПро CSP (версия ${this.getCPCSPVersion()})`);
-      exts.push(ext);
-    }
-
     try {
       switch (algorithm) {
         case ALG_GOST2001:
@@ -546,7 +540,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
       try {
         if (OS_TYPE === "Windows_NT") {
-          window.PKISTORE.importCertificate(cert, PROVIDER_MICROSOFT, (err: Error) => {
+          window.PKISTORE.importCertificate(cert, PROVIDER_CRYPTOPRO, (err: Error) => {
             if (err) {
               Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
             }
@@ -650,11 +644,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
     let providerType: string;
 
-    if (OS_TYPE === "Windows_NT") {
-      providerType = PROVIDER_MICROSOFT;
-    } else {
-      providerType = PROVIDER_CRYPTOPRO;
-    }
+    providerType = PROVIDER_CRYPTOPRO;
 
     window.PKISTORE.importCertificationRequest(csr, providerType, contName, (err: Error) => {
       if (err) {

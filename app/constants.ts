@@ -117,7 +117,6 @@ export const CA = "CA";
 export const REQUEST = "Request";
 
 export const PROVIDER_SYSTEM = "PROVIDER_SYSTEM";
-export const PROVIDER_MICROSOFT = "PROVIDER_MICROSOFT";
 export const PROVIDER_CRYPTOPRO = "PROVIDER_CRYPTOPRO";
 
 export const DEFAULT_PATH: string = window.DEFAULT_PATH;
