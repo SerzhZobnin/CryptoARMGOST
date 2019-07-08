@@ -232,6 +232,8 @@ declare namespace native {
             getCertificate(): PKI.Certificate;
             setIndex(ind: number): void;
             getIndex(): number;
+            getIssuerName(): string;
+            getSerialNumber(): string;
             getSignatureAlgorithm(): string;
             getDigestAlgorithm(): string;
             getSigningTime(): string;
@@ -505,6 +507,22 @@ declare namespace trusted.cms {
          * @memberOf Signer
          */
         readonly signatureDigestAlgorithm: string;
+        /**
+         * Return issuer name
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Signer
+         */
+        readonly issuerName: string;
+        /**
+         * Return serial number of certificate
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Signer
+         */
+        readonly serialNumber: string;
     }
 }
 declare namespace trusted.cms {
