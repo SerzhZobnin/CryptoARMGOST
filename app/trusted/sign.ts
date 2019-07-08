@@ -354,9 +354,9 @@ export function verifySignerCert(cert: trusted.pki.Certificate): boolean {
 
 export function getSignPropertys(cms: trusted.cms.SignedData) {
   try {
-    // let signers: trusted.cms.SignerCollection;
+    let signers: trusted.cms.SignerCollection;
     let signerCert: trusted.pki.Certificate;
-    // let signer: trusted.cms.Signer;
+    let signer: trusted.cms.Signer;
     // let signerId: trusted.cms.SignerId;
     let signerCertItems: trusted.pkistore.PkiItem[];
     let certificates: trusted.pki.CertificateCollection;
@@ -371,14 +371,14 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
 
     // chain = new trusted.pki.Chain();
 
-    //signers = cms.signers();
+    signers = cms.signers();
     certificates = cms.certificates();
 
-    /*for (let i = 0; i < signers.length; i++) {
+    for (let i = 0; i < signers.length; i++) {
       signer = signers.items(i);
-      signerId = signer.signerId;
+      // signerId = signer.signerId;
 
-      for (let j = 0; j < certificates.length; j++) {
+      /*for (let j = 0; j < certificates.length; j++) {
         let tmpCert: trusted.pki.Certificate = certificates.items(j);
         if ((tmpCert.issuerName === signerId.issuerName) && (tmpCert.serialNumber === signerId.serialNumber)) {
           signer.certificate = tmpCert;
@@ -398,16 +398,16 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
             break;
           }
         }
-      }
+      }*/
 
       if (!signer.certificate) {
         $(".toast-signercert_not_found").remove();
         Materialize.toast(localize("Sign.signercert_not_found", window.locale), 2000, "toast-signercert_not_found");
       }
-    }*/
+    }
 
     let curRes: any;
-   /* for (let i: number = 0; i < signers.length; i++) {
+    for (let i: number = 0; i < signers.length; i++) {
       certificatesSignStatus = true;
       signer = signers.items(i);
       cert = signer.certificate;
@@ -486,7 +486,7 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
       certSign = [];
 
       try {
-        signerStatus = signer.signedAttributes().length > 0 ? signer.verify() && signer.verifyContent(cms.content) : signer.verifyContent(cms.content);
+        signerStatus = cms.verify(signer);
       } catch (e) {
         $(".toast-verify_signercontent_founds_errors").remove();
         Materialize.toast(localize("Sign.verify_signercontent_founds_errors", window.locale), 2000, "toast-verify_signercontent_founds_errors");
@@ -494,8 +494,8 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
 
       curRes.status_verify = certificatesSignStatus && signerStatus,
 
-        result.push(curRes);
-    }*/
+      result.push(curRes);
+    }
 
     return result;
   } catch (e) {
