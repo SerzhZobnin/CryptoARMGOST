@@ -309,23 +309,22 @@ export function verifySign(cms: trusted.cms.SignedData): boolean {
   let res: boolean = false;
 
   try {
-    // let signers: trusted.cms.SignerCollection;
-    // let signerCert: trusted.pki.Certificate = undefined;
-    // let signer: trusted.cms.Signer;
-    // let signerId: trusted.cms.SignerId;
-    // let signerCertItems: trusted.pkistore.PkiItem[];
-    // let certs: trusted.pki.CertificateCollection = new trusted.pki.CertificateCollection();
+    /*let signers: trusted.cms.SignerCollection;
+    let signerCert: trusted.pki.Certificate;
+    let signer: trusted.cms.Signer;
+    let signerCertItems: trusted.pkistore.PkiItem[];
+    let certs: trusted.pki.CertificateCollection = new trusted.pki.CertificateCollection();
 
-   // signers = cms.signers();
-   /* certs = cms.certificates();
+    signers = cms.signers();
+    certs = cms.certificates();
 
     for (let i = 0; i < signers.length; i++) {
       signer = signers.items(i);
-      signerId = signer.signerId;
       signerCertItems = window.PKISTORE.find({
-        issuerName: signerId.issuerName,
-        serial: signerId.serialNumber,
+        issuerName: signer.issuerName,
+        serial: signer.serialNumber,
       });
+
       for (let j = 0; j < signerCertItems.length; j++) {
         signerCert = window.PKISTORE.getPkiObject(signerCertItems[j]);
         if (signerCert) {
@@ -378,19 +377,22 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
       signer = signers.items(i);
       // signerId = signer.signerId;
 
-      /*for (let j = 0; j < certificates.length; j++) {
-        let tmpCert: trusted.pki.Certificate = certificates.items(j);
-        if ((tmpCert.issuerName === signerId.issuerName) && (tmpCert.serialNumber === signerId.serialNumber)) {
-          signer.certificate = tmpCert;
-          break;
+      if (!signer.certificate) {
+        for (let j = 0; j < certificates.length; j++) {
+          let tmpCert: trusted.pki.Certificate = certificates.items(j);
+          if ((tmpCert.issuerName === signer.issuerName) && (tmpCert.serialNumber === signer.serialNumber)) {
+            signer.certificate = tmpCert;
+            break;
+          }
         }
       }
 
       if (!signer.certificate) {
         signerCertItems = window.PKISTORE.find({
-          issuerName: signerId.issuerName,
-          serial: signerId.serialNumber,
+          issuerName: signer.issuerName,
+          serial: signer.serialNumber,
         });
+
         for (let j = 0; j < signerCertItems.length; j++) {
           signerCert = window.PKISTORE.getPkiObject(signerCertItems[j]);
           if (signerCert) {
@@ -398,7 +400,7 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
             break;
           }
         }
-      }*/
+      }
 
       if (!signer.certificate) {
         $(".toast-signercert_not_found").remove();
@@ -494,7 +496,7 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
 
       curRes.status_verify = certificatesSignStatus && signerStatus,
 
-      result.push(curRes);
+        result.push(curRes);
     }
 
     return result;
