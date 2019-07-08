@@ -16,6 +16,7 @@ interface Window {
     DEFAULT_DOCUMENTS_PATH: string;
     DEFAULT_CSR_PATH: string;
     LICENSE_PATH: string;
+    LICENSE_MNG: any;
     PLATFORM: string;
     SETTINGS_JSON: string;
     TRUSTED_CRYPTO_LOG: string;

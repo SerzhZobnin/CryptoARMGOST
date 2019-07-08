@@ -1,3 +1,5 @@
+import { LicenseManager } from "../constants";
+
 const CTLICENSE_R_NO_ERROR: number = 900;
 const CTLICENSE_R_ERROR_INTERNAL: number = 901;
 const CTLICENSE_R_ERROR_LOAD_LICENSE: number = 902;
@@ -14,9 +16,9 @@ const CTLICENSE_R_ERROR_STORE_IS_LOCKED: number = 912;
 
 export function checkLicense(key?: string): boolean {
   try {
-    // const res = key ? trusted.utils.Jwt.checkLicense(key) : trusted.utils.Jwt.checkLicense();
+    const res = key ? JSON.parse(LicenseManager.checkLicense(key)).verify : LicenseManager.accessOperations();
 
-    return true;
+    return res;
   } catch (err) {
     return false;
   }

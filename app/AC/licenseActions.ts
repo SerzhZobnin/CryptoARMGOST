@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import {
-  DELETE_ALL_TEMPORY_LICENSES, FAIL, LICENSE_PATH,
+  DELETE_ALL_TEMPORY_LICENSES, FAIL, LICENSE_PATH, LicenseManager,
   LOAD_LICENSE, START, SUCCESS, VERIFY_LICENSE,
 } from "../constants";
 import { checkLicense } from "../trusted/jwt";
@@ -15,7 +15,7 @@ export function deleteAllTemporyLicenses() {
     licenses.forEach((license) => {
       if (license && license.license) {
         try {
-          trusted.utils.Jwt.deleteLicense(license.license);
+          LicenseManager.deleteLicense(license.license);
         } catch (e) {
           console.log("error", e);
         }

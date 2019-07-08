@@ -134,6 +134,8 @@ export const APP_LOG_FILE = window.APP_LOG_FILE;
 export const APP_ERRORS_LOG_FILE = window.APP_ERRORS_LOG_FILE;
 export const USER_NAME = window.USER_NAME;
 
+export const LicenseManager: trusted.utils.License_Mng = window.LICENSE_MNG;
+
 export const SIGNWITHDIGEST_GOST3410_12_256 = "GOST R 34.10-2012 with 34.11-2012 256-bit";
 export const SIGNWITHDIGEST_GOST3410_12_512 = "GOST R 34.10-2012 with 34.11-2012 512-bit";
 export const GOSTR3411_94_WITH_GOSTR3410_2001 = "GOST R 34.11-94 with GOST R 34.10-2001";
