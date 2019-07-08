@@ -57,14 +57,12 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
     const style = { height: 39 + "px" };
 
     let notAfter: string;
-    let notBefore: string;
     let productName: string;
     let productAutor: string;
     let productIssue: string;
 
     if (lic_format === "NONE" || lic_format == null) {
       notAfter = "-";
-      notBefore = "-";
       productAutor = "-";
       productName = "-";
       productIssue = "-";
@@ -75,7 +73,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
               <LicenseInfoFiled title={localize("Certificate.issuer_name", locale)} info={productIssue} />
             </div>
             <div className="col s6">
-            <LicenseInfoFiled title={localize("License.lic_notafter", locale)} info={notAfter} />
+              <LicenseInfoFiled title={localize("License.lic_notafter", locale)} info={notAfter} />
             </div>
           </div>
           <div className="row">
@@ -83,7 +81,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
               <LicenseInfoFiled title={localize("Common.product", locale)} info={productName} />
             </div>
             <div className="col s6">
-            <LicenseStatus />
+              <LicenseStatus />
             </div>
           </div>
         </React.Fragment>
@@ -93,7 +91,6 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
     if (lic_format === "TRIAL") {
       const exp = new Date(license.exp * 1000);
       notAfter = (license.exp === 0) ? localize("License.lic_unlimited", locale) : this.getLocaleDate(license.exp * 1000);
-      notBefore = this.getLocaleDate(license.iat * 1000);
       productName = localize("About.product_name", locale);
       return (
         <React.Fragment>
@@ -110,20 +107,48 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
               <LicenseInfoFiled title={localize("Common.product", locale)} info={productName} />
             </div>
             <div className="col s6">
-            <LicenseStatus />
+              <LicenseStatus />
             </div>
           </div>
         </React.Fragment>
       );
-    } else if (lic_format === "MTX") {
+    } else if (lic_format === "dlv") {
+      const exp = new Date(license.exp * 1000);
+      notAfter = (license.exp === 0) ? localize("License.lic_unlimited", locale) : this.getLocaleDate(license.exp * 1000);
+      productName = localize("About.product_name", locale);
+
+      return (
+        <React.Fragment>
+          <div className="row">
+            <div className="col s6">
+              <LicenseInfoFiled title={localize("Certificate.issuer_name", locale)} info={license.iss} />
+            </div>
+            <div className="col s6">
+              <LicenseInfoFiled title={localize("License.lic_notafter", locale)} info={notAfter} />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col s6">
+              <LicenseInfoFiled title={localize("Common.product", locale)} info={productName} />
+            </div>
+            <div className="col s6">
+              <LicenseStatus />
+            </div>
+          </div>
+        </React.Fragment>
+      );
+    } else if (lic_format === "JWT") {
       if (lic_status === 0) {
-        notAfter = "-";
-        notBefore = "-";
+        var date = new Date(license.exp * 1000);
+        let year = date.getFullYear();
+        if ((year === 1970) || (year >= 2037)) notAfter = localize("License.lic_unlimited", locale);
+        else notAfter = this.getLocaleDate(license.exp * 1000);
         productName = localize("About.product_name", locale);
       } else {
-        const exp = new Date(license.exp * 1000);
-        notAfter = (license.exp === 0) ? localize("License.lic_unlimited", locale) : this.getLocaleDate(license.exp * 1000);
-        notBefore = this.getLocaleDate(license.iat * 1000);
+        var date = new Date(license.exp * 1000);
+        let year = date.getFullYear();
+        if ((year === 1970) || (year >= 2037)) notAfter = localize("License.lic_unlimited", locale);
+        else notAfter = this.getLocaleDate(license.exp * 1000);
         productName = localize("About.product_name", locale);
       }
       return (
@@ -141,43 +166,7 @@ class LicenseInfo extends React.Component<ILicenseInfoProps, {}> {
               <LicenseInfoFiled title={localize("Common.product", locale)} info={productName} />
             </div>
             <div className="col s6">
-            <LicenseStatus />
-            </div>
-          </div>
-        </React.Fragment>
-      );
-    } else if (lic_format === "JWT") {
-      if (lic_status === 0) {
-        var date = new Date(license.exp * 1000);
-        let year = date.getFullYear();
-        if ((year === 1970) || (year >= 2037)) notAfter = localize("License.lic_unlimited", locale);
-        else notAfter = this.getLocaleDate(license.exp * 1000);
-        notBefore = this.getLocaleDate(license.iat * 1000);
-        productName = localize("About.product_name", locale);
-      } else {
-        var date = new Date(license.exp * 1000);
-        let year = date.getFullYear();
-        if ((year === 1970) || (year >= 2037)) notAfter = localize("License.lic_unlimited", locale);
-        else notAfter = this.getLocaleDate(license.exp * 1000);
-        notBefore = this.getLocaleDate(license.iat * 1000);
-        productName = localize("About.product_name", locale);
-      }
-      return (
-        <React.Fragment>
-          <div className="row">
-            <div className="col s6">
-              <LicenseInfoFiled title={localize("Certificate.issuer_name", locale)} info={license.iss} />
-            </div>
-            <div className="col s6">
-            <LicenseInfoFiled title={localize("License.lic_notafter", locale)} info={notAfter} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col s6">
-              <LicenseInfoFiled title={localize("Common.product", locale)} info={productName} />
-            </div>
-            <div className="col s6">
-            <LicenseStatus />
+              <LicenseStatus />
             </div>
           </div>
         </React.Fragment>

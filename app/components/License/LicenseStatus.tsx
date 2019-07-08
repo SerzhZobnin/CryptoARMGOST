@@ -87,7 +87,7 @@ class LicenseStatus extends React.Component<ILicenseStatusProps, {}> {
         messageStatus = localize("License.License_overtimes", locale);
         messageExpired = localize("License.license_overtimes_expired", locale);
       }
-    } else if (lic_format === "MTX") {
+    } else if (lic_format === "dlv") {
       if (status && lic_error !== 903 && lic_error !== 907) {
         viewStatus = "correct";
         if (license.exp == 0) {

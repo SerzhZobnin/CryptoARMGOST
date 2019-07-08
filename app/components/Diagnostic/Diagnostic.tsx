@@ -135,7 +135,7 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
         }],
       });
     }
-    if (nextProps.lic_format === "MTX" && nextProps.statusLicense === false && nextProps.verifiedLicense == true && loadingLicense === false) {
+    if (nextProps.lic_format === "dlv" && nextProps.statusLicense === false && nextProps.verifiedLicense == true && loadingLicense === false) {
       this.setState({
         errors: [...this.state.errors, {
           important: WARNING,
