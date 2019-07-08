@@ -173,6 +173,19 @@ declare namespace native {
             stringFromBase64(instr: string, flag?: number): string;
             stringToBase64(instr: string, flag?: number): string;
         }
+        class License_Mng {
+            addLicense(lic: string): number;
+            addLicenseFromFile(filename: string): number;
+            deleteLicense(lic: string): boolean;
+            deleteLicenseOfIndex(index: number): boolean;
+            getCountLicense(): number;
+            getLicense(index: number): string;
+            checkLicense(lic: string): string;
+            checkLicenseOfIndex(index: number): string;
+            generateTrial(): string;
+            checkTrialLicense(): string;
+            accessOperations(): boolean;
+        }
         class Jwt {
             createHeader(alg: string): string;
             createPayload(aud: string, sub: string, core: number, nbf: number, iss: string, exp: number, iat: number, jti: string, desc: string): string;
@@ -204,9 +217,24 @@ declare namespace native {
             save(filename: string, dataFormat: trusted.DataFormat): void;
             export(dataFormat?: trusted.DataFormat): Buffer;
             getCertificates(): PKI.CertificateCollection;
+            getSigners(): SignerCollection;
             isDetached(): boolean;
-            verify(): boolean;
+            verify(signer?: CMS.Signer): boolean;
             sign(certs: PKI.Certificate): void;
+        }
+        class SignerCollection {
+            items(index: number): Signer;
+            length(): number;
+        }
+        class Signer {
+            constructor(nativeHandle?: native.CMS.Signer);
+            setCertificate(cert: PKI.Certificate): void;
+            getCertificate(): PKI.Certificate;
+            setIndex(ind: number): void;
+            getIndex(): number;
+            getSignatureAlgorithm(): string;
+            getDigestAlgorithm(): string;
+            getSigningTime(): string;
         }
     }
     namespace PKISTORE {
@@ -407,6 +435,116 @@ declare namespace trusted.core {
     }
 }
 declare namespace trusted.cms {
+    /**
+     * Wrap CMS_SignerInfo
+     *
+     * @export
+     * @class Signer
+     * @extends {BaseObject<native.CMS.Signer>}
+     */
+    class Signer extends BaseObject<native.CMS.Signer> {
+        /**
+         * Creates an instance of Signer.
+         *
+         * @param {native.CMS.Signer} handle
+         *
+         * @memberOf Signer
+         */
+        constructor(nativeHandle?: native.CMS.Signer);
+        /**
+         * Return signer certificate
+         *
+         * @type {Certificate}
+         * @memberOf Signer
+         */
+        /**
+        * Set signer certificate
+        * Error if cert no signer
+        *
+        * @param cert Certificate
+        *
+        * @memberOf Signer
+        */
+        certificate: pki.Certificate;
+        /**
+         * Return Index
+         *
+         * @readonly
+         * @type {number}
+         * @memberOf Signer
+         */
+        /**
+        * Set index certificate
+        *
+        * @param ind string
+        *
+        * @memberOf Signer
+        */
+        index: number;
+        /**
+         * Return signing time from signed attributes
+         *
+         * @readonly
+         * @type {Date}
+         * @memberof Signer
+         */
+        readonly signingTime: Date;
+        /**
+        * Return signature algorithm
+        *
+        * @readonly
+        * @type {string}
+        * @memberOf Signer
+        */
+        readonly signatureAlgorithm: string;
+        /**
+         * Return signature digest algorithm
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Signer
+         */
+        readonly signatureDigestAlgorithm: string;
+    }
+}
+declare namespace trusted.cms {
+    /**
+     * Collection of Signer
+     *
+     * @export
+     * @class SignerCollection
+     * @extends {BaseObject<native.CMS.SignerCollection>}
+     * @implements {Collection.ICollection}
+     */
+    class SignerCollection extends BaseObject<native.CMS.SignerCollection> implements core.ICollection {
+        /**
+         * Creates an instance of SignerCollection.
+         *
+         * @param {native.CMS.SignerCollection} nativeHandle
+         *
+         * @memberOf SignerCollection
+         */
+        constructor(nativeHandle: native.CMS.SignerCollection);
+        /**
+         * Return element by index from collection
+         *
+         * @param {number} index
+         * @returns {Signer}
+         *
+         * @memberOf SignerCollection
+         */
+        items(index: number): Signer;
+        /**
+         * Return collection length
+         *
+         * @readonly
+         * @type {number}
+         * @memberOf SignerCollection
+         */
+        readonly length: number;
+    }
+}
+declare namespace trusted.cms {
     enum SignedDataContentType {
         url = 0,
         buffer = 1
@@ -504,6 +642,23 @@ declare namespace trusted.cms {
          */
         certificates(index?: number): any;
         /**
+        * Return signer by index
+        *
+        * @param {number} index
+        * @returns {Signer}
+        *
+        * @memberOf SignedData
+        */
+        signers(index: number): Signer;
+        /**
+        * Return signers collection
+        *
+        * @returns {SignerCollection}
+        *
+        * @memberOf SignedData
+        */
+        signers(): SignerCollection;
+        /**
          * Load sign from file location
          *
          * @param {string} filename File location
@@ -542,16 +697,16 @@ declare namespace trusted.cms {
         /**
          * Verify signature
          *
+         * @param {Signer} [signer] Certificate
          * @returns {boolean}
          *
          * @memberOf SignedData
          */
-        verify(): boolean;
+        verify(signer?: cms.Signer): boolean;
         /**
          * Create sign
          *
          * @param {Certificate} [certs] Certificate
-         * @param {boolean} isDetached Certificate
          *
          * @memberOf SignedData
          */
@@ -854,6 +1009,94 @@ declare namespace trusted.utils {
          * @memberOf Dlv
          */
         checkLicense(lic: string): string;
+    }
+}
+declare namespace trusted.utils {
+    /**
+     * JSON Web Token (LICENSE_MNG)
+     * Uses only with CTGOSTCP
+     *
+     * @export
+     * @class License_Mng
+     * @extends {BaseObject<native.LICENSE_MNG.License_Mng>}
+     */
+    class License_Mng extends BaseObject<native.UTILS.License_Mng> {
+        /**
+          * Creates an instance of License_Mng.
+          *
+          *
+          * @memberOf License_Mng
+          */
+        constructor();
+        /**
+          * Add license_mng license to store
+          * License must be correct
+          *
+          * @static
+          * @param {string} license license token in LICENSE_MNG format
+          * @returns {boolean}
+          * @memberof License_Mng
+          */
+        addLicense(lic: string): number;
+        /**
+          * Add license_mng license to store
+          * License must be correct
+          *
+          * @static
+          * @param {string} license license token in LICENSE_MNG format
+          * @returns {boolean}
+          * @memberof License_Mng
+          */
+        addLicenseFromFile(lic: string): number;
+        /**
+         * Delete license_mng license from store
+         *
+         * @static
+         * @param {string} license license token
+         * @returns {boolean}
+         * @memberof License_Mng
+         */
+        deleteLicense(lic: string): boolean;
+        /**
+         * Delete license_mng license from store
+         *
+         * @static
+         * @param {string} license license token
+         * @returns {boolean}
+         * @memberof License_Mng
+         */
+        deleteLicenseOfIndex(index: number): boolean;
+        /**
+         * Delete license_mng license from store
+         *
+         * @static
+         * @param {string} license license token
+         * @returns {boolean}
+         * @memberof License_Mng
+         */
+        getCountLicense(): number;
+        /**
+        * Delete license_mng license from store
+        *
+        * @static
+        * @param {string} license license token
+        * @returns {boolean}
+        * @memberof License_Mng
+        */
+        getLicense(index: number): string;
+        /**
+         * Delete license_mng license from store
+         *
+         * @static
+         * @param {string} license license token
+         * @returns {boolean}
+         * @memberof License_Mng
+         */
+        checkLicense(lic: string): string;
+        checkLicenseOfIndex(index: number): string;
+        accessOperations(): boolean;
+        generateTrial(): string;
+        checkTrialLicense(): string;
     }
 }
 declare namespace trusted.pki {
