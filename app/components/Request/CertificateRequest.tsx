@@ -8,7 +8,7 @@ import { loadAllCertificates, removeAllCertificates } from "../../AC";
 import {
   ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, DEFAULT_CSR_PATH, HOME_DIR,
   KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
-  PROVIDER_CRYPTOPRO,  PROVIDER_SYSTEM, REQUEST, REQUEST_TEMPLATE_ADDITIONAL,
+  PROVIDER_CRYPTOPRO, PROVIDER_SYSTEM, REQUEST, REQUEST_TEMPLATE_ADDITIONAL,
   REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
 import * as jwt from "../../trusted/jwt";
@@ -109,7 +109,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
         digitalSignature: true,
         encipherOnly: false,
         keyAgreement: true,
-        keyCertSign: true,
+        keyCertSign: false,
         keyEncipherment: false,
         nonRepudiation: true,
       },
@@ -202,7 +202,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
             {activeSubjectNameInfoTab ?
               <div className="col s12 ">
-                <div className="content-wrapper z-depth-1 tbody" style={{height: "400px"}}>
+                <div className="content-wrapper z-depth-1 tbody" style={{ height: "400px" }}>
                   <div className="content-item-relative">
                     <div className="row halfbottom" />
                     <SubjectNameInfo
@@ -507,6 +507,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     certReq.extensions = exts;
     certReq.pubKeyAlgorithm = algorithm;
     certReq.containerName = containerName;
+    certReq.exportableFlag = exportableKey;
 
     if (!fs.existsSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"))) {
       fs.mkdirSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"), { mode: 0o700 });
@@ -673,7 +674,15 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
   }
 
   toggleSelfSigned = () => {
-    this.setState({ selfSigned: !this.state.selfSigned });
+    const { selfSigned } = this.state;
+
+    this.setState({
+      keyUsage: {
+        ...this.state.keyUsage,
+        keyCertSign: !selfSigned,
+      },
+      selfSigned: !selfSigned,
+    });
   }
 
   toggleExportableKey = () => {
@@ -728,6 +737,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
   }
 
   handleKeyUsageGroupChange = (ev: any) => {
+    const { selfSigned } = this.state;
     const group = ev.target.value;
     this.setState({ keyUsageGroup: group });
 
@@ -741,7 +751,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
             digitalSignature: true,
             encipherOnly: false,
             keyAgreement: false,
-            keyCertSign: true,
+            keyCertSign: selfSigned ? true : false,
             keyEncipherment: false,
             nonRepudiation: true,
           },
@@ -757,7 +767,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
             digitalSignature: false,
             encipherOnly: false,
             keyAgreement: true,
-            keyCertSign: true,
+            keyCertSign: selfSigned ? true : false,
             keyEncipherment: false,
             nonRepudiation: false,
           },
@@ -773,7 +783,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
             digitalSignature: true,
             encipherOnly: false,
             keyAgreement: true,
-            keyCertSign: true,
+            keyCertSign: selfSigned ? true : false,
             keyEncipherment: false,
             nonRepudiation: true,
           },
