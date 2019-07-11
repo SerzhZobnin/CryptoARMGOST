@@ -91,7 +91,7 @@ export class Store {
 
     const bCA = cert.isCA;
     const selfSigned = cert.isSelfSigned;
-    const hasKey = /*provider.hasPrivateKey(cert)*/ true;
+    const hasKey = provider.hasPrivateKey(cert);
 
     if (category) {
       store.addCert(provider.handle, category, cert, contName, 75);
