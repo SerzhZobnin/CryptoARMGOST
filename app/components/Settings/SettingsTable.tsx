@@ -214,12 +214,15 @@ class SettingsTable extends React.Component<ISettingsTableProps & ISettingsTable
 
       const datum = this.getDatum(this.state.sortedList, index);
 
-      if (datum && setting && datum.id === setting.id) {
-        rowClassName += "selectedRow ";
-      }
+      const founded = foundSettings.indexOf(index) >= 0;
+      const selected = datum && setting && datum.id === setting.id;
 
-      if (foundSettings.indexOf(index) >= 0) {
-        rowClassName += "foundEvent";
+      if (founded && selected) {
+        rowClassName += "foundAndSelectedEvent ";
+      } else if (founded) {
+        rowClassName += "foundEvent ";
+      } else if (selected) {
+        rowClassName += "selectedRow ";
       }
 
       return rowClassName;

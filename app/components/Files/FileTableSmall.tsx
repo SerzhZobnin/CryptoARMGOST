@@ -300,10 +300,15 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
     } else {
       let rowClassName = index % 2 === 0 ? "evenRow " : "oddRow ";
 
-      if (activeFilesMap.includes(this.getDatum(this.state.sortedList, index))) {
+      const founded = foundDocuments.indexOf(index) >= 0;
+      const selected = activeFilesMap.includes(this.getDatum(this.state.sortedList, index));
+
+      if (founded && selected) {
+        rowClassName += "foundAndSelectedEvent ";
+      } else if (founded) {
+        rowClassName += "foundEvent ";
+      } else if (selected) {
         rowClassName += "selectedRow ";
-      } else if (foundDocuments.indexOf(index) >= 0) {
-        rowClassName += "foundEvent";
       }
 
       if (index === this.state.hoveredRowIndex) {

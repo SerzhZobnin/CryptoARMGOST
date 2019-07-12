@@ -271,10 +271,15 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
     } else {
       let rowClassName = index % 2 === 0 ? "evenRow " : "oddRow ";
 
-      if (selectedDocuments.includes(this.getDatum(this.state.sortedList, index))) {
-        rowClassName += "selectedRow";
-      } else if (foundDocuments.indexOf(index) >= 0) {
-        rowClassName += "foundEvent";
+      const founded = foundDocuments.indexOf(index) >= 0;
+      const selected = selectedDocuments.includes(this.getDatum(this.state.sortedList, index));
+
+      if (founded && selected) {
+        rowClassName += "foundAndSelectedEvent ";
+      } else if (founded) {
+        rowClassName += "foundEvent ";
+      } else if (selected) {
+        rowClassName += "selectedRow ";
       }
 
       return rowClassName;

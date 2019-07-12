@@ -305,14 +305,19 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
     } else {
       let rowClassName = index % 2 === 0 ? "evenRow " : "oddRow ";
 
-      if (activeFilesMap.includes(this.getDatum(this.state.sortedList, index))) {
-        rowClassName += "selectedRow ";
-      } else if (foundDocuments.indexOf(index) >= 0) {
+      const founded = foundDocuments.indexOf(index) >= 0;
+      const selected = activeFilesMap.includes(this.getDatum(this.state.sortedList, index));
+
+      if (founded && selected) {
+        rowClassName += "foundAndSelectedEvent ";
+      } else if (founded) {
         rowClassName += "foundEvent ";
+      } else if (selected) {
+        rowClassName += "selectedRow ";
       }
 
       if (index === this.state.hoveredRowIndex) {
-        rowClassName += "hoverRow";
+        rowClassName += " hoverRow";
       }
 
       return rowClassName;
