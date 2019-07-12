@@ -141,7 +141,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
                     dataKey="extension"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.1}
+                    width={50}
                     label={localize("Documents.type", locale)}
                   />
                   <Column
@@ -157,7 +157,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
                     dataKey="mtime"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.2}
+                    width={150}
                     label={localize("Documents.mdate", locale)}
                   />
                   <Column
