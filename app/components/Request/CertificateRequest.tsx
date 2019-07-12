@@ -449,15 +449,15 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       exts.push(ext);
     }
 
-    if (email.length) {
-      oid = new trusted.pki.Oid("subjectAltName");
-      ext = new trusted.pki.Extension(oid, `email:${email}`);
-      exts.push(ext);
-    }
+    // if (email.length) {
+    //   oid = new trusted.pki.Oid("subjectAltName");
+    //   ext = new trusted.pki.Extension(oid, `email:${email}`);
+    //   exts.push(ext);
+    // }
 
-    oid = new trusted.pki.Oid("basicConstraints");
-    ext = new trusted.pki.Extension(oid, "critical,CA:false");
-    exts.push(ext);
+    // oid = new trusted.pki.Oid("basicConstraints");
+    // ext = new trusted.pki.Extension(oid, "critical,CA:false");
+    // exts.push(ext);
 
     try {
       switch (algorithm) {
