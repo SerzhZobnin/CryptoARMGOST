@@ -22,6 +22,13 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   line-height: 35px;
 }
 
+#toast-container {
+  top: auto !important;
+  right: auto !important;
+  left: 5%;
+  bottom: 7%;
+}
+
 .cryptoarm-blue {
   color: #334294;
 }
