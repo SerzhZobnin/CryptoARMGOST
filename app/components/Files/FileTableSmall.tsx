@@ -147,7 +147,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
                   rowClassName={this.rowClassName}
                   onRowClick={this.handleOnRowClick}
                   onRowMouseOver={this.handleOnRowMouseOver}
-                  //onRowMouseOut={this.handleOnRowMouseOut}
+                  onRowMouseOut={this.handleOnRowMouseOut}
                   overscanRowCount={3}
                   rowGetter={rowGetter}
                   rowCount={sortedList.size}
@@ -166,54 +166,58 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
 
                       return (
                         <div className="row nobottom">
-                          <div className="col s1">
-                            <div className="row nobottom">
-                              <div className="col s12">
-                                <FileIcon file={rowData} />
-                              </div>
-                            </div>
+                          <div className="col s2">
+                            <FileIcon file={rowData} />
                           </div>
-                          <div className={`col ${hovered ? "s8 l8" : "s11"}`}>
-                            <div className="row nobottom">
-                              <div className="col s12">
-                                <div className="collection-title truncate">{cellData}</div>
-                              </div>
-                              {/* <div className="col s12">
-                                <div className="collection-info cert-info truncate">{path.dirname(rowData.fullpath)}</div>
-                              </div> */}
-                              <div className="col s5">
-                                <div className="collection-info cert-info truncate">{(new Date(rowData.mtime)).toLocaleDateString(locale, {
-                                  day: "numeric",
-                                  hour: "numeric",
-                                  minute: "numeric",
-                                  month: "numeric",
-                                  year: "numeric",
-                                })}
-                                </div>
-                              </div>
-                              <div className="col s7">
-                                <div className="collection-info cert-info truncate">{bytesToSize(rowData.filesize)}</div>
-                              </div>
-                            </div>
+                          <div className="col s10">
+                            <div className="collection-title truncate">{cellData}</div>
                           </div>
-                          {(hovered) ?
-                            <div className="col m2 l2">
-                              <FileItemButtons
-                                deleteFile={this.props.deleteFile}
-                                file={rowData}
-                                selectTempContentOfSignedFiles={this.props.selectTempContentOfSignedFiles}
-                              />
-                            </div>
-                            :
-                            null}
                         </div>);
                     }
                     }
                     dataKey="filename"
-                    disableSort={true}
                     headerRenderer={this.headerRenderer}
-                    width={644}
-                    label={"Список файлов"}
+                    width={width * 0.45}
+                    label={localize("Documents.filename", locale)}
+                  />
+                  <Column
+                    cellRenderer={({ cellData }) => {
+                      return (new Date(cellData)).toLocaleDateString(locale, {
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                      });
+                    }}
+                    dataKey="mtime"
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    width={width * 0.27}
+                    label={localize("Documents.mdate", locale)}
+                  />
+                  <Column
+                    cellRenderer={({ cellData, rowData, rowIndex }) => {
+                      return (
+                        (rowIndex === this.state.hoveredRowIndex) ?
+                          <FileItemButtons
+                            deleteFile={this.props.deleteFile}
+                            file={rowData}
+                            selectTempContentOfSignedFiles={this.props.selectTempContentOfSignedFiles}
+                          />
+                          :
+                          <div className="row nobottom">
+                            <div className="col s12">
+                              <div className="truncate">{bytesToSize(cellData)}</div>
+                            </div>
+                          </div>
+                      );
+                    }}
+                    dataKey="filesize"
+                    width={width * 0.28}
+                    disableSort={false}
+                    headerRenderer={this.headerRenderer}
+                    label={localize("Documents.filesize", locale)}
                   />
                 </Table>
               )}
@@ -339,7 +343,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
         }
       } catch (e) {
         //
-       }
+      }
 
     });
 
@@ -368,6 +372,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
     return (
       <React.Fragment>
         {label}
+        {sortBy === dataKey && <SortIndicator sortDirection={sortDirection} />}
       </React.Fragment>
     );
   }
