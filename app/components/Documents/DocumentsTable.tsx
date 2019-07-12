@@ -2,17 +2,19 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { AutoSizer, Column, Table } from "react-virtualized";
+import { deleteFile, selectTempContentOfSignedFiles } from "../../AC";
 import {
   loadAllDocuments, removeAllDocuments, selectDocument,
   unselectAllDocuments,
 } from "../../AC/documentsActions";
 import { filteredDocumentsSelector, selectedDocumentsSelector } from "../../selectors/documentsSelector";
 import "../../table.global.css";
-import { extFile, mapToArr } from "../../utils";
+import { bytesToSize, extFile, mapToArr } from "../../utils";
 import FileIcon from "../Files/FileIcon";
 import ProgressBars from "../ProgressBars";
 import SortDirection from "../Sort/SortDirection";
 import SortIndicator from "../Sort/SortIndicator";
+import DocumentItemButtons from "./DocumentItemButtons";
 
 type TSortDirection = "ASC" | "DESC" | undefined;
 
@@ -28,11 +30,13 @@ interface IDocumentsTableDispatch {
   loadAllDocuments: () => void;
   removeAllDocuments: () => void;
   selectDocument: (uid: number) => void;
+  selectTempContentOfSignedFiles: any;
   unselectAllDocuments: () => void;
 }
 
 interface IDocumentsTableState {
   disableHeader: boolean;
+  hoveredRowIndex: number;
   foundDocuments: number[];
   scrollToIndex: number;
   sortBy: string;
@@ -56,6 +60,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
     this.state = {
       disableHeader: false,
       foundDocuments: [],
+      hoveredRowIndex: -1,
       scrollToIndex: 0,
       sortBy,
       sortDirection,
@@ -117,6 +122,8 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
                   rowHeight={45}
                   rowClassName={this.rowClassName}
                   onRowClick={this.handleOnRowClick}
+                  onRowMouseOver={this.handleOnRowMouseOver}
+                  onRowMouseOut={this.handleOnRowMouseOut}
                   overscanRowCount={3}
                   rowGetter={rowGetter}
                   rowCount={sortedList.size}
@@ -134,7 +141,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
                     dataKey="extension"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={50}
+                    width={width * 0.1}
                     label={localize("Documents.type", locale)}
                   />
                   <Column
@@ -150,7 +157,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
                     dataKey="mtime"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={150}
+                    width={width * 0.2}
                     label={localize("Documents.mdate", locale)}
                   />
                   <Column
@@ -161,13 +168,19 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
                     label={localize("Documents.filename", locale)}
                   />
                   <Column
-                    cellRenderer={({ cellData, rowData }) => {
+                    cellRenderer={({ cellData, rowData, rowIndex }) => {
                       return (
-                        <div className="row nobottom">
-                          <div className="col s12">
-                            <div className="truncate">{this.bytesToSize(cellData)}</div>
+                        (rowIndex === this.state.hoveredRowIndex) ?
+                          <DocumentItemButtons
+                            file={rowData}
+                            selectTempContentOfSignedFiles={this.props.selectTempContentOfSignedFiles}
+                          />
+                          :
+                          <div className="row nobottom">
+                            <div className="col s12">
+                              <div className="truncate">{bytesToSize(cellData)}</div>
+                            </div>
                           </div>
-                        </div>
                       );
                     }}
                     dataKey="filesize"
@@ -196,20 +209,16 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
     );
   }
 
-  bytesToSize = (bytes: number, decimals = 2) => {
-    const sizes = ["B", "KB", "MB", "GB", "TB"];
+  handleOnRowMouseOver = ({ event, index, rowData }: { event: Event, index: number, rowData: any }) => {
+    this.setState({
+      hoveredRowIndex: index,
+    });
+  }
 
-    if (bytes === 0) {
-      return "n/a";
-    }
-
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-
-    if (i === 0) {
-      return `${bytes} ${sizes[i]}`;
-    }
-
-    return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${sizes[i]}`;
+  handleOnRowMouseOut = () => {
+    this.setState({
+      hoveredRowIndex: -1,
+    });
   }
 
   handleOnRowClick = ({ rowData }: { rowData: any }) => {
@@ -354,4 +363,4 @@ export default connect((state) => ({
   isLoading: state.documents.loading,
   selectedDocuments: selectedDocumentsSelector(state),
   signatures: state.signatures,
-}), { loadAllDocuments, removeAllDocuments, selectDocument, unselectAllDocuments })(DocumentTable);
+}), { loadAllDocuments, removeAllDocuments, selectDocument, selectTempContentOfSignedFiles, unselectAllDocuments })(DocumentTable);
