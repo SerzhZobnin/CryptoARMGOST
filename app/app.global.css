@@ -1717,10 +1717,13 @@ h6.contact-title {
 }
 
 .type_icon.pdf{
+  background-size: 100%;
   background: url(./resources/image/files/file_pdf.png) no-repeat;
 }
 
 .type_icon.pfx{
+  background-size: 30px 36px !important;
+  left: 9px;
   background: url(./resources/image/files/file_pfx.png) no-repeat;
 }
 
