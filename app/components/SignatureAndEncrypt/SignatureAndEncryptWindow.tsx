@@ -97,6 +97,9 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
   render() {
     const { localize, locale } = this.context;
     const { fileSignatures, file, showSignatureInfo } = this.state;
+    const { isDefaultFilters } = this.props;
+
+    const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
 
     return (
       <div className="content-noflex">
@@ -123,7 +126,9 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
               </div>
               <div className="col" style={{ width: "40px" }}>
                 <a onClick={this.handleShowModalFilterDocuments}>
-                  <i className="file-setting-item waves-effect material-icons secondary-content">filter_list</i>
+                <i className={`file-setting-item waves-effect material-icons secondary-content`}>
+                    <i className={`material-icons ${classDefaultFilters}`} />
+                  </i>
                 </a>
               </div>
               <div className="col" style={{ width: "40px" }}>
@@ -271,6 +276,7 @@ export default connect((state) => {
 
   return {
     activeFilesArr: mapToArr(activeFilesSelector(state, { active: true })),
+    isDefaultFilters: state.filters.documents.isDefaultFilters,
     files: mapToArr(state.files.entities),
     packageSignResult: state.signatures.packageSignResult,
     signatures,

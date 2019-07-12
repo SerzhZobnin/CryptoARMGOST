@@ -144,6 +144,8 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     const { documents, isDefaultFilters, isDocumentsReviewed, recipients, setting, signer } = this.props;
     const { fileSignatures, file, showSignatureInfo } = this.state;
 
+    const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
+
     return (
       <div className="content-noflex">
         <div className="row">
@@ -169,7 +171,9 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
               </div>
               <div className="col" style={{ width: "40px" }}>
                 <a onClick={this.handleShowModalFilterDocuments}>
-                  <i className="file-setting-item waves-effect material-icons secondary-content">filter_list</i>
+                  <i className={`file-setting-item waves-effect material-icons secondary-content`}>
+                    <i className={`material-icons ${classDefaultFilters}`} />
+                  </i>
                 </a>
               </div>
               <div className="col" style={{ width: "40px" }}>
@@ -223,7 +227,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                   </div>
                 </React.Fragment>
               ) :
-              <DocumentsRightColumn handleClickDelete={this.handleShowModalDeleteDocuments}/>
+              <DocumentsRightColumn handleClickDelete={this.handleShowModalDeleteDocuments} />
             }
 
           </div>

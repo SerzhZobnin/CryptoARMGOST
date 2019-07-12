@@ -3243,25 +3243,19 @@ svg:hover {
   }
 
   i.material-icons.filter_off {
-    display: block;
     text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+    width: 22px;
+    height: 22px;
     background: url(./resources/image/icon_filter_off.svg);
-    background-size: 32px 32px;
-    margin-top: 0px;
-    margin-left: 2px;
+    background-size: 100%;
   }
 
   i.material-icons.filter_on {
-    display: block;
     text-indent: -9999px;
-    width: 32px;
-    height: 32px;
+    width: 22px;
+    height: 22px;
     background: url(./resources/image/icon_filter_on.svg);
-    background-size: 32px 32px;
-    margin-top: 0px;
-    margin-left: 2px;
+    background-size: 100%;
   }
 
   i.material-icons.context_menu {

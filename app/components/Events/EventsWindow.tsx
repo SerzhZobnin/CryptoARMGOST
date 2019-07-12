@@ -80,7 +80,9 @@ class EventsWindow extends React.Component<IEventsWindowProps & IEventsWindowDis
           </div>
           <div className="col" style={{ width: "40px" }}>
             <a onClick={this.handleShowModalFilterEvents}>
-              <i className="file-setting-item waves-effect material-icons secondary-content">filter_list</i>
+              <i className={`file-setting-item waves-effect material-icons secondary-content`}>
+                <i className={`material-icons ${classDefaultFilters}`} />
+              </i>
             </a>
           </div>
           <div className="col" style={{ width: "40px" }}>
