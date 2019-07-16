@@ -449,6 +449,12 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       exts.push(ext);
     }
 
+    if (template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_ADDITIONAL || REQUEST_TEMPLATE_KEP_FIZ) {
+      oid = new trusted.pki.Oid("1.2.643.100.111");
+      ext = new trusted.pki.Extension(oid, `КриптоПро CSP (версия ${this.getCPCSPVersion()})`);
+      exts.push(ext);
+    }
+
     // if (email.length) {
     //   oid = new trusted.pki.Oid("subjectAltName");
     //   ext = new trusted.pki.Extension(oid, `email:${email}`);
@@ -481,12 +487,12 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const atrs = [
       { type: "C", value: country },
       { type: "CN", value: cn },
-      { type: "emailAddress", value: email },
-      { type: "localityName", value: locality },
-      { type: "stateOrProvinceName", value: province },
+      { type: "E", value: email },
+      { type: "L", value: locality },
+      { type: "S", value: province },
       { type: "O", value: organization },
       { type: "OU", value: organizationUnitName },
-      { type: "title", value: title },
+      { type: "T", value: title },
     ];
 
     if (template !== REQUEST_TEMPLATE_DEFAULT) {
