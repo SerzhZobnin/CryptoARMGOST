@@ -22,10 +22,6 @@ localize.contextTypes = {
 };
 
 export function localizeAlgorithm(algorithm: string, locale: string) {
-  if (locale === EN) {
-    return algorithm;
-  }
-
   let msg;
 
   switch (algorithm) {

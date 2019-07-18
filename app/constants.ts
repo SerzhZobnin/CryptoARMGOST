@@ -136,18 +136,18 @@ export const USER_NAME = window.USER_NAME;
 
 export const LicenseManager: trusted.utils.License_Mng = window.LICENSE_MNG;
 
-export const SIGNWITHDIGEST_GOST3410_12_256 = "GOST R 34.10-2012 with 34.11-2012 256-bit";
-export const SIGNWITHDIGEST_GOST3410_12_512 = "GOST R 34.10-2012 with 34.11-2012 512-bit";
-export const GOSTR3411_94_WITH_GOSTR3410_2001 = "GOST R 34.11-94 with GOST R 34.10-2001";
-export const GOSR3411_94_WITH_GOSTR3410_94 = "GOST R 34.11-94 with GOST R 34.10-94";
-export const GOST3410_12_256 = "GOST R 34.10-2012 with 256-bit key";
-export const GOST3410_12_512 = "GOST R 34.10-2012 with 512-bit key";
-export const MD_GOST94 = "GOST R 34.11-94";
-export const MD_GOST12_256 = "GOST R 34.11-2012 256-bit length";
-export const MD_GOST12_512 = "GOST R 34.11-2012 512-bit length";
-export const GOST2001 = "GOST R 34.10-2001";
-export const GOST94 = "GOST R 34.10-94";
-export const GOST89 = "GOST 28147-89";
+export const SIGNWITHDIGEST_GOST3410_12_256 = "1.2.643.7.1.1.3.2";
+export const SIGNWITHDIGEST_GOST3410_12_512 = "1.2.643.7.1.1.3.3";
+export const GOSTR3411_94_WITH_GOSTR3410_2001 = "1.2.643.2.2.3";
+export const GOSR3411_94_WITH_GOSTR3410_94 = "1.2.643.2.2.4";
+export const GOST3410_12_256 = "1.2.643.7.1.1.1.1";
+export const GOST3410_12_512 = "1.2.643.7.1.1.1.2";
+export const MD_GOST94 = "1.2.643.2.2.9";
+export const MD_GOST12_256 = "1.2.643.7.1.1.2.2";
+export const MD_GOST12_512 = "1.2.643.7.1.1.2.3";
+export const GOST2001 = "1.2.643.2.2.19";
+export const GOST94 = "1.2.643.2.2.20";
+export const GOST89 = "1.2.643.2.2.21";
 
 export const ALG_RSA = "RSA";
 export const ALG_GOST2001 = "gost2001";
