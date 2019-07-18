@@ -56,7 +56,7 @@ class SideMenu extends React.Component<{}, {}> {
 
           <Link to={LOCATION_SETTINGS}>
             {localize("Settings.Settings", locale)}
-            <i className="material-icons left settings">library_books</i>
+            <i className="material-icons left setting">library_books</i>
           </Link>
 
           <Link to={LOCATION_EVENTS}>
