@@ -78,7 +78,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                         <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.props.changeDefaultSettings(setting.id)}>
                           <div className="col s12 svg_icon">
                             <a data-position="bottom">
-                              <i className="material-icons certificate export" />
+                              <i className="material-icons settings import" />
                             </a>
                           </div>
                           <div className="col s12 svg_icon_text">{"Применить"}</div>
@@ -90,7 +90,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                     <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.props.history.push(LOCATION_SETTINGS_CONFIG)}>
                       <div className="col s12 svg_icon">
                         <a data-position="bottom">
-                          <i className="material-icons certificate export" />
+                          <i className="material-icons settings edit" />
                         </a>
                       </div>
                       <div className="col s12 svg_icon_text">{"Редактирвоать"}</div>
@@ -102,7 +102,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                     }}>
                       <div className="col s12 svg_icon">
                         <a data-position="bottom">
-                          <i className="material-icons certificate remove" />
+                          <i className="material-icons settings add" />
                         </a>
                       </div>
                       <div className="col s12 svg_icon_text">{"Создать"}</div>
@@ -139,7 +139,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                     }}>
                       <div className="col s12 svg_icon">
                         <a data-position="bottom">
-                          <i className="material-icons certificate remove" />
+                          <i className="material-icons settings add" />
                         </a>
                       </div>
                       <div className="col s12 svg_icon_text">{"Создать"}</div>

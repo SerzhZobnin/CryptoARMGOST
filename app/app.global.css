@@ -3400,6 +3400,32 @@ svg:hover {
     background: url(./resources/image/folder_icon.svg);
   }
 
+  i.material-icons.settings {
+    background-size: 36px 36px !important;
+    width: 36px;
+    height: 36px;
+  }
+
+  i.material-icons.settings.import {
+    background: url(./resources/image/operations/import_setting.svg);
+  }
+
+  i.material-icons.settings.export {
+    background: url(./resources/image/operations/export_setting.svg);
+  }
+
+  i.material-icons.settings.edit {
+    background: url(./resources/image/operations/edit_setting.svg);
+  }
+
+  i.material-icons.settings.clear {
+    background: url(./resources/image/operations/clear_setting.svg);
+  }
+
+  i.material-icons.settings.add {
+    background: url(./resources/image/operations/add_setting.svg);
+  }
+
   .col.s10prt{
      width:12%;
   }
