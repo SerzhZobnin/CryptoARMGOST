@@ -74,7 +74,7 @@ export function loadLicense(license?: string) {
 
         if (status.verify) {
           lic_format = status.type;
-          lic.exp = status.attribute.ExpirationTime;
+          lic.exp = status.attribute ? status.attribute.ExpirationTime : status.payload ? JSON.parse(status.payload).exp : null;
           lic.iat = 0;
           licenseStatus = true;
           lic_error = 900; // CTLICENSE_R_NO_ERROR
