@@ -172,9 +172,9 @@ export function resignFile(uri: string, cert: trusted.pki.Certificate, policies:
     if (sd.isDetached()) {
       policies.push("detached");
 
-      // if (!(sd = setDetachedContent(sd, uri))) {
-      //   return;
-      // }
+      if (!(sd = setDetachedContent(sd, uri))) {
+        return;
+      }
 
       sd.policies = ["noSignerCertificateVerify"];
 
