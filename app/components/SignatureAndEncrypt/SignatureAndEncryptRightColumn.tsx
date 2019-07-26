@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as path from "path";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
@@ -595,10 +596,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
       if (policies.archiveFiles) {
         let outURI: string;
+        const archiveName = activeFilesArr.length === 1 ? `${path.parse(activeFilesArr[0].filename).name}.zip` : localize("Encrypt.archive_name", locale);
         if (folderOut.length > 0) {
-          outURI = path.join(folderOut, localize("Encrypt.archive_name", locale));
+          outURI = path.join(folderOut, archiveName);
         } else {
-          outURI = path.join(HOME_DIR, localize("Encrypt.archive_name", locale));
+          outURI = path.join(HOME_DIR, archiveName);
         }
 
         const output = fs.createWriteStream(outURI);

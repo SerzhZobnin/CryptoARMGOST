@@ -561,10 +561,11 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
 
       if (policies.archiveFiles) {
         let outURI: string;
+        const archiveName = activeDocumentsArr.length === 1 ? `${path.parse(activeDocumentsArr[0].filename).name}.zip` : localize("Encrypt.archive_name", locale);
         if (folderOut.length > 0) {
-          outURI = path.join(folderOut, localize("Encrypt.archive_name", locale));
+          outURI = path.join(folderOut, archiveName);
         } else {
-          outURI = path.join(HOME_DIR, localize("Encrypt.archive_name", locale));
+          outURI = path.join(HOME_DIR, archiveName);
         }
 
         const output = fs.createWriteStream(outURI);
