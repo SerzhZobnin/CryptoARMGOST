@@ -352,7 +352,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     let oid;
     let ext;
 
-    /*if (licenseStatus !== true) {
+    if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
       Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
 
@@ -368,7 +368,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       });
 
       return;
-    }*/
+    }
 
     if (!this.verifyFields()) {
       $(".toast-required_fields").remove();

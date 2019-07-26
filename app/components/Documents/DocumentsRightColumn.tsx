@@ -307,7 +307,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     const { activeDocumentsArr, signer, lic_error } = this.props;
     const { localize, locale } = this.context;
 
-    /*const licenseStatus = checkLicense();
+    const licenseStatus = checkLicense();
 
     if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
@@ -325,7 +325,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       });
 
       return;
-    }*/
+    }
 
     if (activeDocumentsArr.length > 0) {
       /*const key = window.PKISTORE.findKey(signer);
@@ -635,7 +635,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     const { addDocuments, activeDocumentsArr, setting, licenseStatus, lic_error } = this.props;
     const { localize, locale } = this.context;
 
-    /*if (licenseStatus !== true) {
+    if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
       Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
 
@@ -651,7 +651,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       });
 
       return;
-    }*/
+    }
 
     if (activeDocumentsArr.length > 0) {
       const folderOut = setting.outfolder;

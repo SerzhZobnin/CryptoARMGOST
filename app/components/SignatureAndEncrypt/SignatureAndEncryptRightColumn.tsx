@@ -301,7 +301,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { activeFilesArr, signer, lic_error } = this.props;
     const { localize, locale } = this.context;
 
-    /*const licenseStatus = checkLicense();
+    const licenseStatus = checkLicense();
 
     if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
@@ -319,7 +319,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       });
 
       return;
-    }*/
+    }
 
     if (activeFilesArr.length > 0) {
 
@@ -694,7 +694,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { connectedList, connections, activeFilesArr, setting, deleteFile, selectFile, licenseStatus, lic_error } = this.props;
     const { localize, locale } = this.context;
 
-    /*if (licenseStatus !== true) {
+    if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
       Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
 
@@ -710,7 +710,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       });
 
       return;
-    }*/
+    }
 
     if (activeFilesArr.length > 0) {
       const folderOut = setting.outfolder;
