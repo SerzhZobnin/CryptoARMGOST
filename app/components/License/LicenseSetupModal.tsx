@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { loadLicense } from "../../AC/licenseActions";
-import { DEFAULT_PATH, LICENSE_PATH, PLATFORM } from "../../constants";
+import { DEFAULT_PATH, LICENSE_PATH, LicenseManager, PLATFORM } from "../../constants";
 import * as jwt from "../../trusted/jwt";
 import HeaderWorkspaceBlock from "../HeaderWorkspaceBlock";
 const dialog = window.electron.remote.dialog;
@@ -103,10 +103,9 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
         }
 
         try {
-          // trusted.utils.Jwt.addLicense(key);
-          throw new Error("TODO trusted.utils.Jwt.addLicense");
+          LicenseManager.addLicense(key);
         } catch (e) {
-          console.log("error", e);
+          console.log("LicenseManager error", e);
         }
 
         window.sudo.exec(command, options, function (error: any) {
