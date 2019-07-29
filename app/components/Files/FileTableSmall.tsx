@@ -116,6 +116,12 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
     }
   }
 
+  componentDidMount() {
+    if (this.props.searchValue) {
+      this.search(this.props.searchValue);
+    }
+  }
+
   render() {
     const { locale, localize } = this.context;
     const { loadingFiles, filesMap, searchValue } = this.props;
