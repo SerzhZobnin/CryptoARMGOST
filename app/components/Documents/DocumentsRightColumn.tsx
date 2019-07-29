@@ -21,14 +21,14 @@ import {
 import {
   DECRYPT, DEFAULT_DOCUMENTS_PATH, ENCRYPT, HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_MAIN, LOCATION_SETTINGS_CONFIG,
-  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
+  LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
 import { activeFilesSelector, connectedSelector } from "../../selectors";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
 import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
 import * as trustedEncrypts from "../../trusted/encrypt";
-import * as jwt from "../../trusted/jwt";
 import { checkLicense } from "../../trusted/jwt";
+import * as jwt from "../../trusted/jwt";
 import * as trustedSign from "../../trusted/sign";
 import { dirExists, extFile, fileCoding, mapToArr, md5 } from "../../utils";
 import logger from "../../winstonLogger";
@@ -103,7 +103,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
 
   render() {
     const { localize, locale } = this.context;
-    const { documents, isDefaultFilters, isDocumentsReviewed, recipients, setting, signer } = this.props;
+    const { documents, isDefaultFilters, isDocumentsReviewed, recipients, setting, settings, signer } = this.props;
     const { fileSignatures, file, showSignatureInfo } = this.state;
 
     return (
@@ -123,6 +123,17 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
                   this.props.activeSetting(this.props.setting.id);
                 }}>Изменить</a></li>
               </Link>
+              {
+                settings && settings.size > 1 ?
+                  <Link to={LOCATION_SETTINGS_SELECT}>
+                    <li>
+                      <a onClick={() => {
+                        this.props.activeSetting(this.props.setting.id);
+                      }}>Выбрать</a>
+                    </li>
+                  </Link> :
+                  null
+              }
             </ul>
           </div>
         </div>
@@ -831,6 +842,7 @@ export default connect((state) => {
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
     setting: state.settings.getIn(["entities", state.settings.default]),
+    settings: state.settings.entities,
     signatures,
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
