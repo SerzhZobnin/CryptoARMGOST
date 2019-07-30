@@ -380,7 +380,7 @@ export default {
     help: "Help",
     link_shop: "https://cryptoarm.ru/shop/cryptoarm-gost",
     link_shop_name: " КриптоАРМ.RU",
-    link_user_guide: "https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost-1-5.pdf",
+    link_user_guide: "https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost-2-0.pdf",
     link_user_guide_name: " КриптоАРМ ГОСТ Руководство пользователя.pdf",
     user_guide: "Documentation for the software product can be obtained from the link: ",
   },
