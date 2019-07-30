@@ -403,4 +403,4 @@ export default connect((state) => {
     settings: state.settings.getIn(["entities", state.settings.active]),
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
   };
-}, { applySettings, deleteRecipient, selectSignerCertificate })(SettingsWindow);
+}, { applySettings, deleteRecipient, selectSignerCertificate })(SettingsWindow); 
