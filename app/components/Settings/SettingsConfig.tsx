@@ -338,7 +338,7 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
 
   handleSaveToDocumentsClick = () => {
     const { settings } = this.state;
-    const directory = settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder
+    const directory = !settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder
     this.setState({
       settings: settings
         .setIn(["outfolder"], directory)
@@ -403,4 +403,4 @@ export default connect((state) => {
     settings: state.settings.getIn(["entities", state.settings.active]),
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
   };
-}, { applySettings, deleteRecipient, selectSignerCertificate })(SettingsWindow);
+}, { applySettings, deleteRecipient, selectSignerCertificate })(SettingsWindow); 
