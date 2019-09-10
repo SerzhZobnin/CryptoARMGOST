@@ -1,6 +1,24 @@
 import * as crypto from "crypto";
 import * as fs from "fs";
+
 import { OrderedMap } from "immutable";
+import PropTypes from "prop-types";
+import React from "react";
+
+
+let err_hint: string[] = ["Доступны только цифры", "Проверьте количество цифр", "Не правильно введены данные"];
+interface ISignatureStatusProps {
+  signature: any;
+  handleActiveCert: (cert: any) => void;
+}
+
+class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
+  static contextTypes = {
+    locale: PropTypes.string,
+    localize: PropTypes.func,
+  };
+  
+}
 
 export function arrayToMap(arr, RecordModel) {
   return arr.reduce((acc, el) => acc.set(el.id, RecordModel ? new RecordModel(el) : el), new OrderedMap({}))
@@ -116,21 +134,31 @@ export const uuid = () => {
 export const randomSerial = () => {
   return Math.floor(Math.random() * 1000000000000000000);
 };
+export let err_snils = "";
+export let err_inn = "";
+export let err_ogrnip = "";
 
 export const validateSnils = (snils: string | number) => {
   let result = false;
-
+  
   if (typeof snils === "number") {
     snils = snils.toString();
   } else if (typeof snils !== "string") {
     snils = "";
   }
 
+  
+
   if (!snils.length) {
+    
     return false;
   } else if (/[^0-9]/.test(snils)) {
+    err_snils = err_hint[0];
+    
     return false;
+    
   } else if (snils.length !== 11) {
+    err_snils = err_hint[1];
     return false;
   } else {
     let sum = 0;
@@ -140,6 +168,7 @@ export const validateSnils = (snils: string | number) => {
     }
 
     let checkDigit = 0;
+    
     if (sum < 100) {
       checkDigit = sum;
     } else if (sum > 101) {
@@ -151,15 +180,18 @@ export const validateSnils = (snils: string | number) => {
     if (checkDigit === parseInt(snils.slice(-2), 10)) {
       result = true;
     } else {
+      err_snils = err_hint[2];
       return false;
     }
   }
+  
+
   return result;
 };
 
 export const validateInn = (inn: string | number) => {
   let result = false;
-
+  
   if (typeof inn === "number") {
     inn = inn.toString();
   } else if (typeof inn !== "string") {
@@ -169,8 +201,12 @@ export const validateInn = (inn: string | number) => {
   if (!inn.length) {
     return false;
   } else if (/[^0-9]/.test(inn)) {
+    err_inn = err_hint[0];
+    
     return false;
   } else if ([10, 12].indexOf(inn.length) === -1) {
+    
+    err_inn = err_hint[1];
     return false;
   } else {
     const checkDigit = (inn, coefficients) => {
@@ -180,7 +216,7 @@ export const validateInn = (inn: string | number) => {
       for (const i in coefficients) {
         n += coefficients[i] * inn[i];
       }
-
+      
       return parseInt(n % 11 % 10, 10);
     };
 
@@ -202,9 +238,13 @@ export const validateInn = (inn: string | number) => {
     }
 
     if (!result) {
+      err_inn = err_hint[2];
+      
       return false;
     }
   }
+
+  
   return result;
 };
 
@@ -220,17 +260,24 @@ export const validateOgrnip = (ogrnip: string | number) => {
   if (!ogrnip.length) {
     return false;
   } else if (/[^0-9]/.test(ogrnip)) {
+    
+    err_ogrnip = err_hint[0];
     return false;
   } else if (ogrnip.length !== 15) {
+    
+    err_ogrnip = err_hint[1];
     return false;
   } else {
     const n15 = parseInt((parseInt(ogrnip.slice(0, -1), 10) % 13).toString().slice(-1), 10);
     if (n15 === parseInt(ogrnip[14], 10)) {
       result = true;
     } else {
+      
+      err_ogrnip = err_hint[2];
       return false;
     }
   }
+ 
   return result;
 };
 

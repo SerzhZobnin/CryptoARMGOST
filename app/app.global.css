@@ -3222,6 +3222,74 @@ svg:hover {
   fill: #334294;
 }
 
+.tooltip {
+  position: relative;
+  background: #F44336;
+  padding: 2px 9px;
+  margin: 5px;
+  font-size: 15px;
+  border-radius: 100%;
+  color: #FFF;
+}
+
+.tooltip:before,
+.tooltip:after {
+  position: absolute;
+  content: '';
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+.tooltip:before {
+  border-width: 10px 8px 0 8px;
+  border-style: solid;
+  border-color: #F44336 transparent transparent transparent;
+  top: -12px;
+  left: 5px;
+  transform: translateY(20px);
+}
+
+.tooltip:after {
+  content: attr(data-tooltip);
+  background: #F44336;
+  width: 160px;
+  height: 28px;
+  font-size: 11px;
+  font-weight: 300;
+  top: -44px;
+  left: -130px;
+  padding: 4px;
+  border-radius: 5px;
+  letter-spacing: 1px;
+  transform: translateY(20px);
+}
+
+.tooltip:hover::before,
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+
+.anim_block
+{
+  display: block;
+}
+.anim_none
+{
+  display: none;
+}
+#anim
+{
+
+  position: absolute;
+  right: 15px;
+  top: 20px;
+}
+#anim:hover {
+  animation: shake 500ms ease-in-out forwards;
+}
+
 /*---------Journal operations-------*/
 
 .icon_operation_status_success {
@@ -3469,3 +3537,5 @@ svg:hover {
       padding-right: 0px;
       margin-right: 14px;
   }
+
+

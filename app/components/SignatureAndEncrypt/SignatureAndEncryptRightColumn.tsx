@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import PropTypes from "prop-types";
+import PropTypes, { any } from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -18,7 +18,7 @@ import {
   DECRYPT, ENCRYPT, HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_SETTINGS_CONFIG,
   LOCATION_SETTINGS_SELECT,
-  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
+  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,TRUSTED_CRYPTO_LOG,
 } from "../../constants";
 import { activeFilesSelector, connectedSelector } from "../../selectors";
 import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
@@ -32,6 +32,9 @@ import RecipientsList from "../RecipientsList";
 import SignerInfo from "../Signature/SignerInfo";
 
 const dialog = window.electron.remote.dialog;
+
+
+
 
 interface ISignatureAndEncryptRightColumnSettingsProps {
   activeFilesArr: any;
@@ -323,7 +326,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (activeFilesArr.length > 0) {
-
+    
       const cert = window.PKISTORE.getPkiObject(signer);
 
       const filesForSign = [];
@@ -352,7 +355,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     // tslint:disable-next-line:no-shadowed-variable
     const { packageSign } = this.props;
     const { localize, locale } = this.context;
-
+    
+    
     if (files.length > 0) {
       const policies = ["noAttributes"];
 
@@ -363,6 +367,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         if (!dirExists(folderOut)) {
           $(".toast-failed_find_directory").remove();
           Materialize.toast(localize("Settings.failed_find_directory", locale), 2000, "toast-failed_find_directory");
+          
           return;
         }
       }

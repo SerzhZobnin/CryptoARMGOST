@@ -163,6 +163,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
                   <li>
                     <a className="waves-effect waves-light" onClick={this.minimizeWindow.bind(this)}>
                       <i className="material-icons">remove</i>
+                      
                     </a>
                   </li>
                   <li>

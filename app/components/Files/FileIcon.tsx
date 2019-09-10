@@ -47,6 +47,7 @@ class FileIcon extends React.Component<IFileIconProps, {}> {
     this.timerHandle = setTimeout(() => {
       if (file.extension === "sig") {
         const signs = this.props.signatures.getIn(["entities", file.id]);
+       
 
         if (!signs) {
           this.props.verifySignature(file.id, false);

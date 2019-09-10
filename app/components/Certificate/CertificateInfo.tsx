@@ -37,12 +37,12 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
+  
 
   render() {
     const { localize, locale } = this.context;
     const { certificate } = this.props;
     const PRIV_KEY = certificate.key && certificate.key.length > 0 ? localize("Certificate.present", locale) : localize("Certificate.absent", locale);
-
     return (
       <div className="collection cert-info-list">
         <div className="collection-item certs-collection certificate-info">

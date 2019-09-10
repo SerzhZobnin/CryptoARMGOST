@@ -93,7 +93,7 @@ class SettingsWindow extends React.Component<{}, ISettingsWindowState> {
                           <i className="material-icons settings edit" />
                         </a>
                       </div>
-                      <div className="col s12 svg_icon_text">{"Редактирвоать"}</div>
+                      <div className="col s12 svg_icon_text">{"Редактировать"}</div>
                     </div>
 
                     <div className="col s4 waves-effect waves-cryptoarm" onClick={() => {

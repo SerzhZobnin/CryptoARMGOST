@@ -70,6 +70,7 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
         if (newPath) {
           if (shell.openItem(newPath)) {
             this.props.selectTempContentOfSignedFiles(newPath);
+            
           }
         }
       }

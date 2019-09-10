@@ -35,6 +35,7 @@ export function deleteSetting(id: string) {
 }
 
 export function applySettings(settings: any) {
+
   return {
     payload: { settings },
     type: APPLY_SETTINGS,
@@ -42,14 +43,16 @@ export function applySettings(settings: any) {
 }
 
 export function toggleSaveToDocuments(saveToDocuments: boolean) {
-
+  
   return (dispatch: (action: {}) => void) => {
+    
     if (saveToDocuments) {
-
+      
       dispatch(changeSignatureOutfolder(DEFAULT_DOCUMENTS_PATH));
       dispatch(changeEncryptOutfolder(DEFAULT_DOCUMENTS_PATH));
+      
     } else {
-
+      
       dispatch(changeSignatureOutfolder(""));
       dispatch(changeEncryptOutfolder(""));
     }
@@ -58,6 +61,7 @@ export function toggleSaveToDocuments(saveToDocuments: boolean) {
       payload: { saveToDocuments },
       type: TOGGLE_SAVE_TO_DOCUMENTS,
     });
+    
   };
 }
 

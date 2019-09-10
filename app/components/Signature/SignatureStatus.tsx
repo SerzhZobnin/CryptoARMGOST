@@ -23,7 +23,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
   render() {
     const { signature } = this.props;
     const { localize, locale } = this.context;
-
+    
     let status = "";
     let icon = "";
     let isValid = "";
@@ -39,6 +39,11 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
     }
 
     const signerCert = signature.certs[signature.certs.length - 1];
+    
+
+      let dateSigningTime = new Date(signature.signingTime);
+      dateSigningTime.setHours(dateSigningTime.getHours() + 3) 
+
 
     return (
       <div className="row halfbottom" onClick={this.handleClick}>
@@ -75,13 +80,14 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
         <div className="col s10 " style={{ fontSize: "75%" }}>
           <div className="col s12">
             <div className={isValid}>{status}</div>
-            <div className="collection-info cert-info">{localize("Sign.signingTime", locale)}: {signature.signingTime ? (new Date(signature.signingTime)).toLocaleDateString(locale, {
-              day: "numeric",
-              hour: "numeric",
-              minute: "numeric",
-              month: "long",
-              year: "numeric",
-            }) : "-"}</div>
+            
+            <div className="collection-info cert-info">{localize("Sign.signingTime", locale)}: { signature.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            month: "long",
+            year: "numeric",
+          }) : "-"}</div>
           </div>
         </div>
 

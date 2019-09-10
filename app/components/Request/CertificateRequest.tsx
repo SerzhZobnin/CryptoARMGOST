@@ -62,6 +62,7 @@ interface ICertificateRequestState {
   snils?: string;
   template: string;
   title?: string;
+  organization1?: string;
 }
 
 interface ICertificateRequestProps {
@@ -116,7 +117,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       keyUsageGroup: KEY_USAGE_SIGN_AND_ENCIPHERMENT,
       locality: template.localityName,
       ogrnip: template.ogrnip,
-      organization: template.O,
+      organization: props.organization1,
       organizationUnitName: template.OU,
       province: template.stateOrProvinceName,
       selfSigned: false,
@@ -124,7 +125,12 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       template: template.snils || template.ogrnip || template.inn
         || template.OU || template.title ? REQUEST_TEMPLATE_ADDITIONAL : REQUEST_TEMPLATE_DEFAULT,
       title: template.title,
+  
+      
+
     };
+   
+    
   }
 
   componentDidMount() {
@@ -222,6 +228,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
                       handleCountryChange={this.handleCountryChange}
                       handleTemplateChange={this.handleTemplateChange}
                       handleInputChange={this.handleInputChange}
+                      
                     />
                   </div>
                 </div>
@@ -275,7 +282,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
                   <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
                 </div>
                 <div style={{ display: "inline-block", margin: "10px" }}>
-                  <a className="btn btn-outlined waves-effect waves-light modal-close" onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
+                  <a className="btn btn-outlined waves-effect waves-light " onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
                 </div>
               </div>
             </div>
@@ -340,11 +347,13 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const { localize, locale } = this.context;
     const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
-    const { licenseStatus, lic_error } = this.props;
+    const { licenseStatus, lic_error} = this.props;
 
-    const exts = new trusted.pki.ExtensionCollection();
+    
+    const exts =
+     new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
-    const OS_TYPE = os.type();
+    const OS_TYPE = os.type();1
     let providerType: string = PROVIDER_SYSTEM;
     let keyUsageStr = "critical";
     let extendedKeyUsageStr = "";
@@ -838,21 +847,21 @@ const oidsName = [
 ];
 
 const oidValues: { [index: string]: string } = {
-  CN: "2.5.4.3",
-  SN: "2.5.4.4",
+  CN: "CN",
+  SN: "SN",
   serialNumber: "2.5.4.5",
   // tslint:disable-next-line:object-literal-sort-keys
-  C: "2.5.4.6",
-  localityName: "2.5.4.7",
-  stateOrProvinceName: "2.5.4.8",
-  streetAddress: "2.5.4.9",
-  O: "2.5.4.10",
-  OU: "2.5.4.11",
-  title: "2.5.4.12",
+  C: "C",
+  localityName: "L",
+  stateOrProvinceName: "ST",
+  streetAddress: "STREET",
+  O: "O",
+  OU: "OU",
+  title: "Title",
   postalCode: "2.5.4.17",
-  GN: "2.5.4.42",
-  initials: "2.5.4.43",
-  emailAddress: "1.2.840.113549.1.9.1",
+  GN: "GivenName",
+  initials: "Initials",
+  emailAddress: "Email",
   snils: "1.2.643.100.3",
   inn: "1.2.643.3.131.1.1",
   ogrn: "1.2.643.100.1",
@@ -894,11 +903,15 @@ const getTemplateByCertificate = (certificate: any) => {
     const subjectName = certificate.subjectName + "/";
 
     oidsName.map((oidName: string) => {
-      const oidValue = subjectName.match(`/${oidValues[oidName]}=([^\/]*)/`);
+      const oidValue = subjectName.match(`${oidValues[oidName]}=([^\/]*)/`);
+      
       if (oidValue) {
         template[oidName] = oidValue[1];
       }
+      
+
     });
+    
   }
 
   return template;

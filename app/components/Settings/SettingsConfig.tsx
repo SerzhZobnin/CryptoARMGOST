@@ -343,10 +343,9 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
       settings: settings
         .setIn(["outfolder"], directory)
         .setIn(["saveToDocuments"], !settings.saveToDocuments),
-
-
+        
     });
-
+  
   }
 
   handleEncodingChange = (encoding: string) => {

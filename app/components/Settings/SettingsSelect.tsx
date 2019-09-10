@@ -109,7 +109,7 @@ class SettingsSelect extends React.Component<{}, ISettingsSelectState> {
     const { setting } = this.props;
 
     if (setting) {
-      console.log("--- setting", setting);
+     
       this.props.changeDefaultSettings(setting.id);
     }
 

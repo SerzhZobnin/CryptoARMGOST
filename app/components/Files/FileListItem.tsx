@@ -111,6 +111,7 @@ class FileListItem extends React.Component<IFilelistItemProps, {}> {
         if (newPath) {
           if (shell.openItem(newPath)) {
             this.props.selectTempContentOfSignedFiles(newPath);
+            
           }
         }
       }
