@@ -632,7 +632,7 @@ class CertWindow extends React.Component<any, any> {
             matches ? (
               <React.Fragment>
                 <CertificateInfoTabs activeCertInfoTab={this.handleChangeActiveTab} />
-                <div style={{ height: "calc(100vh - 200px)" }}>
+                <div style={{ height: "calc(100vh - 150px)" }}>
                   <div className="add-certs">
                     {cert}
                   </div>
@@ -645,7 +645,7 @@ class CertWindow extends React.Component<any, any> {
                   <hr />
                 </div>
                 <div className="col s12" style={{ padding: 0 }}>
-                  <div style={{ height: "calc(100vh - 200px)" }}>
+                  <div style={{ height: "calc(100vh - 150px)" }}>
                     <div className="add-certs">
                       <CertificateInfo certificate={certificate} />
                       <a className="collection-info chain-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
@@ -799,20 +799,17 @@ class CertWindow extends React.Component<any, any> {
         isOpen={showModalCertificateRequest}
         header={localize("CSR.create_request", locale)}
         onClose={() => this.handleCloseModalByType(MODAL_CERTIFICATE_REQUEST)}>
-        
+
         <CertificateRequest
           certificateTemplate={certificateTemplate}
           onCancel={() => this.handleCloseModalByType(MODAL_CERTIFICATE_REQUEST)}
           selfSigned={false}
         />
       </Modal>
-      
     );
-    
-   
   }
-  showModalCloudCSP = () => {
 
+  showModalCloudCSP = () => {
     const { localize, locale } = this.context;
     const { showModalCloudCSP } = this.state;
 
@@ -995,7 +992,7 @@ class CertWindow extends React.Component<any, any> {
             </div>
             {
               certificate || crl ?
-                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "150px" }}>
+                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "70px" }}>
                   <div className="col s12">
                     <hr />
                   </div>
@@ -1029,21 +1026,7 @@ class CertWindow extends React.Component<any, any> {
                       </div> :
                       null
                   }
-                   <div className="col s12">
-                <div className="row halfbottom"></div>
-              </div>
-                <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleCopyParameter}>
-                    <div className="col s12 svg_icon">
-                      <a data-position="bottom">
-                        <i className="material-icons certificate csrfolder" />
-                      </a>
-                    </div>
-                    <div className="col s12 svg_icon_text">{localize("Common.copy", locale)}</div>
-                  </div>
-                  </div>
-                  
-                
-               
+                </div>
                 : null
             }
 
@@ -1179,10 +1162,6 @@ class CertWindow extends React.Component<any, any> {
 
   handleOpenCSRFolder = () => {
     window.electron.shell.openItem(DEFAULT_CSR_PATH);
-  }
-  handleCopyParameter =() => {
-    this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST);
-    console.log(ISubjectNameInfoProps);
   }
 
   getCPCSPVersion = () => {
