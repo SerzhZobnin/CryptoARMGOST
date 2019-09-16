@@ -35,14 +35,14 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
   };
 
   constructor(props: any) {
-    
+
     super(props);
     this.state = ({
       activeError: "",
       criticalError: false,
       errors: [],
     });
-    
+
   }
 
   checkCPCSP = () => {
@@ -59,11 +59,11 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
             type: NO_GOST_2001,
           }],
         });
-        
+
         this.setState({ criticalError: false });
         return false;
       }
-      
+
       if (!trusted.utils.Csp.checkCPCSPLicense()) {
         $(".toast-noCPLicense").remove();
         Materialize.toast(localize("Csp.noCPLicense", locale), 5000, "toast-noCPLicense");
@@ -74,7 +74,7 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
             type: ERROR_CHECK_CSP_LICENSE,
           }],
         });
-        
+
         return false;
       }
     } catch (e) {
@@ -86,17 +86,17 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
           type: ERROR_CHECK_CSP_PARAMS,
         }],
       });
-      
+
       this.setState({ criticalError: false });
 
       return false;
     }
-    
+
     return true;
   }
 
   checkTrustedCryptoLoadedErr = () => {
-    
+
     if (window.tcerr) {
       if (window.tcerr.message) {
         if (~window.tcerr.message.indexOf("libcapi")) {
@@ -119,33 +119,31 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
           type: ERROR_LOAD_TRUSTED_CRYPTO,
         }],
       });
-      
+
       this.setState({ criticalError: false });
 
       return false;
     }
-    
+
     return true;
   }
 
   componentWillReceiveProps(nextProps: any) {
     const { certificatesLoaded, loadingLicense } = this.props;
     const { errors } = this.state;
-    
-    
-    
+
     if (nextProps.statusLicense === false && nextProps.lic_format === "NONE" && nextProps.verifiedLicense == true && loadingLicense === false) {
-          this.setState({
+      this.setState({
         errors: [...this.state.errors, {
           important: WARNING,
           type: NO_CRYPTOARM_LICENSE,
         }],
       });
-      
+
     }
-    
+
     if (nextProps.lic_format === "dlv" && nextProps.statusLicense === false && nextProps.verifiedLicense == true && loadingLicense === false) {
-         
+
       this.setState({
         errors: [...this.state.errors, {
           important: WARNING,
@@ -159,11 +157,11 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
           important: WARNING,
           type: NO_CORRECT_CRYPTOARM_LICENSE,
         }],
-        
+
       });
-    
+
     }
-    
+
     if (certificatesLoaded === false && nextProps.certificatesLoaded && (nextProps.certificates.size === 0)) {
       this.setState({
         errors: [...this.state.errors, {
@@ -171,19 +169,17 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
           type: NO_HAVE_CERTIFICATES_WITH_KEY,
         }],
       });
-      
+
     }
-   
-    
+
   }
 
   componentDidMount() {
     const { certificatesLoading } = this.props;
-    
+
     // tslint:disable-next-line:no-shadowed-variable
     const { loadAllCertificates, loadLicense } = this.props;
-    
-    
+
     if (this.checkTrustedCryptoLoadedErr()) {
       this.checkCPCSP();
     }
@@ -193,51 +189,50 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
     if (!certificatesLoading) {
       loadAllCertificates();
     }
-    
+
   }
 
   getCloseButton() {
     const { localize, locale } = this.context;
     const { activeError, criticalError } = this.state;
-    
+
     if (!criticalError && activeError === NO_CORRECT_CRYPTOARM_LICENSE || activeError === NO_CRYPTOARM_LICENSE || activeError === ERROR_CHECK_CSP_LICENSE) {
-      
+
       return (
         <Link to={LOCATION_ABOUT} onClick={() => $("#modal-window-diagnostic").closeModal()}>
           <a className="btn btn-outlined waves-effect waves-light modal-close">{localize("Common.goOver", locale)}</a>
         </Link>
       );
-    } else { 
+    } else {
       return (
         <a className="btn btn-outlined waves-effect waves-light modal-close" onClick={this.handleMaybeCloseApp}>{localize("Diagnostic.close", locale)}</a>
       );
     }
-   
+
   }
 
   showModalWithError = () => {
     let test = 0;
-       
+
     const { localize, locale } = this.context;
     const { errors } = this.state;
-    
+
     if (!errors || !errors.length) {
       return null;
     }
-   
+
     const cspErrors: IError[] = [];
     for (const error of errors) {
       if (error.type === NO_GOST_2001 ||
         error.type === ERROR_CHECK_CSP_PARAMS) {
         cspErrors.push(error);
       }
-      
+
     }
-    
 
     if (cspErrors.length) {
       if (!this.state.activeError) {
-       
+
         this.setState({ activeError: cspErrors[0].type });
       }
     } else {
@@ -245,37 +240,33 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
         this.setState({ activeError: errors[0].type });
       }
     }
-    
+
     let errors_bad_LICENSE = 0
     let errorCounter_LICENSE = 0
-    for (let usl = 0; usl< errors.length; usl++)
-    {
-        if (errors[errorCounter_LICENSE].type == "NO_CRYPTOARM_LICENSE")
-        {
-          errors_bad_LICENSE++;
-          if(errors_bad_LICENSE >= 2)
-          {          
-            this.setState({
-              errors: errors.slice(errorCounter_LICENSE, errorCounter_LICENSE +1)
-            });            
-            errors_bad_LICENSE--
-          }          
-        }        
-        errorCounter_LICENSE++;     
+    for (let usl = 0; usl < errors.length; usl++) {
+      if (errors[errorCounter_LICENSE].type == "NO_CRYPTOARM_LICENSE") {
+        errors_bad_LICENSE++;
+        if (errors_bad_LICENSE >= 2) {
+          this.setState({
+            errors: errors.slice(errorCounter_LICENSE, errorCounter_LICENSE + 1)
+          });
+          errors_bad_LICENSE--
+        }
+      }
+      errorCounter_LICENSE++;
     }
-    
+
     return (
       <DiagnosticModal
         isOpen={true}
         header={localize("Diagnostic.header", locale)}
         onClose={this.handleMaybeCloseApp}>
- 
 
         <div>
           <div className="row nobottom">
             <div className="diagnostic-content-item">
               <div className="col s6 m5 l6 problem-contaner">
-              
+
                 <Problems errors={cspErrors.length ? cspErrors : errors} activeError={this.state.activeError} onClick={this.handleClickOnError} />
               </div>
               <div className="col s6 m7 l6 problem-contaner">
@@ -299,20 +290,20 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
   }
 
   handleClickOnError = (error: string) => {
-    
+
     this.setState({ activeError: error });
-    
+
   }
 
   handleMaybeCloseApp = () => {
-    
+
     const { criticalError } = this.state;
 
     if (criticalError) {
       remote.getGlobal("sharedObject").isQuiting = true;
       remote.getCurrentWindow().close();
     }
-  
+
     $("#modal-window-diagnostic").closeModal();
   }
 

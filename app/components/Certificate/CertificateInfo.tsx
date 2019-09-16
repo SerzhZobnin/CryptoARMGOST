@@ -22,7 +22,7 @@ export interface IX509Certificate {
   status: boolean;
   signatureAlgorithm: string;
   signatureDigestAlgorithm: string;
- publicKeyAlgorithm: string;
+  publicKeyAlgorithm: string;
   privateKey: boolean;
   active: boolean;
   key: string;
@@ -37,7 +37,6 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
-  
 
   render() {
     const { localize, locale } = this.context;
