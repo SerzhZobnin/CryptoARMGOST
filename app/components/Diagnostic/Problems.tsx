@@ -50,6 +50,7 @@ class Problems extends React.Component<IProblemsProps, {}> {
   }
 
   isOpen = (type: string) => {
+
     const { activeError } = this.props;
     return (type === activeError) ? "active" : "";
   }
@@ -59,10 +60,13 @@ class Problems extends React.Component<IProblemsProps, {}> {
   }
 
   render() {
+    
     const { errors, onClick } = this.props;
     const { localize, locale } = this.context;
-
+    
     const elements = errors.map((error: any) => <div key={Math.random()}>
+    
+   
       <div className={"add-problems collection "}>
         <div className="row problems-list-item" onClick={() => onClick(error.type)}>
           <div className={"collection-item avatar problems-collection " + this.isOpen(error.type)}>

@@ -86,6 +86,7 @@ export default (settings = new DefaultReducerState(), action) => {
       break;
 
     case TOGGLE_SAVE_TO_DOCUMENTS:
+      
       settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "saveToDocuments"], payload.saveToDocuments);

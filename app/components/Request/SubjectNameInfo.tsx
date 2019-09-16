@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import {
   REQUEST_TEMPLATE_ADDITIONAL, REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP,
 } from "../../constants";
-import { validateInn, validateOgrnip, validateSnils } from "../../utils";
+import { validateInn, validateOgrnip, validateSnils,err_snils, err_inn, err_ogrnip } from "../../utils";
 
 const REQULAR_EXPRESSION = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
@@ -26,6 +26,7 @@ interface ISubjectNameInfoProps {
   handleTemplateChange: (ev: any) => void;
   handleInputChange: (ev: any) => void;
 }
+
 
 class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
   static contextTypes = {
@@ -50,7 +51,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
   render() {
     const { localize, locale } = this.context;
     const { cn, email, organization, locality, province, country, template, handleCountryChange, handleInputChange, handleTemplateChange } = this.props;
-
+    
     return (
       <div className="row">
         <div className="row">
@@ -74,6 +75,8 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
               value={cn}
               onChange={handleInputChange}
               placeholder={localize("CSR.common_name", locale)}
+              maxlength="64"
+              
             />
             <label htmlFor="commonName">{localize("CSR.common_name", locale)} *</label>
           </div>
@@ -88,6 +91,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
               value={organization}
               onChange={handleInputChange}
               placeholder={localize("CSR.organization_name", locale)}
+              maxlength="64"
             />
             <label htmlFor="organizationName">{localize("CSR.organization_name", locale)}</label>
           </div>
@@ -104,6 +108,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
               value={locality}
               onChange={handleInputChange}
               placeholder={localize("CSR.locality_name", locale)}
+              maxlength="64"
             />
             <label htmlFor="localityName">
               {localize("CSR.locality_name", locale)}
@@ -119,6 +124,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
               value={province}
               onChange={handleInputChange}
               placeholder={localize("CSR.province_name", locale)}
+              maxlength="128"
             />
             <label htmlFor="stateOrProvinceName">
               {localize("CSR.province_name", locale)}
@@ -136,6 +142,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
             value={email}
             onChange={handleInputChange}
             placeholder={localize("CSR.email_address", locale)}
+            maxlength="255"
           />
           <label htmlFor="emailAddress">{localize("CSR.email_address", locale)}</label>
         </div>
@@ -153,7 +160,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
   }
 
   getAditionalField = () => {
-    const { template, handleInputChange, inn, ogrnip, organizationUnitName, snils, title } = this.props;
+    const { template, handleInputChange, inn, ogrnip, organizationUnitName, snils, title} = this.props;
     const { localize, locale } = this.context;
 
     if (template === REQUEST_TEMPLATE_KEP_FIZ || template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_ADDITIONAL) {
@@ -170,12 +177,19 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
                       className={!ogrnip || !ogrnip.length ? "validate" : validateOgrnip(ogrnip) ? "valid" : "invalid"}
                       name="ogrnip"
                       value={ogrnip}
+                      maxlength="15"
                       onChange={handleInputChange}
                     />
+                    
+                    <div className={!ogrnip || !ogrnip.length ?  "anim_none" : validateInn(ogrnip) ? "valid" : "anim_block"} id="anim">
+                 <span class="tooltip" data-tooltip={err_ogrnip}>!</span>
+               </div>
                     <label htmlFor="ogrnip">
                       {localize("CSR.ogrnip", locale)}
                       {template === REQUEST_TEMPLATE_KEP_IP ? " *" : ""}
+                      
                     </label>
+                    
                   </div>
                 </div>) :
               null
@@ -189,7 +203,14 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
                 name="snils"
                 value={snils}
                 onChange={handleInputChange}
+                maxlength="11"
+                
               />
+  
+
+               <div className={!snils || !snils.length ?  "anim_none" : validateInn(snils) ? "valid" : "anim_block"} id="anim">
+                 <span class="tooltip" data-tooltip={err_snils}>!</span>
+               </div>
               <label htmlFor="snils">
                 {localize("CSR.snils", locale)}
                 {template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_KEP_FIZ ? " *" : ""}
@@ -203,8 +224,14 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
                 name="inn"
                 value={inn}
                 onChange={handleInputChange}
+                maxlength="12"
               />
-              <label htmlFor="inn">{localize("CSR.inn", locale)}</label>
+              
+              
+                 <label htmlFor="inn">{localize("CSR.inn", locale)}</label>
+              <div className={!inn || !inn.length ? "anim_none" : validateInn(inn) ? "valid" : "anim_block"} id="anim">
+                 <span class="tooltip" data-tooltip={err_inn}>!</span>
+               </div>
             </div>
           </div>
           {
@@ -219,6 +246,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
                       name="organizationUnitName"
                       value={organizationUnitName}
                       onChange={handleInputChange}
+                      maxlength="64"
                     />
                     <label htmlFor="organizationUnitName">{localize("CSR.organizational_unit_name", locale)}</label>
                   </div>
@@ -230,6 +258,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
                       name="title"
                       value={title}
                       onChange={handleInputChange}
+                      maxlength="64"
                     />
                     <label htmlFor="title">{localize("CSR.title", locale)}</label>
                   </div>

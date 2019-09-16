@@ -129,7 +129,7 @@ export function packageSign(
                   issuerName: subjectCert.issuerName,
                   notAfter: new Date(subjectCert.notAfter).getTime(),
                   notBefore: new Date(subjectCert.notBefore).getTime(),
-                  signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
+                  signingTime: info.signingTime ? new Date(info.signingTime).getTime()  : undefined,
                   subjectFriendlyName: info.subject,
                   subjectName: subjectCert.subjectName,
 

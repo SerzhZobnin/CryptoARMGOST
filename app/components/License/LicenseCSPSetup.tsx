@@ -114,7 +114,6 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
     const { license } = this.state;
     const { localize, locale } = this.context;
     const self = this;
-
     let cpconfigPath = "";
     let cmnd = "";
 

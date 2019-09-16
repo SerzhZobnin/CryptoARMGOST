@@ -11,6 +11,7 @@ interface IButtonWithExternalLinkProps {
 class ButtonWithExternalLink extends React.Component<IButtonWithExternalLinkProps, {}> {
   render() {
     const { externalName, externalLink } = this.props;
+    
     return (
       <span>
         <a className="waves-effect waves-light btn" target="_blank" onClick={(event: any) => this.gotoLink(externalLink)}>
@@ -56,8 +57,10 @@ class LicenseStatus extends React.Component<ILicenseStatusProps, {}> {
 
   render() {
     const { localize, locale } = this.context;
-    const { license, status, lic_format, lic_error } = this.props;
+    
 
+    const { license, status, lic_format, lic_error } = this.props;
+    
     const settings = {
       draggable: false,
     };
