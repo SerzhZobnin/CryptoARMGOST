@@ -125,12 +125,12 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       template: template.snils || template.ogrnip || template.inn
         || template.OU || template.title ? REQUEST_TEMPLATE_ADDITIONAL : REQUEST_TEMPLATE_DEFAULT,
       title: template.title,
-  
-      
+
+
 
     };
-   
-    
+
+
   }
 
   componentDidMount() {
@@ -228,7 +228,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
                       handleCountryChange={this.handleCountryChange}
                       handleTemplateChange={this.handleTemplateChange}
                       handleInputChange={this.handleInputChange}
-                      
+
                     />
                   </div>
                 </div>
@@ -347,13 +347,13 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const { localize, locale } = this.context;
     const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
-    const { licenseStatus, lic_error} = this.props;
+    const { licenseStatus, lic_error } = this.props;
 
-    
+
     const exts =
-     new trusted.pki.ExtensionCollection();
+      new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
-    const OS_TYPE = os.type();1
+    const OS_TYPE = os.type(); 1
     let providerType: string = PROVIDER_SYSTEM;
     let keyUsageStr = "critical";
     let extendedKeyUsageStr = "";
@@ -904,14 +904,14 @@ const getTemplateByCertificate = (certificate: any) => {
 
     oidsName.map((oidName: string) => {
       const oidValue = subjectName.match(`${oidValues[oidName]}=([^\/]*)/`);
-      
+
       if (oidValue) {
         template[oidName] = oidValue[1];
       }
-      
+
 
     });
-    
+
   }
 
   return template;
