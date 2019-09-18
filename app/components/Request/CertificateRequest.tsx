@@ -908,8 +908,6 @@ const getTemplateByCertificate = (certificate: any) => {
       if (oidValue) {
         template[oidName] = oidValue[1];
       }
-
-
     });
 
   }

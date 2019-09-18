@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import {
   REQUEST_TEMPLATE_ADDITIONAL, REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP,
 } from "../../constants";
-import { validateInn, validateOgrnip, validateSnils,err_snils, err_inn, err_ogrnip } from "../../utils";
+import { validateInn, validateOgrnip, validateSnils, err_snils, err_inn, err_ogrnip } from "../../utils";
 
 const REQULAR_EXPRESSION = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
@@ -26,7 +26,6 @@ interface ISubjectNameInfoProps {
   handleTemplateChange: (ev: any) => void;
   handleInputChange: (ev: any) => void;
 }
-
 
 class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
   static contextTypes = {
@@ -51,7 +50,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
   render() {
     const { localize, locale } = this.context;
     const { cn, email, organization, locality, province, country, template, handleCountryChange, handleInputChange, handleTemplateChange } = this.props;
-    
+
     return (
       <div className="row">
         <div className="row">
@@ -76,7 +75,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
               onChange={handleInputChange}
               placeholder={localize("CSR.common_name", locale)}
               maxlength="64"
-              
+
             />
             <label htmlFor="commonName">{localize("CSR.common_name", locale)} *</label>
           </div>
@@ -133,34 +132,34 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
           </div>
         </div>
         <div className="row">
-        <div className="input-field input-field-csr col s6">
-          <input
-            id="emailAddress"
-            type="email"
-            className={!email || !email.length ? "validate" : REQULAR_EXPRESSION.test(email) ? "valid" : "invalid"}
-            name="email"
-            value={email}
-            onChange={handleInputChange}
-            placeholder={localize("CSR.email_address", locale)}
-            maxlength="255"
-          />
-          <label htmlFor="emailAddress">{localize("CSR.email_address", locale)}</label>
-        </div>
-        <div className="input-field input-field-csr col s6">
-          <select className="select" ref="countrySelect" value={country} onChange={handleCountryChange} >
-            <option value="RU">Российская Федерация (RU)</option>
-            <option value="AU">Австралия (AU)</option>
-          </select>
+          <div className="input-field input-field-csr col s6">
+            <input
+              id="emailAddress"
+              type="email"
+              className={!email || !email.length ? "validate" : REQULAR_EXPRESSION.test(email) ? "valid" : "invalid"}
+              name="email"
+              value={email}
+              onChange={handleInputChange}
+              placeholder={localize("CSR.email_address", locale)}
+              maxlength="255"
+            />
+            <label htmlFor="emailAddress">{localize("CSR.email_address", locale)}</label>
+          </div>
+          <div className="input-field input-field-csr col s6">
+            <select className="select" ref="countrySelect" value={country} onChange={handleCountryChange} >
+              <option value="RU">Российская Федерация (RU)</option>
+              <option value="AU">Австралия (AU)</option>
+            </select>
 
-          <label>{localize("CSR.country", locale)}</label>
-        </div>
+            <label>{localize("CSR.country", locale)}</label>
+          </div>
         </div>
       </div>
     );
   }
 
   getAditionalField = () => {
-    const { template, handleInputChange, inn, ogrnip, organizationUnitName, snils, title} = this.props;
+    const { template, handleInputChange, inn, ogrnip, organizationUnitName, snils, title } = this.props;
     const { localize, locale } = this.context;
 
     if (template === REQUEST_TEMPLATE_KEP_FIZ || template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_ADDITIONAL) {
@@ -180,16 +179,16 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
                       maxlength="15"
                       onChange={handleInputChange}
                     />
-                    
-                    <div className={!ogrnip || !ogrnip.length ?  "anim_none" : validateInn(ogrnip) ? "valid" : "anim_block"} id="anim">
-                 <span class="tooltip" data-tooltip={err_ogrnip}>!</span>
-               </div>
+
+                    <div className={!ogrnip || !ogrnip.length ? "anim_none" : validateInn(ogrnip) ? "valid" : "anim_block"} id="anim">
+                      <span class="tooltip" data-tooltip={err_ogrnip}>!</span>
+                    </div>
                     <label htmlFor="ogrnip">
                       {localize("CSR.ogrnip", locale)}
                       {template === REQUEST_TEMPLATE_KEP_IP ? " *" : ""}
-                      
+
                     </label>
-                    
+
                   </div>
                 </div>) :
               null
@@ -204,13 +203,12 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
                 value={snils}
                 onChange={handleInputChange}
                 maxlength="11"
-                
-              />
-  
 
-               <div className={!snils || !snils.length ?  "anim_none" : validateInn(snils) ? "valid" : "anim_block"} id="anim">
-                 <span class="tooltip" data-tooltip={err_snils}>!</span>
-               </div>
+              />
+
+              <div className={!snils || !snils.length ? "anim_none" : validateInn(snils) ? "valid" : "anim_block"} id="anim">
+                <span class="tooltip" data-tooltip={err_snils}>!</span>
+              </div>
               <label htmlFor="snils">
                 {localize("CSR.snils", locale)}
                 {template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_KEP_FIZ ? " *" : ""}
@@ -226,12 +224,11 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
                 onChange={handleInputChange}
                 maxlength="12"
               />
-              
-              
-                 <label htmlFor="inn">{localize("CSR.inn", locale)}</label>
+
+              <label htmlFor="inn">{localize("CSR.inn", locale)}</label>
               <div className={!inn || !inn.length ? "anim_none" : validateInn(inn) ? "valid" : "anim_block"} id="anim">
-                 <span class="tooltip" data-tooltip={err_inn}>!</span>
-               </div>
+                <span class="tooltip" data-tooltip={err_inn}>!</span>
+              </div>
             </div>
           </div>
           {
