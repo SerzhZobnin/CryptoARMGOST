@@ -485,6 +485,10 @@ export default {
     application_name: "Имя веб-приложения Сервиса Проверки Подписи",
     hostname: "Адрес веб-сервиса",
   },
+  Services: {
+    Services: "СЕРВИСЫ",
+    services: "Сервисы",
+  },
   Settings: {
     BASE: "BASE-64",
     Choose: "ВЫБРАТЬ",
@@ -572,9 +576,5 @@ export default {
   SignAndEncrypt: {
     SignAndEncrypt: "ПОДПИСЬ И ШИФРОВАНИЕ",
     sign_and_encrypt: "Подпись и шифрование",
-  },
-  Services: {
-    Services: "СЕРВИСЫ",
-    services: "Сервисы",
   },
 };

@@ -483,6 +483,10 @@ export default {
     application_name: "Application Name",
     hostname: "Hostname",
   },
+  Services: {
+    Services: "SERVICES",
+    services: "Services",
+  },
   Settings: {
     BASE: "BASE-64",
     Choose: "CHOOSE",
@@ -570,9 +574,5 @@ export default {
   SignAndEncrypt: {
     SignAndEncrypt: "SIGNING AND ENCRYPTION",
     sign_and_encrypt: "Signature and encryption",
-  },
-  Services: {
-    Services: "SERVICES",
-    services: "Services",
   },
 };
