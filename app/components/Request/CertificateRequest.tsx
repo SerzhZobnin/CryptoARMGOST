@@ -125,12 +125,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       template: template.snils || template.ogrnip || template.inn
         || template.OU || template.title ? REQUEST_TEMPLATE_ADDITIONAL : REQUEST_TEMPLATE_DEFAULT,
       title: template.title,
-
-
-
     };
-
-
   }
 
   componentDidMount() {
