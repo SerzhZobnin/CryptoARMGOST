@@ -483,6 +483,10 @@ export default {
     application_name: "Application Name",
     hostname: "Hostname",
   },
+  Services: {
+    Services: "SERVICES",
+    services: "Services",
+  },
   Settings: {
     BASE: "BASE-64",
     Choose: "CHOOSE",
