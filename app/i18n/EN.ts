@@ -350,6 +350,7 @@ export default {
     operation_object: "Operation object",
     operation_result: "Operation result",
     search_in_doclist: "Search in documents list",
+    search_in_services: "Search in services list",
     search_in_table: "Search in operations log",
     status: "Status",
     user_name: "User",
@@ -486,6 +487,8 @@ export default {
   Services: {
     Services: "SERVICES",
     services: "Services",
+    services_not_found: "The service is not found",
+    services_not_select: "A service is not selected",
   },
   Settings: {
     BASE: "BASE-64",
