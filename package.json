@@ -101,7 +101,6 @@
     "@types/redux": "^3.6.0",
     "@types/redux-logger": "^3.0.0",
     "@types/request": "^2.48.1",
-    "@types/socket.io": "^1.4.36",
     "@types/systeminformation": "^3.23.0",
     "@types/webpack-env": "^1.13.0",
     "@types/xml2js": "^0.4.3",
