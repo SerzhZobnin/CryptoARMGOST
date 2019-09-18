@@ -350,6 +350,7 @@ export default {
     operation_object: "Объект операции",
     operation_result: "Результат операции",
     search_in_doclist: "Поиск по списку документов",
+    search_in_services: "Поиск сервиса",
     search_in_table: "Поиск по журналу операций",
     status: "Статус",
     user_name: "Пользователь",
@@ -488,6 +489,8 @@ export default {
   Services: {
     Services: "СЕРВИСЫ",
     services: "Сервисы",
+    services_not_found: "Сервисы отсутствуют",
+    services_not_select: "Сервис не выбран",
   },
   Settings: {
     BASE: "BASE-64",

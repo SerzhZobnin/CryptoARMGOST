@@ -7,8 +7,8 @@ import {
   LOCATION_ABOUT, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
   LOCATION_CERTIFICATES,
   LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
-  LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SETTINGS,
-  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
+  LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SERVICES,
+  LOCATION_SETTINGS, LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
 } from "../constants";
 import { connectedSelector, loadingRemoteFilesSelector } from "../selectors";
 import { CANCELLED } from "../server/constants";
@@ -127,6 +127,9 @@ class MenuBar extends React.Component<any, IMenuBarState> {
             }) + "] - " + localize("About.product_NAME", locale);
         }
         return title;
+
+      case LOCATION_SERVICES:
+        return `${localize("Services.services", locale)} - ${localize("About.product_NAME", locale)}`;
 
       default:
         return `${localize("SignAndEncrypt.sign_and_encrypt", locale)} - ${localize("About.product_NAME", locale)}`;
