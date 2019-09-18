@@ -573,4 +573,8 @@ export default {
     SignAndEncrypt: "ПОДПИСЬ И ШИФРОВАНИЕ",
     sign_and_encrypt: "Подпись и шифрование",
   },
+  Services: {
+    Services: "СЕРВИСЫ",
+    services: "Сервисы",
+  },
 };
