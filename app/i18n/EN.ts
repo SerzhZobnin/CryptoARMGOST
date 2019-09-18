@@ -571,4 +571,8 @@ export default {
     SignAndEncrypt: "SIGNING AND ENCRYPTION",
     sign_and_encrypt: "Signature and encryption",
   },
+  Services: {
+    Services: "SERVICES",
+    services: "Services",
+  },
 };
