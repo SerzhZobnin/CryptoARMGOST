@@ -487,6 +487,7 @@ export default {
   Services: {
     Services: "SERVICES",
     services: "Services",
+    services_add_item: "Add service",
     services_not_found: "The service is not found",
     services_not_select: "A service is not selected",
   },
