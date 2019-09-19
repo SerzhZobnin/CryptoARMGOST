@@ -489,6 +489,7 @@ export default {
   Services: {
     Services: "СЕРВИСЫ",
     services: "Сервисы",
+    services_add_item: "Добавить сервис",
     services_not_found: "Сервисы отсутствуют",
     services_not_select: "Сервис не выбран",
   },

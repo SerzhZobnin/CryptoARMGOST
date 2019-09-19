@@ -1,11 +1,9 @@
-import * as fs from "fs";
-import * as path from "path";
-import PropTypes, { any } from "prop-types";
+import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import { changeSearchValue } from "../../AC/searchActions";
 import BlockNotElements from "../BlockNotElements";
+import BlockWithReference from "../BlockWithReference";
 
 const dialog = window.electron.remote.dialog;
 
@@ -87,7 +85,8 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
               <div className="col s12">
                 <div style={{ display: "flex" }}>
                   <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
-                    <BlockNotElements name={"active"} title={localize("Services.services_not_found", locale)} />
+                    <BlockWithReference name={"active"} title={localize("Services.services_not_found", locale)} icon={"block"}
+                      reference={""} titleRef={localize("Services.services_add_item", locale)} />
                   </div>
                 </div>
               </div>
