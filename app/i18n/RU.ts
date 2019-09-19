@@ -153,6 +153,7 @@ export default {
     cert_export_cancel: "Отмена экспорта сертификата",
     cert_export_failed: "Не удалось экспортировать сертификат",
     cert_export_ok: "Сертификат успешно экспортирован",
+    cert_get_through_ca: "Получить сертификат через сервис УЦ",
     cert_import: "Импортировать",
     cert_import_failed: "Не удалось импортировать сертификат",
     cert_import_from_file: "Импорт из файла",

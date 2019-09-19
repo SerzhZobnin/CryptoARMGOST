@@ -153,6 +153,7 @@ export default {
     cert_export_cancel: "Cancel the certificate export",
     cert_export_failed: "The certificate export failed",
     cert_export_ok: "The certificate is successfully exported",
+    cert_get_through_ca: "Get a certificate through the CA service",
     cert_import: "Import the certificate",
     cert_import_failed: "The certificate import failed",
     cert_import_from_file: "Import from file",

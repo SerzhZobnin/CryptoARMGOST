@@ -956,6 +956,7 @@ class CertWindow extends React.Component<any, any> {
                         </li>
                     }
                     <li><a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)}>{localize("CSR.create_request", locale)}</a></li>
+                    <li><a>{localize("Certificate.cert_get_through_ca", locale)}</a></li>
                   </ul>
                   <input type="file" id="choose-cert" value="" onChange={(event: any) => {
                     this.handleCertificateImport(event.target.files);
