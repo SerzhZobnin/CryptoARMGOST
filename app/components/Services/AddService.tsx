@@ -126,7 +126,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                 <div className="row halfbottom">
                   <div style={{ float: "right" }}>
                     <div style={{ display: "inline-block", margin: "10px" }}>
-                      <a className={"btn btn-outlined waves-effect waves-light modal-close "} onClick={this.handleAdd}>{localize("Services.connect", locale)}</a>
+                      <a className={"btn btn-outlined waves-effect waves-light"} onClick={this.handelCancel}>{localize("Services.connect", locale)}</a>
                     </div>
                   </div>
                 </div>
