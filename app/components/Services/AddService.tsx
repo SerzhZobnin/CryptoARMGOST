@@ -7,6 +7,7 @@ import { CA_SERVICE } from "../../constants";
 import { uuid } from "../../utils";
 import CryptoProCASettings from "../CA/CryptoProCASettings";
 import DynamicRegistrationForm from "../CA/DynamicRegistrationForm";
+import LoginForm from "../CA/LoginForm";
 import { ICAServiceSettings, IService } from "./types";
 
 interface IAddServiceState {
@@ -102,7 +103,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                       regNewUser ?
                         // tslint:disable-next-line:max-line-length
                         <DynamicRegistrationForm RDN={[{ "Oid": "2.5.4.3", "Name": "CN", "LocalizedName": "Общее имя", "SettingsValues": [], "DefaultValue": "", "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.6", "Name": "C", "LocalizedName": "Страна/регион", "SettingsValues": ["RU"], "DefaultValue": "RU", "ProhibitAnyValue": false, "ProhibitChange": true, "ProhibitEmpty": true }, { "Oid": "2.5.4.8", "Name": "S", "LocalizedName": "Область", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.7", "Name": "L", "LocalizedName": "Город", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.10", "Name": "O", "LocalizedName": "Организация", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.11", "Name": "OU", "LocalizedName": "Подразделение", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "1.2.840.113549.1.9.1", "Name": "E", "LocalizedName": "Адрес E-Mail", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.4", "Name": "SN", "LocalizedName": "Фамилия", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.42", "Name": "G", "LocalizedName": "Имя и отчество", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.9", "Name": "STREET", "LocalizedName": "Адрес", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "1.2.643.100.1", "Name": "OGRN", "LocalizedName": "ОГРН", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "1.2.643.100.3", "Name": "SNILS", "LocalizedName": "СНИЛС", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "1.2.643.3.131.1.1", "Name": "INN", "LocalizedName": "ИНН", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.12", "Name": "T", "LocalizedName": "Должность или звание", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }]} />
-                        : null
+                        : <LoginForm />
                     }
                   </div>
               }
