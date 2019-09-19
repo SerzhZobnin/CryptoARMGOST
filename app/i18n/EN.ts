@@ -63,6 +63,12 @@ export default {
     id_tc26_signwithdigest_gost3410_12_256: "GOST R 34.11-2012/34.10-2012 256 bit",
     id_tc26_signwithdigest_gost3410_12_512: "GOST R 34.11-2012/34.10-2012 512 bit",
   },
+  CA: {
+    cryptopro_ca: "КриптоПро УЦ 2.0",
+    reg_new_user: "New user account registration",
+    url: "URL",
+    url_placeholder: "Укажите URL вида  https://{веб сервер УЦ}/ui/api/{folder}",
+  },
   CRL: {
     authorityKeyid: "Authority key id",
     crlNumber: "CRL number",
@@ -487,10 +493,15 @@ export default {
   },
   Services: {
     Services: "SERVICES",
+    add_new_service: "Add new service",
+    connect: "Connect",
+    description: "Description",
+    service_type: "Type of service",
     services: "Services",
     services_add_item: "Add service",
     services_not_found: "The service is not found",
     services_not_select: "A service is not selected",
+    write_service_description: "Write service description",
   },
   Settings: {
     BASE: "BASE-64",

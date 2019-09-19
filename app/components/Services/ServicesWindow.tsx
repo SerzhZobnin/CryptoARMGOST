@@ -4,8 +4,9 @@ import { connect } from "react-redux";
 import { changeSearchValue } from "../../AC/searchActions";
 import BlockNotElements from "../BlockNotElements";
 import BlockWithReference from "../BlockWithReference";
-
-const dialog = window.electron.remote.dialog;
+import Modal from "../Modal";
+import AddService from "./AddService";
+import { IService } from "./types";
 
 interface IServicesWindowProps {
   isDefaultFilters: boolean;
@@ -13,6 +14,8 @@ interface IServicesWindowProps {
 
 interface IServicesWindowState {
   searchValue: string;
+  activeService: IService | undefined;
+  showModalAddService: boolean;
 }
 
 class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWindowState> {
@@ -25,7 +28,9 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
     super(props);
 
     this.state = {
+      activeService: undefined,
       searchValue: "",
+      showModalAddService: false,
     };
   }
 
@@ -52,7 +57,7 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
             <div className="row halfbottom">
               <div className="row halfbottom" />
               <div className="col" style={{ width: "40px", paddingLeft: "40px" }}>
-                <a>
+                <a onClick={this.handleShowModalAddService.bind(this)}>
                   <i className="file-setting-item waves-effect material-icons secondary-content pulse">add</i>
                 </a>
               </div>
@@ -86,7 +91,7 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
                 <div style={{ display: "flex" }}>
                   <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
                     <BlockWithReference name={"active"} title={localize("Services.services_not_found", locale)} icon={"block"}
-                      reference={""} titleRef={localize("Services.services_add_item", locale)} />
+                      reference={""} titleRef={localize("Services.services_add_item", locale)} onBtnClick={this.handleShowModalAddService} />
                   </div>
                 </div>
               </div>
@@ -103,12 +108,52 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
             </div>
           </div>
         </div>
+        {this.showModalAddService()}
       </div>
     );
   }
 
   handleSearchValueChange = (ev: any) => {
     this.setState({ searchValue: ev.target.value });
+  }
+
+  handleShowModalAddService = () => {
+    this.setState({ showModalAddService: true });
+  }
+
+  handleCloseModalAddService = () => {
+    this.setState({ showModalAddService: false });
+  }
+
+  handleOnCancelAddService = (service: IService) => {
+    if (service) {
+      this.setState({
+        activeService: service,
+      });
+    }
+
+    this.handleCloseModalAddService();
+  }
+
+  showModalAddService = () => {
+    const { localize, locale } = this.context;
+    const { showModalAddService } = this.state;
+
+    if (!showModalAddService) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalAddService}
+        header={localize("Services.add_new_service", locale)}
+        onClose={this.handleCloseModalAddService} style={{
+          width: "70%",
+        }}>
+
+        <AddService onCancel={this.handleOnCancelAddService} />
+      </Modal>
+    );
   }
 }
 
