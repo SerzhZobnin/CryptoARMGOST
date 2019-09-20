@@ -5,6 +5,11 @@ export interface IService {
   name: string;
   url: string;
   field: string;
+  login: string;
+  password: string;
+  email: string;
+  key_information: string;
+  comment: string;
 }
 
 interface IServiceInfoProps {
