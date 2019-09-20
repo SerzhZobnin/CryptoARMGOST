@@ -487,6 +487,7 @@ export default {
   },
   Services: {
     Services: "SERVICES",
+    service_ca: "Сertification Authority",
     services: "Services",
     services_add_item: "Add service",
     services_not_found: "The service is not found",

@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { changeSearchValue } from "../../AC/searchActions";
 import BlockNotElements from "../BlockNotElements";
 import BlockWithReference from "../BlockWithReference";
+import ServicesList from "./ServicesList";
 
 const dialog = window.electron.remote.dialog;
 
@@ -30,13 +31,7 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
   }
 
   componentDidMount() {
-    $(".btn-floated, .nav-small-btn").dropdown({
-      alignment: "left",
-      belowOrigin: false,
-      gutter: 0,
-      inDuration: 300,
-      outDuration: 225,
-    });
+    $(".btn-floated").dropdown();
   }
 
   render() {
@@ -81,12 +76,15 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
                 </a>
               </div>
             </div>
-            <div className="row">
-              <div className="col s12">
-                <div style={{ display: "flex" }}>
-                  <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
-                    <BlockWithReference name={"active"} title={localize("Services.services_not_found", locale)} icon={"block"}
-                      reference={""} titleRef={localize("Services.services_add_item", locale)} />
+            <div className={"collection not-active"}>
+              <div className="row">
+                <div className="col s12">
+                  <div style={{ display: "flex" }}>
+                    <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
+                      {/* <BlockWithReference name={"active"} title={localize("Services.services_not_found", locale)} icon={"block"}
+                        reference={""} titleRef={localize("Services.services_add_item", locale)} /> */}
+                        <ServicesList ActiveService={this.handleActiveService}/>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -109,6 +107,10 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
 
   handleSearchValueChange = (ev: any) => {
     this.setState({ searchValue: ev.target.value });
+  }
+
+  handleActiveService = (service: any) => {
+    this.setState(service);
   }
 }
 

@@ -489,6 +489,7 @@ export default {
   },
   Services: {
     Services: "СЕРВИСЫ",
+    service_ca: "Удостоверяющие центры",
     services: "Сервисы",
     services_add_item: "Добавить сервис",
     services_not_found: "Сервисы отсутствуют",
