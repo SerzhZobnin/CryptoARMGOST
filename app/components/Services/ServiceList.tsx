@@ -41,15 +41,25 @@ class ServiceList extends React.Component<IServiceListProps, any> {
     const other: object[] = [];
 
     const temp1 = {
+      comment: "Комментарий1",
+      email: "email1",
       field: "Доп.поле",
       id: 1,
+      key_information: "key1",
+      login: "Логин1",
       name: "Тестовый УЦ 2.0 КриптоПРО(ТЕСТ)-1",
+      password: "12345",
       url: "https://www.yandex.ru",
     };
     const temp2 = {
+      comment: "Комментарий2",
+      email: "email2",
       field: "Доп.поле",
       id: 2,
+      key_information: "key2",
+      login: "Логин2",
       name: "Тестовый УЦ 2.0 КриптоПРО(ТЕСТ)-2",
+      password: "qwerty",
       url: "https://www.yandex.ru",
     };
 
@@ -77,7 +87,7 @@ class ServiceList extends React.Component<IServiceListProps, any> {
   }
 
   getCollapsibleElement = (head: string, name: string, elements: object[], count: number, active: boolean = false) => {
-    const { ActiveService, toggleOpenItem, isItemOpened } = this.props;
+    const { activeService, toggleOpenItem, isItemOpened } = this.props;
 
     if (!elements || elements.length === 0) {
       return null;
@@ -115,13 +125,13 @@ class ServiceList extends React.Component<IServiceListProps, any> {
                               matches ? (
                                 <ServiceListItem
                                   key={service.id}
-                                  chooseCert={() => ActiveService(service)}
+                                  chooseCert={() => activeService(service)}
                                   isOpen={isItemOpened(service.id.toString())}
                                   toggleOpen={toggleOpenItem(service.id.toString())}
                                   service={service} />
                               ) : <ServiceListItemBigWidth
                                   key={service.id}
-                                  chooseCert={() => ActiveService(service)}
+                                  chooseCert={() => activeService(service)}
                                   isOpen={isItemOpened(service.id.toString())}
                                   toggleOpen={toggleOpenItem(service.id.toString())}
                                   service={service} />

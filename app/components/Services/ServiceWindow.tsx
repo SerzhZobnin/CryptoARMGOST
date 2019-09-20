@@ -8,20 +8,11 @@ import BlockNotElements from "../BlockNotElements";
 import BlockWithReference from "../BlockWithReference";
 import Modal from "../Modal";
 import AddService from "./AddService";
-import ServicesList from "./ServicesList";
+import ServiceInfo from "./ServiceInfo";
+import ServicesList from "./ServiceList";
 import { IService } from "./types";
 
-interface IServicesWindowProps {
-  isDefaultFilters: boolean;
-}
-
-interface IServicesWindowState {
-  searchValue: string;
-  activeService: IService | undefined;
-  showModalAddService: boolean;
-}
-
-class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWindowState> {
+class ServiceWindow extends React.Component<any, any> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -33,6 +24,7 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
     this.state = {
       activeService: undefined,
       searchValue: "",
+      service: null,
       showModalAddService: false,
     };
   }
@@ -90,7 +82,7 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
                     <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
                       {/* <BlockWithReference name={"active"} title={localize("Services.services_not_found", locale)} icon={"block"}
                         reference={""} titleRef={localize("Services.services_add_item", locale)} /> */}
-                        <ServicesList ActiveService={this.handleActiveService}/>
+                        <ServicesList activeService={this.handleActiveService}/>
                     </div>
                   </div>
                 </div>
@@ -102,7 +94,7 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
             <div className="row">
               <div className="col s12">
                 <div style={{ height: "calc(100vh - 110px)" }}>
-                  <BlockNotElements name={"active"} title={localize("Services.services_not_select", locale)} />
+                  {this.getServiceInfo()}
                 </div>
               </div>
             </div>
@@ -113,12 +105,37 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
     );
   }
 
+  getServiceInfo() {
+    const { service } = this.state;
+    const { localize, locale } = this.context;
+
+    if (service) {
+      return this.getServiceInfoBody();
+    } else {
+      return <BlockNotElements name={"active"} title={localize("Services.services_not_select", locale)} />;
+    }
+  }
+
+  getServiceInfoBody() {
+    const { service } = this.state;
+    const { localize, locale } = this.context;
+
+    let ser: any = null;
+    ser = <ServiceInfo service={service} />;
+
+    return (
+      <div className="add-certs">
+        {ser}
+      </div>
+    );
+  }
+
   handleSearchValueChange = (ev: any) => {
     this.setState({ searchValue: ev.target.value });
   }
 
   handleActiveService = (service: any) => {
-    this.setState(service);
+    this.setState({service});
   }
 
   handleShowModalAddService = () => {
@@ -166,4 +183,4 @@ export default connect((state) => {
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     searchValue: state.filters.searchValue,
   };
-}, { changeSearchValue })(ServicesWindow);
+}, { changeSearchValue })(ServiceWindow);
