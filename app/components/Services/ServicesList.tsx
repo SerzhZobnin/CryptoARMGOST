@@ -4,6 +4,7 @@ import Media from "react-media";
 import { AutoSizer, List } from "react-virtualized";
 import accordion from "../../decorators/accordion";
 import ServiceListItem from "./ServiceListItem";
+import ServiceListItemBigWidth from "./ServiceListItemBigWidth";
 
 const HEIGHT_MODAL = 356;
 const HEIGHT_FULL = 432;
@@ -40,11 +41,13 @@ class ServiceList extends React.Component<IServiceListProps, any> {
     const other: object[] = [];
 
     const temp1 = {
+      field: "Доп.поле",
       id: 1,
       name: "Тестовый УЦ 2.0 КриптоПРО(ТЕСТ)-1",
       url: "https://www.yandex.ru",
     };
     const temp2 = {
+      field: "Доп.поле",
       id: 2,
       name: "Тестовый УЦ 2.0 КриптоПРО(ТЕСТ)-2",
       url: "https://www.yandex.ru",
@@ -108,12 +111,21 @@ class ServiceList extends React.Component<IServiceListProps, any> {
                       return (
                         <ul key={key} style={style}>
                           <Media query="(max-width: 1020px)">
-                            <ServiceListItem
-                              key = {service.id}
-                              chooseCert={() => ActiveService(service)}
-                              isOpen={isItemOpened(service.id.toString())}
-                              toggleOpen={toggleOpenItem(service.id.toString())}
-                              service={service}/>
+                            {(matches) =>
+                              matches ? (
+                                <ServiceListItem
+                                  key={service.id}
+                                  chooseCert={() => ActiveService(service)}
+                                  isOpen={isItemOpened(service.id.toString())}
+                                  toggleOpen={toggleOpenItem(service.id.toString())}
+                                  service={service} />
+                              ) : <ServiceListItemBigWidth
+                                  key={service.id}
+                                  chooseCert={() => ActiveService(service)}
+                                  isOpen={isItemOpened(service.id.toString())}
+                                  toggleOpen={toggleOpenItem(service.id.toString())}
+                                  service={service} />
+                            }
                           </Media>
                         </ul>
                       );
