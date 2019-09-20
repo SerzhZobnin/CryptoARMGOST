@@ -192,3 +192,5 @@ export const ADD_SERVICE_CERTIFICATE = "ADD_SERVICE_CERTIFICATE";
 export const DELETE_SERVICE = "DELETE_SERVICE";
 
 export const CRYPTOPRO_DSS_NAME = "КриптоПро DSS";
+
+export const CA_SERVICE = "CA_SERVICE";

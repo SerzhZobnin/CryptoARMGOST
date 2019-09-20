@@ -63,6 +63,15 @@ export default {
     id_tc26_signwithdigest_gost3410_12_256: "ГОСТ Р 34.11-2012/34.10-2012 256 бит",
     id_tc26_signwithdigest_gost3410_12_512: "ГОСТ Р 34.11-2012/34.10-2012 512 бит",
   },
+  CA: {
+    cryptopro_ca: "КриптоПро УЦ 2.0",
+    login: "Логин",
+    password: "Пароль",
+    reg_new_user: "Регистрация нового пользователя",
+    remember_me: "Запомнить пароль",
+    url: "URL",
+    url_placeholder: "URL вида  https://{веб сервер УЦ}/ui/api/{folder}",
+  },
   CRL: {
     authorityKeyid: "Идентификатор ключа",
     crlNumber: "Номер CRL",
@@ -489,11 +498,16 @@ export default {
   },
   Services: {
     Services: "СЕРВИСЫ",
+    add_new_service: "Добавление нового сервиса",
+    connect: "Подключить",
+    description: "Описание",
     service_ca: "Удостоверяющие центры",
+    service_type: "Тип сервиса",
     services: "Сервисы",
     services_add_item: "Добавить сервис",
     services_not_found: "Сервисы отсутствуют",
     services_not_select: "Сервис не выбран",
+    write_service_description: "Введите описание сервиса",
   },
   Settings: {
     BASE: "BASE-64",

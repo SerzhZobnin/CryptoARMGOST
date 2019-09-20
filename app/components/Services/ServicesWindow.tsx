@@ -2,11 +2,14 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { changeSearchValue } from "../../AC/searchActions";
-import BlockNotElements from "../BlockNotElements";
-import BlockWithReference from "../BlockWithReference";
-import ServicesList from "./ServicesList";
 
 const dialog = window.electron.remote.dialog;
+import BlockNotElements from "../BlockNotElements";
+import BlockWithReference from "../BlockWithReference";
+import Modal from "../Modal";
+import AddService from "./AddService";
+import ServicesList from "./ServicesList";
+import { IService } from "./types";
 
 interface IServicesWindowProps {
   isDefaultFilters: boolean;
@@ -14,6 +17,8 @@ interface IServicesWindowProps {
 
 interface IServicesWindowState {
   searchValue: string;
+  activeService: IService | undefined;
+  showModalAddService: boolean;
 }
 
 class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWindowState> {
@@ -26,7 +31,9 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
     super(props);
 
     this.state = {
+      activeService: undefined,
       searchValue: "",
+      showModalAddService: false,
     };
   }
 
@@ -47,7 +54,7 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
             <div className="row halfbottom">
               <div className="row halfbottom" />
               <div className="col" style={{ width: "40px", paddingLeft: "40px" }}>
-                <a>
+                <a onClick={this.handleShowModalAddService.bind(this)}>
                   <i className="file-setting-item waves-effect material-icons secondary-content pulse">add</i>
                 </a>
               </div>
@@ -76,7 +83,7 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
                 </a>
               </div>
             </div>
-            <div className={"collection not-active"}>
+            <div className={"collection"}>
               <div className="row">
                 <div className="col s12">
                   <div style={{ display: "flex" }}>
@@ -101,6 +108,7 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
             </div>
           </div>
         </div>
+        {this.showModalAddService()}
       </div>
     );
   }
@@ -111,6 +119,45 @@ class ServicesWindow extends React.Component<IServicesWindowProps, IServicesWind
 
   handleActiveService = (service: any) => {
     this.setState(service);
+  }
+
+  handleShowModalAddService = () => {
+    this.setState({ showModalAddService: true });
+  }
+
+  handleCloseModalAddService = () => {
+    this.setState({ showModalAddService: false });
+  }
+
+  handleOnCancelAddService = (service: IService) => {
+    if (service) {
+      this.setState({
+        activeService: service,
+      });
+    }
+
+    this.handleCloseModalAddService();
+  }
+
+  showModalAddService = () => {
+    const { localize, locale } = this.context;
+    const { showModalAddService } = this.state;
+
+    if (!showModalAddService) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalAddService}
+        header={localize("Services.add_new_service", locale)}
+        onClose={this.handleCloseModalAddService} style={{
+          width: "70%",
+        }}>
+
+        <AddService onCancel={this.handleOnCancelAddService} />
+      </Modal>
+    );
   }
 }
 
