@@ -12,26 +12,70 @@ import { ICAServiceSettings, IService } from "./types";
 
 interface IAddServiceState {
   activeSettingsTab: boolean;
+  isUserattrLoading: boolean;
   regNewUser: boolean;
   serviceName: string;
   serviceType: "CA_SERVICE";
   serviceSettings: ICAServiceSettings;
+  RDN: any;
 }
 
 const initialState = {
   activeSettingsTab: true,
+  isUserattrLoading: false,
   regNewUser: true,
   serviceName: "КриптоПро УЦ 2.0",
   serviceSettings: {
-    url: "https://testca2012.cryptopro.ru/ui/api/b1ca4992-d7cd-4f7e-b56e-a81e00db58ee",
+    url: "https://testca2012.cryptopro.ru/ui/api/b1ca4992-d7cd-4f7e-b56e-a81e00db58ee/userattr",
   },
   serviceType: CA_SERVICE,
+  RDN: null,
 };
 
 interface IAddServiceProps {
   addService: (service: IService) => void;
   mapServices: Map<any, any>;
   onCancel: (service?: IService) => void;
+}
+
+export async function requestApi(url: string) {
+  return new Promise((resolve, reject) => {
+
+    const curl = new window.Curl();
+
+    curl.setOpt("URL", url);
+    curl.setOpt("FOLLOWLOCATION", true);
+
+    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+      let data;
+
+      try {
+
+        if (statusCode !== 200) {
+          throw new Error(`Unexpected response, status code ${statusCode}, url is ${url}`);
+        }
+
+        data = JSON.parse(response.toString());
+
+      } catch (error) {
+        reject(`Cannot load data, error: ${error.message}`);
+        return;
+      } finally {
+        curl.close.bind(curl);
+      }
+
+      resolve(data);
+    });
+
+    curl.on("error", (error: { message: any; }) => {
+      console.log("error: ", error);
+
+      curl.close.bind(curl);
+      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
+    });
+
+    curl.perform();
+  });
 }
 
 class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
@@ -101,8 +145,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                     <div className="row" />
                     {
                       regNewUser ?
-                        // tslint:disable-next-line:max-line-length
-                        <DynamicRegistrationForm RDN={[{ "Oid": "2.5.4.3", "Name": "CN", "LocalizedName": "Общее имя", "SettingsValues": [], "DefaultValue": "", "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.6", "Name": "C", "LocalizedName": "Страна/регион", "SettingsValues": ["RU"], "DefaultValue": "RU", "ProhibitAnyValue": false, "ProhibitChange": true, "ProhibitEmpty": true }, { "Oid": "2.5.4.8", "Name": "S", "LocalizedName": "Область", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.7", "Name": "L", "LocalizedName": "Город", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.10", "Name": "O", "LocalizedName": "Организация", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.11", "Name": "OU", "LocalizedName": "Подразделение", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "1.2.840.113549.1.9.1", "Name": "E", "LocalizedName": "Адрес E-Mail", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.4", "Name": "SN", "LocalizedName": "Фамилия", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.42", "Name": "G", "LocalizedName": "Имя и отчество", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.9", "Name": "STREET", "LocalizedName": "Адрес", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "1.2.643.100.1", "Name": "OGRN", "LocalizedName": "ОГРН", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "1.2.643.100.3", "Name": "SNILS", "LocalizedName": "СНИЛС", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "1.2.643.3.131.1.1", "Name": "INN", "LocalizedName": "ИНН", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }, { "Oid": "2.5.4.12", "Name": "T", "LocalizedName": "Должность или звание", "SettingsValues": [], "DefaultValue": null, "ProhibitAnyValue": false, "ProhibitChange": false, "ProhibitEmpty": true }]} />
+                        <DynamicRegistrationForm RDN={this.state.RDN} />
                         : <LoginForm />
                     }
                   </div>
@@ -193,21 +236,10 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
   }
 
   handleAdd = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { addService, onCancel } = this.props;
-    const { serviceName, serviceSettings, serviceType } = this.state;
-    const { localize, locale } = this.context;
+    const { serviceType } = this.state;
 
-    const id = uuid();
-    const service: IService = {
-      id,
-      name: serviceName,
-      settings: serviceSettings,
-      type: serviceType,
-    };
-
-    if (service.type === CA_SERVICE) {
-      this.setState({ activeSettingsTab: false });
+    if (serviceType === CA_SERVICE) {
+      this.getUserattr();
       return;
     }
   }
@@ -218,6 +250,43 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
     if (onCancel) {
       onCancel();
     }
+  }
+
+  getUserattr = async () => {
+    const { serviceSettings } = this.state;
+
+    this.setState({isUserattrLoading: true});
+    let data: any;
+
+    try {
+      data = await requestApi(serviceSettings.url);
+    } catch (err) {
+      console.log(err);
+    }
+
+    this.setState({isUserattrLoading: false, RDN: data.RDN, activeSettingsTab: false});
+  }
+
+  onCAUserattrGet = (model: any) => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { addService, onCancel } = this.props;
+    const { serviceName, serviceSettings, serviceType } = this.state;
+
+    if (!model) {
+      return;
+    }
+
+    const id = uuid();
+    const service: IService = {
+      id,
+      name: serviceName,
+      settings: serviceSettings,
+      type: serviceType,
+    };
+
+    addService(service);
+    // getCertificates(serviceSettings.authURL, serviceSettings.restURL, token);
+    onCancel(service);
   }
 }
 

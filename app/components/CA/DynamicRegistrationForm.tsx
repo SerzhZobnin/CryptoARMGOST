@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import ReactDOM from "react-dom";
 
-interface IRDNObject {
+export interface IRDNObject {
   /**
    * Значение OIDэлемента учетной записи пользователя
    */

@@ -1,6 +1,8 @@
-import { IMegafonSettings, IService } from "../components/Services/types";
-import { ADD_SERVICE, ADD_SERVICE_CERTIFICATE, CHANGE_SERVICE_NAME,
-  CHANGE_SERVICE_SETTINGS, DELETE_CERTIFICATE, DELETE_SERVICE } from "../constants";
+import { IService } from "../components/Services/types";
+import {
+  ADD_SERVICE, CHANGE_SERVICE_NAME,
+  CHANGE_SERVICE_SETTINGS, DELETE_SERVICE,
+} from "../constants";
 
 export function addService(service: IService) {
   return {
