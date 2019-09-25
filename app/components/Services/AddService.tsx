@@ -26,7 +26,7 @@ const initialState = {
   regNewUser: true,
   serviceName: "КриптоПро УЦ 2.0",
   serviceSettings: {
-    url: "https://testca2012.cryptopro.ru/ui/api/b1ca4992-d7cd-4f7e-b56e-a81e00db58ee/userattr",
+    url: "https://testca2012.cryptopro.ru/ui/api/b1ca4992-d7cd-4f7e-b56e-a81e00db58ee",
   },
   serviceType: CA_SERVICE,
   RDN: null,
@@ -36,46 +36,6 @@ interface IAddServiceProps {
   addService: (service: IService) => void;
   mapServices: Map<any, any>;
   onCancel: (service?: IService) => void;
-}
-
-export async function requestApi(url: string) {
-  return new Promise((resolve, reject) => {
-
-    const curl = new window.Curl();
-
-    curl.setOpt("URL", url);
-    curl.setOpt("FOLLOWLOCATION", true);
-
-    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
-      let data;
-
-      try {
-
-        if (statusCode !== 200) {
-          throw new Error(`Unexpected response, status code ${statusCode}, url is ${url}`);
-        }
-
-        data = JSON.parse(response.toString());
-
-      } catch (error) {
-        reject(`Cannot load data, error: ${error.message}`);
-        return;
-      } finally {
-        curl.close.bind(curl);
-      }
-
-      resolve(data);
-    });
-
-    curl.on("error", (error: { message: any; }) => {
-      console.log("error: ", error);
-
-      curl.close.bind(curl);
-      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
-    });
-
-    curl.perform();
-  });
 }
 
 class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
@@ -145,7 +105,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                     <div className="row" />
                     {
                       regNewUser ?
-                        <DynamicRegistrationForm RDN={this.state.RDN} />
+                        <DynamicRegistrationForm caURL={serviceSettings.url} onCancel={this.handelCancel} />
                         : <LoginForm />
                     }
                   </div>
@@ -170,7 +130,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                 <div className="row halfbottom">
                   <div style={{ float: "right" }}>
                     <div style={{ display: "inline-block", margin: "10px" }}>
-                      <a className={"btn btn-outlined waves-effect waves-light"} onClick={this.handelCancel}>{localize("Services.connect", locale)}</a>
+                      <a className={"btn btn-outlined waves-effect waves-light"} onClick={this.handleCAUserRegrequest}>{localize("Services.connect", locale)}</a>
                     </div>
                   </div>
                 </div>
@@ -239,7 +199,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
     const { serviceType } = this.state;
 
     if (serviceType === CA_SERVICE) {
-      this.getUserattr();
+      this.setState({ activeSettingsTab: false });
       return;
     }
   }
@@ -252,29 +212,10 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
     }
   }
 
-  getUserattr = async () => {
-    const { serviceSettings } = this.state;
-
-    this.setState({isUserattrLoading: true});
-    let data: any;
-
-    try {
-      data = await requestApi(serviceSettings.url);
-    } catch (err) {
-      console.log(err);
-    }
-
-    this.setState({isUserattrLoading: false, RDN: data.RDN, activeSettingsTab: false});
-  }
-
-  onCAUserattrGet = (model: any) => {
+  handleCAUserRegrequest = (model: any) => {
     // tslint:disable-next-line:no-shadowed-variable
     const { addService, onCancel } = this.props;
     const { serviceName, serviceSettings, serviceType } = this.state;
-
-    if (!model) {
-      return;
-    }
 
     const id = uuid();
     const service: IService = {

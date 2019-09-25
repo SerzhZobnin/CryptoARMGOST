@@ -1,8 +1,10 @@
 import PropTypes from "prop-types";
 import React from "react";
 import Media from "react-media";
+import { connect } from "react-redux";
 import { AutoSizer, List } from "react-virtualized";
 import accordion from "../../decorators/accordion";
+import { mapToArr } from "../../utils";
 import ServiceListItem from "./ServiceListItem";
 import ServiceListItemBigWidth from "./ServiceListItemBigWidth";
 
@@ -24,7 +26,7 @@ class ServiceList extends React.Component<IServiceListProps, any> {
     super(props);
 
     this.state = ({
-      activeSection: "my",
+      activeSection: "CA_SERVICE",
       countSections: 0,
     });
   }
@@ -36,51 +38,27 @@ class ServiceList extends React.Component<IServiceListProps, any> {
 
   render() {
     const { localize, locale } = this.context;
+    const { services } = this.props;
 
-    const my: object[] = [];
-    const other: object[] = [];
+    const ca: object[] = [];
 
-    const temp1 = {
-      comment: "Комментарий1",
-      email: "email1",
-      field: "Доп.поле",
-      id: 1,
-      key_information: "key1",
-      login: "Логин1",
-      name: "Тестовый УЦ 2.0 КриптоПРО(ТЕСТ)-1",
-      password: "12345",
-      url: "https://www.yandex.ru",
-    };
-    const temp2 = {
-      comment: "Комментарий2",
-      email: "email2",
-      field: "Доп.поле",
-      id: 2,
-      key_information: "key2",
-      login: "Логин2",
-      name: "Тестовый УЦ 2.0 КриптоПРО(ТЕСТ)-2",
-      password: "qwerty",
-      url: "https://www.yandex.ru",
-    };
-
-    my.push(temp1);
-    my.push(temp2);
-    other.push(temp1);
+    services.forEach((service: any) => {
+      switch (service.type) {
+        case "CA_SERVICE":
+          return ca.push(service);
+      }
+    });
 
     let count = -1;
 
-    if (my.length) {
-      count++;
-    }
-    if (other.length) {
+    if (ca.length) {
       count++;
     }
 
     return (
       <React.Fragment>
         <ul className="collapsible" data-collapsible="accordion">
-          {this.getCollapsibleElement(localize("Services.service_ca", locale), "my", my, count, true)}
-          {this.getCollapsibleElement(localize("Services.service_ca", locale), "other", other, count)}
+          {this.getCollapsibleElement(localize("Services.service_ca", locale), "CA_SERVICE", ca, count, true)}
         </ul>
       </React.Fragment>
     );
@@ -151,4 +129,9 @@ class ServiceList extends React.Component<IServiceListProps, any> {
     );
   }
 }
-export default (accordion(ServiceList));
+
+export default connect((state) => {
+  return {
+    services: mapToArr(state.services.entities),
+  };
+})(accordion(ServiceList));

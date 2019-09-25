@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import ReactDOM from "react-dom";
+import ProgressBars from "../ProgressBars";
 
 export interface IRDNObject {
   /**
@@ -39,6 +40,21 @@ export interface IRDNObject {
 
 interface IDynamicRegistrationFormProps {
   /**
+   * URL вида  https://{веб сервер УЦ}/ui/api/{folder}
+   *
+   * @type {string}
+   * @memberof IDynamicRegistrationFormProps
+   */
+  caURL: string;
+  onCancel?: () => void;
+}
+
+interface IDynamicRegistrationFormState {
+  error: string;
+  isUserattrLoading: boolean;
+  isUserattrLoaded: boolean;
+  model: any;
+  /**
    * Значения элементов учетных записей пользователейорганизованных в папке УЦ
    *
    * @type {IRDNObject[]}
@@ -47,8 +63,45 @@ interface IDynamicRegistrationFormProps {
   RDN: IRDNObject[];
 }
 
-interface IDynamicRegistrationFormState {
-  [key: string]: string;
+export async function requestApi(url: string) {
+  return new Promise((resolve, reject) => {
+    console.log("url", url);
+
+    const curl = new window.Curl();
+
+    curl.setOpt("URL", url);
+    curl.setOpt("FOLLOWLOCATION", true);
+
+    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
+      let data;
+
+      try {
+
+        if (statusCode !== 200) {
+          throw new Error(`Unexpected response, status code ${statusCode}, url is ${url}`);
+        }
+
+        data = JSON.parse(response.toString());
+
+      } catch (error) {
+        reject(`Cannot load data, error: ${error.message}`);
+        return;
+      } finally {
+        curl.close.bind(curl);
+      }
+
+      resolve(data);
+    });
+
+    curl.on("error", (error: { message: any; }) => {
+      console.log("error: ", error);
+
+      curl.close.bind(curl);
+      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
+    });
+
+    curl.perform();
+  });
 }
 
 class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormProps, IDynamicRegistrationFormState> {
@@ -59,12 +112,13 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
 
   constructor(props: any) {
     super(props);
-
-    const model: any = {};
-
-    props.RDN.map((field: IRDNObject) => model[field.Oid] = field.DefaultValue);
-
-    this.state = { ...model };
+    this.state = {
+      RDN: [],
+      error: "",
+      isUserattrLoaded: false,
+      isUserattrLoading: false,
+      model: {},
+    };
   }
 
   componentDidMount() {
@@ -77,6 +131,8 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
     });
 
     Materialize.updateTextFields();
+
+    this.geCAtuserattr();
   }
 
   componentDidUpdate() {
@@ -85,7 +141,17 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
 
   render() {
     const { localize, locale } = this.context;
-    const { RDN } = this.props;
+    const { isUserattrLoading, isUserattrLoaded, RDN } = this.state;
+
+    if (isUserattrLoading) {
+      return <ProgressBars />;
+    }
+
+    if (isUserattrLoading === false && isUserattrLoaded === true && (!RDN || !RDN.length)) {
+      Materialize.toast("Ошибка получения свойств учетной записи", 3000, "toast-ca_empty_rdn");
+      Materialize.toast(this.state.error, 4000, "toast-ca_error");
+      this.handelCancel();
+    }
 
     return (
       <div className="row">
@@ -116,7 +182,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
                 </div>
               );
             } else {
-              const oidValue = this.state[field.Oid];
+              const oidValue = this.state.model[field.Oid];
 
               return (
                 <div className="row">
@@ -145,10 +211,40 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
   handleInputChange = (ev: any) => {
     const target = ev.target;
     const name = target.name;
+    const value = ev.target.value;
 
-    this.setState({
-      [name]: ev.target.value,
-    });
+    this.setState((prevState) => ({
+      model: {
+        ...prevState.model,
+        [name]: value,
+      },
+    }));
+  }
+
+  geCAtuserattr = async () => {
+    const { caURL } = this.props;
+
+    this.setState({ isUserattrLoading: true });
+    let data: any;
+
+    try {
+      data = await requestApi(`${caURL}/userattr`);
+    } catch (err) {
+      this.setState({ isUserattrLoading: false, isUserattrLoaded: true, error: err});
+    }
+
+    const model: any = {};
+    data.RDN.map((field: IRDNObject) => model[field.Oid] = field.DefaultValue);
+
+    this.setState({ isUserattrLoading: false, isUserattrLoaded: true, RDN: data.RDN, model: { ...model } });
+  }
+
+  handelCancel = () => {
+    const { onCancel } = this.props;
+
+    if (onCancel) {
+      onCancel();
+    }
   }
 }
 

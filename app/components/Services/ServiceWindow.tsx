@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { changeSearchValue } from "../../AC/searchActions";
 
 const dialog = window.electron.remote.dialog;
+import { mapToArr } from "../../utils";
 import BlockNotElements from "../BlockNotElements";
 import BlockWithReference from "../BlockWithReference";
 import Modal from "../Modal";
@@ -80,9 +81,12 @@ class ServiceWindow extends React.Component<any, any> {
                 <div className="col s12">
                   <div style={{ display: "flex" }}>
                     <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
-                      {/* <BlockWithReference name={"active"} title={localize("Services.services_not_found", locale)} icon={"block"}
-                        reference={""} titleRef={localize("Services.services_add_item", locale)} /> */}
-                        <ServicesList activeService={this.handleActiveService}/>
+                      {
+                        this.props.services.size < 1 ?
+                          <BlockWithReference name={"active"} title={localize("Services.services_not_found", locale)} icon={"block"}
+                            reference={""} titleRef={localize("Services.services_add_item", locale)} onBtnClick={this.handleShowModalAddService} /> :
+                          <ServicesList activeService={this.handleActiveService} />
+                      }
                     </div>
                   </div>
                 </div>
@@ -135,7 +139,7 @@ class ServiceWindow extends React.Component<any, any> {
   }
 
   handleActiveService = (service: any) => {
-    this.setState({service});
+    this.setState({ service });
   }
 
   handleShowModalAddService = () => {
@@ -182,5 +186,6 @@ export default connect((state) => {
   return {
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     searchValue: state.filters.searchValue,
+    services: state.services.entities,
   };
 }, { changeSearchValue })(ServiceWindow);
