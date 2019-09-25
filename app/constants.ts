@@ -197,3 +197,5 @@ export const DELETE_SERVICE = "DELETE_SERVICE";
 export const CRYPTOPRO_DSS_NAME = "КриптоПро DSS";
 
 export const CA_SERVICE = "CA_SERVICE";
+export const POST_CA_REGREQUEST = "POST_CA_REGREQUEST";
+export const GET_CA_REGREQUEST = "GET_CA_REGREQUEST";

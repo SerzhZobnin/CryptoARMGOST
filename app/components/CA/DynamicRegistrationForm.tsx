@@ -47,6 +47,7 @@ interface IDynamicRegistrationFormProps {
    */
   caURL: string;
   onCancel?: () => void;
+  onRDNmodelChange: (model: any) => void;
 }
 
 interface IDynamicRegistrationFormState {
@@ -213,12 +214,16 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
     const name = target.name;
     const value = ev.target.value;
 
-    this.setState((prevState) => ({
-      model: {
-        ...prevState.model,
-        [name]: value,
-      },
+    const newModel = {
+      ...this.state.model,
+      [name]: value,
+    };
+
+    this.setState(({
+      model: { ...newModel },
     }));
+
+    this.props.onRDNmodelChange({ ...newModel });
   }
 
   geCAtuserattr = async () => {
@@ -230,11 +235,13 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
     try {
       data = await requestApi(`${caURL}/userattr`);
     } catch (err) {
-      this.setState({ isUserattrLoading: false, isUserattrLoaded: true, error: err});
+      this.setState({ isUserattrLoading: false, isUserattrLoaded: true, error: err });
     }
 
     const model: any = {};
     data.RDN.map((field: IRDNObject) => model[field.Oid] = field.DefaultValue);
+
+    this.props.onRDNmodelChange(model);
 
     this.setState({ isUserattrLoading: false, isUserattrLoaded: true, RDN: data.RDN, model: { ...model } });
   }
