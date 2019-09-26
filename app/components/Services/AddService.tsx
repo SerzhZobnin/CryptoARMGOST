@@ -104,7 +104,6 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                   </div>
                   :
                   <div className="row">
-                    <div className="row" />
                     {
                       regNewUser ?
                         <DynamicRegistrationForm

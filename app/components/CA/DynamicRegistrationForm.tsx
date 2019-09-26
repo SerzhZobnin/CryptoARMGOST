@@ -156,6 +156,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
 
     return (
       <div className="row">
+        <div className="row" />
         {
           RDN.map((field: IRDNObject) => {
             if (field.SettingsValues && field.SettingsValues.length) {
