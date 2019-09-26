@@ -1,6 +1,6 @@
 import {routerReducer as router} from "react-router-redux";
 import {combineReducers} from "redux";
-import ca from "./ca.ts"
+import ca from "./ca";
 import certificates from "./certificates";
 import cloudCSP from "./cloudCSP";
 import connections from "./connections";

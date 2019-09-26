@@ -47,7 +47,7 @@ export default class ServiceInfo extends React.Component<IServiceInfoProps, any>
             </div>
             <div className="collection-item certs-collection certificate-info">
               <div className={"collection-info cert-info-blue"}>{localize("Services.adress", locale)}</div>
-              <div className={"collection-title selectable-text"}>{service.url}</div>
+              <div className={"collection-title selectable-text"}>{service.settings.url}</div>
             </div>
           </div>
         </div>

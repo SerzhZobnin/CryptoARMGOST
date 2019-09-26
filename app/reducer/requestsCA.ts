@@ -1,7 +1,9 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { ADD_CERTIFICATE_REQUEST_CA, ADD_SERVICE, CHANGE_SERVICE_NAME, CHANGE_SERVICE_SETTINGS,
-  DELETE_CERTIFICATE_REQUEST_CA, DELETE_SERVICE, SERVICES_JSON } from "../constants";
+import {
+  ADD_CERTIFICATE_REQUEST_CA,
+  DELETE_CERTIFICATE_REQUEST_CA, SERVICES_JSON,
+} from "../constants";
 import { mapToArr } from "../utils";
 
 export const ServiceModel = Record({
