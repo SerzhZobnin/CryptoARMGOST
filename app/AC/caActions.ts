@@ -1,19 +1,16 @@
+import { ICertificateRequestCA } from "../components/Services/types";
 import {
   FAIL, GET_CA_REGREQUEST,
-  POST_CA_REGREQUEST, START, SUCCESS,
+  POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS,
 } from "../constants";
 
-export async function postApi(url: string, postfields: any) {
+export async function postApi(url: string, postfields: any, headerfields: string[] ) {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
 
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
-    curl.setOpt(window.Curl.option.HTTPHEADER, [
-      "Content-Type: application/json",
-      "Accept: application/json",
-    ]);
-
+    curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
 
     curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
@@ -66,7 +63,11 @@ export function postRegRequest(url: string, comment: string, description: string
           Email: email,
           KeyPhrase: keyPhrase,
           OidArray,
-        }));
+        }),
+        [
+          "Content-Type: application/json",
+          "Accept: application/json",
+        ]);
 
         dispatch({
           payload: {
@@ -81,6 +82,40 @@ export function postRegRequest(url: string, comment: string, description: string
 
         dispatch({
           type: POST_CA_REGREQUEST + FAIL,
+        });
+      }
+    }, 0);
+  };
+}
+
+export function postCertRequest(url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) {
+  return (dispatch) => {
+    dispatch({
+      type: POST_CA_CERTREQUEST + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+
+      try {
+        url = url.substr(0, url.lastIndexOf("/"));
+        data = await postApi(
+          `${url}/certrequest`,
+          certificateRequestCA.certificateReq,
+          [
+            "Content-Type: application/octet-stream",
+            `Authorization: Basic ${Buffer.from(regRequest.Token + ":" + regRequest.Password).toString("base64")}`
+          ],
+        );
+
+        dispatch({
+            type: POST_CA_CERTREQUEST + SUCCESS,
+        });
+      } catch (e) {
+        Materialize.toast(e, 4000, "toast-ca_error");
+
+        dispatch({
+          type: POST_CA_CERTREQUEST + FAIL,
         });
       }
     }, 0);

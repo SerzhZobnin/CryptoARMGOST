@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { addCertificateRequestCA, loadAllCertificates, removeAllCertificates } from "../../AC";
+import { postCertRequest } from "../../AC/caActions";
 import {
   ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, DEFAULT_CSR_PATH, HOME_DIR,
   KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
@@ -12,7 +13,7 @@ import {
   REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
 import * as jwt from "../../trusted/jwt";
-import { formatDate, randomSerial, uuid, validateInn, validateOgrnip, validateSnils, fileCoding } from "../../utils";
+import { fileCoding, formatDate, mapToArr, randomSerial, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
 import logger from "../../winstonLogger";
 import { ICertificateRequestCA } from "../Services/types";
 import HeaderTabs from "./HeaderTabs";
@@ -75,6 +76,7 @@ interface ICertificateRequestCAProps {
   loadAllCertificates: () => void;
   removeAllCertificates: () => void;
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
+  postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
 }
 
 class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, ICertificateRequestCAState> {
@@ -192,8 +194,9 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   render() {
     const { localize, locale } = this.context;
-    const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email, exportableKey, extKeyUsage, inn, keyLength,
-      keyUsage, keyUsageGroup, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
+    const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email,
+      exportableKey, extKeyUsage, inn, keyLength, keyUsage, keyUsageGroup, locality, ogrnip, organization,
+      organizationUnitName, province, selfSigned, snils, template, title } = this.state;
 
     return (
       <React.Fragment>
@@ -327,7 +330,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const { localize, locale } = this.context;
     const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
-    const { addCertificateRequestCA, licenseStatus, lic_error } = this.props;
+    const { addCertificateRequestCA, licenseStatus, lic_error, servicesMap, caServicesMap, postCertRequest } = this.props;
 
     const exts = new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
@@ -439,6 +442,10 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       exts.push(ext);
     }
 
+    oid = new trusted.pki.Oid("1.3.6.1.4.1.311.21.7");
+    ext = new trusted.pki.Extension(oid, "1.2.643.2.2.46.0.8");
+    exts.push(ext);
+
     // if (email.length) {
     //   oid = new trusted.pki.Oid("subjectAltName");
     //   ext = new trusted.pki.Extension(oid, `email:${email}`);
@@ -521,11 +528,14 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const id = uuid();
     const certificateRequestCA: ICertificateRequestCA = {
       id,
-      certificate: cmsContext,
+      certificateReq: cmsContext,
     };
 
     addCertificateRequestCA(certificateRequestCA);
 
+    const services = mapToArr(servicesMap);
+    const regRequest = caServicesMap.regRequests.find((obj: any) => obj.get("serviceId") === services[0].id);
+    postCertRequest(`${services[0].settings.url}`, certificateRequestCA, regRequest);
     this.handleReloadCertificates();
     Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     this.handelCancel();
@@ -794,8 +804,10 @@ const getTemplateByCertificate = (certificate: any) => {
 
 export default connect((state) => {
   return {
+    caServicesMap: state.ca,
     certificateLoading: state.certificates.loading,
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
+    servicesMap: state.services.entities,
   };
-}, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA })(CertificateRequestCA);
+}, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest })(CertificateRequestCA);

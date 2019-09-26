@@ -204,3 +204,4 @@ export const CRYPTOPRO_DSS_NAME = "КриптоПро DSS";
 export const CA_SERVICE = "CA_SERVICE";
 export const POST_CA_REGREQUEST = "POST_CA_REGREQUEST";
 export const GET_CA_REGREQUEST = "GET_CA_REGREQUEST";
+export const POST_CA_CERTREQUEST = "POST_CA_CERTREQUEST";
