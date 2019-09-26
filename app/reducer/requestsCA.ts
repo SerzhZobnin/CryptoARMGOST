@@ -2,24 +2,13 @@ import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
 import {
   ADD_CERTIFICATE_REQUEST_CA,
-  DELETE_CERTIFICATE_REQUEST_CA, SERVICES_JSON,
+  CA_CSR_JSON, DELETE_CERTIFICATE_REQUEST_CA,
 } from "../constants";
 import { mapToArr } from "../utils";
 
-export const ServiceModel = Record({
-  id: null,
-  name: null,
-  settings: OrderedMap({}),
-  type: null,
-});
-
 export const CertificateRequestCAModel = Record({
-  id: null,
   certificate: null,
-});
-
-export const SettingsModel = Record({
-  url: null,
+  id: null,
 });
 
 export const DefaultReducerState = Record({
@@ -32,31 +21,28 @@ export default (requestsCA = new DefaultReducerState(), action) => {
   switch (type) {
     case ADD_CERTIFICATE_REQUEST_CA:
       requestsCA = requestsCA.setIn(["entities", payload.certificateRequestCA.id], new CertificateRequestCAModel(payload.certificateRequestCA));
-      return requestsCA;
+      break;
 
     case DELETE_CERTIFICATE_REQUEST_CA:
-      return requestsCA
+      requestsCA = requestsCA
         .deleteIn(["entities", payload.id]);
+      break;
   }
 
-  const state = ({
-    requestsCA: requestsCA.toJS(),
-  });
-  state.requestsCA = mapToArr(requestsCA.entities);
-  const newSettings = [];
+  if (type === ADD_CERTIFICATE_REQUEST_CA || type === DELETE_CERTIFICATE_REQUEST_CA) {
+    const state = {
+      requestsCA: mapToArr(requestsCA.entities),
+    };
 
-  for (let request of state.requestsCA) {
-    newSettings.push(request);
+    const sstate = JSON.stringify(state, null, 4);
+
+    fs.writeFile(CA_CSR_JSON, sstate, (err: any) => {
+      if (err) {
+        // tslint:disable-next-line:no-console
+        console.log("------- error write to ", CA_CSR_JSON);
+      }
+    });
   }
 
-  state.requestsCA = newSettings;
-
-  const sstate = JSON.stringify(state, null, 4);
-  fs.writeFile(SERVICES_JSON, sstate, (err: any) => {
-    if (err) {
-      // tslint:disable-next-line:no-console
-      console.log(err);
-    }
-  });
   return requestsCA;
 };

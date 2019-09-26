@@ -1,5 +1,11 @@
+import * as fs from "fs";
+
 import { OrderedMap, Record } from "immutable";
-import { ADD_SERVICE, CHANGE_SERVICE_NAME, CHANGE_SERVICE_SETTINGS, DELETE_SERVICE } from "../constants";
+import { mapToArr } from "../../app/utils";
+import {
+  ADD_SERVICE, CHANGE_SERVICE_NAME, CHANGE_SERVICE_SETTINGS,
+  DELETE_SERVICE, SERVICES_JSON,
+} from "../constants";
 
 export const ServiceModel = Record({
   id: null,
@@ -25,17 +31,37 @@ export default (services = new DefaultReducerState(), action) => {
       if (payload.settings) {
         services = services.setIn(["entities", payload.service.id, "settings"], new SettingsModel(payload.settings));
       }
-      return services;
+      break;
 
     case DELETE_SERVICE:
-      return services
+      services = services
         .deleteIn(["entities", payload.id]);
+      break;
 
     case CHANGE_SERVICE_SETTINGS:
-      return services.setIn(["entities", payload.id, "settings"], new SettingsModel(payload.settings));
+      services = services.setIn(["entities", payload.id, "settings"], new SettingsModel(payload.settings));
+      break;
 
     case CHANGE_SERVICE_NAME:
-      return services.setIn(["entities", payload.id, "name"], payload.name);
+      services = services.setIn(["entities", payload.id, "name"], payload.name);
+      break;
+  }
+
+  if (type === ADD_SERVICE || type === DELETE_SERVICE ||
+    type === CHANGE_SERVICE_SETTINGS || type === CHANGE_SERVICE_NAME) {
+
+    const state = {
+      services: mapToArr(services.entities),
+    };
+
+    const sstate = JSON.stringify(state, null, 4);
+
+    fs.writeFile(SERVICES_JSON, sstate, (err: any) => {
+      if (err) {
+        // tslint:disable-next-line:no-console
+        console.log("------- error write to ", SERVICES_JSON);
+      }
+    });
   }
 
   return services;

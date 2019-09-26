@@ -15,6 +15,8 @@ interface Window {
     DEFAULT_CERTSTORE_PATH: string;
     DEFAULT_DOCUMENTS_PATH: string;
     DEFAULT_CSR_PATH: string;
+    CA_REGREGUESTS_JSON: string;
+    CA_CSR_JSON: string;
     LICENSE_PATH: string;
     LICENSE_MNG: any;
     PLATFORM: string;
