@@ -3468,6 +3468,16 @@ svg:hover {
     background: url(./resources/image/folder_icon.svg);
   }
 
+  i.material-icons.ca {
+    background-size: 36px 36px !important;
+    width: 36px;
+    height: 36px;
+  }
+
+  i.material-icons.ca.new_request {
+    background: url(./resources/image/ca/new_request_to_ca.svg);
+  }
+
   i.material-icons.settings {
     background-size: 36px 36px !important;
     width: 36px;

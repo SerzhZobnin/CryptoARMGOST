@@ -37,6 +37,7 @@ class ServiceWindow extends React.Component<any, any> {
   render() {
     const { localize, locale } = this.context;
     const { isDefaultFilters } = this.props;
+    const { service } = this.state;
 
     const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
 
@@ -102,6 +103,34 @@ class ServiceWindow extends React.Component<any, any> {
                 </div>
               </div>
             </div>
+
+            {
+              service ?
+                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "70px" }}>
+                  <div className="col s12">
+                    <hr />
+                  </div>
+                  <div className="col s4 waves-effect waves-cryptoarm">
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons ca new_request" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">Создать запрос</div>
+                  </div>
+
+                  <div className="col s4 waves-effect waves-cryptoarm">
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons certificate remove" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+                  </div>
+                </div> :
+                null
+            }
+
           </div>
         </div>
         {this.showModalAddService()}
