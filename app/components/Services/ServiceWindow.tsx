@@ -122,10 +122,13 @@ class ServiceWindow extends React.Component<any, any> {
 
   getServiceInfoBody() {
     const { service } = this.state;
+    const { caServicesMap } = this.props;
     const { localize, locale } = this.context;
 
+    const regRequest = caServicesMap.regRequests.find((obj: any) => obj.get("serviceId") === service.id);
+
     let ser: any = null;
-    ser = <ServiceInfo service={service} />;
+    ser = <ServiceInfo service={{ ...service, login: regRequest ? regRequest.Token : "", password: regRequest ? regRequest.Password : "" }} />;
 
     return (
       <div className="add-certs">
@@ -185,6 +188,7 @@ class ServiceWindow extends React.Component<any, any> {
 export default connect((state) => {
   return {
     isDefaultFilters: state.filters.documents.isDefaultFilters,
+    caServicesMap: state.ca,
     searchValue: state.filters.searchValue,
     services: state.services.entities,
   };

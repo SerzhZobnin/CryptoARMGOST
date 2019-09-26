@@ -1,5 +1,6 @@
 import {routerReducer as router} from "react-router-redux";
 import {combineReducers} from "redux";
+import ca from "./ca.ts"
 import certificates from "./certificates";
 import cloudCSP from "./cloudCSP";
 import connections from "./connections";
@@ -31,6 +32,7 @@ export default combineReducers({
   remoteFiles,
   requestsCA,
   settings,
+  ca,
   services,
   signatures,
 });

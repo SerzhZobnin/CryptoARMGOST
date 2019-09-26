@@ -2,6 +2,7 @@ import { Map } from "immutable";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
+import { postRegRequest } from "../../AC/caActions";
 import { addService } from "../../AC/servicesActions";
 import { CA_SERVICE } from "../../constants";
 import { uuid } from "../../utils";
@@ -17,7 +18,7 @@ interface IAddServiceState {
   serviceName: string;
   serviceType: "CA_SERVICE";
   serviceSettings: ICAServiceSettings;
-  RDN: any;
+  RDNmodel: any;
 }
 
 const initialState = {
@@ -29,13 +30,14 @@ const initialState = {
     url: "https://testca2012.cryptopro.ru/ui/api/b1ca4992-d7cd-4f7e-b56e-a81e00db58ee",
   },
   serviceType: CA_SERVICE,
-  RDN: null,
+  RDNmodel: null,
 };
 
 interface IAddServiceProps {
   addService: (service: IService) => void;
   mapServices: Map<any, any>;
   onCancel: (service?: IService) => void;
+  postRegRequest: (url: string, comment: string, description: string, email: string, keyPhrase: string, oids: any, serviceId: string) => void;
 }
 
 class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
@@ -105,7 +107,11 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                     <div className="row" />
                     {
                       regNewUser ?
-                        <DynamicRegistrationForm caURL={serviceSettings.url} onCancel={this.handelCancel} />
+                        <DynamicRegistrationForm
+                          caURL={serviceSettings.url}
+                          onCancel={this.handelCancel}
+                          onRDNmodelChange={this.onRDNmodelChange}
+                        />
                         : <LoginForm />
                     }
                   </div>
@@ -212,10 +218,18 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
     }
   }
 
-  handleCAUserRegrequest = (model: any) => {
+  onRDNmodelChange = (model: any) => {
+    this.setState({ RDNmodel: { ...model } });
+  }
+
+  handleCAUserRegrequest = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { addService, onCancel } = this.props;
-    const { serviceName, serviceSettings, serviceType } = this.state;
+    const { addService, onCancel, postRegRequest } = this.props;
+    const { serviceName, serviceSettings, serviceType, RDNmodel } = this.state;
+
+    if (!RDNmodel) {
+      this.handelCancel();
+    }
 
     const id = uuid();
     const service: IService = {
@@ -226,11 +240,11 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
     };
 
     addService(service);
-    // getCertificates(serviceSettings.authURL, serviceSettings.restURL, token);
+    postRegRequest(`${serviceSettings.url}`, "-", "-", "ct@ct.ru", "1", RDNmodel, id);
     onCancel(service);
   }
 }
 
 export default connect((state) => ({
   mapServices: state.services,
-}), { addService })(AddService);
+}), { addService, postRegRequest })(AddService);
