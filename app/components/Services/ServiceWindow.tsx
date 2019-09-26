@@ -128,7 +128,7 @@ class ServiceWindow extends React.Component<any, any> {
     const regRequest = caServicesMap.regRequests.find((obj: any) => obj.get("serviceId") === service.id);
 
     let ser: any = null;
-    ser = <ServiceInfo service={{ ...service, login: regRequest ? regRequest.Token : "", password: regRequest ? regRequest.Password : "" }} />;
+    ser = <ServiceInfo service={{ ...service.toJS(), login: regRequest ? regRequest.Token : "", password: regRequest ? regRequest.Password : "" }} />;
 
     return (
       <div className="add-services">
