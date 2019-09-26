@@ -131,7 +131,7 @@ class ServiceWindow extends React.Component<any, any> {
     ser = <ServiceInfo service={{ ...service, login: regRequest ? regRequest.Token : "", password: regRequest ? regRequest.Password : "" }} />;
 
     return (
-      <div className="add-certs">
+      <div className="add-services">
         {ser}
       </div>
     );
