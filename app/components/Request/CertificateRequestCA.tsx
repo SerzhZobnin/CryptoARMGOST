@@ -330,7 +330,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const { localize, locale } = this.context;
     const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
-    const { addCertificateRequestCA, licenseStatus, lic_error, servicesMap, caServicesMap, postCertRequest } = this.props;
+    const { addCertificateRequestCA, licenseStatus, lic_error, servicesMap, regrequests, postCertRequest } = this.props;
 
     const exts = new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
@@ -534,7 +534,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     addCertificateRequestCA(certificateRequestCA);
 
     const services = mapToArr(servicesMap);
-    const regRequest = caServicesMap.regRequests.find((obj: any) => obj.get("serviceId") === services[0].id);
+    const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === services[0].id);
     postCertRequest(`${services[0].settings.url}`, certificateRequestCA, regRequest);
     this.handleReloadCertificates();
     Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
@@ -804,10 +804,10 @@ const getTemplateByCertificate = (certificate: any) => {
 
 export default connect((state) => {
   return {
-    caServicesMap: state.ca,
     certificateLoading: state.certificates.loading,
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
+    regrequests: state.regrequests.entities,
     servicesMap: state.services.entities,
   };
 }, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest })(CertificateRequestCA);
