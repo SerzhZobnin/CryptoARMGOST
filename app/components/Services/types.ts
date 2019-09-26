@@ -22,3 +22,8 @@ export interface IService {
   settings: ICAServiceSettings;
   name: string;
 }
+
+export interface ICertificateRequestCA {
+  id: string;
+  certificate: string;
+}

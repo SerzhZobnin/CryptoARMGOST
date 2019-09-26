@@ -11,6 +11,7 @@ import files from "./files";
 import filters from "./filters";
 import license from "./license";
 import remoteFiles from "./remoteFiles";
+import requestsCA from "./requestsCA";
 import services from "./services";
 import settings from "./settings";
 import signatures from "./signatures";
@@ -28,6 +29,7 @@ export default combineReducers({
   filters,
   license,
   remoteFiles,
+  requestsCA,
   settings,
   services,
   signatures,

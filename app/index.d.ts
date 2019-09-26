@@ -19,6 +19,7 @@ interface Window {
     LICENSE_MNG: any;
     PLATFORM: string;
     SETTINGS_JSON: string;
+    SERVICES_JSON: string;
     TRUSTED_CRYPTO_LOG: string;
     fs: any;
     os: any;

@@ -4,7 +4,7 @@ import * as path from "path";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { loadAllCertificates, removeAllCertificates } from "../../AC";
+import { addCertificateRequestCA, loadAllCertificates, removeAllCertificates } from "../../AC";
 import {
   ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, DEFAULT_CSR_PATH, HOME_DIR,
   KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
@@ -12,8 +12,9 @@ import {
   REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
 import * as jwt from "../../trusted/jwt";
-import { formatDate, randomSerial, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
+import { formatDate, randomSerial, uuid, validateInn, validateOgrnip, validateSnils, fileCoding } from "../../utils";
 import logger from "../../winstonLogger";
+import { ICertificateRequestCA } from "../Services/types";
 import HeaderTabs from "./HeaderTabs";
 import KeyParameters from "./KeyParameters";
 import SubjectNameInfo from "./SubjectNameInfo";
@@ -39,7 +40,7 @@ interface IExtendedKeyUsage {
   [key: string]: boolean;
 }
 
-interface ICertificateRequestState {
+interface ICertificateRequestCAState {
   activeSubjectNameInfoTab: boolean;
   algorithm: string;
   cn: string;
@@ -65,7 +66,7 @@ interface ICertificateRequestState {
   organization1?: string;
 }
 
-interface ICertificateRequestProps {
+interface ICertificateRequestCAProps {
   certificateTemplate: any;
   onCancel?: () => void;
   certificateLoading: boolean;
@@ -73,9 +74,10 @@ interface ICertificateRequestProps {
   licenseStatus: boolean;
   loadAllCertificates: () => void;
   removeAllCertificates: () => void;
+  addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
 }
 
-class CertificateRequest extends React.Component<ICertificateRequestProps, ICertificateRequestState> {
+class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, ICertificateRequestCAState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -255,22 +257,6 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
             <div className="row halfbottom" />
 
             <div className="row halfbottom">
-              <div style={{ float: "left" }}>
-                <div style={{ display: "inline-block", margin: "10px" }}>
-                  <input
-                    name="selfSigned"
-                    className="filled-in"
-                    type="checkbox"
-                    id="selfSigned"
-                    checked={selfSigned}
-                    onChange={this.toggleSelfSigned}
-                  />
-                  <label htmlFor="selfSigned">
-                    {localize("CSR.create_selfSigned", locale)}
-                  </label>
-                </div>
-              </div>
-
               <div style={{ float: "right" }}>
                 <div style={{ display: "inline-block", margin: "10px" }}>
                   <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
@@ -341,17 +327,12 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const { localize, locale } = this.context;
     const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
-    const { licenseStatus, lic_error } = this.props;
+    const { addCertificateRequestCA, licenseStatus, lic_error } = this.props;
 
-
-    const exts =
-      new trusted.pki.ExtensionCollection();
+    const exts = new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
-    const OS_TYPE = os.type(); 1
-    let providerType: string = PROVIDER_SYSTEM;
     let keyUsageStr = "critical";
     let extendedKeyUsageStr = "";
-    let keyPair;
     let oid;
     let ext;
 
@@ -474,7 +455,6 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
         case ALG_GOST12_256:
         case ALG_GOST12_512:
           pkeyopt.push(`container:${containerName}`);
-          // keyPair = key.generate(algorithm, pkeyopt);
           break;
         default:
           return;
@@ -522,129 +502,32 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       fs.mkdirSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"), { mode: 0o700 });
     }
 
+    const uri = path.join(DEFAULT_CSR_PATH, `requestCA_${cn}_${algorithm}_${formatDate(new Date())}.req`);
     try {
-      certReq.save(path.join(DEFAULT_CSR_PATH, `${cn}_${algorithm}_${formatDate(new Date())}.req`), trusted.DataFormat.PEM);
+      certReq.save(uri, trusted.DataFormat.PEM);
     } catch (e) {
       //
     }
 
-    providerType = PROVIDER_CRYPTOPRO;
-
-    if (selfSigned) {
-      const cert = new trusted.pki.Certificate(certReq);
-      cert.serialNumber = randomSerial();
-      cert.notAfter = 60 * 60 * 24 * 365; // 365 days in sec
-      cert.sign();
-
-      logger.log({
-        certificate: cert.subjectName,
-        level: "info",
-        message: "",
-        operation: "Генерация сертификата",
-        operationObject: {
-          in: "CN=" + cert.subjectFriendlyName,
-          out: "Null",
-        },
-        userName: USER_NAME,
-      });
-
-      try {
-        if (OS_TYPE === "Windows_NT") {
-          window.PKISTORE.importCertificate(cert, PROVIDER_CRYPTOPRO, (err: Error) => {
-            if (err) {
-              Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
-            }
-          }, ROOT);
-
-          logger.log({
-            certificate: cert.subjectName,
-            level: "info",
-            message: "",
-            operation: "Импорт сертификата",
-            operationObject: {
-              in: "CN=" + cert.subjectFriendlyName,
-              out: "Null",
-            },
-            userName: USER_NAME,
-          });
-        }
-      } catch (err) {
-        logger.log({
-          certificate: cert.subjectName,
-          level: "error",
-          message: err.message ? err.message : err,
-          operation: "Импорт сертификата",
-          operationObject: {
-            in: "CN=" + cert.subjectFriendlyName,
-            out: "Null",
-          },
-          userName: USER_NAME,
-        });
-      }
-
-      try {
-        trusted.utils.Csp.installCertificateToContainer(cert, containerName, 75);
-        trusted.utils.Csp.installCertificateFromContainer(containerName, 75, "Crypto-Pro GOST R 34.10-2001 Cryptographic Service Provider");
-
-        this.handleReloadCertificates();
-
-        Materialize.toast(localize("Certificate.cert_import_ok", locale), 2000, "toast-cert_imported");
-
-        logger.log({
-          certificate: cert.subjectName,
-          level: "info",
-          message: "",
-          operation: "Импорт сертификата",
-          operationObject: {
-            in: "CN=" + cert.subjectFriendlyName,
-            out: "Null",
-          },
-          userName: USER_NAME,
-        });
-      } catch (err) {
-        Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
-
-        logger.log({
-          certificate: cert.subjectName,
-          level: "error",
-          message: err.message ? err.message : err,
-          operation: "Импорт сертификата",
-          operationObject: {
-            in: "CN=" + cert.subjectFriendlyName,
-            out: "Null",
-          },
-          userName: USER_NAME,
-        });
-      }
+    let cmsContext = null;
+    if (fileCoding(uri) === trusted.DataFormat.PEM) {
+      cmsContext = fs.readFileSync(uri, "utf8");
+      cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE REQUEST-----\r\n", "");
+      cmsContext = cmsContext.replace("\r\n-----END CERTIFICATE REQUEST-----", "");
+      cmsContext = cmsContext.replace(/\r\n/g, "");
     } else {
-      const cert = new trusted.pki.Certificate(certReq);
-      cert.serialNumber = randomSerial();
-      cert.notAfter = 60; // 60 sec
-      cert.sign();
-
-      window.PKISTORE.importCertificate(cert, providerType, (err: Error) => {
-        if (err) {
-          Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
-        }
-      }, REQUEST, containerName);
-
-      logger.log({
-        certificate: certReq.subject,
-        level: "info",
-        message: "",
-        operation: "Генерация запроса на сертификат",
-        operationObject: {
-          in: "CN=" + cn,
-          out: "Null",
-        },
-        userName: USER_NAME,
-      });
-
-      this.handleReloadCertificates();
-
-      Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
+      cmsContext = fs.readFileSync(uri, "base64");
     }
+    const id = uuid();
+    const certificateRequestCA: ICertificateRequestCA = {
+      id,
+      certificate: cmsContext,
+    };
 
+    addCertificateRequestCA(certificateRequestCA);
+
+    this.handleReloadCertificates();
+    Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     this.handelCancel();
   }
 
@@ -915,4 +798,4 @@ export default connect((state) => {
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
   };
-}, { loadAllCertificates, removeAllCertificates })(CertificateRequest);
+}, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA })(CertificateRequestCA);
