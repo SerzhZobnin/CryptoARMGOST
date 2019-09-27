@@ -7,7 +7,7 @@ import {
 import { mapToArr } from "../utils";
 
 export const CertificateRequestCAModel = Record({
-  certificate: null,
+  certificateReq: null,
   id: null,
 });
 
