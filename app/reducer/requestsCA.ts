@@ -2,13 +2,15 @@ import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
 import {
   ADD_CERTIFICATE_REQUEST_CA,
-  CA_CSR_JSON, DELETE_CERTIFICATE_REQUEST_CA,
+  CA_CSR_JSON, DELETE_CERTIFICATE_REQUEST_CA, POST_CA_CERTREQUEST, SUCCESS,
 } from "../constants";
 import { mapToArr } from "../utils";
 
 export const CertificateRequestCAModel = Record({
+  certRequestId: null,
   certificateReq: null,
   id: null,
+  status: null,
 });
 
 export const DefaultReducerState = Record({
@@ -20,7 +22,13 @@ export default (requestsCA = new DefaultReducerState(), action) => {
 
   switch (type) {
     case ADD_CERTIFICATE_REQUEST_CA:
-      requestsCA = requestsCA.setIn(["entities", payload.certificateRequestCA.id], new CertificateRequestCAModel(payload.certificateRequestCA));
+      requestsCA = requestsCA.setIn(["entities", payload.id], new CertificateRequestCAModel(payload.certificateRequestCA));
+      break;
+
+    case POST_CA_CERTREQUEST + SUCCESS:
+      requestsCA = requestsCA
+        .setIn(["entities", payload.id, "status"], payload.status)
+        .setIn(["entities", payload.id, "certRequestId"], payload.certRequestId);
       break;
 
     case DELETE_CERTIFICATE_REQUEST_CA:
@@ -29,7 +37,8 @@ export default (requestsCA = new DefaultReducerState(), action) => {
       break;
   }
 
-  if (type === ADD_CERTIFICATE_REQUEST_CA || type === DELETE_CERTIFICATE_REQUEST_CA) {
+  if (type === ADD_CERTIFICATE_REQUEST_CA || type === DELETE_CERTIFICATE_REQUEST_CA ||
+      type === POST_CA_CERTREQUEST + SUCCESS) {
     const state = {
       requestsCA: mapToArr(requestsCA.entities),
     };
