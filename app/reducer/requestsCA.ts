@@ -38,7 +38,7 @@ export default (requestsCA = new DefaultReducerState(), action) => {
   }
 
   if (type === ADD_CERTIFICATE_REQUEST_CA || type === DELETE_CERTIFICATE_REQUEST_CA ||
-      type === POST_CA_CERTREQUEST + SUCCESS) {
+    type === POST_CA_CERTREQUEST + SUCCESS) {
     const state = {
       requestsCA: mapToArr(requestsCA.entities),
     };

@@ -26,6 +26,7 @@ import PasswordDialog from "../PasswordDialog";
 import ProgressBars from "../ProgressBars";
 import CertificateRequest from "../Request/CertificateRequest";
 import CertificateRequestCA from "../Request/CertificateRequestCA";
+import RequestCAInfo from "../Request/RequestCAInfo";
 import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateDelete from "./CertificateDelete";
 import CertificateExport from "./CertificateExport";
@@ -59,6 +60,7 @@ class CertWindow extends React.Component<any, any> {
       importingCertificate: null,
       importingCertificatePath: null,
       password: "",
+      requestCA: null,
       showDialogInstallRootCertificate: false,
       showModalCertificateRequest: false,
       showModalCertificateRequestCA: false,
@@ -165,11 +167,15 @@ class CertWindow extends React.Component<any, any> {
   }
 
   handleActiveCert = (certificate: any) => {
-    this.setState({ certificate, crl: null });
+    this.setState({ certificate, crl: null, requestCA: null });
   }
 
   handleActiveCRL = (crl: any) => {
-    this.setState({ certificate: null, crl });
+    this.setState({ certificate: null, requestCA: null, crl });
+  }
+
+  handleActiveRequestCA = (requestCA: any) => {
+    this.setState({ certificate: null, crl: null, requestCA });
   }
 
   handleReloadCertificates = () => {
@@ -604,13 +610,15 @@ class CertWindow extends React.Component<any, any> {
   }
 
   getCertificateOrCRLInfo() {
-    const { certificate, crl } = this.state;
+    const { certificate, crl, requestCA } = this.state;
     const { localize, locale } = this.context;
 
     if (certificate) {
       return this.getCertificateInfoBody();
     } else if (crl) {
       return this.getCRLInfoBody();
+    } else if (requestCA) {
+      return this.getRequestCAInfoBody();
     } else {
       return <BlockNotElements name={"active"} title={localize("Certificate.cert_not_select", locale)} />;
     }
@@ -676,6 +684,16 @@ class CertWindow extends React.Component<any, any> {
     return (
       <div className="add-certs">
         <CRLInfo crl={crl} />
+      </div>
+    );
+  }
+
+  getRequestCAInfoBody() {
+    const { requestCA } = this.state;
+
+    return (
+      <div className="add-certs">
+        <RequestCAInfo requestCA={requestCA} />
       </div>
     );
   }
@@ -1012,7 +1030,7 @@ class CertWindow extends React.Component<any, any> {
                         {
                           certificates.size < 1 && crls.length < 1 ?
                             <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
-                            <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} operation="certificate" />
+                            <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} activeRequestCA={this.handleActiveRequestCA} operation="certificate" />
                         }
                       </div>
                     </div>
@@ -1226,6 +1244,6 @@ export default connect((state) => {
     searchValue: state.filters.searchValue,
   };
 }, {
-    changeSearchValue, loadAllCertificates, loadAllContainers,
-    removeAllCertificates, removeAllContainers, resetCloudCSP
-  })(CertWindow);
+  changeSearchValue, loadAllCertificates, loadAllContainers,
+  removeAllCertificates, removeAllContainers, resetCloudCSP
+})(CertWindow);
