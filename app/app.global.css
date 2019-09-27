@@ -722,10 +722,6 @@ i.material-icons.left.about {
   background: url(./resources/image/about_menu_icon.svg);;
 }
 
-i.material-icons.left.agreement{
-  background: url(./resources/image/agreement_menu_icon.svg);
-}
-
 i.material-icons.left.keystore{
   background: url(./resources/image/key_store_menu_icon.svg);
 }
@@ -1252,17 +1248,6 @@ i.material-icons.left.cert {
   }
 
 /*-----------------Главная страница--------------------*/
-.header{
-    margin-top: 1px;
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
-    /*height: 46%;*/
-    height: 184px;
-    background: url(./resources/image/main_window_header.png);
-}
-
 .maincontent{
     height: 54%;
 }
@@ -1313,34 +1298,6 @@ i.material-icons.left.cert {
   font-size: 12px;
   padding-top: 6px;
 }
-
-.facebook{
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
-  background: url(./resources/image/facebook_icon.svg);
-  background-size: 24px 24px;
-}
-
-.vk{
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
-  background: url(./resources/image/vk_icon.svg);
-  background-size: 24px 24px;
-}
-
-.twitter{
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
-  background: url(./resources/image/twitter_icon.svg);
-  background-size: 24px 24px;
-}
-
 
 .facebook:hover, .vk:hover, .twitter:hover, .mail:hover, .google:hover{
     cursor: pointer;
@@ -1412,60 +1369,6 @@ i.material-icons.left.cert {
     margin-left: 95px;
 }
 
-.sign_roundbutton_icon{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/sign_roundbutton_icon.svg);
-  background-size: 68px 68px;
-}
-
-.sign_roundbutton_icon:hover{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/sign_roundbutton_over_icon.svg);
-  background-size: 68px 68px;
-}
-
-.encrypt_roundbutton_icon{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/encrypt_roundbutton_icon.svg);
-  background-size: 68px 68px;
-}
-
-.encrypt_roundbutton_icon:hover{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/encrypt_roundbutton_over_icon.svg);
-  background-size: 68px 68px;
-}
-
-.certificate_roundbutton_icon{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/cert_roundbutton_icon.svg);
-  background-size: 68px 68px;
-}
-
-.certificate_roundbutton_icon:hover{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/cert_roundbutton_over_icon.svg);
-  background-size: 68px 68px;
-}
-
 .r-iconbox-icon {
   float: left;
 }
@@ -1507,17 +1410,6 @@ display: inline-block;
 
 .license_background{
     background: url(./resources/image/geo_gray.png);
-}
-
-.geo-icon{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/target.svg);
-  background-size: 68px 68px;
-  margin-left: 472px;
-  margin-top: 135px;
 }
 
 .about .row {
@@ -1635,26 +1527,6 @@ h6.contact-title {
   padding-left: 10px;
   padding-right: 10px;
   color: gray;
-}
-
-.geo_contact_icon{
-  display: block;
-  text-indent: -9999px;
-  width: 36px;
-  height: 36px;
-  background: url(./resources/image/geo_contact_icon.png);
-  background-size: 36px 36px;
-  margin-top: 6px;
-}
-
-.address_contact_icon{
-  display: block;
-  text-indent: -9999px;
-  width: 36px;
-  height: 36px;
-  background: url(./resources/image/address_contact_icon.png);
-  background-size: 36px 36px;
-  margin-top: 8px;
 }
 
 .mail_contact_icon{
@@ -1943,11 +1815,6 @@ a.menuheaderlink:hover {
     height: 300px;
     border-left: 1px solid #bf3817;
     border-right: 1px solid #bf3817;
-}
-
-.onlinelic_area{
-    background: url(./resources/image/licence_footer.png);
-    height: 252px;
 }
 
 .bmark_desktoplic {
@@ -2387,13 +2254,6 @@ a.cert-back-btn.waves-effect.waves-light {
     left: 35%;
     font-size: 80px;
 }
-.reg-back-btn {
-    display: block;
-    background: url(./resources/image/left-arrow.svg);
-    background-size: 100%;
-    width: 40px;
-    height: 40px;
-}
 .reg-back-icon {
     margin: 10px;
     height: 40px;
@@ -2421,36 +2281,18 @@ a.cert-back-btn.waves-effect.waves-light {
   width: 24px;
   height: 24px;
 }
-.cert-error {
-    background: url(./resources/image/cert_error.svg);
-    background-size: 100%;
-    height: 50px;
-    width: 50px;
-}
-.cert-ok {
-    background: url(./resources/image/cert_ok.svg);
-    background-size: 100%;
-    height: 50px;
-    width: 50px;
-}
+
 .return-icon {
   background: url(./resources/image/return-button.svg);
 }
 .cert-icon {
   background: url(./resources/image/cert_menu_icon_white.svg);
 }
-.google {
-  background: url(./resources/image/google_icon.svg);
-}
+
 .mail{
   background: url(./resources/image/mail_icon.svg);
 }
-.socials-icon {
-    background: url(./resources/image/social-media-campaign.svg);
-}
-.login-password-icon {
-    background: url(./resources/image/login-password.svg);
-}
+
 .password-icon {
     background: url(./resources/image/password.svg);
     background-size: 100%;
@@ -3005,30 +2847,6 @@ a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
   background-color: #e4dedc;
 }
 
-.alert_ok_icon {
-    display: block;
-    background: url(./resources/image/alert_ok_icon.svg);
-    background-size: 100%;
-    width: 50px;
-    height: 50px;
-}
-
-.alert_warning_icon {
-    display: block;
-    background: url(./resources/image/alert_warning_icon.svg);
-    background-size: 100%;
-    width: 50px;
-    height: 50px;
-}
-
-.alert_error_icon {
-    display: block;
-    background: url(./resources/image/alert_error_icon.svg);
-    background-size: 100%;
-    width: 50px;
-    height: 50px;
-}
-
 .checkbox-red[type="checkbox"] + label:before{
   border: 2px solid;
   background: transparent;
@@ -3143,28 +2961,6 @@ a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
 
 .prefix.active {
   color: #334294 !important;
-}
-
-.icon_ok {
-  background: url(./resources/image/icon_ok.svg);
-  background-size: 100%;
-  height: 24px;
-  width: 24px;
-  position: absolute;
-  top: 7px;
-  padding-left: 0px;
-  left: 0px;
-}
-
-.icon_fail {
-  background: url(./resources/image/icon_fail.svg);
-  background-size: 100%;
-  height: 24px;
-  width: 24px;
-  position: absolute;
-  top: 7px;
-  padding-left: 0px;
-  left: 0px;
 }
 
 .picker__frame {
@@ -3333,17 +3129,6 @@ svg:hover {
     height: 22px;
     background: url(./resources/image/icon_filter_on.svg);
     background-size: 100%;
-  }
-
-  i.material-icons.context_menu {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
-    background: url(./resources/image/icon_context_menu.svg);
-    background-size: 32px 32px;
-    margin-top: 0px;
-    margin-left: -6px;
   }
 
 .border_element{
