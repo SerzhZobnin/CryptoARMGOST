@@ -78,7 +78,7 @@ app.on('ready', async () => {
 
 
   preloader = new BrowserWindow({
-    alwaysOnTop: true,
+    alwaysOnTop: false,
     width: 496, height: 149,
     resizable: false,
     frame: false,
