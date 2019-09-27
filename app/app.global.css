@@ -1767,7 +1767,7 @@ a.menuheaderlink:hover {
   background-size: 16px 16px;
 }
 
-.status_ok_icon{
+.status_ok_icon {
   width: 30px;
   height: 30px;
   background: url(./resources/image/status_ok.svg);
@@ -3326,4 +3326,28 @@ svg:hover {
       margin-right: 14px;
   }
 
+  .ca_request {
+    background: url(./resources/image/ca/request_to_ca.svg);
+    background-size: 100%;
+    height: 32px;
+    width: 32px;
+    text-align: center;
+    }
 
+.ca_request_status {
+  width: 20px;
+  height: 20px;
+  background-size: 100% !important;
+}
+
+.ca_request_status.ok {
+  background: url(./resources/image/status_ok.svg);
+}
+
+.ca_request_status.error {
+  background: url(./resources/image/status_error.svg);
+}
+
+.ca_request_status.unknown {
+  background: url(./resources/image/status_unknow.svg);
+}

@@ -205,3 +205,15 @@ export const CA_SERVICE = "CA_SERVICE";
 export const POST_CA_REGREQUEST = "POST_CA_REGREQUEST";
 export const GET_CA_REGREQUEST = "GET_CA_REGREQUEST";
 export const POST_CA_CERTREQUEST = "POST_CA_CERTREQUEST";
+
+export const REQUEST_STATUS = {
+  Q: "Q", // запрос установлен в очередь на обработку(Новый, Queued);
+  // tslint:disable-next-line: object-literal-sort-keys
+  A: "A",  // запрос одобрен оператором(Принят, Accepted);
+  R: "R", // запрос отклонен оператором, сертификат не изготовлен(Отклонен, Rejected);
+  P: "P", // запрос передан на обработку в Центр сертификации, но сертификат еще не изготовлен(Обрабатывается, Pending);
+  D: "D", // запрос передан на обработку в Центрсертификации, но Центр сертификации отклонил запрос и не изготовил сертификат(Отклонен ЦС, Denied);
+  C: "C", // запрос обработан, сертификат изготовлен Центром сертификации(Завершен, Complete);
+  E: "E", // ошибка обработки запроса (Ошибка, Errored);
+  K: "K", // пользователь подтвердил получение и установку сертификата на своем рабочем месте(Подтвержден, Acknowledged).
+};
