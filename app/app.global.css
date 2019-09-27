@@ -2440,7 +2440,7 @@ a.cert-back-btn.waves-effect.waves-light {
 /*---------cert chain--------------*/
 
 i.material-icons.left.chain_1 {
-  background: url(./resources/image/chain_1.png);
+  background: url(./resources/image/chain/chain_1.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2451,7 +2451,7 @@ i.material-icons.left.chain_1 {
 }
 
 i.material-icons.left.chain_2 {
-  background: url(./resources/image/chain_2.png);
+  background: url(./resources/image/chain/chain_2.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2462,7 +2462,7 @@ i.material-icons.left.chain_2 {
 }
 
 i.material-icons.left.chain_3 {
-  background: url(./resources/image/chain_3.png);
+  background: url(./resources/image/chain/chain_3.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2473,7 +2473,7 @@ i.material-icons.left.chain_3 {
 }
 
 i.material-icons.left.chain_4 {
-  background: url(./resources/image/chain_4.png);
+  background: url(./resources/image/chain/chain_4.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2484,7 +2484,7 @@ i.material-icons.left.chain_4 {
 }
 
 i.material-icons.left.chain_5 {
-  background: url(./resources/image/chain_5.png);
+  background: url(./resources/image/chain/chain_5.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2495,7 +2495,7 @@ i.material-icons.left.chain_5 {
 }
 
 i.material-icons.left.chain_6 {
-  background: url(./resources/image/chain_6.png);
+  background: url(./resources/image/chain/chain_6.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2506,7 +2506,7 @@ i.material-icons.left.chain_6 {
 }
 
 i.material-icons.left.chain_7 {
-  background: url(./resources/image/chain_7.png);
+  background: url(./resources/image/chain/chain_7.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2517,7 +2517,7 @@ i.material-icons.left.chain_7 {
 }
 
 i.material-icons.left.chain_8 {
-  background: url(./resources/image/chain_8.png);
+  background: url(./resources/image/chain/chain_8.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2528,7 +2528,7 @@ i.material-icons.left.chain_8 {
 }
 
 i.material-icons.left.chain_9 {
-  background: url(./resources/image/chain_9.png);
+  background: url(./resources/image/chain/chain_9.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2539,7 +2539,7 @@ i.material-icons.left.chain_9 {
 }
 
 i.material-icons.left.chain_10 {
-  background: url(./resources/image/chain_10.png);
+  background: url(./resources/image/chain/chain_10.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
