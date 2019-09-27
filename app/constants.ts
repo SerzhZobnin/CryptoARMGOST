@@ -135,6 +135,7 @@ export const APP_LOG_FILE = window.APP_LOG_FILE;
 export const APP_ERRORS_LOG_FILE = window.APP_ERRORS_LOG_FILE;
 export const USER_NAME = window.USER_NAME;
 export const CA_REGREGUESTS_JSON = window.CA_REGREGUESTS_JSON;
+export const CA_CERTREGUESTS_JSON = window.CA_CERTREGUESTS_JSON;
 export const CA_CSR_JSON = window.CA_CSR_JSON;
 
 export const LicenseManager: trusted.utils.License_Mng = window.LICENSE_MNG;
@@ -205,3 +206,4 @@ export const CA_SERVICE = "CA_SERVICE";
 export const POST_CA_REGREQUEST = "POST_CA_REGREQUEST";
 export const GET_CA_REGREQUEST = "GET_CA_REGREQUEST";
 export const POST_CA_CERTREQUEST = "POST_CA_CERTREQUEST";
+export const GET_CA_CERTREQUEST = "GET_CA_CERTREQUEST";
