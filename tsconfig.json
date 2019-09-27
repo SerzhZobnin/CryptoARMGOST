@@ -28,7 +28,7 @@
     "options": {
       "presets": [
         ["env", {
-          "targets": { "node": 6 },
+          "targets": { "node": 8 },
           "useBuiltIns": true
         }],
         "es2015",
