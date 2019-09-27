@@ -310,6 +310,7 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
                           <RequestCAListItem
                             key={request.id}
                             requestCA={request}
+                            service={this.props.services.getIn(["entities", request.serviceId])}
                             chooseCert={() => activeRequestCA(request)}
                             operation={operation}
                             isOpen={isItemOpened(request.id.toString())}
@@ -340,5 +341,6 @@ export default connect((state, ownProps: IOwnProps) => {
     isLoaded: state.certificates.loaded,
     isLoading: state.certificates.loading,
     requestsCA: filteredRequestCASelector(state),
+    services: state.services,
   };
 }, { loadAllCertificates, verifyCertificate }, null, { pure: false })(accordion(CertificateList));

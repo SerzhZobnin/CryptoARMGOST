@@ -5,6 +5,7 @@ import { mapToArr } from "../utils";
 
 export const RegRequestModel = Record({
   Password: null,
+  RDN: null,
   RegRequestId: null,
   Status: null,
   Token: null,
@@ -24,6 +25,7 @@ export default (regrequests = new DefaultReducerState(), action) => {
       regrequests = regrequests.setIn(["entities", payload.id], new RegRequestModel({
         id: payload.id,
         ...payload.regRequest,
+        RDN: { ...payload.RDN },
         serviceId: payload.serviceId,
       }));
       break;

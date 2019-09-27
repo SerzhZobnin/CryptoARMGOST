@@ -4,7 +4,7 @@ import {
   POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS,
 } from "../constants";
 
-export async function postApi(url: string, postfields: any, headerfields: string[] ) {
+export async function postApi(url: string, postfields: any, headerfields: string[]) {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
 
@@ -13,7 +13,7 @@ export async function postApi(url: string, postfields: any, headerfields: string
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
 
-    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
       let data;
 
       try {
@@ -64,13 +64,14 @@ export function postRegRequest(url: string, comment: string, description: string
           KeyPhrase: keyPhrase,
           OidArray,
         }),
-        [
-          "Content-Type: application/json",
-          "Accept: application/json",
-        ]);
+          [
+            "Content-Type: application/json",
+            "Accept: application/json",
+          ]);
 
         dispatch({
           payload: {
+            RDN: oids,
             id: data.RegRequest.RegRequestId,
             regRequest: data.RegRequest,
             serviceId,
@@ -109,7 +110,7 @@ export function postCertRequest(url: string, certificateRequestCA: ICertificateR
         );
 
         dispatch({
-            type: POST_CA_CERTREQUEST + SUCCESS,
+          type: POST_CA_CERTREQUEST + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");
