@@ -1207,27 +1207,27 @@ i.material-icons.left {
 }
 
 i.material-icons.left.my {
-  background: url(./resources/image/cert_category_my.svg);
+  background: url(./resources/image/cert_stores/my.svg);
 }
 
 i.material-icons.left.other {
-  background: url(./resources/image/cert_category_other.svg);
+  background: url(./resources/image/cert_stores/other.svg);
 }
 
 i.material-icons.left.intermediate {
-  background: url(./resources/image/cert_category_intermediate.svg);
+  background: url(./resources/image/cert_stores/intermediate.svg);
 }
 
 i.material-icons.left.root {
-  background: url(./resources/image/cert_category_root.svg);
+  background: url(./resources/image/cert_stores/root.svg);
 }
 
 i.material-icons.left.token {
-  background: url(./resources/image/cert_category_token.svg);
+  background: url(./resources/image/cert_stores/token.svg);
 }
 
 i.material-icons.left.request {
-  background: url(./resources/image/cert_category_request.svg);
+  background: url(./resources/image/cert_stores/request.svg);
 }
 
 i.material-icons.left.connect {
