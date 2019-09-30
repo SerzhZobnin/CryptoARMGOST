@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { addCertificateRequestCA, loadAllCertificates, removeAllCertificates } from "../../AC";
-import { getCertRequest, postCertRequest } from "../../AC/caActions";
+import { getCertRequestStatus, postCertRequest } from "../../AC/caActions";
 import {
   ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, DEFAULT_CSR_PATH, HOME_DIR,
   KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
@@ -77,7 +77,7 @@ interface ICertificateRequestCAProps {
   removeAllCertificates: () => void;
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
   postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any, serviceId: string) => void;
-  getCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
+  getCertRequestStatus: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
 }
 
 class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, ICertificateRequestCAState> {
@@ -332,7 +332,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
     const { addCertificateRequestCA, licenseStatus, lic_error, servicesMap, regrequests,
-      postCertRequest, getCertRequest, certrequests } = this.props;
+      postCertRequest, getCertRequestStatus, certrequests } = this.props;
 
     const exts = new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
@@ -538,7 +538,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === services[0].id);
       postCertRequest(`${services[0].settings.url}`, certificateRequestCA, regRequest, services[0].id);
       const certRequest = certrequests.find((obj: any) => obj.get("id") === certificateRequestCA.id);
-      //getCertRequest(`${services[0].settings.url}`, certRequest, regRequest);
+      //getCertRequestStatus(`${services[0].settings.url}`, certRequest, regRequest);
 
       this.handleReloadCertificates();
       Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
@@ -819,4 +819,4 @@ export default connect((state) => {
     certrequests: state.certrequests.entities,
     servicesMap: state.services.entities,
   };
-}, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest, getCertRequest })(CertificateRequestCA);
+}, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest, getCertRequestStatus })(CertificateRequestCA);

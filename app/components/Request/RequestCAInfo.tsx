@@ -1,19 +1,30 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { connect } from "react-redux";
+import { getCertRequestStatus } from "../../AC/caActions";
+import { filteredRequestCASelector } from "../../selectors/requestCASelector";
 
 interface IRequestCAInfoProps {
   requestCA: any;
 }
 
-export default class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
+class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
 
+  componentDidMount() {
+    const { certrequests, regrequests, servicesMap, getCertRequestStatus, request } = this.props;
+    const certRequest = certrequests.find((obj: any) => obj.get("id") === request.id);
+    const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
+    const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
+    getCertRequestStatus(`${service.settings.url}`, certRequest, regrequest);
+  }
+
   render() {
     const { localize, locale } = this.context;
-    const { requestCA } = this.props;
+    const { request } = this.props;
 
     return (
       <React.Fragment>
@@ -26,7 +37,7 @@ export default class RequestCAInfo extends React.Component<IRequestCAInfoProps, 
           <div className="collection cert-info-list">
             <div className="collection-item certs-collection certificate-info">
               <div className={"collection-info cert-info-blue"}>{localize("CA.current_status", locale)}</div>
-              <div className={"collection-title selectable-text"}>{requestCA.status}</div>
+              <div className={"collection-title selectable-text"}>{request.status}</div>
             </div>
           </div>
         </div>
@@ -41,3 +52,14 @@ export default class RequestCAInfo extends React.Component<IRequestCAInfoProps, 
     );
   }
 }
+
+export default connect((state, ownProps) => {
+  console.log(ownProps);
+  return {
+    request: state.certrequests.getIn(["entities", ownProps.requestCA.id]),
+    certrequests: filteredRequestCASelector(state),
+    regrequests: state.regrequests.entities,
+    servicesMap: state.services.entities,
+  };
+}, {getCertRequestStatus,
+})(RequestCAInfo);

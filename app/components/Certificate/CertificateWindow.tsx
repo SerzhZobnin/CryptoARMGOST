@@ -5,6 +5,7 @@ import React from "react";
 import Media from "react-media";
 import { connect } from "react-redux";
 import { loadAllCertificates, loadAllContainers, removeAllCertificates, removeAllContainers } from "../../AC";
+import { getCertRequestStatus } from "../../AC/caActions";
 import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
 import {
@@ -13,6 +14,7 @@ import {
 } from "../../constants";
 import { filteredCertificatesSelector } from "../../selectors";
 import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
+import { filteredRequestCASelector } from "../../selectors/requestCASelector";
 import { fileCoding, fileExists } from "../../utils";
 import logger from "../../winstonLogger";
 import BlockNotElements from "../BlockNotElements";
@@ -1235,6 +1237,8 @@ class CertWindow extends React.Component<any, any> {
 export default connect((state) => {
   return {
     certificates: filteredCertificatesSelector(state, { operation: "certificate" }),
+    certrequests: filteredRequestCASelector(state),
+    regrequests: state.regrequests.entities,
     cloudCSPSettings: state.settings.getIn(["entities", state.settings.default]).cloudCSP,
     cloudCSPState: state.cloudCSP,
     containersLoading: state.containers.loading,
@@ -1242,8 +1246,10 @@ export default connect((state) => {
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
     searchValue: state.filters.searchValue,
+    servicesMap: state.services.entities,
   };
 }, {
   changeSearchValue, loadAllCertificates, loadAllContainers,
-  removeAllCertificates, removeAllContainers, resetCloudCSP
+  removeAllCertificates, removeAllContainers, resetCloudCSP,
+  getCertRequestStatus,
 })(CertWindow);
