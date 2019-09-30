@@ -702,7 +702,7 @@ i.material-icons.left {
   text-indent: -9999px;
   width: 24px;
   height: 24px;
-  background-size: 24px 24px;
+  background-size: 24px 24px !important;
   margin-top: 7px;
 }
 
@@ -1239,9 +1239,6 @@ i.material-icons.left.connect {
     background: url(./resources/image/service_category_connect.svg);
   }
 
-i.material-icons.left.cert {
-    background: url(./resources/image/service_category_cert.svg);
-  }
 
 /*-----------------Главная страница--------------------*/
 .maincontent{
@@ -3350,4 +3347,8 @@ svg:hover {
 
 .ca_request_status.unknown {
   background: url(./resources/image/status_unknow.svg);
+}
+
+.ca_request_status.wait{
+  background: url(./resources/image/status_wait.svg);
 }
