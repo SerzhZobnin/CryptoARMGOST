@@ -28,7 +28,7 @@ class RequestCAListItem extends React.Component<IRequestCAListItemProps, {}> {
   }
 
   render() {
-    const { requestCA, isOpen } = this.props;
+    const { requestCA, isOpen, service } = this.props;
     let active = "";
 
     if (isOpen) {
@@ -66,7 +66,7 @@ class RequestCAListItem extends React.Component<IRequestCAListItemProps, {}> {
             </div>
             <div className="col s10">
               <div className="collection-title ">{"requestCA.subject"}</div>
-              <div className="collection-info cert-info ">{"service"}</div>
+              <div className="collection-info cert-info ">{service.name}</div>
             </div>
             <div className="col s1">
               <div className={status} />

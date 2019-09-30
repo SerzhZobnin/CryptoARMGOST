@@ -13,7 +13,7 @@ import {
   REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
 import * as jwt from "../../trusted/jwt";
-import { fileCoding, formatDate, mapToArr, randomSerial, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
+import { arrayToMap, fileCoding, formatDate, mapToArr, randomSerial, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
 import logger from "../../winstonLogger";
 import { ICertificateRequestCA } from "../Services/types";
 import HeaderTabs from "./HeaderTabs";
@@ -76,7 +76,7 @@ interface ICertificateRequestCAProps {
   loadAllCertificates: () => void;
   removeAllCertificates: () => void;
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
-  postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
+  postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) => void;
   getCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
 }
 
@@ -539,7 +539,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
     const services = mapToArr(servicesMap);
     const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === services[0].id);
-    postCertRequest(`${services[0].settings.url}`, certificateRequestCA, regRequest);
+    postCertRequest(`${services[0].settings.url}`, certificateRequestCA, atrs, regRequest, services[0].id);
     const certRequest = certrequests.find((obj: any) => obj.get("id") === certificateRequestCA.id);
     //getCertRequest(`${services[0].settings.url}`, certRequest, regRequest);
     this.handleReloadCertificates();

@@ -125,7 +125,7 @@ export function postRegRequest(url: string, comment: string, description: string
   };
 }
 
-export function postCertRequest(url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) {
+export function postCertRequest(url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) {
   return (dispatch) => {
     dispatch({
       type: POST_CA_CERTREQUEST + START,
@@ -146,9 +146,11 @@ export function postCertRequest(url: string, certificateRequestCA: ICertificateR
         );
         dispatch({
           payload: {
-            id: certificateRequestCA.id,
             certRequestId: data.CertRequest.CertRequestId,
+            id: certificateRequestCA.id,
+            serviceId,
             status: data.CertRequest.Status,
+            subject,
           },
           type: POST_CA_CERTREQUEST + SUCCESS,
         });
