@@ -1,7 +1,7 @@
 import { ICertificateRequestCA } from "../components/Services/types";
 import {
   FAIL, GET_CA_REGREQUEST,
-  POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS, GET_CA_CERTREQUEST,
+  POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS, GET_CA_CERTREQUEST, GET_CA_CERTREQUEST_STATUS,
 } from "../constants";
 
 export async function postApi(url: string, postfields: any, headerfields: string[]) {
@@ -49,7 +49,6 @@ export async function getApi(url: string, headerfields: string[] ) {
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-
     curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
       let data;
 
@@ -165,10 +164,10 @@ export function postCertRequest(url: string, certificateRequestCA: ICertificateR
   };
 }
 
-export function getCertRequest(url: string, certRequest: ICertificateRequestCA, regRequest: any) {
+export function getCertRequestStatus(url: string, certRequest: ICertificateRequestCA, regRequest: any) {
   return (dispatch) => {
     dispatch({
-      type: GET_CA_CERTREQUEST + START,
+      type: GET_CA_CERTREQUEST_STATUS + START,
     });
 
     setTimeout(async () => {
@@ -177,19 +176,23 @@ export function getCertRequest(url: string, certRequest: ICertificateRequestCA, 
       try {
         url = url.substr(0, url.lastIndexOf("/"));
         data = await getApi(
-          `${url}/certrequest/${certRequest.certRequestId}/rawcert`,
+          `${url}/certrequest/${certRequest.certRequestId}`,
           [
             `Authorization: Basic ${Buffer.from(regRequest.Token + ":" + regRequest.Password).toString("base64")}`,
           ],
         );
         dispatch({
-            type: GET_CA_CERTREQUEST + SUCCESS,
+          payload: {
+            id: certRequest.id,
+            status: data.CertRequest.Status,
+          },
+            type: GET_CA_CERTREQUEST_STATUS + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");
 
         dispatch({
-          type: GET_CA_CERTREQUEST + FAIL,
+          type: GET_CA_CERTREQUEST_STATUS + FAIL,
         });
       }
     }, 0);

@@ -17,7 +17,7 @@ class RequestCAListItem extends React.Component<IRequestCAListItemProps, {}> {
   };
 
   shouldComponentUpdate(nextProps: IRequestCAListItemProps) {
-    return nextProps.isOpen !== this.props.isOpen;
+    return (nextProps.isOpen !== this.props.isOpen) || (nextProps.requestCA.status !== this.props.requestCA.status);
   }
 
   handleClick = () => {

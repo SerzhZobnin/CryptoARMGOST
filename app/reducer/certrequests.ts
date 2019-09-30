@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
 import {
   ADD_CERTIFICATE_REQUEST_CA,
-  CA_CSR_JSON, DELETE_CERTIFICATE_REQUEST_CA, POST_CA_CERTREQUEST, SUCCESS, CA_CERTREGUESTS_JSON,
+  CA_CSR_JSON, DELETE_CERTIFICATE_REQUEST_CA, POST_CA_CERTREQUEST, SUCCESS, CA_CERTREGUESTS_JSON, GET_CA_CERTREQUEST, GET_CA_CERTREQUEST_STATUS,
 } from "../constants";
 import { mapToArr } from "../utils";
 
@@ -37,6 +37,11 @@ export default (certrequests = new DefaultReducerState(), action) => {
         .setIn(["entities", payload.id, "subject"], payload.subject);
       break;
 
+    case GET_CA_CERTREQUEST_STATUS + SUCCESS:
+      certrequests = certrequests
+        .setIn(["entities", payload.id, "status"], payload.status);
+      break;
+
     case DELETE_CERTIFICATE_REQUEST_CA:
       certrequests = certrequests
         .deleteIn(["entities", payload.id]);
@@ -44,7 +49,7 @@ export default (certrequests = new DefaultReducerState(), action) => {
   }
 
   if (type === ADD_CERTIFICATE_REQUEST_CA || type === DELETE_CERTIFICATE_REQUEST_CA ||
-      type === POST_CA_CERTREQUEST + SUCCESS) {
+      type === POST_CA_CERTREQUEST + SUCCESS || type === GET_CA_CERTREQUEST_STATUS + SUCCESS) {
     const state = {
       certrequests: mapToArr(certrequests.entities),
     };
