@@ -1,7 +1,7 @@
 import { createSelector } from "reselect";
 import { mapToArr } from "../utils";
 
-export const requestsGetter = (state: any) => state.requestsCA.entities;
+export const requestsGetter = (state: any) => state.certrequests.entities;
 export const filtersGetter = (state: any) => state.filters;
 
 export const filteredRequestCASelector = createSelector(requestsGetter, filtersGetter, (requests, filters) => {

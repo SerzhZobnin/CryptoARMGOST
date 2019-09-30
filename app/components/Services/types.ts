@@ -24,6 +24,8 @@ export interface IService {
 }
 
 export interface ICertificateRequestCA {
-  id: string;
+  certRequestId: string;
   certificateReq: string;
+  id: string;
+  status: string;
 }

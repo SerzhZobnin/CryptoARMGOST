@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { addCertificateRequestCA, loadAllCertificates, removeAllCertificates } from "../../AC";
-import { postCertRequest } from "../../AC/caActions";
+import { getCertRequest, postCertRequest } from "../../AC/caActions";
 import {
   ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, DEFAULT_CSR_PATH, HOME_DIR,
   KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
@@ -77,6 +77,7 @@ interface ICertificateRequestCAProps {
   removeAllCertificates: () => void;
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
   postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
+  getCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
 }
 
 class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, ICertificateRequestCAState> {
@@ -330,7 +331,8 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const { localize, locale } = this.context;
     const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
-    const { addCertificateRequestCA, licenseStatus, lic_error, servicesMap, regrequests, postCertRequest } = this.props;
+    const { addCertificateRequestCA, licenseStatus, lic_error, servicesMap, regrequests,
+      postCertRequest, getCertRequest, certrequests } = this.props;
 
     const exts = new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
@@ -527,15 +529,19 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     }
     const id = uuid();
     const certificateRequestCA: ICertificateRequestCA = {
-      id,
+      certRequestId: "",
       certificateReq: cmsContext,
+      id,
+      status: "",
     };
 
     addCertificateRequestCA(certificateRequestCA);
 
     const services = mapToArr(servicesMap);
     const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === services[0].id);
-    postCertRequest(`${services[0].settings.url}`, certificateRequestCA, regRequest, services[0].id);
+    postCertRequest(`${services[0].settings.url}`, certificateRequestCA, regRequest);
+    const certRequest = certrequests.find((obj: any) => obj.get("id") === certificateRequestCA.id);
+    //getCertRequest(`${services[0].settings.url}`, certRequest, regRequest);
     this.handleReloadCertificates();
     Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     this.handelCancel();
@@ -808,6 +814,7 @@ export default connect((state) => {
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
     regrequests: state.regrequests.entities,
+    certrequests: state.certrequests.entities,
     servicesMap: state.services.entities,
   };
-}, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest })(CertificateRequestCA);
+}, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest, getCertRequest })(CertificateRequestCA);
