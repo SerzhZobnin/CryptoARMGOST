@@ -65,10 +65,13 @@ export default {
   },
   CA: {
     cryptopro_ca: "КриптоПро УЦ 2.0",
+    current_status: "Current request status",
     login: "Login",
     password: "Password",
     reg_new_user: "New user account registration",
     remember_me: "Remember me",
+    request_info: "Information about request",
+    request_status: "Status of request",
     url: "URL",
     url_placeholder: "Укажите URL вида  https://{веб сервер УЦ}/ui/api/{folder}",
   },

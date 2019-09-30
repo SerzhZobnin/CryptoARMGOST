@@ -10,6 +10,7 @@ export const CertificateRequestCAModel = Record({
   certRequestId: null,
   certificateReq: null,
   id: null,
+  serviceId: null,
   status: null,
 });
 

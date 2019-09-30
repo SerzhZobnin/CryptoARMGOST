@@ -542,7 +542,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     postCertRequest(`${services[0].settings.url}`, certificateRequestCA, regRequest);
     const certRequest = certrequests.find((obj: any) => obj.get("id") === certificateRequestCA.id);
     //getCertRequest(`${services[0].settings.url}`, certRequest, regRequest);
-    //this.handleReloadCertificates();
+    this.handleReloadCertificates();
     Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     this.handelCancel();
   }
