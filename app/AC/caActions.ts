@@ -1,7 +1,7 @@
 import { ICertificateRequestCA } from "../components/Services/types";
 import {
   FAIL, GET_CA_REGREQUEST,
-  POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS,
+  POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS, GET_CA_CERTREQUEST,
 } from "../constants";
 
 export async function postApi(url: string, postfields: any, headerfields: string[] ) {
@@ -22,6 +22,42 @@ export async function postApi(url: string, postfields: any, headerfields: string
           throw new Error(`Unexpected response, status code ${statusCode}`);
         }
 
+        data = JSON.parse(response.toString());
+
+      } catch (error) {
+        reject(`Cannot load data, error: ${error.message}`);
+        return;
+      } finally {
+        curl.close.bind(curl);
+      }
+
+      resolve(data);
+    });
+
+    curl.on("error", (error: { message: any; }) => {
+      curl.close.bind(curl);
+      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
+    });
+
+    curl.perform();
+  });
+}
+
+export async function getApi(url: string, headerfields: string[] ) {
+  return new Promise((resolve, reject) => {
+    const curl = new window.Curl();
+    curl.setOpt("URL", url);
+    curl.setOpt("FOLLOWLOCATION", true);
+    curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
+
+    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+      let data;
+
+      try {
+
+        if (statusCode !== 200) {
+          throw new Error(`Unexpected response, status code ${statusCode}`);
+        }
         data = JSON.parse(response.toString());
 
       } catch (error) {
@@ -104,18 +140,53 @@ export function postCertRequest(url: string, certificateRequestCA: ICertificateR
           certificateRequestCA.certificateReq,
           [
             "Content-Type: application/octet-stream",
-            `Authorization: Basic ${Buffer.from(regRequest.Token + ":" + regRequest.Password).toString("base64")}`
+            `Authorization: Basic ${Buffer.from(regRequest.Token + ":" + regRequest.Password).toString("base64")}`,
           ],
         );
-
         dispatch({
-            type: POST_CA_CERTREQUEST + SUCCESS,
+          payload: {
+            id: certificateRequestCA.id,
+            certRequestId: data.CertRequest.CertRequestId,
+            status: data.CertRequest.Status,
+          },
+          type: POST_CA_CERTREQUEST + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");
 
         dispatch({
           type: POST_CA_CERTREQUEST + FAIL,
+        });
+      }
+    }, 0);
+  };
+}
+
+export function getCertRequest(url: string, certRequest: ICertificateRequestCA, regRequest: any) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_CA_CERTREQUEST + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+
+      try {
+        url = url.substr(0, url.lastIndexOf("/"));
+        data = await getApi(
+          `${url}/certrequest/${certRequest.certRequestId}/rawcert`,
+          [
+            `Authorization: Basic ${Buffer.from(regRequest.Token + ":" + regRequest.Password).toString("base64")}`,
+          ],
+        );
+        dispatch({
+            type: GET_CA_CERTREQUEST + SUCCESS,
+        });
+      } catch (e) {
+        Materialize.toast(e, 4000, "toast-ca_error");
+
+        dispatch({
+          type: GET_CA_CERTREQUEST + FAIL,
         });
       }
     }, 0);

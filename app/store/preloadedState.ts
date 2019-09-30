@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { CA_CSR_JSON, CA_REGREGUESTS_JSON, SERVICES_JSON, SETTINGS_JSON } from "../constants";
+import { CA_CSR_JSON, CA_REGREGUESTS_JSON, SERVICES_JSON, SETTINGS_JSON, CA_CERTREGUESTS_JSON } from "../constants";
 import { DefaultReducerState as DefaultRegrequestsReducerState, RegRequestModel } from "../reducer/regrequests";
-import { CertificateRequestCAModel, DefaultReducerState as DefaultRequestsReducerState } from "../reducer/requestsCA";
+import { CertificateRequestCAModel, DefaultReducerState as DefaultRequestsReducerState } from "../reducer/certrequests";
 import { DefaultReducerState as DefaultServicesReducerState, ServiceModel, SettingsModel as ServiceSettingsModel } from "../reducer/services";
 import {
   DefaultReducerState as DefaultSettingsState, EncryptModel,
@@ -104,8 +104,8 @@ if (fileExists(CA_REGREGUESTS_JSON)) {
   }
 }
 
-if (fileExists(CA_CSR_JSON)) {
-  const requests = fs.readFileSync(CA_CSR_JSON, "utf8");
+if (fileExists(CA_CERTREGUESTS_JSON)) {
+  const requests = fs.readFileSync(CA_CERTREGUESTS_JSON, "utf8");
 
   if (requests) {
     try {
@@ -113,12 +113,12 @@ if (fileExists(CA_CSR_JSON)) {
 
       const data = JSON.parse(requests);
 
-      for (const request of data.requestsCA) {
+      for (const request of data.certrequests) {
         const mreg = new CertificateRequestCAModel({ ...request });
         requestsMap = requestsMap.setIn(["entities", request.id], mreg);
       }
 
-      odata.requestsCA = requestsMap;
+      odata.certrequests = requestsMap;
     } catch (e) {
       //
     }
