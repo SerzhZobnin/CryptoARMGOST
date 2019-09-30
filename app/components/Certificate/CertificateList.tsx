@@ -27,7 +27,7 @@ interface ICertificateListProps {
   isLoaded: boolean;
   isLoading: boolean;
   operation: string;
-  requestsCA: any;
+  certrequests: any;
   loadAllCertificates: () => void;
   verifyCertificate: (id: number) => void;
 }
@@ -59,7 +59,7 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
   }
 
   render() {
-    const { certificates, crls, isLoading, operation, requestsCA } = this.props;
+    const { certificates, crls, isLoading, operation, certrequests } = this.props;
     const { localize, locale } = this.context;
 
     if (isLoading) {
@@ -117,7 +117,7 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
       count++;
     }
 
-    if (requestsCA.length && (operation === "certificate")) {
+    if (certrequests.length && (operation === "certificate")) {
       count++;
     }
 
@@ -130,7 +130,7 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
           {this.getCollapsibleElement(localize("Certificate.certs_root", locale), "root", root, count)}
           {this.getCollapsibleElement(localize("Certificate.certs_token", locale), "token", token, count)}
           {this.getCollapsibleElement(localize("Certificate.certs_request", locale), "request", request, count)}
-          {(operation === "certificate") ? this.getCollapsibleElementRequestCA("Запросы отправленные в УЦ", "intermediate", requestsCA, count) : null}
+          {(operation === "certificate") ? this.getCollapsibleElementRequestCA("Запросы отправленные в УЦ", "intermediate", certrequests, count) : null}
           {(operation === "certificate") ? this.getCollapsibleElementCRL(localize("Certificate.crls", locale), "intermediate", crls, count) : null}
         </ul>
       </React.Fragment>
@@ -340,7 +340,7 @@ export default connect((state, ownProps: IOwnProps) => {
     crls: filteredCrlsSelector(state),
     isLoaded: state.certificates.loaded,
     isLoading: state.certificates.loading,
-    requestsCA: filteredRequestCASelector(state),
+    certrequests: filteredRequestCASelector(state),
     services: state.services,
   };
 }, { loadAllCertificates, verifyCertificate }, null, { pure: false })(accordion(CertificateList));

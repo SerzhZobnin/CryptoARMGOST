@@ -30,6 +30,7 @@ export default (certrequests = new DefaultReducerState(), action) => {
 
     case POST_CA_CERTREQUEST + SUCCESS:
       certrequests = certrequests
+        .setIn(["entities", payload.id, "serviceId"], payload.serviceId)
         .setIn(["entities", payload.id, "status"], payload.status)
         .setIn(["entities", payload.id, "certRequestId"], payload.certRequestId)
         .setIn(["entities", payload.id, "serviceId"], payload.serviceId)

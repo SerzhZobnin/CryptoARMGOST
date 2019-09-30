@@ -514,34 +514,38 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const uri = path.join(DEFAULT_CSR_PATH, `requestCA_${cn}_${algorithm}_${formatDate(new Date())}.req`);
     try {
       certReq.save(uri, trusted.DataFormat.PEM);
+
+      let cmsContext = null;
+      if (fileCoding(uri) === trusted.DataFormat.PEM) {
+        cmsContext = fs.readFileSync(uri, "utf8");
+        cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE REQUEST-----\r\n", "");
+        cmsContext = cmsContext.replace("\r\n-----END CERTIFICATE REQUEST-----", "");
+        cmsContext = cmsContext.replace(/\r\n/g, "");
+      } else {
+        cmsContext = fs.readFileSync(uri, "base64");
+      }
+      const id = uuid();
+      const certificateRequestCA: ICertificateRequestCA = {
+        certRequestId: "",
+        certificateReq: cmsContext,
+        id,
+        status: "",
+      };
+
+      addCertificateRequestCA(certificateRequestCA);
+
+      const services = mapToArr(servicesMap);
+      const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === services[0].id);
+      postCertRequest(`${services[0].settings.url}`, certificateRequestCA, atrs, regRequest, services[0].id);
+      const certRequest = certrequests.find((obj: any) => obj.get("id") === certificateRequestCA.id);
+      //getCertRequest(`${services[0].settings.url}`, certRequest, regRequest);
+
+      this.handleReloadCertificates();
+      Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     } catch (e) {
       //
     }
 
-    let cmsContext = null;
-    if (fileCoding(uri) === trusted.DataFormat.PEM) {
-      cmsContext = fs.readFileSync(uri, "utf8");
-      cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE REQUEST-----\r\n", "");
-      cmsContext = cmsContext.replace("\r\n-----END CERTIFICATE REQUEST-----", "");
-      cmsContext = cmsContext.replace(/\r\n/g, "");
-    } else {
-      cmsContext = fs.readFileSync(uri, "base64");
-    }
-    const id = uuid();
-    const certificateRequestCA: ICertificateRequestCA = {
-      certRequestId: "",
-      certificateReq: cmsContext,
-      id,
-      status: "",
-    };
-
-    addCertificateRequestCA(certificateRequestCA);
-
-    const services = mapToArr(servicesMap);
-    const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === services[0].id);
-    postCertRequest(`${services[0].settings.url}`, certificateRequestCA, atrs, regRequest, services[0].id);
-    const certRequest = certrequests.find((obj: any) => obj.get("id") === certificateRequestCA.id);
-    //getCertRequest(`${services[0].settings.url}`, certRequest, regRequest);
     this.handleReloadCertificates();
     Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     this.handelCancel();
