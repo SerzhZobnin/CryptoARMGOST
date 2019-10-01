@@ -100,5 +100,6 @@ export default connect((state, ownProps) => {
     servicesMap: state.services.entities,
     certRequest: filteredRequestCASelector(state).find((obj: any) => obj.get("id") === request.id),
   };
-}, { getCertRequest, getCertRequestStatus,
+}, {
+  getCertRequest, getCertRequestStatus,
 })(RequestCAInfo);
