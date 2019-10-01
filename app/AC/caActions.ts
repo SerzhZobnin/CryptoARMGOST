@@ -1,7 +1,7 @@
 import { ICertificateRequestCA } from "../components/Services/types";
 import {
   FAIL, GET_CA_REGREQUEST,
-  POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS, GET_CA_CERTREQUEST, GET_CA_CERTREQUEST_STATUS,
+  POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS, GET_CA_CERTREQUEST, GET_CA_CERTREQUEST_STATUS, HOME_DIR,
 } from "../constants";
 
 export async function postApi(url: string, postfields: any, headerfields: string[]) {
@@ -43,22 +43,19 @@ export async function postApi(url: string, postfields: any, headerfields: string
   });
 }
 
-export async function getApi(url: string, headerfields: string[] ) {
+export async function getApiStatus(url: string, headerfields: string[] ) {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
+
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
-      let data;
-
       try {
-
         if (statusCode !== 200) {
           throw new Error(`Unexpected response, status code ${statusCode}`);
         }
-        data = JSON.parse(response.toString());
-
+        //data = JSON.parse(response.toString());
       } catch (error) {
         reject(`Cannot load data, error: ${error.message}`);
         return;
@@ -66,7 +63,48 @@ export async function getApi(url: string, headerfields: string[] ) {
         curl.close.bind(curl);
       }
 
-      resolve(data);
+      resolve(response);
+    });
+
+    curl.on("error", (error: { message: any; }) => {
+      curl.close.bind(curl);
+      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
+    });
+
+    curl.perform();
+  });
+}
+
+export async function getApi(url: string, headerfields: string[] ) {
+  return new Promise((resolve, reject) => {
+    const curl = new window.Curl();
+    let data = new Buffer("");
+
+    curl.setOpt("URL", url);
+    curl.setOpt("FOLLOWLOCATION", true);
+    curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
+    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+      try {
+        if (statusCode !== 200) {
+          throw new Error(`Unexpected response, status code ${statusCode}`);
+        }
+        //data = JSON.parse(response.toString());
+      } catch (error) {
+        reject(`Cannot load data, error: ${error.message}`);
+        return;
+      } finally {
+        curl.close.bind(curl);
+      }
+
+      //console.log(new TextEncoder().encode(new TextDecoder().decode(data)));
+      const cert = new trusted.pki.Certificate();
+      cert.import(data);
+      resolve(cert.export(trusted.DataFormat.PEM).toString());
+    });
+
+    curl.on('data', (chunk, curlInstance) => {
+      data = Buffer.concat([data, chunk]);
+      return chunk.length;
     });
 
     curl.on("error", (error: { message: any; }) => {
@@ -175,12 +213,14 @@ export function getCertRequestStatus(url: string, certRequest: ICertificateReque
 
       try {
         url = url.substr(0, url.lastIndexOf("/"));
-        data = await getApi(
+        data = await getApiStatus(
           `${url}/certrequest/${certRequest.certRequestId}`,
           [
             `Authorization: Basic ${Buffer.from(regRequest.Token + ":" + regRequest.Password).toString("base64")}`,
           ],
         );
+        data = JSON.parse(data.toString());
+
         dispatch({
           payload: {
             id: certRequest.id,
@@ -193,6 +233,43 @@ export function getCertRequestStatus(url: string, certRequest: ICertificateReque
 
         dispatch({
           type: GET_CA_CERTREQUEST_STATUS + FAIL,
+        });
+      }
+    }, 0);
+  };
+}
+
+export function getCertRequest(url: string, certRequest: ICertificateRequestCA, regRequest: any) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_CA_CERTREQUEST + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+
+      try {
+        url = url.substr(0, url.lastIndexOf("/"));
+        data = await getApi(
+          `${url}/certrequest/${certRequest.certRequestId}/rawcert`,
+          [
+            "Content-Type: application/octet-stream",
+            `Authorization: Basic ${Buffer.from(regRequest.Token + ":" + regRequest.Password).toString("base64")}`,
+          ],
+        );
+
+        dispatch({
+          payload: {
+            certificate: data,
+            id: certRequest.id,
+          },
+            type: GET_CA_CERTREQUEST + SUCCESS,
+        });
+      } catch (e) {
+        Materialize.toast(e, 4000, "toast-ca_error");
+
+        dispatch({
+          type: GET_CA_CERTREQUEST + FAIL,
         });
       }
     }, 0);

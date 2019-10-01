@@ -8,6 +8,7 @@ import { mapToArr } from "../utils";
 
 export const CertificateRequestCAModel = Record({
   certRequestId: null,
+  certificate: null,
   certificateReq: null,
   id: null,
   serviceId: null,
@@ -42,6 +43,11 @@ export default (certrequests = new DefaultReducerState(), action) => {
         .setIn(["entities", payload.id, "status"], payload.status);
       break;
 
+    case GET_CA_CERTREQUEST + SUCCESS:
+      certrequests = certrequests
+        .setIn(["entities", payload.id, "certificate"], payload.certificate);
+      break;
+
     case DELETE_CERTIFICATE_REQUEST_CA:
       certrequests = certrequests
         .deleteIn(["entities", payload.id]);
@@ -49,7 +55,8 @@ export default (certrequests = new DefaultReducerState(), action) => {
   }
 
   if (type === ADD_CERTIFICATE_REQUEST_CA || type === DELETE_CERTIFICATE_REQUEST_CA ||
-      type === POST_CA_CERTREQUEST + SUCCESS || type === GET_CA_CERTREQUEST_STATUS + SUCCESS) {
+      type === POST_CA_CERTREQUEST + SUCCESS || type === GET_CA_CERTREQUEST_STATUS + SUCCESS ||
+      type === GET_CA_CERTREQUEST + SUCCESS) {
     const state = {
       certrequests: mapToArr(certrequests.entities),
     };

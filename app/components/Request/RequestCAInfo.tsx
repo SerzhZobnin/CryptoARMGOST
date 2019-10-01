@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { getCertRequestStatus } from "../../AC/caActions";
+import { getCertRequest, getCertRequestStatus } from "../../AC/caActions";
+import { REQUEST_STATUS, HOME_DIR } from "../../constants";
 import { filteredRequestCASelector } from "../../selectors/requestCASelector";
 
 interface IRequestCAInfoProps {
@@ -15,11 +16,25 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
   };
 
   componentDidMount() {
-    const { certrequests, regrequests, servicesMap, getCertRequestStatus, request } = this.props;
-    const certRequest = certrequests.find((obj: any) => obj.get("id") === request.id);
+    const { certRequest, certrequests, regrequests, servicesMap, getCertRequest, getCertRequestStatus, request } = this.props;
     const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
     const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
     getCertRequestStatus(`${service.settings.url}`, certRequest, regrequest);
+  }
+
+  componentDidUpdate(prevProps: any) {
+    const { certRequest, certrequests, regrequests, servicesMap, getCertRequest, getCertRequestStatus, request } = this.props;
+    if ((request.status !== prevProps.request.status) && (request.status === REQUEST_STATUS.C)) {
+      const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
+      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
+      getCertRequest(`${service.settings.url}`, certRequest, regrequest);
+    }
+
+    if ((certRequest.certificate !== prevProps.certRequest.certificate) && (certRequest.certificate)) {
+      const cert = new trusted.pki.Certificate();
+      cert.import(new Buffer(certRequest.certificate), trusted.DataFormat.PEM);
+      console.log(cert);
+    }
   }
 
   render() {
@@ -54,12 +69,13 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
 }
 
 export default connect((state, ownProps) => {
-  console.log(ownProps);
+  const request = state.certrequests.getIn(["entities", ownProps.requestCA.id]);
   return {
-    request: state.certrequests.getIn(["entities", ownProps.requestCA.id]),
+    request,
     certrequests: filteredRequestCASelector(state),
     regrequests: state.regrequests.entities,
     servicesMap: state.services.entities,
+    certRequest: filteredRequestCASelector(state).find((obj: any) => obj.get("id") === request.id),
   };
-}, {getCertRequestStatus,
+}, { getCertRequest, getCertRequestStatus,
 })(RequestCAInfo);
