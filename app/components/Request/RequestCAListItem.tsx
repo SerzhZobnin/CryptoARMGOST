@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { REQUEST_STATUS } from "../../constants";
+import { arrayToMap } from "../../utils";
 
 interface IRequestCAListItemProps {
   chooseCert: () => void;
@@ -35,6 +36,10 @@ class RequestCAListItem extends React.Component<IRequestCAListItemProps, {}> {
       active = "active";
     }
 
+    const subjectObj = requestCA && requestCA.subject ?
+      requestCA.subject.reduce((obj, item) => (obj[item.type] = item.value, obj), {}) :
+      {};
+
     let status = "ca_request_status ";
 
     switch (requestCA.status) {
@@ -65,7 +70,7 @@ class RequestCAListItem extends React.Component<IRequestCAListItemProps, {}> {
               <div className="ca_request" />
             </div>
             <div className="col s10">
-              <div className="collection-title ">{"requestCA.subject"}</div>
+              <div className="collection-title ">{subjectObj && subjectObj.CN ? subjectObj.CN : "-"}</div>
               <div className="collection-info cert-info ">{service.name}</div>
             </div>
             <div className="col s1">
