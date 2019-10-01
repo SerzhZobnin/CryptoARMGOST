@@ -63,8 +63,31 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
           <div className="desktoplic_text_item">{localize("CA.request_info", locale)}</div>
           <hr />
         </div>
+
+        <div className="col s12">
+          <div className="collection cert-info-list">
+            {this.getRequestInfo()}
+          </div>
+        </div>
       </React.Fragment>
     );
+  }
+
+  getRequestInfo = () => {
+    const { request } = this.props;
+
+    if (!request || !request.subject || !request.subject.length) {
+      return null;
+    }
+
+    return request.subject.map((field: any) => {
+      return (
+        <div className="collection-item certs-collection certificate-info">
+          <div className={"collection-info cert-info-blue"}>{field.type}</div>
+          <div className={"collection-title selectable-text"}>{field.value ? field.value : "-"}</div>
+        </div>
+      );
+    });
   }
 }
 
