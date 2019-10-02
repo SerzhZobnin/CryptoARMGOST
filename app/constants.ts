@@ -208,6 +208,7 @@ export const GET_CA_REGREQUEST = "GET_CA_REGREQUEST";
 export const POST_CA_CERTREQUEST = "POST_CA_CERTREQUEST";
 export const GET_CA_CERTREQUEST = "GET_CA_CERTREQUEST";
 export const GET_CA_CERTREQUEST_STATUS = "GET_CA_CERTREQUEST_STATUS";
+export const POST_CA_CERTREQUEST_СONFIRMATION = "POST_CA_CERTREQUEST_СONFIRMATION";
 
 export const REQUEST_STATUS = {
   Q: "Q", // запрос установлен в очередь на обработку(Новый, Queued);

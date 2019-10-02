@@ -1,8 +1,8 @@
 import { ICertificateRequestCA } from "../components/Services/types";
 import {
   FAIL, GET_CA_CERTREQUEST,
-  GET_CA_CERTREQUEST_STATUS, GET_CA_REGREQUEST, HOME_DIR,
-  POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS,
+  GET_CA_CERTREQUEST_STATUS, GET_CA_REGREQUEST, HOME_DIR, POST_CA_CERTREQUEST,
+  POST_CA_CERTREQUEST_СONFIRMATION, POST_CA_REGREQUEST, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -15,7 +15,7 @@ export async function postApi(url: string, postfields: any, headerfields: string
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
 
-    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
       let data;
 
       try {
@@ -256,6 +256,47 @@ export function postCertRequest(url: string, certificateRequestCA: ICertificateR
 
         dispatch({
           type: POST_CA_CERTREQUEST + FAIL,
+        });
+      }
+    }, 0);
+  };
+}
+
+export function postCertRequestСonfirmation(url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) {
+  return (dispatch) => {
+    dispatch({
+      type: POST_CA_CERTREQUEST_СONFIRMATION + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+      const dataStatus = {
+        Status: "K",
+      };
+      try {
+        url = url.substr(0, url.lastIndexOf("/"));
+        data = await postApi(
+          `${url}/certrequest/${certificateRequestCA.certRequestId}`,
+          JSON.stringify(dataStatus),
+          [
+            "Content-Type: application/json",
+            "Accept: */*",
+            `Authorization: Basic ${Buffer.from(regRequest.Token + ":" + regRequest.Password).toString("base64")}`,
+          ],
+        );
+        console.log(data);
+        dispatch({
+          payload: {
+            id: certificateRequestCA.id,
+            status: data.CertRequest.Status,
+          },
+          type: POST_CA_CERTREQUEST_СONFIRMATION + SUCCESS,
+        });
+      } catch (e) {
+        Materialize.toast(e, 4000, "toast-ca_error");
+
+        dispatch({
+          type: POST_CA_CERTREQUEST_СONFIRMATION + FAIL,
         });
       }
     }, 0);
