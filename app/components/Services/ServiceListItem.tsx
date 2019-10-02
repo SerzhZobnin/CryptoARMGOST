@@ -35,7 +35,7 @@ class ServiceListItem extends React.Component<IServiceListItemProps, {}> {
     const { service, isOpen } = this.props;
 
     let active = "";
-    let curStatusStyle = "cert_status_ok";
+    let curStatusStyle = "ca_service_status ok";
 
     if (isOpen) {
       active = "active";

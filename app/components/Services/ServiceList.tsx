@@ -26,7 +26,7 @@ class ServiceList extends React.Component<IServiceListProps, any> {
     super(props);
 
     this.state = ({
-      activeSection: "CA_SERVICE",
+      activeSection: "ca",
       countSections: 0,
     });
   }
@@ -58,7 +58,7 @@ class ServiceList extends React.Component<IServiceListProps, any> {
     return (
       <React.Fragment>
         <ul className="collapsible" data-collapsible="accordion">
-          {this.getCollapsibleElement(localize("Services.service_ca", locale), "CA_SERVICE", ca, count, true)}
+          {this.getCollapsibleElement(localize("Services.service_ca", locale), "ca", ca, count, true)}
         </ul>
       </React.Fragment>
     );

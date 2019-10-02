@@ -130,7 +130,7 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
           {this.getCollapsibleElement(localize("Certificate.certs_root", locale), "root", root, count)}
           {this.getCollapsibleElement(localize("Certificate.certs_token", locale), "token", token, count)}
           {this.getCollapsibleElement(localize("Certificate.certs_request", locale), "request", request, count)}
-          {(operation === "certificate") ? this.getCollapsibleElementRequestCA("Запросы отправленные в УЦ", "intermediate", certrequests, count) : null}
+          {(operation === "certificate") ? this.getCollapsibleElementRequestCA("Запросы отправленные в УЦ", "ca", certrequests, count) : null}
           {(operation === "certificate") ? this.getCollapsibleElementCRL(localize("Certificate.crls", locale), "intermediate", crls, count) : null}
         </ul>
       </React.Fragment>

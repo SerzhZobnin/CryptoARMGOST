@@ -71,7 +71,7 @@ class RequestCAListItem extends React.Component<IRequestCAListItemProps, {}> {
             </div>
             <div className="col s10">
               <div className="collection-title ">{subjectObj && subjectObj.CN ? subjectObj.CN : "-"}</div>
-              <div className="collection-info cert-info ">{service.name}</div>
+              <div className="collection-info cert-info ">{service ? service.name : "-"}</div>
             </div>
             <div className="col s1">
               <div className={status} />

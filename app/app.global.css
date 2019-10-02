@@ -1236,8 +1236,15 @@ i.material-icons.left.connect {
 }
 
 i.material-icons.left.connect {
-    background: url(./resources/image/service_category_connect.svg);
-  }
+  background: url(./resources/image/service_category_connect.svg);
+}
+
+i.material-icons.left.ca {
+  background: url(./resources/image/CA/service_ca.svg);
+  width: 24px;
+  height: 24px;
+  background-size: 100% !important;
+}
 
 
 /*-----------------Главная страница--------------------*/
@@ -3351,4 +3358,22 @@ svg:hover {
 
 .ca_request_status.wait{
   background: url(./resources/image/status_wait.svg);
+}
+
+.ca_service_status {
+  width: 32px;
+  height: 32px;
+  background-size: 100% !important;
+}
+
+.ca_service_status.ok {
+  background: url(./resources/image/ca/service_status_ok.svg);
+}
+
+.ca_service_status.error {
+  background: url(./resources/image/ca/service_status_error.svg);
+}
+
+.ca_service_status.unknown {
+  background: url(./resources/image/ca/service_status_unknown.svg);
 }
