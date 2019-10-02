@@ -84,7 +84,7 @@ class LoginForm extends React.PureComponent<ILoginFormProps, ILoginFormState> {
           </div>
         </div>
 
-        <div className="row">
+        {/* <div className="row">
           <div className="col s11">
             <div className="input-checkbox">
               <input
@@ -100,7 +100,7 @@ class LoginForm extends React.PureComponent<ILoginFormProps, ILoginFormState> {
               </label>
             </div>
           </div>
-        </div>
+        </div> */}
 
       </div>
     );
