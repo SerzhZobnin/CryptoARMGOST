@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { loadAllCertificates, removeAllCertificates } from "../../AC";
-import { getCertRequest, getCertRequestStatus } from "../../AC/caActions";
+import { getCertRequest, getCertRequestStatus, postCertRequestСonfirmation } from "../../AC/caActions";
 import { DEFAULT_CERTSTORE_PATH, HOME_DIR, MY, PROVIDER_CRYPTOPRO, REQUEST_STATUS } from "../../constants";
 import { filteredRequestCASelector } from "../../selectors/requestCASelector";
 
@@ -24,7 +24,7 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
   }
 
   componentDidUpdate(prevProps: any) {
-    const { certRequest, regrequests, servicesMap, getCertRequest, request } = this.props;
+    const { certRequest, regrequests, servicesMap, getCertRequest, request, postCertRequestСonfirmation } = this.props;
     const { localize, locale } = this.context;
     if ((request.status !== prevProps.request.status) && (request.status === REQUEST_STATUS.C)) {
       const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
@@ -32,8 +32,13 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
       getCertRequest(`${service.settings.url}`, certRequest, regrequest);
     }
 
-    if ((certRequest.certificate !== prevProps.certRequest.certificate) && (certRequest.certificate)) {
+    if ((request.status === REQUEST_STATUS.C) &&
+        (certRequest.certificate !== prevProps.certRequest.certificate) &&
+        (certRequest.certificate)) {
+      const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
+      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
       const cert = new trusted.pki.Certificate();
+
       cert.import(new Buffer(certRequest.certificate), trusted.DataFormat.PEM);
       const containerName = trusted.utils.Csp.getContainerNameByCertificate(cert);
       window.PKISTORE.importCertificate(cert, PROVIDER_CRYPTOPRO, (err: Error) => {
@@ -43,7 +48,7 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
       }, MY, containerName);
 
       trusted.utils.Csp.installCertificateToContainer(cert, containerName, 75);
-
+      postCertRequestСonfirmation(`${service.settings.url}`, certRequest, regrequest);
       this.handleReloadCertificates();
     }
   }
@@ -125,5 +130,5 @@ export default connect((state, ownProps) => {
     certRequest: filteredRequestCASelector(state).find((obj: any) => obj.get("id") === request.id),
   };
 }, {
-  getCertRequest, getCertRequestStatus, loadAllCertificates, removeAllCertificates,
+  getCertRequest, getCertRequestStatus, postCertRequestСonfirmation, loadAllCertificates, removeAllCertificates,
 })(RequestCAInfo);
