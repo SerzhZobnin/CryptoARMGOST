@@ -2,7 +2,7 @@ import { Map } from "immutable";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { postRegRequest } from "../../AC/caActions";
+import { getRegRequest, postRegRequest } from "../../AC/caActions";
 import { addService } from "../../AC/servicesActions";
 import { CA_SERVICE } from "../../constants";
 import { uuid } from "../../utils";
@@ -14,6 +14,8 @@ import { ICAServiceSettings, IService } from "./types";
 interface IAddServiceState {
   activeSettingsTab: boolean;
   isUserattrLoading: boolean;
+  login: string;
+  password: string;
   regNewUser: boolean;
   serviceName: string;
   serviceType: "CA_SERVICE";
@@ -24,6 +26,8 @@ interface IAddServiceState {
 const initialState = {
   activeSettingsTab: true,
   isUserattrLoading: false,
+  login: "",
+  password: "",
   regNewUser: true,
   serviceName: "КриптоПро УЦ 2.0",
   serviceSettings: {
@@ -37,6 +41,7 @@ interface IAddServiceProps {
   addService: (service: IService) => void;
   mapServices: Map<any, any>;
   onCancel: (service?: IService) => void;
+  getRegRequest: (url: string, login: string, password: string, id: string) => void;
   postRegRequest: (url: string, comment: string, description: string, email: string, keyPhrase: string, oids: any, serviceId: string) => void;
 }
 
@@ -111,7 +116,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                           onCancel={this.handelCancel}
                           onRDNmodelChange={this.onRDNmodelChange}
                         />
-                        : <LoginForm />
+                        : <LoginForm login={this.state.login} password={this.state.password} loginChange={this.handleLoginChange} passwordChange={this.handlePasswordChange} />
                     }
                   </div>
               }
@@ -200,6 +205,14 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
     return;
   }
 
+  handleLoginChange = (value: string) => {
+    this.setState({ login: value });
+  }
+
+  handlePasswordChange = (value: any) => {
+    this.setState({ password: value });
+  }
+
   handleAdd = () => {
     const { serviceType } = this.state;
 
@@ -223,12 +236,8 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
 
   handleCAUserRegrequest = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { addService, onCancel, postRegRequest } = this.props;
-    const { serviceName, serviceSettings, serviceType, RDNmodel } = this.state;
-
-    if (!RDNmodel) {
-      this.handelCancel();
-    }
+    const { addService, getRegRequest, onCancel, postRegRequest } = this.props;
+    const { login, password, regNewUser, serviceName, serviceSettings, serviceType, RDNmodel } = this.state;
 
     const id = uuid();
     const service: IService = {
@@ -238,12 +247,22 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
       type: serviceType,
     };
 
-    addService(service);
-    postRegRequest(`${serviceSettings.url}`, "-", "-", "ct@ct.ru", "1", RDNmodel, id);
-    onCancel(service);
+    if (regNewUser) {
+      if (!RDNmodel) {
+        this.handelCancel();
+      }
+
+      addService(service);
+      postRegRequest(`${serviceSettings.url}`, "-", "-", "ct@ct.ru", "1", RDNmodel, id);
+      onCancel(service);
+    } else {
+      addService(service);
+      getRegRequest(`${serviceSettings.url}`, login, password, id);
+      onCancel(service);
+    }
   }
 }
 
 export default connect((state) => ({
   mapServices: state.services,
-}), { addService, postRegRequest })(AddService);
+}), { addService, getRegRequest, postRegRequest })(AddService);

@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { CA_REGREGUESTS_JSON, FAIL, POST_CA_REGREQUEST, START, SUCCESS } from "../constants";
+import { CA_REGREGUESTS_JSON, FAIL, GET_CA_REGREQUEST, POST_CA_REGREQUEST, START, SUCCESS } from "../constants";
 import { mapToArr } from "../utils";
 
 export const RegRequestModel = Record({
@@ -22,6 +22,7 @@ export default (regrequests = new DefaultReducerState(), action) => {
 
   switch (type) {
     case POST_CA_REGREQUEST + SUCCESS:
+    case GET_CA_REGREQUEST + SUCCESS:
       regrequests = regrequests.setIn(["entities", payload.id], new RegRequestModel({
         id: payload.id,
         ...payload.regRequest,
@@ -31,7 +32,7 @@ export default (regrequests = new DefaultReducerState(), action) => {
       break;
   }
 
-  if (type === POST_CA_REGREQUEST + SUCCESS) {
+  if (type === POST_CA_REGREQUEST + SUCCESS || type === GET_CA_REGREQUEST + SUCCESS) {
     const state = {
       regrequests: mapToArr(regrequests.entities),
     };

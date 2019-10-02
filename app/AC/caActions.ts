@@ -1,8 +1,10 @@
 import { ICertificateRequestCA } from "../components/Services/types";
 import {
-  FAIL, GET_CA_REGREQUEST,
-  POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS, GET_CA_CERTREQUEST, GET_CA_CERTREQUEST_STATUS, HOME_DIR,
+  FAIL, GET_CA_CERTREQUEST,
+  GET_CA_CERTREQUEST_STATUS, GET_CA_REGREQUEST, HOME_DIR,
+  POST_CA_CERTREQUEST, POST_CA_REGREQUEST, START, SUCCESS,
 } from "../constants";
+import { uuid } from "../utils";
 
 export async function postApi(url: string, postfields: any, headerfields: string[]) {
   return new Promise((resolve, reject) => {
@@ -55,7 +57,6 @@ export async function getApiStatus(url: string, headerfields: string[] ) {
         if (statusCode !== 200) {
           throw new Error(`Unexpected response, status code ${statusCode}`);
         }
-        //data = JSON.parse(response.toString());
       } catch (error) {
         reject(`Cannot load data, error: ${error.message}`);
         return;
@@ -156,6 +157,65 @@ export function postRegRequest(url: string, comment: string, description: string
 
         dispatch({
           type: POST_CA_REGREQUEST + FAIL,
+        });
+      }
+    }, 0);
+  };
+}
+
+export function getRegRequest(url: string, Token: string, Password: string, serviceId: string) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_CA_REGREQUEST + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+
+      try {
+        data = await getApiStatus(
+          `${url}/regrequest`,
+          [
+            "Content-Type: application/json",
+            `Authorization: Basic ${Buffer.from(Token + ":" + Password).toString("base64")}`,
+          ],
+        );
+
+        data = JSON.parse(data.toString());
+        const statusRegRequest = data.RegRequest.Status;
+
+        url = url.substr(0, url.lastIndexOf("/"));
+        data = await getApiStatus(
+          `${url}/regrequest/profile?type=json`,
+          [
+            "Content-Type: application/json",
+            `Authorization: Basic ${Buffer.from(Token + ":" + Password).toString("base64")}`,
+          ],
+        );
+
+        data = JSON.parse(data.toString());
+        const profile = data.Profile.reduce((obj, item) => ({...obj, ...item}), {});
+        const regRequestId = uuid();
+
+        dispatch({
+          payload: {
+            RDN: profile,
+            id: regRequestId,
+            regRequest: {
+              Password,
+              RegRequestId: regRequestId,
+              Status: statusRegRequest,
+              Token,
+            },
+            serviceId,
+          },
+            type: GET_CA_REGREQUEST + SUCCESS,
+        });
+      } catch (e) {
+        Materialize.toast(e, 4000, "toast-ca_error");
+
+        dispatch({
+          type: GET_CA_REGREQUEST + FAIL,
         });
       }
     }, 0);

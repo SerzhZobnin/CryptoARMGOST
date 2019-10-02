@@ -2,13 +2,18 @@ import PropTypes from "prop-types";
 import React from "react";
 
 interface ILoginFormState {
-  login: string;
-  password: string;
   passwordIsMasked: boolean;
   remember: boolean;
 }
 
-class LoginForm extends React.PureComponent<{}, ILoginFormState> {
+interface ILoginFormProps {
+  login: string;
+  password: string;
+  loginChange: (value: string) => void;
+  passwordChange: (value: string) => void;
+}
+
+class LoginForm extends React.PureComponent<ILoginFormProps, ILoginFormState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -18,8 +23,6 @@ class LoginForm extends React.PureComponent<{}, ILoginFormState> {
     super(props);
 
     this.state = {
-      login: "",
-      password: "",
       passwordIsMasked: true,
       remember: true,
     };
@@ -35,11 +38,12 @@ class LoginForm extends React.PureComponent<{}, ILoginFormState> {
 
   render() {
     const { localize, locale } = this.context;
-    const { login, password, passwordIsMasked, remember } = this.state;
+    const { passwordIsMasked, remember } = this.state;
+    const { login, password, loginChange, passwordChange } = this.props;
 
     return (
       <div className="row">
-
+        <div className="row" />
         <div className="row">
           <div className="input-field input-field-csr col s12">
             <input
@@ -48,7 +52,7 @@ class LoginForm extends React.PureComponent<{}, ILoginFormState> {
               className="validate"
               name="login"
               value={login}
-              onChange={this.loginChange}
+              onChange={(ev) => loginChange(ev.target.value)}
             />
             <label htmlFor="login">
               {localize("CA.login", locale)}
@@ -64,7 +68,7 @@ class LoginForm extends React.PureComponent<{}, ILoginFormState> {
               className="validate"
               name="password"
               value={password}
-              onChange={this.passwordChange}
+              onChange={(ev) => passwordChange(ev.target.value)}
             />
             <label htmlFor="password">
               {localize("CA.password", locale)}
@@ -100,14 +104,6 @@ class LoginForm extends React.PureComponent<{}, ILoginFormState> {
 
       </div>
     );
-  }
-
-  loginChange = (ev: any) => {
-    this.setState({ login: ev.target.value });
-  }
-
-  passwordChange = (ev: any) => {
-    this.setState({ password: ev.target.value });
   }
 
   toggleRemember = () => {
