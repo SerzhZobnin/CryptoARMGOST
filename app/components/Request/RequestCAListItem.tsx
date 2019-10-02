@@ -59,7 +59,6 @@ class RequestCAListItem extends React.Component<IRequestCAListItemProps, {}> {
         break;
       default:
         status = status + "unknown";
-
     }
 
     return (

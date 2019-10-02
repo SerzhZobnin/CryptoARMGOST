@@ -65,7 +65,7 @@ class ServiceList extends React.Component<IServiceListProps, any> {
   }
 
   getCollapsibleElement = (head: string, name: string, elements: object[], count: number, active: boolean = false) => {
-    const { activeService, toggleOpenItem, isItemOpened } = this.props;
+    const { activeService, toggleOpenItem, isItemOpened, regrequests } = this.props;
 
     if (!elements || elements.length === 0) {
       return null;
@@ -95,6 +95,7 @@ class ServiceList extends React.Component<IServiceListProps, any> {
                       }
 
                       const service = elements[index];
+                      const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
 
                       return (
                         <ul key={key} style={style}>
@@ -106,6 +107,7 @@ class ServiceList extends React.Component<IServiceListProps, any> {
                                   chooseCert={() => activeService(service)}
                                   isOpen={isItemOpened(service.id.toString())}
                                   toggleOpen={toggleOpenItem(service.id.toString())}
+                                  regRequest={regRequest}
                                   service={service} />
                               ) : <ServiceListItemBigWidth
                                   key={service.id}
@@ -132,6 +134,7 @@ class ServiceList extends React.Component<IServiceListProps, any> {
 
 export default connect((state) => {
   return {
+    regrequests: state.regrequests.entities,
     services: mapToArr(state.services.entities),
   };
 })(accordion(ServiceList));
