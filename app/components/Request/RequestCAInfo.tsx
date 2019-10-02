@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
+import { loadAllCertificates, removeAllCertificates } from "../../AC";
 import { getCertRequest, getCertRequestStatus } from "../../AC/caActions";
-import { REQUEST_STATUS, HOME_DIR } from "../../constants";
+import { DEFAULT_CERTSTORE_PATH, HOME_DIR, MY, PROVIDER_CRYPTOPRO, REQUEST_STATUS } from "../../constants";
 import { filteredRequestCASelector } from "../../selectors/requestCASelector";
 
 interface IRequestCAInfoProps {
@@ -16,14 +17,15 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
   };
 
   componentDidMount() {
-    const { certRequest, certrequests, regrequests, servicesMap, getCertRequest, getCertRequestStatus, request } = this.props;
+    const { certRequest, regrequests, servicesMap, getCertRequestStatus, } = this.props;
     const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
     const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
     getCertRequestStatus(`${service.settings.url}`, certRequest, regrequest);
   }
 
   componentDidUpdate(prevProps: any) {
-    const { certRequest, certrequests, regrequests, servicesMap, getCertRequest, getCertRequestStatus, request } = this.props;
+    const { certRequest, regrequests, servicesMap, getCertRequest, request } = this.props;
+    const { localize, locale } = this.context;
     if ((request.status !== prevProps.request.status) && (request.status === REQUEST_STATUS.C)) {
       const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
       const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
@@ -33,7 +35,16 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
     if ((certRequest.certificate !== prevProps.certRequest.certificate) && (certRequest.certificate)) {
       const cert = new trusted.pki.Certificate();
       cert.import(new Buffer(certRequest.certificate), trusted.DataFormat.PEM);
-      console.log(cert);
+      const containerName = trusted.utils.Csp.getContainerNameByCertificate(cert);
+      window.PKISTORE.importCertificate(cert, PROVIDER_CRYPTOPRO, (err: Error) => {
+        if (err) {
+          Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
+        }
+      }, MY, containerName);
+
+      trusted.utils.Csp.installCertificateToContainer(cert, containerName, 75);
+
+      this.handleReloadCertificates();
     }
   }
 
@@ -89,17 +100,30 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
       );
     });
   }
+
+  handleReloadCertificates = () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { certificateLoading, loadAllCertificates, removeAllCertificates } = this.props;
+
+    removeAllCertificates();
+
+    if (!certificateLoading) {
+      loadAllCertificates();
+    }
+  }
 }
+
 
 export default connect((state, ownProps) => {
   const request = state.certrequests.getIn(["entities", ownProps.requestCA.id]);
   return {
     request,
+    certificateLoading: state.certificates.loading,
     certrequests: filteredRequestCASelector(state),
     regrequests: state.regrequests.entities,
     servicesMap: state.services.entities,
     certRequest: filteredRequestCASelector(state).find((obj: any) => obj.get("id") === request.id),
   };
 }, {
-  getCertRequest, getCertRequestStatus,
+  getCertRequest, getCertRequestStatus, loadAllCertificates, removeAllCertificates,
 })(RequestCAInfo);
