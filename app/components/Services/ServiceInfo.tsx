@@ -75,16 +75,16 @@ export default class ServiceInfo extends React.Component<IServiceInfoProps, any>
         <div className="col s12">
           <div className="collection cert-info-list">
             <div className="collection-item certs-collection certificate-info">
-              <div className={"collection-info cert-info-blue"}>{localize("Services.email", locale)}</div>
-              <div className={"collection-title selectable-text"}>{service.email}</div>
+              <div className="collection-info cert-info-blue">{localize("Services.email", locale)}</div>
+              <div className="collection-title">{service.email}</div>
             </div>
             <div className="collection-item certs-collection certificate-info">
-              <div className={"collection-info cert-info-blue"}>{localize("Services.key_information", locale)}</div>
-              <div className={"collection-title selectable-text"}>{service.key_information}</div>
+              <div className="collection-info cert-info-blue">{localize("Services.key_information", locale)}</div>
+              <div className="collection-title">{service.key_information}</div>
             </div>
             <div className="collection-item certs-collection certificate-info">
-              <div className={"collection-info cert-info-blue"}>{localize("Services.comment", locale)}</div>
-              <div className={"collection-title selectable-text"}>{service.comment}</div>
+              <div className="collection-info cert-info-blue">{localize("Services.comment", locale)}</div>
+              <div className="collection-title selectable-text">{service.comment}</div>
             </div>
           </div>
         </div>

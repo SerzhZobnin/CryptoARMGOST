@@ -985,7 +985,6 @@ nav .cert-seacrh label i {
     padding: 5px 10px;
     border: none;
     cursor: default;
-    pointer-events: none;
 }
 .certificate-info .collection-title,
 .certificate-info .collection-info {
