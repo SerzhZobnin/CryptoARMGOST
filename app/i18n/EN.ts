@@ -64,8 +64,12 @@ export default {
     id_tc26_signwithdigest_gost3410_12_512: "GOST R 34.11-2012/34.10-2012 512 bit",
   },
   CA: {
+    comment: "Comment to regrequest",
     cryptopro_ca: "КриптоПро УЦ 2.0",
     current_status: "Current request status",
+    description: "Description",
+    email: "Email",
+    keyPhrase: "Key phrase",
     login: "Login",
     password: "Password",
     reg_new_user: "New user account registration",

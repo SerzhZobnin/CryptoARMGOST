@@ -159,7 +159,12 @@ class ServiceWindow extends React.Component<any, any> {
     const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
 
     let ser: any = null;
-    ser = <ServiceInfo service={{ ...service.toJS(), login: regRequest ? regRequest.Token : "", password: regRequest ? regRequest.Password : "" }} />;
+    ser = <ServiceInfo service={{ ...service.toJS(), login: regRequest ? regRequest.Token : "",
+     password: regRequest ? regRequest.Password : "",
+     comment: regRequest ? regRequest.Comment : "",
+     keyPhrase: regRequest ? regRequest.KeyPhrase : "",
+     email: regRequest ? regRequest.Email : "",
+     }} />;
 
     return (
       <div className="add-services">
@@ -174,7 +179,11 @@ class ServiceWindow extends React.Component<any, any> {
   }
 
   handleActiveService = (service: any) => {
-    this.setState({ service });
+    if (this.state.service && this.state.service.id === service.id) {
+      this.setState({ service: null });
+    } else {
+      this.setState({ service });
+    }
   }
 
   handleShowModalAddService = () => {

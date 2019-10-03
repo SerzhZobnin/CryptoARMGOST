@@ -15,7 +15,7 @@ export async function postApi(url: string, postfields: any, headerfields: string
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
 
-    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
       let data;
 
       try {
@@ -158,6 +158,10 @@ export function postRegRequest(url: string, comment: string, description: string
 
         dispatch({
           payload: {
+            Comment: comment,
+            Description: description,
+            Email: email,
+            KeyPhrase: keyPhrase,
             RDN: oids,
             id: data.RegRequest.RegRequestId,
             regRequest: data.RegRequest,

@@ -47,7 +47,12 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
         }
       }, MY, containerName);
 
-      trusted.utils.Csp.installCertificateToContainer(cert, containerName, 75);
+      try {
+        trusted.utils.Csp.installCertificateToContainer(cert, containerName, 75);
+      } catch (e) {
+        //
+      }
+
       postCertRequestСonfirmation(`${service.settings.url}`, certRequest, regrequest);
       this.handleReloadCertificates();
     }
