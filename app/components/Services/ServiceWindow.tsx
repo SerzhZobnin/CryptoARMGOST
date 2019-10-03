@@ -2,12 +2,14 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { changeSearchValue } from "../../AC/searchActions";
+import { deleteService } from "../../AC/servicesActions";
 import { filteredServicesSelector } from "../../selectors/servicesSelectors";
 import { mapToArr } from "../../utils";
 import BlockNotElements from "../BlockNotElements";
 import BlockWithReference from "../BlockWithReference";
 import Modal from "../Modal";
 import AddService from "./AddService";
+import DeleteService from "./DeleteService";
 import ServiceInfo from "./ServiceInfo";
 import ServicesList from "./ServiceList";
 import { IService } from "./types";
@@ -25,6 +27,7 @@ class ServiceWindow extends React.Component<any, any> {
       activeService: undefined,
       service: null,
       showModalAddService: false,
+      showModalDeleteService: false,
     };
   }
 
@@ -117,7 +120,7 @@ class ServiceWindow extends React.Component<any, any> {
                     <div className="col s12 svg_icon_text">Создать запрос</div>
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleShowModalDeleteService}>
                     <div className="col s12 svg_icon">
                       <a data-position="bottom">
                         <i className="material-icons certificate remove" />
@@ -132,6 +135,7 @@ class ServiceWindow extends React.Component<any, any> {
           </div>
         </div>
         {this.showModalAddService()}
+        {this.showModalDeleteService()}
       </div>
     );
   }
@@ -181,6 +185,14 @@ class ServiceWindow extends React.Component<any, any> {
     this.setState({ showModalAddService: false });
   }
 
+  handleShowModalDeleteService = () => {
+    this.setState({ showModalDeleteService: true });
+  }
+
+  handleCloseModalDeleteService = () => {
+    this.setState({ showModalDeleteService: false });
+  }
+
   handleOnCancelAddService = (service: IService) => {
     if (service) {
       this.setState({
@@ -211,6 +223,33 @@ class ServiceWindow extends React.Component<any, any> {
       </Modal>
     );
   }
+
+  showModalDeleteService = () => {
+    const { localize, locale } = this.context;
+    const { service, showModalDeleteService } = this.state;
+
+    if (!service || !showModalDeleteService) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalDeleteService}
+        header={localize("Services.delete_service", locale)}
+        onClose={this.handleCloseModalDeleteService}>
+
+        <DeleteService
+          deleteService={this.handleDeleteService}
+          service={service}
+          onCancel={this.handleCloseModalDeleteService} />
+      </Modal>
+    );
+  }
+
+  handleDeleteService = (serviceId: string) => {
+    this.setState({service: null});
+    this.props.deleteService(serviceId);
+  }
 }
 
 export default connect((state) => {
@@ -220,4 +259,4 @@ export default connect((state) => {
     searchValue: state.filters.searchValue,
     services: filteredServicesSelector(state),
   };
-}, { changeSearchValue })(ServiceWindow);
+}, { changeSearchValue, deleteService })(ServiceWindow);
