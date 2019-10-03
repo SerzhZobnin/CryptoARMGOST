@@ -19,7 +19,7 @@ class LoginForm extends React.PureComponent<ILoginFormProps, ILoginFormState> {
     localize: PropTypes.func,
   };
 
-  constructor(props: ILoginFormState) {
+  constructor(props: ILoginFormProps) {
     super(props);
 
     this.state = {
