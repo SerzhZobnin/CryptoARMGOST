@@ -1930,6 +1930,10 @@ p.message_onlinelic{
   align-items: center;
 }
 
+.text-security {
+  -webkit-text-security: disc;
+}
+
 #get-password {
   top: 30% !important;
   width: 60%;

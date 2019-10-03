@@ -16,15 +16,28 @@ interface IServiceInfoProps {
   service: IService;
 }
 
-export default class ServiceInfo extends React.Component<IServiceInfoProps, any> {
+interface IServiceInfoState {
+  passwordIsMasked: boolean;
+}
+
+export default class ServiceInfo extends React.Component<IServiceInfoProps, IServiceInfoState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
 
+  constructor(props: IServiceInfoProps) {
+    super(props);
+
+    this.state = {
+      passwordIsMasked: true,
+    };
+  }
+
   render() {
     const { localize, locale } = this.context;
     const { service } = this.props;
+    const { passwordIsMasked } = this.state;
 
     return (
       <React.Fragment>
@@ -55,12 +68,21 @@ export default class ServiceInfo extends React.Component<IServiceInfoProps, any>
         <div className="col s12">
           <div className="collection cert-info-list">
             <div className="collection-item certs-collection certificate-info">
-              <div className={"collection-info cert-info-blue"}>{localize("Services.login", locale)}</div>
-              <div className={"collection-title selectable-text"}>{service.login}</div>
+              <div className="collection-info cert-info-blue">{localize("Services.login", locale)}</div>
+              <div className="collection-title selectable-text">{service.login}</div>
             </div>
             <div className="collection-item certs-collection certificate-info">
-              <div className={"collection-info cert-info-blue"}>{localize("Services.password", locale)}</div>
-              <div className={"collection-title selectable-text"}>{service.password}</div>
+              <div className="col s11" style={{ padding: 0 }}>
+                <div className="collection-info cert-info-blue">{localize("Services.password", locale)}</div>
+                <div className={`collection-title selectable-text ${passwordIsMasked ? "text-security" : ""}`}>{service.password}</div>
+              </div>
+              <div className="col s1">
+                <i className="file-setting-item waves-effect material-icons secondary-content"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    this.togglePasswordMask();
+                  }}>visibility</i>
+              </div>
             </div>
           </div>
         </div>
@@ -91,5 +113,9 @@ export default class ServiceInfo extends React.Component<IServiceInfoProps, any>
         <div className="row" />
       </React.Fragment>
     );
+  }
+
+  togglePasswordMask = () => {
+    this.setState({ passwordIsMasked: !this.state.passwordIsMasked });
   }
 }
