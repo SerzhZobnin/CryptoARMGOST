@@ -1,8 +1,9 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { CA_CSR_JSON, CA_REGREGUESTS_JSON, SERVICES_JSON, SETTINGS_JSON, CA_CERTREGUESTS_JSON } from "../constants";
+import { CA_CSR_JSON, CA_REGREGUESTS_JSON, SERVICES_JSON, SETTINGS_JSON, CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON } from "../constants";
 import { DefaultReducerState as DefaultRegrequestsReducerState, RegRequestModel } from "../reducer/regrequests";
 import { CertificateRequestCAModel, DefaultReducerState as DefaultRequestsReducerState } from "../reducer/certrequests";
+import { CertTemplateModel, DefaultReducerState as DefaultCertTemplateReducerState } from "../reducer/certtemplate";
 import { DefaultReducerState as DefaultServicesReducerState, ServiceModel, SettingsModel as ServiceSettingsModel } from "../reducer/services";
 import {
   DefaultReducerState as DefaultSettingsState, EncryptModel,
@@ -121,6 +122,27 @@ if (fileExists(CA_CERTREGUESTS_JSON)) {
       odata.certrequests = requestsMap;
     } catch (e) {
       //
+    }
+  }
+
+  if (fileExists(CA_CERTTEMPLATE_JSON)) {
+    const certtemplate = fs.readFileSync(CA_CERTTEMPLATE_JSON, "utf8");
+
+    if (requests) {
+      try {
+        let certtemplateMap = new DefaultCertTemplateReducerState();
+
+        const data = JSON.parse(certtemplate);
+
+        for (const template of data.certtemplate) {
+          const mreg = new CertTemplateModel({ ...template });
+          certtemplateMap = certtemplateMap.setIn(["entities", template.id], mreg);
+        }
+
+        odata.certtemplate = certtemplateMap;
+      } catch (e) {
+        //
+      }
     }
   }
 }

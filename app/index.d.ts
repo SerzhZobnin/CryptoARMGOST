@@ -17,6 +17,7 @@ interface Window {
     DEFAULT_CSR_PATH: string;
     CA_REGREGUESTS_JSON: string;
     CA_CERTREGUESTS_JSON: string;
+    CA_CERTTEMPLATE_JSON: string;
     CA_CSR_JSON: string;
     LICENSE_PATH: string;
     LICENSE_MNG: any;
