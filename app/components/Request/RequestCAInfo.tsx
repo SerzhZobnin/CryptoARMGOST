@@ -17,10 +17,12 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
   };
 
   componentDidMount() {
-    const { certRequest, regrequests, servicesMap, getCertRequestStatus, } = this.props;
-    const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
-    const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
-    getCertRequestStatus(`${service.settings.url}`, certRequest, regrequest);
+    const { certRequest, regrequests, servicesMap, request, getCertRequestStatus, } = this.props;
+    if (request.status !== REQUEST_STATUS.K) {
+      const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
+      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
+       getCertRequestStatus(`${service.settings.url}`, certRequest, regrequest);
+    }
   }
 
   componentDidUpdate(prevProps: any) {
@@ -123,16 +125,16 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
   }
 }
 
-
 export default connect((state, ownProps) => {
   const request = state.certrequests.getIn(["entities", ownProps.requestCA.id]);
+  const certRequest = filteredRequestCASelector(state).find((obj: any) => obj.get("id") === request.id);
   return {
     request,
     certificateLoading: state.certificates.loading,
     certrequests: filteredRequestCASelector(state),
     regrequests: state.regrequests.entities,
     servicesMap: state.services.entities,
-    certRequest: filteredRequestCASelector(state).find((obj: any) => obj.get("id") === request.id),
+    certRequest,
   };
 }, {
   getCertRequest, getCertRequestStatus, postCertRequestСonfirmation, loadAllCertificates, removeAllCertificates,
