@@ -15,7 +15,7 @@ export async function postApi(url: string, postfields: any, headerfields: string
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
 
-    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
       let data;
 
       try {
@@ -45,14 +45,14 @@ export async function postApi(url: string, postfields: any, headerfields: string
   });
 }
 
-export async function getApiStatus(url: string, headerfields: string[] ) {
+export async function getApiStatus(url: string, headerfields: string[]) {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
 
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
       try {
         if (statusCode !== 200) {
           throw new Error(`Unexpected response, status code ${statusCode}`);
@@ -76,7 +76,7 @@ export async function getApiStatus(url: string, headerfields: string[] ) {
   });
 }
 
-export async function getApi(url: string, headerfields: string[] ) {
+export async function getApi(url: string, headerfields: string[]) {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
     let data = new Buffer("");
@@ -84,7 +84,7 @@ export async function getApi(url: string, headerfields: string[] ) {
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
       try {
         if (statusCode !== 200) {
           throw new Error(`Unexpected response, status code ${statusCode}`);
@@ -145,6 +145,10 @@ export function postRegRequest(url: string, comment: string, description: string
 
         dispatch({
           payload: {
+            Comment: comment,
+            Description: description,
+            Email: email,
+            KeyPhrase: keyPhrase,
             RDN: oids,
             id: data.RegRequest.RegRequestId,
             regRequest: data.RegRequest,
@@ -194,7 +198,7 @@ export function getRegRequest(url: string, Token: string, Password: string, serv
         );
 
         data = JSON.parse(data.toString());
-        const profile = data.Profile.reduce((obj, item) => ({...obj, ...item}), {});
+        const profile = data.Profile.reduce((obj, item) => ({ ...obj, ...item }), {});
         const regRequestId = uuid();
 
         dispatch({
@@ -209,7 +213,7 @@ export function getRegRequest(url: string, Token: string, Password: string, serv
             },
             serviceId,
           },
-            type: GET_CA_REGREQUEST + SUCCESS,
+          type: GET_CA_REGREQUEST + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");
@@ -327,7 +331,7 @@ export function getCertRequestStatus(url: string, certRequest: ICertificateReque
             id: certRequest.id,
             status: data.CertRequest.Status,
           },
-            type: GET_CA_CERTREQUEST_STATUS + SUCCESS,
+          type: GET_CA_CERTREQUEST_STATUS + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");
@@ -364,7 +368,7 @@ export function getCertRequest(url: string, certRequest: ICertificateRequestCA, 
             certificate: data,
             id: certRequest.id,
           },
-            type: GET_CA_CERTREQUEST + SUCCESS,
+          type: GET_CA_CERTREQUEST + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");

@@ -4,6 +4,10 @@ import { CA_REGREGUESTS_JSON, FAIL, GET_CA_REGREQUEST, POST_CA_REGREQUEST, START
 import { mapToArr } from "../utils";
 
 export const RegRequestModel = Record({
+  Comment: null,
+  Description: null,
+  Email: null,
+  KeyPhrase: null,
   Password: null,
   RDN: null,
   RegRequestId: null,
@@ -28,6 +32,10 @@ export default (regrequests = new DefaultReducerState(), action) => {
         ...payload.regRequest,
         RDN: { ...payload.RDN },
         serviceId: payload.serviceId,
+        Comment: payload.Comment,
+        Description: payload.Description,
+        Email: payload.Email,
+        KeyPhrase: payload.KeyPhrase,
       }));
       break;
   }

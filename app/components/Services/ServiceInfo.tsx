@@ -8,7 +8,7 @@ export interface IService {
   login: string;
   password: string;
   email: string;
-  key_information: string;
+  keyPhrase: string;
   comment: string;
 }
 
@@ -102,7 +102,7 @@ export default class ServiceInfo extends React.Component<IServiceInfoProps, ISer
             </div>
             <div className="collection-item certs-collection certificate-info">
               <div className="collection-info cert-info-blue">{localize("Services.key_information", locale)}</div>
-              <div className="collection-title">{service.key_information}</div>
+              <div className="collection-title">{service.keyPhrase}</div>
             </div>
             <div className="collection-item certs-collection certificate-info">
               <div className="collection-info cert-info-blue">{localize("Services.comment", locale)}</div>

@@ -13,7 +13,11 @@ import { ICAServiceSettings, IService } from "./types";
 
 interface IAddServiceState {
   activeSettingsTab: boolean;
+  comment: string;
+  description: string;
+  email: string;
   isUserattrLoading: boolean;
+  keyPhrase: string;
   login: string;
   password: string;
   regNewUser: boolean;
@@ -25,7 +29,11 @@ interface IAddServiceState {
 
 const initialState = {
   activeSettingsTab: true,
+  comment: "",
+  description: "",
+  email: "",
   isUserattrLoading: false,
+  keyPhrase: "",
   login: "",
   password: "",
   regNewUser: true,
@@ -127,6 +135,22 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
             {
               activeSettingsTab ?
                 <div className="row halfbottom">
+                  <div style={{ float: "left" }}>
+                    <div style={{ display: "inline-block", margin: "10px" }}>
+                      <input
+                        name="regNewUser"
+                        type="checkbox"
+                        id="regNewUser"
+                        className="filled-in"
+                        checked={regNewUser}
+                        onClick={this.toggleRegNewUser}
+                      />
+                      <label htmlFor={"regNewUser"} className="truncate">
+                        {localize("CA.reg_new_user", locale)}
+                      </label>
+                    </div>
+                  </div>
+
                   <div style={{ float: "right" }}>
                     <div style={{ display: "inline-block", margin: "10px" }}>
                       <a className={"btn btn-text waves-effect waves-light modal-close "} onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
@@ -160,25 +184,19 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
         return (
           <React.Fragment>
             <CryptoProCASettings
+              comment={this.state.comment}
+              commentChange={this.handleCommentChange}
+              description={this.state.description}
+              descriptionChange={this.handleDescriptionChange}
+              email={this.state.email}
+              emailChange={this.handleEmailChange}
+              keyPhrase={this.state.keyPhrase}
+              keyPhraseChange={this.handleKeyPhraseChange}
               nameChange={this.handleServiceNameChange}
               urlChange={this.handleCAUrlChange}
+              regNewUser={regNewUser}
               service={{ settings: serviceSettings, name: serviceName }}
             />
-            <div className="col s12">
-              <div className="input-checkbox">
-                <input
-                  name="regNewUser"
-                  type="checkbox"
-                  id="regNewUser"
-                  className="filled-in"
-                  checked={regNewUser}
-                  onClick={this.toggleRegNewUser}
-                />
-                <label htmlFor={"regNewUser"} className="truncate">
-                  {localize("CA.reg_new_user", locale)}
-                </label>
-              </div>
-            </div>
           </React.Fragment>
         );
 
@@ -193,6 +211,22 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
 
   handleServiceNameChange = (ev: any) => {
     this.setState({ serviceName: ev.target.value });
+  }
+
+  handleCommentChange = (ev: any) => {
+    this.setState({ comment: ev.target.value });
+  }
+
+  handleDescriptionChange = (ev: any) => {
+    this.setState({ description: ev.target.value });
+  }
+
+  handleEmailChange = (ev: any) => {
+    this.setState({ email: ev.target.value });
+  }
+
+  handleKeyPhraseChange = (ev: any) => {
+    this.setState({ keyPhrase: ev.target.value });
   }
 
   handleCAUrlChange = (ev: any) => {
@@ -237,7 +271,8 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
   handleCAUserRegrequest = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { addService, getRegRequest, onCancel, postRegRequest } = this.props;
-    const { login, password, regNewUser, serviceName, serviceSettings, serviceType, RDNmodel } = this.state;
+    const { comment, description, email, keyPhrase, login, password, regNewUser, serviceName,
+      serviceSettings, serviceType, RDNmodel } = this.state;
 
     const id = uuid();
     const service: IService = {
@@ -253,7 +288,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
       }
 
       addService(service);
-      postRegRequest(`${serviceSettings.url}`, "-", "-", "ct@ct.ru", "1", RDNmodel, id);
+      postRegRequest(`${serviceSettings.url}`, comment, description, email, keyPhrase, RDNmodel, id);
       onCancel(service);
     } else {
       addService(service);
