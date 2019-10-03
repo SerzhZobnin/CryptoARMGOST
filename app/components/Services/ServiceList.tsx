@@ -4,6 +4,7 @@ import Media from "react-media";
 import { connect } from "react-redux";
 import { AutoSizer, List } from "react-virtualized";
 import accordion from "../../decorators/accordion";
+import { filteredServicesSelector } from "../../selectors/servicesSelectors";
 import { mapToArr } from "../../utils";
 import ServiceListItem from "./ServiceListItem";
 import ServiceListItemBigWidth from "./ServiceListItemBigWidth";
@@ -135,6 +136,6 @@ class ServiceList extends React.Component<IServiceListProps, any> {
 export default connect((state) => {
   return {
     regrequests: state.regrequests.entities,
-    services: mapToArr(state.services.entities),
+    services: mapToArr(filteredServicesSelector(state)),
   };
 })(accordion(ServiceList));

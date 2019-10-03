@@ -2,8 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { changeSearchValue } from "../../AC/searchActions";
-
-const dialog = window.electron.remote.dialog;
+import { filteredServicesSelector } from "../../selectors/servicesSelectors";
 import { mapToArr } from "../../utils";
 import BlockNotElements from "../BlockNotElements";
 import BlockWithReference from "../BlockWithReference";
@@ -24,7 +23,6 @@ class ServiceWindow extends React.Component<any, any> {
 
     this.state = {
       activeService: undefined,
-      searchValue: "",
       service: null,
       showModalAddService: false,
     };
@@ -36,7 +34,7 @@ class ServiceWindow extends React.Component<any, any> {
 
   render() {
     const { localize, locale } = this.context;
-    const { isDefaultFilters } = this.props;
+    const { isDefaultFilters, searchValue } = this.props;
     const { service } = this.state;
 
     const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
@@ -59,9 +57,9 @@ class ServiceWindow extends React.Component<any, any> {
                     id="search"
                     type="search"
                     placeholder={localize("EventsTable.search_in_services", locale)}
-                    value={this.state.searchValue}
+                    value={searchValue}
                     onChange={this.handleSearchValueChange} />
-                  <i className="material-icons close" onClick={() => this.setState({ searchValue: "" })} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
+                  <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
                 </div>
               </div>
               <div className="col" style={{ width: "40px" }}>
@@ -167,7 +165,8 @@ class ServiceWindow extends React.Component<any, any> {
   }
 
   handleSearchValueChange = (ev: any) => {
-    this.setState({ searchValue: ev.target.value });
+    const { changeSearchValue } = this.props;
+    changeSearchValue(ev.target.value);
   }
 
   handleActiveService = (service: any) => {
@@ -219,6 +218,6 @@ export default connect((state) => {
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     regrequests: state.regrequests.entities,
     searchValue: state.filters.searchValue,
-    services: state.services.entities,
+    services: filteredServicesSelector(state),
   };
 }, { changeSearchValue })(ServiceWindow);
