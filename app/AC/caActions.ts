@@ -2,7 +2,7 @@ import { ICertificateRequestCA } from "../components/Services/types";
 import {
   FAIL, GET_CA_CERTREQUEST,
   GET_CA_CERTREQUEST_STATUS, GET_CA_REGREQUEST, HOME_DIR, POST_CA_CERTREQUEST,
-  POST_CA_CERTREQUEST_СONFIRMATION, POST_CA_REGREQUEST, START, SUCCESS,
+  POST_CA_CERTREQUEST_СONFIRMATION, POST_CA_REGREQUEST, START, SUCCESS, GET_CA_CERTTEMPLATE,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -45,7 +45,7 @@ export async function postApi(url: string, postfields: any, headerfields: string
   });
 }
 
-export async function getApiStatus(url: string, headerfields: string[] ) {
+export async function getApi(url: string, headerfields: string[]) {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
 
@@ -53,6 +53,8 @@ export async function getApiStatus(url: string, headerfields: string[] ) {
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+      let data;
+
       try {
         if (statusCode !== 200) {
           throw new Error(`Unexpected response, status code ${statusCode}`);
@@ -64,7 +66,9 @@ export async function getApiStatus(url: string, headerfields: string[] ) {
         curl.close.bind(curl);
       }
 
-      resolve(response);
+      data = JSON.parse(response.toString());
+
+      resolve(data);
     });
 
     curl.on("error", (error: { message: any; }) => {
@@ -76,7 +80,7 @@ export async function getApiStatus(url: string, headerfields: string[] ) {
   });
 }
 
-export async function getApi(url: string, headerfields: string[] ) {
+export async function getCertApi(url: string, headerfields: string[]) {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
     let data = new Buffer("");
@@ -84,7 +88,7 @@ export async function getApi(url: string, headerfields: string[] ) {
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
       try {
         if (statusCode !== 200) {
           throw new Error(`Unexpected response, status code ${statusCode}`);
@@ -125,6 +129,7 @@ export function postRegRequest(url: string, comment: string, description: string
 
     setTimeout(async () => {
       let data: any;
+      let data2: any;
 
       try {
         const OidArray = Object.keys(oids).map(function (key) {
@@ -143,12 +148,21 @@ export function postRegRequest(url: string, comment: string, description: string
             "Accept: application/json",
           ]);
 
+        data2 = await getApi(
+          `${url}/certtemplate`,
+          [
+            "Accept: application/json",
+            `Authorization: Basic ${Buffer.from(data.RegRequest.Token + ":" + data.RegRequest.Password).toString("base64")}`,
+          ],
+        );
+
         dispatch({
           payload: {
             RDN: oids,
             id: data.RegRequest.RegRequestId,
             regRequest: data.RegRequest,
             serviceId,
+            template: data2.Template,
           },
           type: POST_CA_REGREQUEST + SUCCESS,
         });
@@ -173,7 +187,7 @@ export function getRegRequest(url: string, Token: string, Password: string, serv
       let data: any;
 
       try {
-        data = await getApiStatus(
+        data = await getApi(
           `${url}/regrequest`,
           [
             "Content-Type: application/json",
@@ -181,11 +195,10 @@ export function getRegRequest(url: string, Token: string, Password: string, serv
           ],
         );
 
-        data = JSON.parse(data.toString());
         const statusRegRequest = data.RegRequest.Status;
 
         url = url.substr(0, url.lastIndexOf("/"));
-        data = await getApiStatus(
+        data = await getApi(
           `${url}/regrequest/profile?type=json`,
           [
             "Content-Type: application/json",
@@ -193,8 +206,7 @@ export function getRegRequest(url: string, Token: string, Password: string, serv
           ],
         );
 
-        data = JSON.parse(data.toString());
-        const profile = data.Profile.reduce((obj, item) => ({...obj, ...item}), {});
+        const profile = data.Profile.reduce((obj, item) => ({ ...obj, ...item }), {});
         const regRequestId = uuid();
 
         dispatch({
@@ -209,7 +221,7 @@ export function getRegRequest(url: string, Token: string, Password: string, serv
             },
             serviceId,
           },
-            type: GET_CA_REGREQUEST + SUCCESS,
+          type: GET_CA_REGREQUEST + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");
@@ -284,7 +296,6 @@ export function postCertRequestСonfirmation(url: string, certificateRequestCA: 
             `Authorization: Basic ${Buffer.from(regRequest.Token + ":" + regRequest.Password).toString("base64")}`,
           ],
         );
-        console.log(data);
         dispatch({
           payload: {
             id: certificateRequestCA.id,
@@ -314,20 +325,19 @@ export function getCertRequestStatus(url: string, certRequest: ICertificateReque
 
       try {
         url = url.substr(0, url.lastIndexOf("/"));
-        data = await getApiStatus(
+        data = await getApi(
           `${url}/certrequest/${certRequest.certRequestId}`,
           [
             `Authorization: Basic ${Buffer.from(regRequest.Token + ":" + regRequest.Password).toString("base64")}`,
           ],
         );
-        data = JSON.parse(data.toString());
 
         dispatch({
           payload: {
             id: certRequest.id,
             status: data.CertRequest.Status,
           },
-            type: GET_CA_CERTREQUEST_STATUS + SUCCESS,
+          type: GET_CA_CERTREQUEST_STATUS + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");
@@ -351,7 +361,7 @@ export function getCertRequest(url: string, certRequest: ICertificateRequestCA, 
 
       try {
         url = url.substr(0, url.lastIndexOf("/"));
-        data = await getApi(
+        data = await getCertApi(
           `${url}/certrequest/${certRequest.certRequestId}/rawcert`,
           [
             "Content-Type: application/octet-stream",
@@ -364,7 +374,7 @@ export function getCertRequest(url: string, certRequest: ICertificateRequestCA, 
             certificate: data,
             id: certRequest.id,
           },
-            type: GET_CA_CERTREQUEST + SUCCESS,
+          type: GET_CA_CERTREQUEST + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");

@@ -11,6 +11,7 @@ export const RegRequestModel = Record({
   Token: null,
   id: null,
   serviceId: null,
+  template: null,
 });
 
 export const DefaultReducerState = Record({
@@ -28,6 +29,7 @@ export default (regrequests = new DefaultReducerState(), action) => {
         ...payload.regRequest,
         RDN: { ...payload.RDN },
         serviceId: payload.serviceId,
+        template: { ...payload.template},
       }));
       break;
   }
