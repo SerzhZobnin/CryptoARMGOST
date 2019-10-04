@@ -1,4 +1,4 @@
-import { ICertificateRequestCA } from "../components/Services/types";
+import { ICertificateRequestCA, IRegRequest } from "../components/Services/types";
 import {
   FAIL, GET_CA_CERTREQUEST,
   GET_CA_CERTREQUEST_STATUS, GET_CA_REGREQUEST, HOME_DIR, POST_CA_CERTREQUEST,
@@ -93,7 +93,6 @@ export async function getCertApi(url: string, headerfields: string[]) {
         if (statusCode !== 200) {
           throw new Error(`Unexpected response, status code ${statusCode}`);
         }
-        //data = JSON.parse(response.toString());
       } catch (error) {
         reject(`Cannot load data, error: ${error.message}`);
         return;
@@ -101,7 +100,6 @@ export async function getCertApi(url: string, headerfields: string[]) {
         curl.close.bind(curl);
       }
 
-      //console.log(new TextEncoder().encode(new TextDecoder().decode(data)));
       const cert = new trusted.pki.Certificate();
       cert.import(data);
       resolve(cert.export(trusted.DataFormat.PEM).toString());
@@ -238,7 +236,7 @@ export function getRegRequest(url: string, Token: string, Password: string, serv
   };
 }
 
-export function postCertRequest(url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) {
+export function postCertRequest(url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: IRegRequest, serviceId: string) {
   return (dispatch) => {
     dispatch({
       type: POST_CA_CERTREQUEST + START,
@@ -278,7 +276,7 @@ export function postCertRequest(url: string, certificateRequestCA: ICertificateR
   };
 }
 
-export function postCertRequestСonfirmation(url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) {
+export function postCertRequestСonfirmation(url: string, certificateRequestCA: ICertificateRequestCA, regRequest: IRegRequest) {
   return (dispatch) => {
     dispatch({
       type: POST_CA_CERTREQUEST_СONFIRMATION + START,
@@ -318,7 +316,7 @@ export function postCertRequestСonfirmation(url: string, certificateRequestCA: 
   };
 }
 
-export function getCertRequestStatus(url: string, certRequest: ICertificateRequestCA, regRequest: any) {
+export function getCertRequestStatus(url: string, certRequest: ICertificateRequestCA, regRequest: IRegRequest) {
   return (dispatch) => {
     dispatch({
       type: GET_CA_CERTREQUEST_STATUS + START,
@@ -354,7 +352,7 @@ export function getCertRequestStatus(url: string, certRequest: ICertificateReque
   };
 }
 
-export function getCertRequest(url: string, certRequest: ICertificateRequestCA, regRequest: any) {
+export function getCertRequest(url: string, certRequest: ICertificateRequestCA, regRequest: IRegRequest) {
   return (dispatch) => {
     dispatch({
       type: GET_CA_CERTREQUEST + START,

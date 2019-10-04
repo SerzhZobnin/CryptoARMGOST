@@ -24,8 +24,24 @@ export interface IService {
 }
 
 export interface ICertificateRequestCA {
+  subject: any;
+  certificate: string;
   certRequestId: string;
   certificateReq: string;
   id: string;
   status: string;
+}
+
+export interface IRegRequest {
+  Comment: string;
+  Description: string;
+  Email: string;
+  KeyPhrase: string;
+  Password: string;
+  RDN: any;
+  RegRequestId: string;
+  Status: string;
+  Token: string;
+  id: string;
+  serviceId: string;
 }
