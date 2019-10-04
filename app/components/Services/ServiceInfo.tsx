@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import CertificateItem from "../CA/CertificateItem";
 
 export interface IService {
   name: string;
@@ -13,6 +14,7 @@ export interface IService {
 }
 
 interface IServiceInfoProps {
+  certificate: any;
   service: IService;
 }
 
@@ -36,7 +38,7 @@ export default class ServiceInfo extends React.Component<IServiceInfoProps, ISer
 
   render() {
     const { localize, locale } = this.context;
-    const { service } = this.props;
+    const { service, certificate } = this.props;
     const { passwordIsMasked } = this.state;
 
     return (
@@ -71,6 +73,7 @@ export default class ServiceInfo extends React.Component<IServiceInfoProps, ISer
               <div className="collection-info cert-info-blue">{localize("Services.login", locale)}</div>
               <div className="collection-title selectable-text">{service.login}</div>
             </div>
+
             <div className="collection-item certs-collection certificate-info">
               <div className="col s11" style={{ padding: 0 }}>
                 <div className="collection-info cert-info-blue">{localize("Services.password", locale)}</div>
@@ -84,6 +87,17 @@ export default class ServiceInfo extends React.Component<IServiceInfoProps, ISer
                   }}>visibility</i>
               </div>
             </div>
+
+            {
+              certificate ?
+                <div className="collection-item certs-collection certificate-info">
+                  <div className="col s12" style={{ padding: 0 }}>
+                    <div className="collection-info cert-info-blue">{localize("Services.certificate", locale)}</div>
+                    <CertificateItem certificate={certificate} style={{ padding: 0 }} />
+                  </div>
+                </div> :
+                null
+            }
           </div>
         </div>
 

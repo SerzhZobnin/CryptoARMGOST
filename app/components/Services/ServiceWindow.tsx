@@ -153,18 +153,21 @@ class ServiceWindow extends React.Component<any, any> {
 
   getServiceInfoBody() {
     const { service } = this.state;
-    const { regrequests } = this.props;
+    const { certificates, certrequests, regrequests } = this.props;
     const { localize, locale } = this.context;
 
     const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
+    const certrequest = certrequests.find((obj: any) => obj.get("serviceId") === service.id);
+    const certificate = certrequest ? certificates.getIn(["entities", certrequest.certificateId]) : null;
 
     let ser: any = null;
-    ser = <ServiceInfo service={{ ...service.toJS(), login: regRequest ? regRequest.Token : "",
-     password: regRequest ? regRequest.Password : "",
-     comment: regRequest ? regRequest.Comment : "",
-     keyPhrase: regRequest ? regRequest.KeyPhrase : "",
-     email: regRequest ? regRequest.Email : "",
-     }} />;
+    ser = <ServiceInfo service={{
+      ...service.toJS(), login: regRequest ? regRequest.Token : "",
+      password: regRequest ? regRequest.Password : "",
+      comment: regRequest ? regRequest.Comment : "",
+      keyPhrase: regRequest ? regRequest.KeyPhrase : "",
+      email: regRequest ? regRequest.Email : "",
+    }} certificate={certificate} />;
 
     return (
       <div className="add-services">
@@ -256,13 +259,15 @@ class ServiceWindow extends React.Component<any, any> {
   }
 
   handleDeleteService = (serviceId: string) => {
-    this.setState({service: null});
+    this.setState({ service: null });
     this.props.deleteService(serviceId);
   }
 }
 
 export default connect((state) => {
   return {
+    certificates: state.certificates,
+    certrequests: state.certrequests.entities,
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     regrequests: state.regrequests.entities,
     searchValue: state.filters.searchValue,

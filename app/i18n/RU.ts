@@ -507,6 +507,7 @@ export default {
     Services: "СЕРВИСЫ",
     add_new_service: "Добавление нового сервиса",
     adress: "Адрес",
+    certificate: "Сертификат",
     comment: "Комментарий",
     connect: "Подключить",
     delete_service: "Удаление сервиса",
