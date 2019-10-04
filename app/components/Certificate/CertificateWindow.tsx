@@ -184,7 +184,7 @@ class CertWindow extends React.Component<any, any> {
     // tslint:disable-next-line:no-shadowed-variable
     const { isLoading, loadAllCertificates, removeAllCertificates } = this.props;
 
-    this.setState({ certificate: null });
+    this.setState({ certificate: null, crl: null, requestCA: null });
 
     removeAllCertificates();
 
@@ -695,7 +695,7 @@ class CertWindow extends React.Component<any, any> {
 
     return (
       <div className="add-certs">
-        <RequestCAInfo requestCA={requestCA} />
+        <RequestCAInfo requestCA={requestCA} handleReloadCertificates={this.handleReloadCertificates}/>
       </div>
     );
   }

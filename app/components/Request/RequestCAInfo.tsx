@@ -3,11 +3,19 @@ import React from "react";
 import { connect } from "react-redux";
 import { loadAllCertificates, removeAllCertificates } from "../../AC";
 import { getCertRequest, getCertRequestStatus, postCertRequestСonfirmation } from "../../AC/caActions";
-import { DEFAULT_CERTSTORE_PATH, HOME_DIR, MY, PROVIDER_CRYPTOPRO, REQUEST_STATUS } from "../../constants";
+import { MY, PROVIDER_CRYPTOPRO, REQUEST_STATUS } from "../../constants";
 import { filteredRequestCASelector } from "../../selectors/requestCASelector";
+import { ICertificateRequestCA, IRegRequest, IService } from "../Services/types";
 
 interface IRequestCAInfoProps {
   requestCA: any;
+  certrequest: ICertificateRequestCA;
+  service: IService;
+  regrequest: IRegRequest;
+  getCertRequestStatus: (url: string, certRequest: ICertificateRequestCA, regRequest: IRegRequest) => void;
+  getCertRequest: (url: string, certRequest: ICertificateRequestCA, regRequest: IRegRequest) => void;
+  postCertRequestСonfirmation: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: IRegRequest) => void;
+  handleReloadCertificates: () => void;
 }
 
 class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
@@ -17,31 +25,29 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
   };
 
   componentDidMount() {
-    const { certRequest, regrequests, servicesMap, request, getCertRequestStatus, } = this.props;
-    if (request.status !== REQUEST_STATUS.K) {
-      const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
-      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
-       getCertRequestStatus(`${service.settings.url}`, certRequest, regrequest);
+    // tslint:disable-next-line: no-shadowed-variable
+    const { getCertRequestStatus } = this.props;
+    const { certrequest, service, regrequest } = this.props;
+    if (certrequest.status !== REQUEST_STATUS.K) {
+      getCertRequestStatus(`${service.settings.url}`, certrequest, regrequest);
     }
   }
 
   componentDidUpdate(prevProps: any) {
-    const { certRequest, regrequests, servicesMap, getCertRequest, request, postCertRequestСonfirmation } = this.props;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { getCertRequest, postCertRequestСonfirmation } = this.props;
+    const { certrequest, service, regrequest, handleReloadCertificates } = this.props;
     const { localize, locale } = this.context;
-    if ((request.status !== prevProps.request.status) && (request.status === REQUEST_STATUS.C)) {
-      const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
-      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
-      getCertRequest(`${service.settings.url}`, certRequest, regrequest);
+    if ((certrequest.status !== prevProps.certrequest.status) && (certrequest.status === REQUEST_STATUS.C)) {
+      getCertRequest(`${service.settings.url}`, certrequest, regrequest);
     }
 
-    if ((request.status === REQUEST_STATUS.C) &&
-        (certRequest.certificate !== prevProps.certRequest.certificate) &&
-        (certRequest.certificate)) {
-      const service = servicesMap.find((obj: any) => obj.get("id") === certRequest.serviceId);
-      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certRequest.serviceId);
-      const cert = new trusted.pki.Certificate();
+    if ((certrequest.status === REQUEST_STATUS.C) &&
+        (certrequest.certificate !== prevProps.certrequest.certificate) &&
+        (certrequest.certificate)) {
 
-      cert.import(new Buffer(certRequest.certificate), trusted.DataFormat.PEM);
+      const cert = new trusted.pki.Certificate();
+      cert.import(new Buffer(certrequest.certificate), trusted.DataFormat.PEM);
       const containerName = trusted.utils.Csp.getContainerNameByCertificate(cert);
       window.PKISTORE.importCertificate(cert, PROVIDER_CRYPTOPRO, (err: Error) => {
         if (err) {
@@ -55,14 +61,14 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
         //
       }
 
-      postCertRequestСonfirmation(`${service.settings.url}`, certRequest, regrequest);
-      this.handleReloadCertificates();
+      postCertRequestСonfirmation(`${service.settings.url}`, certrequest, regrequest);
+      handleReloadCertificates();
     }
   }
 
   render() {
     const { localize, locale } = this.context;
-    const { request } = this.props;
+    const { certrequest } = this.props;
 
     return (
       <React.Fragment>
@@ -75,7 +81,7 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
           <div className="collection cert-info-list">
             <div className="collection-item certs-collection certificate-info">
               <div className={"collection-info cert-info-blue"}>{localize("CA.current_status", locale)}</div>
-              <div className={"collection-title selectable-text"}>{localize(`CARequestStatus.${request.status}`, locale)}</div>
+              <div className={"collection-title selectable-text"}>{localize(`CARequestStatus.${certrequest.status}`, locale)}</div>
             </div>
           </div>
         </div>
@@ -97,13 +103,13 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
   }
 
   getRequestInfo = () => {
-    const { request } = this.props;
+    const { certrequest } = this.props;
 
-    if (!request || !request.subject || !request.subject.length) {
+    if (!certrequest || !certrequest.subject || !certrequest.subject.length) {
       return null;
     }
 
-    return request.subject.map((field: any) => {
+    return certrequest.subject.map((field: any) => {
       return (
         <div className="collection-item certs-collection certificate-info">
           <div className={"collection-info cert-info-blue"}>{field.type}</div>
@@ -112,30 +118,24 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
       );
     });
   }
-
-  handleReloadCertificates = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { certificateLoading, loadAllCertificates, removeAllCertificates } = this.props;
-
-    removeAllCertificates();
-
-    if (!certificateLoading) {
-      loadAllCertificates();
-    }
-  }
 }
 
 export default connect((state, ownProps) => {
-  const request = state.certrequests.getIn(["entities", ownProps.requestCA.id]);
-  const certRequest = filteredRequestCASelector(state).find((obj: any) => obj.get("id") === request.id);
+  const certrequests = filteredRequestCASelector(state);
+  const certrequest = certrequests.find((obj: any) => obj.get("id") === ownProps.requestCA.id);
+  const services = state.services.entities;
+  const service = services.find((obj: any) => obj.get("id") === certrequest.serviceId);
+  const regrequests = state.regrequests.entities;
+  const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === certrequest.serviceId);
   return {
-    request,
     certificateLoading: state.certificates.loading,
-    certrequests: filteredRequestCASelector(state),
-    regrequests: state.regrequests.entities,
-    servicesMap: state.services.entities,
-    certRequest,
+    certrequest,
+    certrequests,
+    regrequest,
+    regrequests,
+    service,
+    services,
   };
 }, {
-  getCertRequest, getCertRequestStatus, postCertRequestСonfirmation, loadAllCertificates, removeAllCertificates,
+  getCertRequest, getCertRequestStatus, loadAllCertificates, postCertRequestСonfirmation, removeAllCertificates,
 })(RequestCAInfo);
