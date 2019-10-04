@@ -75,7 +75,7 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
           <div className="collection cert-info-list">
             <div className="collection-item certs-collection certificate-info">
               <div className={"collection-info cert-info-blue"}>{localize("CA.current_status", locale)}</div>
-              <div className={"collection-title selectable-text"}>{request.status}</div>
+              <div className={"collection-title selectable-text"}>{localize(`CARequestStatus.${request.status}`, locale)}</div>
             </div>
           </div>
         </div>

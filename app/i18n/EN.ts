@@ -79,6 +79,17 @@ export default {
     url: "URL",
     url_placeholder: "Укажите URL вида  https://{веб сервер УЦ}/ui/api/{folder}",
   },
+  CARequestStatus: {
+    Q: "Queued",
+    // tslint:disable-next-line: object-literal-sort-keys
+    A: "Accepted",
+    R: "Rejected",
+    P: "Pending",
+    D: "Denied",
+    C: "Complete",
+    E: "Errored",
+    K: "Acknowledged",
+  },
   CRL: {
     authorityKeyid: "Authority key id",
     crlNumber: "CRL number",
