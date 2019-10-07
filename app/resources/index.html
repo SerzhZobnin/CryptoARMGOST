@@ -97,6 +97,7 @@
     window.DEFAULT_DOCUMENTS_PATH = path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'Documents');
     window.DEFAULT_CSR_PATH = path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'CSR');
     window.DEFAULT_CA_PATH = path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'CA');
+    window.TEMPLATES_PATH = path.join(window.DEFAULT_PATH, "/certreq_templates/CertReqTemplateDefault.json");
     window.PLATFORM = process.platform;
     LICENSE_DIR = (PLATFORM == 'win32') ? process.env['LOCALAPPDATA'] : "/etc/opt";
     window.LICENSE_PATH = path.join(LICENSE_DIR, "/Trusted/CryptoARM GOST/license.lic");

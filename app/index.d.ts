@@ -10,6 +10,7 @@ interface Window {
     PKISTORE: any;
     RESOURCES_PATH: string;
     DEFAULT_PATH: string;
+    TEMPLATES_PATH: string;
     HOME_DIR: string;
     TMP_DIR: string;
     DEFAULT_CERTSTORE_PATH: string;

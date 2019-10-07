@@ -1,14 +1,15 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { CA_CSR_JSON, CA_REGREGUESTS_JSON, SERVICES_JSON, SETTINGS_JSON, CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON } from "../constants";
-import { DefaultReducerState as DefaultRegrequestsReducerState, RegRequestModel } from "../reducer/regrequests";
+import { CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON, CA_CSR_JSON, CA_REGREGUESTS_JSON, SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH } from "../constants";
 import { CertificateRequestCAModel, DefaultReducerState as DefaultRequestsReducerState } from "../reducer/certrequests";
 import { CertTemplateModel, DefaultReducerState as DefaultCertTemplateReducerState } from "../reducer/certtemplate";
+import { DefaultReducerState as DefaultRegrequestsReducerState, RegRequestModel } from "../reducer/regrequests";
 import { DefaultReducerState as DefaultServicesReducerState, ServiceModel, SettingsModel as ServiceSettingsModel } from "../reducer/services";
 import {
   DefaultReducerState as DefaultSettingsState, EncryptModel,
   RecipientModel, SettingsModel as GlobalSettingsModel, SignModel,
 } from "../reducer/settings";
+import { DefaultReducerState as DefaultTemplatesReducerState, TemplateModel } from "../reducer/templates";
 import { fileExists, mapToArr } from "../utils";
 
 let odata = {};
@@ -140,6 +141,27 @@ if (fileExists(CA_CERTREGUESTS_JSON)) {
         }
 
         odata.certtemplate = certtemplateMap;
+      } catch (e) {
+        //
+      }
+    }
+  }
+
+  if (fileExists(TEMPLATES_PATH)) {
+    const templates = fs.readFileSync(TEMPLATES_PATH, "utf8");
+
+    if (templates) {
+      try {
+        let templatesMap = new DefaultTemplatesReducerState();
+
+        const data = JSON.parse(templates);
+
+        for (const template of data.TEMPLATES) {
+          const mtemplate = new TemplateModel({ ...template });
+          templatesMap = templatesMap.update("entities", (entities) => entities.add(mtemplate));
+        }
+
+        odata.templates = templatesMap;
       } catch (e) {
         //
       }
