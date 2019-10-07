@@ -66,6 +66,8 @@ interface ICertificateRequestCAState {
   template: string;
   title?: string;
   organization1?: string;
+  Activeitem: any;
+  OpenButton: boolean;
 }
 
 interface ICertificateRequestCAProps {
@@ -79,6 +81,7 @@ interface ICertificateRequestCAProps {
   loadAllCertificates: () => void;
   removeAllCertificates: () => void;
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
+  ActiveService: (service: any) => void;
   postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) => void;
   getCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
 }
@@ -91,10 +94,11 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   constructor(props: any) {
     super(props);
-
     const template = getTemplateByCertificate(props.certificateTemplate);
 
     this.state = {
+      Activeitem: "",
+      OpenButton: false,
       activeSubjectNameInfoTab: true,
       algorithm: ALG_GOST12_256,
       cn: template.CN,
@@ -196,86 +200,169 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     this.handelCancel();
   }
 
+  activeItemChose(service) {
+    const { Activeitem } = this.state
+
+    this.setState({ Activeitem: service.id })
+
+  }
+
+  funcOpenButton() {
+
+    const { OpenButton } = this.state
+    this.setState({ OpenButton: true })
+  }
+
   render() {
     const { localize, locale } = this.context;
     const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email,
       exportableKey, extKeyUsage, inn, keyLength, keyUsage, keyUsageGroup, locality, ogrnip, organization,
-      organizationUnitName, province, selfSigned, snils, template, title } = this.state;
+      organizationUnitName, province, selfSigned, snils, template, title, Activeitem, OpenButton } = this.state;
+    const { services } = this.props;
 
-    return (
-      <React.Fragment>
-        <div className="modal-body">
-          <div className="row nobottom">
-            <div className="col s12">
-              <HeaderTabs activeSubjectNameInfoTab={this.handleChangeActiveTab} />
-            </div>
+    let active = ""
+    let curStatusStyle = "cert_status_ok";
 
-            {activeSubjectNameInfoTab ?
-              <div className="col s12 ">
-                <div className="content-wrapper z-depth-1 tbody" style={{ height: "400px" }}>
-                  <div className="content-item-relative">
-                    <div className="row halfbottom" />
-                    <SubjectNameInfo
-                      template={template}
-                      cn={cn}
-                      email={email}
-                      organization={organization}
-                      organizationUnitName={organizationUnitName}
-                      locality={locality}
-                      formVerified={formVerified}
-                      province={province}
-                      country={country}
-                      inn={inn}
-                      ogrnip={ogrnip}
-                      snils={snils}
-                      title={title}
-                      handleCountryChange={this.handleCountryChange}
-                      handleTemplateChange={this.handleTemplateChange}
-                      handleInputChange={this.handleInputChange}
-                    />
-                  </div>
-                </div>
-              </div> :
-              <div className="col s12">
-                <div className="content-wrapper z-depth-1 tbody">
-                  <div className="content-item-relative">
-                    <div className="row halfbottom" />
-                    <KeyParameters
-                      algorithm={algorithm}
-                      containerName={containerName}
-                      exportableKey={exportableKey}
-                      extKeyUsage={extKeyUsage}
-                      formVerified={formVerified}
-                      keyLength={keyLength}
-                      keyUsage={keyUsage}
-                      keyUsageGroup={keyUsageGroup}
-                      handleAlgorithmChange={this.handleAlgorithmChange}
-                      handleInputChange={this.handleInputChange}
-                      handleKeyUsageChange={this.handleKeyUsageChange}
-                      handleKeyUsageGroupChange={this.handleKeyUsageGroupChange}
-                      handleExtendedKeyUsageChange={this.handleExtendedKeyUsageChange}
-                      toggleExportableKey={this.toggleExportableKey}
-                    />
-                  </div>
-                </div>
+    const elements = services.map((service: any) => {
+      if (Activeitem === service.id) {
+        active = " active";
+      }
+
+      if ((Activeitem !== service.id)) {
+        active = "";
+      }
+
+      return (
+
+        <div className="row certificate-list-item">
+          <div className={`collection-item avatar certs-collection` + active} onClick={() => { this.activeItemChose(service) }}>
+            <div className="row nobottom valign-wrapper">
+              <div className="col s1">
+                <div className={curStatusStyle} />
               </div>
-            }
-
-            <div className="row halfbottom" />
-
-            <div className="row halfbottom">
-              <div style={{ float: "right" }}>
-                <div style={{ display: "inline-block", margin: "10px" }}>
-                  <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
-                </div>
-                <div style={{ display: "inline-block", margin: "10px" }}>
-                  <a className="btn btn-outlined waves-effect waves-light " onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
-                </div>
+              <div className="col s11">
+                <div className="collection-title">{service.name}</div>
+                <div className="collection-info cert-info ">{service.settings.url}</div>
               </div>
             </div>
           </div>
         </div>
-      </React.Fragment>
+
+      );
+    })
+
+    let disabled = "disabled";
+    if (Activeitem) {
+      disabled = " ";
+    }
+    if (OpenButton === true) {
+
+      return (
+        <React.Fragment>
+          <div className="modal-body">
+            <div className="row nobottom">
+              <div className="col s12">
+                <HeaderTabs activeSubjectNameInfoTab={this.handleChangeActiveTab} />
+              </div>
+
+              {activeSubjectNameInfoTab ?
+                <div className="col s12 ">
+                  <div className="content-wrapper z-depth-1 tbody" style={{ height: "400px" }}>
+                    <div className="content-item-relative">
+                      <div className="row halfbottom" />
+                      <SubjectNameInfo
+                        template={template}
+                        cn={cn}
+                        email={email}
+                        organization={organization}
+                        organizationUnitName={organizationUnitName}
+                        locality={locality}
+                        formVerified={formVerified}
+                        province={province}
+                        country={country}
+                        inn={inn}
+                        ogrnip={ogrnip}
+                        snils={snils}
+                        title={title}
+                        handleCountryChange={this.handleCountryChange}
+                        handleTemplateChange={this.handleTemplateChange}
+                        handleInputChange={this.handleInputChange}
+                      />
+                    </div>
+                  </div>
+                </div> :
+                <div className="col s12">
+                  <div className="content-wrapper z-depth-1 tbody">
+                    <div className="content-item-relative">
+                      <div className="row halfbottom" />
+                      <KeyParameters
+                        algorithm={algorithm}
+                        containerName={containerName}
+                        exportableKey={exportableKey}
+                        extKeyUsage={extKeyUsage}
+                        formVerified={formVerified}
+                        keyLength={keyLength}
+                        keyUsage={keyUsage}
+                        keyUsageGroup={keyUsageGroup}
+                        handleAlgorithmChange={this.handleAlgorithmChange}
+                        handleInputChange={this.handleInputChange}
+                        handleKeyUsageChange={this.handleKeyUsageChange}
+                        handleKeyUsageGroupChange={this.handleKeyUsageGroupChange}
+                        handleExtendedKeyUsageChange={this.handleExtendedKeyUsageChange}
+                        toggleExportableKey={this.toggleExportableKey}
+                      />
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <div className="row halfbottom" />
+
+              <div className="row halfbottom">
+                <div style={{ float: "right" }}>
+                  <div style={{ display: "inline-block", margin: "10px" }}>
+                    <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+                  </div>
+                  <div style={{ display: "inline-block", margin: "10px" }}>
+                    <a className="btn btn-outlined waves-effect waves-light " onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </React.Fragment>
+      );
+    }
+    return (
+      <div className="modal-body">
+        <div className="row nobottom">
+          <div className="row halfbottom">
+            <div className="row">
+              <div className="col s12">
+                <div className="h4">Доступные подключения к сервисам Удостоверяющих Центров</div>
+                <div className="col-12">
+                  <div className="row halfbottom" />
+                  {elements}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="row halfbottom" />
+
+          <div className="row halfbottom">
+            <div style={{ float: "right" }}>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+              </div>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <a className={`btn btn-outlined waves-effect waves-light ${disabled} `} onClick={() => { this.funcOpenButton() }}>{localize("Common.ready", locale)}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     );
   }
 
@@ -808,6 +895,7 @@ export default connect((state) => {
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
     regrequests: state.regrequests.entities,
+    services: mapToArr(state.services.entities),
     servicesMap: state.services.entities,
   };
 }, {
