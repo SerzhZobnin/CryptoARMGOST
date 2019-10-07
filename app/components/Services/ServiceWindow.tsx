@@ -177,6 +177,7 @@ class ServiceWindow extends React.Component<any, any> {
   }
 
   handleSearchValueChange = (ev: any) => {
+    // tslint:disable-next-line: no-shadowed-variable
     const { changeSearchValue } = this.props;
     changeSearchValue(ev.target.value);
   }

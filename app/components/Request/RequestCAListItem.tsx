@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { REQUEST_STATUS } from "../../constants";
 import { arrayToMap } from "../../utils";
+import { IService } from "../Services/types";
 
 interface IRequestCAListItemProps {
   chooseCert: () => void;
@@ -9,6 +10,7 @@ interface IRequestCAListItemProps {
   isOpen: boolean;
   toggleOpen: () => void;
   requestCA: any;
+  service: IService;
 }
 
 class RequestCAListItem extends React.Component<IRequestCAListItemProps, {}> {

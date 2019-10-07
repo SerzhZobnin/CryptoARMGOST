@@ -1,4 +1,5 @@
 import fs from "fs";
+import { Map } from "immutable";
 import noUiSlider from "nouislider";
 import * as path from "path";
 import PropTypes from "prop-types";
@@ -15,7 +16,7 @@ import {
 import * as jwt from "../../trusted/jwt";
 import { arrayToMap, fileCoding, formatDate, mapToArr, randomSerial, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
 import logger from "../../winstonLogger";
-import { ICertificateRequestCA } from "../Services/types";
+import { ICertificateRequestCA, IRegRequest } from "../Services/types";
 import HeaderTabs from "./HeaderTabs";
 import KeyParameters from "./KeyParameters";
 import SubjectNameInfo from "./SubjectNameInfo";
@@ -68,6 +69,8 @@ interface ICertificateRequestCAState {
 }
 
 interface ICertificateRequestCAProps {
+  regrequests: Map<any, any>;
+  servicesMap: Map<any, any>;
   certificateTemplate: any;
   onCancel?: () => void;
   certificateLoading: boolean;
@@ -329,10 +332,11 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   handelReady = () => {
     const { localize, locale } = this.context;
-    const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
-      keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
-    const { addCertificateRequestCA, licenseStatus, lic_error, servicesMap, regrequests,
-      postCertRequest, getCertRequestStatus, certrequests } = this.props;
+    const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn,
+      keyUsage, locality, ogrnip, organization, organizationUnitName, province, snils, template, title } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { addCertificateRequestCA, postCertRequest } = this.props;
+    const { licenseStatus, lic_error, servicesMap, regrequests } = this.props;
 
     const exts = new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
@@ -448,16 +452,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     ext = new trusted.pki.Extension(oid, "1.2.643.2.2.46.0.8");
     exts.push(ext);
 
-    // if (email.length) {
-    //   oid = new trusted.pki.Oid("subjectAltName");
-    //   ext = new trusted.pki.Extension(oid, `email:${email}`);
-    //   exts.push(ext);
-    // }
-
-    // oid = new trusted.pki.Oid("basicConstraints");
-    // ext = new trusted.pki.Extension(oid, "critical,CA:false");
-    // exts.push(ext);
-
     try {
       switch (algorithm) {
         case ALG_GOST2001:
@@ -535,10 +529,8 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       addCertificateRequestCA(certificateRequestCA);
 
       const services = mapToArr(servicesMap);
-      const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === services[0].id);
-      postCertRequest(`${services[0].settings.url}`, certificateRequestCA, atrs, regRequest, services[0].id);
-      const certRequest = certrequests.find((obj: any) => obj.get("id") === certificateRequestCA.id);
-      //getCertRequestStatus(`${services[0].settings.url}`, certRequest, regRequest);
+      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === services[0].id);
+      postCertRequest(`${services[0].settings.url}`, certificateRequestCA, atrs, regrequest, services[0].id);
 
       Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     } catch (e) {
@@ -812,10 +804,12 @@ const getTemplateByCertificate = (certificate: any) => {
 export default connect((state) => {
   return {
     certificateLoading: state.certificates.loading,
+    certrequests: state.certrequests.entities,
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
     regrequests: state.regrequests.entities,
-    certrequests: state.certrequests.entities,
     servicesMap: state.services.entities,
   };
-}, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest, getCertRequestStatus })(CertificateRequestCA);
+}, {
+  addCertificateRequestCA, getCertRequestStatus, loadAllCertificates, postCertRequest, removeAllCertificates,
+})(CertificateRequestCA);

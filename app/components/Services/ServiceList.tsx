@@ -8,13 +8,18 @@ import { filteredServicesSelector } from "../../selectors/servicesSelectors";
 import { mapToArr } from "../../utils";
 import ServiceListItem from "./ServiceListItem";
 import ServiceListItemBigWidth from "./ServiceListItemBigWidth";
+import { IService } from "./types";
 
 const HEIGHT_MODAL = 356;
 const HEIGHT_FULL = 432;
 const ROW_HEIGHT = 45;
 
 interface IServiceListProps {
-  ActiveService: (service: any) => void;
+  services: IService[];
+  regrequests: Record<any, any>;
+  isItemOpened: (id: number) => boolean;
+  activeService: (service: any) => void;
+  toggleOpenItem: (openItemId: any) => (ev: any) => void;
 }
 
 class ServiceList extends React.Component<IServiceListProps, any> {
@@ -96,7 +101,7 @@ class ServiceList extends React.Component<IServiceListProps, any> {
                       }
 
                       const service = elements[index];
-                      const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
+                      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
 
                       return (
                         <ul key={key} style={style}>
@@ -107,14 +112,14 @@ class ServiceList extends React.Component<IServiceListProps, any> {
                                   key={service.id}
                                   chooseCert={() => activeService(service)}
                                   isOpen={isItemOpened(service.id.toString())}
-                                  toggleOpen={toggleOpenItem(service.id.toString())}
-                                  regRequest={regRequest}
+                                  toggleOpen={() => toggleOpenItem(service.id.toString())}
+                                  regRequest={regrequest}
                                   service={service} />
                               ) : <ServiceListItemBigWidth
                                   key={service.id}
                                   chooseCert={() => activeService(service)}
                                   isOpen={isItemOpened(service.id.toString())}
-                                  toggleOpen={toggleOpenItem(service.id.toString())}
+                                  toggleOpen={() => toggleOpenItem(service.id.toString())}
                                   service={service} />
                             }
                           </Media>

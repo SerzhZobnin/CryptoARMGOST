@@ -351,7 +351,6 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     let providerType: string = PROVIDER_SYSTEM;
     let keyUsageStr = "critical";
     let extendedKeyUsageStr = "";
-    let keyPair;
     let oid;
     let ext;
 

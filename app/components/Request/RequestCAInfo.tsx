@@ -60,7 +60,6 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
       } catch (e) {
         //
       }
-
       postCertRequestСonfirmation(`${service.settings.url}`, certrequest, regrequest);
       handleReloadCertificates();
     }
