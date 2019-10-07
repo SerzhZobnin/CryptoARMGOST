@@ -19,6 +19,7 @@ import { ICertificateRequestCA } from "../Services/types";
 import HeaderTabs from "./HeaderTabs";
 import KeyParameters from "./KeyParameters";
 import SubjectNameInfo from "./SubjectNameInfo";
+import  ServiceListItem from "../Services/ServiceListitem";
 
 interface IKeyUsage {
   cRLSign: boolean;
@@ -65,6 +66,8 @@ interface ICertificateRequestCAState {
   template: string;
   title?: string;
   organization1?: string;
+  Activeitem: any;
+  OpenButton:boolean;
 }
 
 interface ICertificateRequestCAProps {
@@ -76,6 +79,7 @@ interface ICertificateRequestCAProps {
   loadAllCertificates: () => void;
   removeAllCertificates: () => void;
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
+  ActiveService: (service: any) => void;
   postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) => void;
   getCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
 }
@@ -87,11 +91,12 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   };
 
   constructor(props: any) {
-    super(props);
-
+    super(props);    
     const template = getTemplateByCertificate(props.certificateTemplate);
 
     this.state = {
+      Activeitem: "",
+      OpenButton: false,
       activeSubjectNameInfoTab: true,
       algorithm: ALG_GOST12_256,
       cn: template.CN,
@@ -192,12 +197,80 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   componentWillUnmount() {
     this.handelCancel();
   }
-
+  
+  activeItemChose(service)
+  {
+     const {Activeitem } = this.state
+     
+     this.setState({Activeitem:service.id})
+     
+  }
+  funcOpenButton()
+  {
+    
+    const {OpenButton} = this.state
+    this.setState({OpenButton:true})
+    
+  
+  }
+  
   render() {
     const { localize, locale } = this.context;
     const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email,
       exportableKey, extKeyUsage, inn, keyLength, keyUsage, keyUsageGroup, locality, ogrnip, organization,
-      organizationUnitName, province, selfSigned, snils, template, title } = this.state;
+      organizationUnitName, province, selfSigned, snils, template, title,Activeitem, OpenButton} = this.state;
+      const {services} = this.props;
+      
+      let active = ""
+      let curStatusStyle = "cert_status_ok";
+      
+      
+        
+        
+      const elements = services.map((service: any) => {
+        
+        
+        if (Activeitem == service.id)
+        {
+        active = " active"}
+        
+        if ((Activeitem !== service.id)) 
+        {
+          active = ""
+        }
+       
+
+      
+
+        return (
+                  
+                <div className="row certificate-list-item">
+        <div className={`collection-item avatar certs-collection` + active}  onClick={() => {this.activeItemChose(service)}}>
+          <div className="row nobottom valign-wrapper">
+            <div className="col s1">
+              <div className={curStatusStyle} />
+            </div>
+            <div className="col s11">
+              <div className="collection-title">{service.name}</div>
+              <div className="collection-info cert-info ">{service.settings.url}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+             
+        );
+      })
+      
+      let disabled = "disabled"
+      if(Activeitem)
+      {
+        disabled = " "
+      }
+      if(OpenButton == true)
+      {
+        const { localize, locale } = this.context;
+    const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email, exportableKey, extKeyUsage, inn, keyLength,
+      keyUsage, keyUsageGroup, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
 
     return (
       <React.Fragment>
@@ -274,8 +347,46 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
         </div>
       </React.Fragment>
     );
-  }
+      }
+    return (
+      
+        
+        <div className="modal-body">
+          <div className="row nobottom">
+         <div className="row halfbottom">
+            <div className="row">
+              <div className="col s12">
+            <div className="h4">Доступные подключения к сервисам Удостоверяющих Центров</div>
+            <div className="col-12">
+            <div className="row halfbottom" />
+            {elements}
+            </div>
+      </div>
+            </div>
+            </div>
+           
+            
 
+            <div className="row halfbottom" />
+
+            <div className="row halfbottom">
+              <div style={{ float: "right" }}>
+                <div style={{ display: "inline-block", margin: "10px" }}>
+                  <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+                </div>
+                <div style={{ display: "inline-block", margin: "10px" }}>
+                  <a className={`btn btn-outlined waves-effect waves-light ${disabled} `} onClick={() => {this.funcOpenButton()}}>{localize("Common.ready", locale)}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+    );
+    
+
+  }
+  
   verifyFields = () => {
     const { algorithm, cn, containerName, email, inn, locality, ogrnip, province, snils, template } = this.state;
     const REQULAR_EXPRESSION = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
@@ -514,7 +625,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const uri = path.join(DEFAULT_CSR_PATH, `requestCA_${cn}_${algorithm}_${formatDate(new Date())}.req`);
     try {
       certReq.save(uri, trusted.DataFormat.PEM);
-
+      
       let cmsContext = null;
       if (fileCoding(uri) === trusted.DataFormat.PEM) {
         cmsContext = fs.readFileSync(uri, "utf8");
@@ -544,7 +655,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     } catch (e) {
       //
     }
-
+        
     this.handelCancel();
   }
 
@@ -817,5 +928,6 @@ export default connect((state) => {
     regrequests: state.regrequests.entities,
     certrequests: state.certrequests.entities,
     servicesMap: state.services.entities,
+    services: mapToArr(state.services.entities)
   };
 }, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest, getCertRequestStatus })(CertificateRequestCA);
