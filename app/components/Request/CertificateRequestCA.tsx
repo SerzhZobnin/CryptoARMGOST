@@ -19,7 +19,6 @@ import { ICertificateRequestCA } from "../Services/types";
 import HeaderTabs from "./HeaderTabs";
 import KeyParameters from "./KeyParameters";
 import SubjectNameInfo from "./SubjectNameInfo";
-import  ServiceListItem from "../Services/ServiceListitem";
 
 interface IKeyUsage {
   cRLSign: boolean;
@@ -67,7 +66,7 @@ interface ICertificateRequestCAState {
   title?: string;
   organization1?: string;
   Activeitem: any;
-  OpenButton:boolean;
+  OpenButton: boolean;
 }
 
 interface ICertificateRequestCAProps {
@@ -91,7 +90,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   };
 
   constructor(props: any) {
-    super(props);    
+    super(props);
     const template = getTemplateByCertificate(props.certificateTemplate);
 
     this.state = {
@@ -197,196 +196,173 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   componentWillUnmount() {
     this.handelCancel();
   }
-  
-  activeItemChose(service)
-  {
-     const {Activeitem } = this.state
-     
-     this.setState({Activeitem:service.id})
-     
+
+  activeItemChose(service) {
+    const { Activeitem } = this.state
+
+    this.setState({ Activeitem: service.id })
+
   }
-  funcOpenButton()
-  {
-    
-    const {OpenButton} = this.state
-    this.setState({OpenButton:true})
-    
-  
+
+  funcOpenButton() {
+
+    const { OpenButton } = this.state
+    this.setState({ OpenButton: true })
   }
-  
+
   render() {
     const { localize, locale } = this.context;
     const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email,
       exportableKey, extKeyUsage, inn, keyLength, keyUsage, keyUsageGroup, locality, ogrnip, organization,
-      organizationUnitName, province, selfSigned, snils, template, title,Activeitem, OpenButton} = this.state;
-      const {services} = this.props;
-      
-      let active = ""
-      let curStatusStyle = "cert_status_ok";
-      
-      
-        
-        
-      const elements = services.map((service: any) => {
-        
-        
-        if (Activeitem == service.id)
-        {
-        active = " active"}
-        
-        if ((Activeitem !== service.id)) 
-        {
-          active = ""
-        }
-       
+      organizationUnitName, province, selfSigned, snils, template, title, Activeitem, OpenButton } = this.state;
+    const { services } = this.props;
 
-      
+    let active = ""
+    let curStatusStyle = "cert_status_ok";
 
-        return (
-                  
-                <div className="row certificate-list-item">
-        <div className={`collection-item avatar certs-collection` + active}  onClick={() => {this.activeItemChose(service)}}>
-          <div className="row nobottom valign-wrapper">
-            <div className="col s1">
-              <div className={curStatusStyle} />
-            </div>
-            <div className="col s11">
-              <div className="collection-title">{service.name}</div>
-              <div className="collection-info cert-info ">{service.settings.url}</div>
+    const elements = services.map((service: any) => {
+      if (Activeitem === service.id) {
+        active = " active";
+      }
+
+      if ((Activeitem !== service.id)) {
+        active = "";
+      }
+
+      return (
+
+        <div className="row certificate-list-item">
+          <div className={`collection-item avatar certs-collection` + active} onClick={() => { this.activeItemChose(service) }}>
+            <div className="row nobottom valign-wrapper">
+              <div className="col s1">
+                <div className={curStatusStyle} />
+              </div>
+              <div className="col s11">
+                <div className="collection-title">{service.name}</div>
+                <div className="collection-info cert-info ">{service.settings.url}</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-             
-        );
-      })
-      
-      let disabled = "disabled"
-      if(Activeitem)
-      {
-        disabled = " "
-      }
-      if(OpenButton == true)
-      {
-        const { localize, locale } = this.context;
-    const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email, exportableKey, extKeyUsage, inn, keyLength,
-      keyUsage, keyUsageGroup, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
 
-    return (
-      <React.Fragment>
-        <div className="modal-body">
-          <div className="row nobottom">
-            <div className="col s12">
-              <HeaderTabs activeSubjectNameInfoTab={this.handleChangeActiveTab} />
-            </div>
+      );
+    })
 
-            {activeSubjectNameInfoTab ?
-              <div className="col s12 ">
-                <div className="content-wrapper z-depth-1 tbody" style={{ height: "400px" }}>
-                  <div className="content-item-relative">
-                    <div className="row halfbottom" />
-                    <SubjectNameInfo
-                      template={template}
-                      cn={cn}
-                      email={email}
-                      organization={organization}
-                      organizationUnitName={organizationUnitName}
-                      locality={locality}
-                      formVerified={formVerified}
-                      province={province}
-                      country={country}
-                      inn={inn}
-                      ogrnip={ogrnip}
-                      snils={snils}
-                      title={title}
-                      handleCountryChange={this.handleCountryChange}
-                      handleTemplateChange={this.handleTemplateChange}
-                      handleInputChange={this.handleInputChange}
-                    />
-                  </div>
-                </div>
-              </div> :
+    let disabled = "disabled";
+    if (Activeitem) {
+      disabled = " ";
+    }
+    if (OpenButton === true) {
+
+      return (
+        <React.Fragment>
+          <div className="modal-body">
+            <div className="row nobottom">
               <div className="col s12">
-                <div className="content-wrapper z-depth-1 tbody">
-                  <div className="content-item-relative">
-                    <div className="row halfbottom" />
-                    <KeyParameters
-                      algorithm={algorithm}
-                      containerName={containerName}
-                      exportableKey={exportableKey}
-                      extKeyUsage={extKeyUsage}
-                      formVerified={formVerified}
-                      keyLength={keyLength}
-                      keyUsage={keyUsage}
-                      keyUsageGroup={keyUsageGroup}
-                      handleAlgorithmChange={this.handleAlgorithmChange}
-                      handleInputChange={this.handleInputChange}
-                      handleKeyUsageChange={this.handleKeyUsageChange}
-                      handleKeyUsageGroupChange={this.handleKeyUsageGroupChange}
-                      handleExtendedKeyUsageChange={this.handleExtendedKeyUsageChange}
-                      toggleExportableKey={this.toggleExportableKey}
-                    />
+                <HeaderTabs activeSubjectNameInfoTab={this.handleChangeActiveTab} />
+              </div>
+
+              {activeSubjectNameInfoTab ?
+                <div className="col s12 ">
+                  <div className="content-wrapper z-depth-1 tbody" style={{ height: "400px" }}>
+                    <div className="content-item-relative">
+                      <div className="row halfbottom" />
+                      <SubjectNameInfo
+                        template={template}
+                        cn={cn}
+                        email={email}
+                        organization={organization}
+                        organizationUnitName={organizationUnitName}
+                        locality={locality}
+                        formVerified={formVerified}
+                        province={province}
+                        country={country}
+                        inn={inn}
+                        ogrnip={ogrnip}
+                        snils={snils}
+                        title={title}
+                        handleCountryChange={this.handleCountryChange}
+                        handleTemplateChange={this.handleTemplateChange}
+                        handleInputChange={this.handleInputChange}
+                      />
+                    </div>
+                  </div>
+                </div> :
+                <div className="col s12">
+                  <div className="content-wrapper z-depth-1 tbody">
+                    <div className="content-item-relative">
+                      <div className="row halfbottom" />
+                      <KeyParameters
+                        algorithm={algorithm}
+                        containerName={containerName}
+                        exportableKey={exportableKey}
+                        extKeyUsage={extKeyUsage}
+                        formVerified={formVerified}
+                        keyLength={keyLength}
+                        keyUsage={keyUsage}
+                        keyUsageGroup={keyUsageGroup}
+                        handleAlgorithmChange={this.handleAlgorithmChange}
+                        handleInputChange={this.handleInputChange}
+                        handleKeyUsageChange={this.handleKeyUsageChange}
+                        handleKeyUsageGroupChange={this.handleKeyUsageGroupChange}
+                        handleExtendedKeyUsageChange={this.handleExtendedKeyUsageChange}
+                        toggleExportableKey={this.toggleExportableKey}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            }
+              }
 
-            <div className="row halfbottom" />
+              <div className="row halfbottom" />
 
-            <div className="row halfbottom">
-              <div style={{ float: "right" }}>
-                <div style={{ display: "inline-block", margin: "10px" }}>
-                  <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
-                </div>
-                <div style={{ display: "inline-block", margin: "10px" }}>
-                  <a className="btn btn-outlined waves-effect waves-light " onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
+              <div className="row halfbottom">
+                <div style={{ float: "right" }}>
+                  <div style={{ display: "inline-block", margin: "10px" }}>
+                    <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+                  </div>
+                  <div style={{ display: "inline-block", margin: "10px" }}>
+                    <a className="btn btn-outlined waves-effect waves-light " onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </React.Fragment>
-    );
-      }
+        </React.Fragment>
+      );
+    }
     return (
-      
-        
-        <div className="modal-body">
-          <div className="row nobottom">
-         <div className="row halfbottom">
+      <div className="modal-body">
+        <div className="row nobottom">
+          <div className="row halfbottom">
             <div className="row">
               <div className="col s12">
-            <div className="h4">Доступные подключения к сервисам Удостоверяющих Центров</div>
-            <div className="col-12">
-            <div className="row halfbottom" />
-            {elements}
-            </div>
-      </div>
-            </div>
-            </div>
-           
-            
-
-            <div className="row halfbottom" />
-
-            <div className="row halfbottom">
-              <div style={{ float: "right" }}>
-                <div style={{ display: "inline-block", margin: "10px" }}>
-                  <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
-                </div>
-                <div style={{ display: "inline-block", margin: "10px" }}>
-                  <a className={`btn btn-outlined waves-effect waves-light ${disabled} `} onClick={() => {this.funcOpenButton()}}>{localize("Common.ready", locale)}</a>
+                <div className="h4">Доступные подключения к сервисам Удостоверяющих Центров</div>
+                <div className="col-12">
+                  <div className="row halfbottom" />
+                  {elements}
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      
-    );
-    
 
+          <div className="row halfbottom" />
+
+          <div className="row halfbottom">
+            <div style={{ float: "right" }}>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
+              </div>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <a className={`btn btn-outlined waves-effect waves-light ${disabled} `} onClick={() => { this.funcOpenButton() }}>{localize("Common.ready", locale)}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    );
   }
-  
+
   verifyFields = () => {
     const { algorithm, cn, containerName, email, inn, locality, ogrnip, province, snils, template } = this.state;
     const REQULAR_EXPRESSION = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
@@ -625,7 +601,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const uri = path.join(DEFAULT_CSR_PATH, `requestCA_${cn}_${algorithm}_${formatDate(new Date())}.req`);
     try {
       certReq.save(uri, trusted.DataFormat.PEM);
-      
+
       let cmsContext = null;
       if (fileCoding(uri) === trusted.DataFormat.PEM) {
         cmsContext = fs.readFileSync(uri, "utf8");
@@ -655,7 +631,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     } catch (e) {
       //
     }
-        
+
     this.handelCancel();
   }
 
@@ -923,11 +899,11 @@ const getTemplateByCertificate = (certificate: any) => {
 export default connect((state) => {
   return {
     certificateLoading: state.certificates.loading,
+    certrequests: state.certrequests.entities,
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
     regrequests: state.regrequests.entities,
-    certrequests: state.certrequests.entities,
+    services: mapToArr(state.services.entities),
     servicesMap: state.services.entities,
-    services: mapToArr(state.services.entities)
   };
 }, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest, getCertRequestStatus })(CertificateRequestCA);
