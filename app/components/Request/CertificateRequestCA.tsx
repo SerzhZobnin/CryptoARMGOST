@@ -307,7 +307,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       <div className="modal-body">
         <div className="row halftop">
           <div className="col s12">
-            <div className="content-wrapper tbody border_group">
+            <div className="content-wrapper tbody border_group" style={{ height: "450px" }}>
               <div className="row">
                 <div className="col s12">
                   <span className="card-infos sub">
