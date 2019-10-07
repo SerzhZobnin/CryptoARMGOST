@@ -702,56 +702,48 @@ i.material-icons.left {
   text-indent: -9999px;
   width: 24px;
   height: 24px;
-  background-size: 24px 24px;
+  background-size: 24px 24px !important;
   margin-top: 7px;
 }
 
 i.material-icons.left.sign {
-  background: url(./resources/image/sign_menu_icon.svg);
-}
-
-i.material-icons.left.encrypt {
-  background: url(./resources/image/encrypt_menu_icon.svg);
+  background: url(./resources/image/sidemenu/sign.svg);
 }
 
 i.material-icons.left.cert {
-  background: url(./resources/image/cert_menu_icon.svg);
+  background: url(./resources/image/sidemenu/certificates.svg);
 }
 
 i.material-icons.left.about {
-  background: url(./resources/image/about_menu_icon.svg);;
-}
-
-i.material-icons.left.agreement{
-  background: url(./resources/image/agreement_menu_icon.svg);
+  background: url(./resources/image/sidemenu/about.svg);
 }
 
 i.material-icons.left.keystore{
-  background: url(./resources/image/key_store_menu_icon.svg);
+  background: url(./resources/image/sidemenu/key_store.svg);
 }
 
 i.material-icons.left.setting{
-  background: url(./resources/image/setting_menu_icon.svg);
+  background: url(./resources/image/sidemenu/settings.svg);
 }
 
 i.material-icons.left.license{
-    background: url(./resources/image/license_menu_icon.svg);
+    background: url(./resources/image/sidemenu/license.svg);
   }
 
   i.material-icons.left.exit{
-    background: url(./resources/image/exit_menu_icon.svg);
+    background: url(./resources/image/sidemenu/exit.svg);
   }
 
   i.material-icons.left.journal {
-    background: url(./resources/image/journal_menu_icon.svg);
+    background: url(./resources/image/sidemenu/journal.svg);
   }
 
   i.material-icons.left.document {
-    background: url(./resources/image/document_menu_icon.svg);
+    background: url(./resources/image/sidemenu/documents.svg);
   }
 
   i.material-icons.left.dss {
-    background: url(./resources/image/dss_menu_icon.svg);
+    background: url(./resources/image/sidemenu/dss.svg);
   }
 
 /*-------------------------------Стили списка файлов------------------*/
@@ -993,7 +985,6 @@ nav .cert-seacrh label i {
     padding: 5px 10px;
     border: none;
     cursor: default;
-    pointer-events: none;
 }
 .certificate-info .collection-title,
 .certificate-info .collection-info {
@@ -1215,27 +1206,27 @@ i.material-icons.left {
 }
 
 i.material-icons.left.my {
-  background: url(./resources/image/cert_category_my.svg);
+  background: url(./resources/image/cert_stores/my.svg);
 }
 
 i.material-icons.left.other {
-  background: url(./resources/image/cert_category_other.svg);
+  background: url(./resources/image/cert_stores/other.svg);
 }
 
 i.material-icons.left.intermediate {
-  background: url(./resources/image/cert_category_intermediate.svg);
+  background: url(./resources/image/cert_stores/intermediate.svg);
 }
 
 i.material-icons.left.root {
-  background: url(./resources/image/cert_category_root.svg);
+  background: url(./resources/image/cert_stores/root.svg);
 }
 
 i.material-icons.left.token {
-  background: url(./resources/image/cert_category_token.svg);
+  background: url(./resources/image/cert_stores/token.svg);
 }
 
 i.material-icons.left.request {
-  background: url(./resources/image/cert_category_request.svg);
+  background: url(./resources/image/cert_stores/request.svg);
 }
 
 i.material-icons.left.connect {
@@ -1244,25 +1235,18 @@ i.material-icons.left.connect {
 }
 
 i.material-icons.left.connect {
-    background: url(./resources/image/service_category_connect.svg);
-  }
-
-i.material-icons.left.cert {
-    background: url(./resources/image/service_category_cert.svg);
-  }
-
-/*-----------------Главная страница--------------------*/
-.header{
-    margin-top: 1px;
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
-    /*height: 46%;*/
-    height: 184px;
-    background: url(./resources/image/main_window_header.png);
+  background: url(./resources/image/service_category_connect.svg);
 }
 
+i.material-icons.left.ca {
+  background: url(./resources/image/CA/service_ca.svg);
+  width: 24px;
+  height: 24px;
+  background-size: 100% !important;
+}
+
+
+/*-----------------Главная страница--------------------*/
 .maincontent{
     height: 54%;
 }
@@ -1313,34 +1297,6 @@ i.material-icons.left.cert {
   font-size: 12px;
   padding-top: 6px;
 }
-
-.facebook{
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
-  background: url(./resources/image/facebook_icon.svg);
-  background-size: 24px 24px;
-}
-
-.vk{
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
-  background: url(./resources/image/vk_icon.svg);
-  background-size: 24px 24px;
-}
-
-.twitter{
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
-  background: url(./resources/image/twitter_icon.svg);
-  background-size: 24px 24px;
-}
-
 
 .facebook:hover, .vk:hover, .twitter:hover, .mail:hover, .google:hover{
     cursor: pointer;
@@ -1412,60 +1368,6 @@ i.material-icons.left.cert {
     margin-left: 95px;
 }
 
-.sign_roundbutton_icon{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/sign_roundbutton_icon.svg);
-  background-size: 68px 68px;
-}
-
-.sign_roundbutton_icon:hover{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/sign_roundbutton_over_icon.svg);
-  background-size: 68px 68px;
-}
-
-.encrypt_roundbutton_icon{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/encrypt_roundbutton_icon.svg);
-  background-size: 68px 68px;
-}
-
-.encrypt_roundbutton_icon:hover{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/encrypt_roundbutton_over_icon.svg);
-  background-size: 68px 68px;
-}
-
-.certificate_roundbutton_icon{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/cert_roundbutton_icon.svg);
-  background-size: 68px 68px;
-}
-
-.certificate_roundbutton_icon:hover{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/cert_roundbutton_over_icon.svg);
-  background-size: 68px 68px;
-}
-
 .r-iconbox-icon {
   float: left;
 }
@@ -1507,17 +1409,6 @@ display: inline-block;
 
 .license_background{
     background: url(./resources/image/geo_gray.png);
-}
-
-.geo-icon{
-  display: block;
-  text-indent: -9999px;
-  width: 68px;
-  height: 68px;
-  background: url(./resources/image/target.svg);
-  background-size: 68px 68px;
-  margin-left: 472px;
-  margin-top: 135px;
 }
 
 .about .row {
@@ -1635,26 +1526,6 @@ h6.contact-title {
   padding-left: 10px;
   padding-right: 10px;
   color: gray;
-}
-
-.geo_contact_icon{
-  display: block;
-  text-indent: -9999px;
-  width: 36px;
-  height: 36px;
-  background: url(./resources/image/geo_contact_icon.png);
-  background-size: 36px 36px;
-  margin-top: 6px;
-}
-
-.address_contact_icon{
-  display: block;
-  text-indent: -9999px;
-  width: 36px;
-  height: 36px;
-  background: url(./resources/image/address_contact_icon.png);
-  background-size: 36px 36px;
-  margin-top: 8px;
 }
 
 .mail_contact_icon{
@@ -1899,7 +1770,7 @@ a.menuheaderlink:hover {
   background-size: 16px 16px;
 }
 
-.status_ok_icon{
+.status_ok_icon {
   width: 30px;
   height: 30px;
   background: url(./resources/image/status_ok.svg);
@@ -1943,11 +1814,6 @@ a.menuheaderlink:hover {
     height: 300px;
     border-left: 1px solid #bf3817;
     border-right: 1px solid #bf3817;
-}
-
-.onlinelic_area{
-    background: url(./resources/image/licence_footer.png);
-    height: 252px;
 }
 
 .bmark_desktoplic {
@@ -2062,6 +1928,10 @@ p.message_onlinelic{
 .icon-info-modal-licence {
   display: flex;
   align-items: center;
+}
+
+.text-security {
+  -webkit-text-security: disc;
 }
 
 #get-password {
@@ -2387,13 +2257,6 @@ a.cert-back-btn.waves-effect.waves-light {
     left: 35%;
     font-size: 80px;
 }
-.reg-back-btn {
-    display: block;
-    background: url(./resources/image/left-arrow.svg);
-    background-size: 100%;
-    width: 40px;
-    height: 40px;
-}
 .reg-back-icon {
     margin: 10px;
     height: 40px;
@@ -2421,36 +2284,15 @@ a.cert-back-btn.waves-effect.waves-light {
   width: 24px;
   height: 24px;
 }
-.cert-error {
-    background: url(./resources/image/cert_error.svg);
-    background-size: 100%;
-    height: 50px;
-    width: 50px;
-}
-.cert-ok {
-    background: url(./resources/image/cert_ok.svg);
-    background-size: 100%;
-    height: 50px;
-    width: 50px;
-}
+
 .return-icon {
   background: url(./resources/image/return-button.svg);
 }
-.cert-icon {
-  background: url(./resources/image/cert_menu_icon_white.svg);
-}
-.google {
-  background: url(./resources/image/google_icon.svg);
-}
+
 .mail{
   background: url(./resources/image/mail_icon.svg);
 }
-.socials-icon {
-    background: url(./resources/image/social-media-campaign.svg);
-}
-.login-password-icon {
-    background: url(./resources/image/login-password.svg);
-}
+
 .password-icon {
     background: url(./resources/image/password.svg);
     background-size: 100%;
@@ -2605,7 +2447,7 @@ a.cert-back-btn.waves-effect.waves-light {
 /*---------cert chain--------------*/
 
 i.material-icons.left.chain_1 {
-  background: url(./resources/image/chain_1.png);
+  background: url(./resources/image/chain/chain_1.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2616,7 +2458,7 @@ i.material-icons.left.chain_1 {
 }
 
 i.material-icons.left.chain_2 {
-  background: url(./resources/image/chain_2.png);
+  background: url(./resources/image/chain/chain_2.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2627,7 +2469,7 @@ i.material-icons.left.chain_2 {
 }
 
 i.material-icons.left.chain_3 {
-  background: url(./resources/image/chain_3.png);
+  background: url(./resources/image/chain/chain_3.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2638,7 +2480,7 @@ i.material-icons.left.chain_3 {
 }
 
 i.material-icons.left.chain_4 {
-  background: url(./resources/image/chain_4.png);
+  background: url(./resources/image/chain/chain_4.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2649,7 +2491,7 @@ i.material-icons.left.chain_4 {
 }
 
 i.material-icons.left.chain_5 {
-  background: url(./resources/image/chain_5.png);
+  background: url(./resources/image/chain/chain_5.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2660,7 +2502,7 @@ i.material-icons.left.chain_5 {
 }
 
 i.material-icons.left.chain_6 {
-  background: url(./resources/image/chain_6.png);
+  background: url(./resources/image/chain/chain_6.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2671,7 +2513,7 @@ i.material-icons.left.chain_6 {
 }
 
 i.material-icons.left.chain_7 {
-  background: url(./resources/image/chain_7.png);
+  background: url(./resources/image/chain/chain_7.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2682,7 +2524,7 @@ i.material-icons.left.chain_7 {
 }
 
 i.material-icons.left.chain_8 {
-  background: url(./resources/image/chain_8.png);
+  background: url(./resources/image/chain/chain_8.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2693,7 +2535,7 @@ i.material-icons.left.chain_8 {
 }
 
 i.material-icons.left.chain_9 {
-  background: url(./resources/image/chain_9.png);
+  background: url(./resources/image/chain/chain_9.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -2704,7 +2546,7 @@ i.material-icons.left.chain_9 {
 }
 
 i.material-icons.left.chain_10 {
-  background: url(./resources/image/chain_10.png);
+  background: url(./resources/image/chain/chain_10.png);
   margin-top: 10px;
   margin-left: -5px;
   display: block;
@@ -3005,30 +2847,6 @@ a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
   background-color: #e4dedc;
 }
 
-.alert_ok_icon {
-    display: block;
-    background: url(./resources/image/alert_ok_icon.svg);
-    background-size: 100%;
-    width: 50px;
-    height: 50px;
-}
-
-.alert_warning_icon {
-    display: block;
-    background: url(./resources/image/alert_warning_icon.svg);
-    background-size: 100%;
-    width: 50px;
-    height: 50px;
-}
-
-.alert_error_icon {
-    display: block;
-    background: url(./resources/image/alert_error_icon.svg);
-    background-size: 100%;
-    width: 50px;
-    height: 50px;
-}
-
 .checkbox-red[type="checkbox"] + label:before{
   border: 2px solid;
   background: transparent;
@@ -3143,28 +2961,6 @@ a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
 
 .prefix.active {
   color: #334294 !important;
-}
-
-.icon_ok {
-  background: url(./resources/image/icon_ok.svg);
-  background-size: 100%;
-  height: 24px;
-  width: 24px;
-  position: absolute;
-  top: 7px;
-  padding-left: 0px;
-  left: 0px;
-}
-
-.icon_fail {
-  background: url(./resources/image/icon_fail.svg);
-  background-size: 100%;
-  height: 24px;
-  width: 24px;
-  position: absolute;
-  top: 7px;
-  padding-left: 0px;
-  left: 0px;
 }
 
 .picker__frame {
@@ -3335,17 +3131,6 @@ svg:hover {
     background-size: 100%;
   }
 
-  i.material-icons.context_menu {
-    display: block;
-    text-indent: -9999px;
-    width: 32px;
-    height: 32px;
-    background: url(./resources/image/icon_context_menu.svg);
-    background-size: 32px 32px;
-    margin-top: 0px;
-    margin-left: -6px;
-  }
-
 .border_element{
     box-shadow: 0 0 0 1px #b5b5b5;
     margin-top: 3px;
@@ -3468,6 +3253,16 @@ svg:hover {
     background: url(./resources/image/folder_icon.svg);
   }
 
+  i.material-icons.ca {
+    background-size: 36px 36px !important;
+    width: 36px;
+    height: 36px;
+  }
+
+  i.material-icons.ca.new_request {
+    background: url(./resources/image/ca/new_request_to_ca.svg);
+  }
+
   i.material-icons.settings {
     background-size: 36px 36px !important;
     width: 36px;
@@ -3538,4 +3333,50 @@ svg:hover {
       margin-right: 14px;
   }
 
+  .ca_request {
+    background: url(./resources/image/ca/request_to_ca.svg);
+    background-size: 100%;
+    height: 32px;
+    width: 32px;
+    text-align: center;
+    }
 
+.ca_request_status {
+  width: 20px;
+  height: 20px;
+  background-size: 100% !important;
+}
+
+.ca_request_status.ok {
+  background: url(./resources/image/status_ok.svg);
+}
+
+.ca_request_status.error {
+  background: url(./resources/image/status_error.svg);
+}
+
+.ca_request_status.unknown {
+  background: url(./resources/image/status_unknow.svg);
+}
+
+.ca_request_status.wait{
+  background: url(./resources/image/status_wait.svg);
+}
+
+.ca_service_status {
+  width: 32px;
+  height: 32px;
+  background-size: 100% !important;
+}
+
+.ca_service_status.ok {
+  background: url(./resources/image/ca/service_status_ok.svg);
+}
+
+.ca_service_status.error {
+  background: url(./resources/image/ca/service_status_error.svg);
+}
+
+.ca_service_status.unknown {
+  background: url(./resources/image/ca/service_status_unknown.svg);
+}

@@ -129,10 +129,15 @@ export const PLATFORM: string = window.PLATFORM;
 export const TMP_DIR: string = window.TMP_DIR;
 export const LICENSE_PATH = window.LICENSE_PATH;
 export const SETTINGS_JSON = window.SETTINGS_JSON;
+export const SERVICES_JSON = window.SERVICES_JSON;
 export const TRUSTED_CRYPTO_LOG = window.TRUSTED_CRYPTO_LOG;
 export const APP_LOG_FILE = window.APP_LOG_FILE;
 export const APP_ERRORS_LOG_FILE = window.APP_ERRORS_LOG_FILE;
 export const USER_NAME = window.USER_NAME;
+export const CA_REGREGUESTS_JSON = window.CA_REGREGUESTS_JSON;
+export const CA_CERTREGUESTS_JSON = window.CA_CERTREGUESTS_JSON;
+export const CA_CERTTEMPLATE_JSON = window.CA_CERTTEMPLATE_JSON;
+export const CA_CSR_JSON = window.CA_CSR_JSON;
 
 export const LicenseManager: trusted.utils.License_Mng = window.LICENSE_MNG;
 
@@ -188,7 +193,32 @@ export const CHANGE_DSS_REST_URL = "CHANGE_DSS_REST_URL";
 export const GET_CERTIFICATES_FROM_DSS = "GET_CERTIFICATES_FROM_DSS";
 export const RESET_CLOUD_CSP = "RESET_CLOUD_CSP";
 
+export const ADD_SERVICE = "ADD_SERVICE";
+export const ADD_CERTIFICATE_REQUEST_CA = "ADD_CERTIFICATE_REQUEST_CA";
 export const ADD_SERVICE_CERTIFICATE = "ADD_SERVICE_CERTIFICATE";
+export const CHANGE_SERVICE_NAME = "CHANGE_SERVICE_NAME";
+export const CHANGE_SERVICE_SETTINGS = "CHANGE_SERVICE_SETTINGS";
 export const DELETE_SERVICE = "DELETE_SERVICE";
+export const DELETE_CERTIFICATE_REQUEST_CA = "DELETE_CERTIFICATE_REQUEST_CA";
 
 export const CRYPTOPRO_DSS_NAME = "КриптоПро DSS";
+
+export const CA_SERVICE = "CA_SERVICE";
+export const POST_CA_REGREQUEST = "POST_CA_REGREQUEST";
+export const GET_CA_REGREQUEST = "GET_CA_REGREQUEST";
+export const POST_CA_CERTREQUEST = "POST_CA_CERTREQUEST";
+export const GET_CA_CERTREQUEST = "GET_CA_CERTREQUEST";
+export const GET_CA_CERTREQUEST_STATUS = "GET_CA_CERTREQUEST_STATUS";
+export const POST_CA_CERTREQUEST_СONFIRMATION = "POST_CA_CERTREQUEST_СONFIRMATION";
+
+export const REQUEST_STATUS = {
+  Q: "Q", // запрос установлен в очередь на обработку(Новый, Queued);
+  // tslint:disable-next-line: object-literal-sort-keys
+  A: "A",  // запрос одобрен оператором(Принят, Accepted);
+  R: "R", // запрос отклонен оператором, сертификат не изготовлен(Отклонен, Rejected);
+  P: "P", // запрос передан на обработку в Центр сертификации, но сертификат еще не изготовлен(Обрабатывается, Pending);
+  D: "D", // запрос передан на обработку в Центрсертификации, но Центр сертификации отклонил запрос и не изготовил сертификат(Отклонен ЦС, Denied);
+  C: "C", // запрос обработан, сертификат изготовлен Центром сертификации(Завершен, Complete);
+  E: "E", // ошибка обработки запроса (Ошибка, Errored);
+  K: "K", // пользователь подтвердил получение и установку сертификата на своем рабочем месте(Подтвержден, Acknowledged).
+};

@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { addCertificateRequestCA, loadAllCertificates, removeAllCertificates } from "../../AC";
-import { postCertRequest } from "../../AC/caActions";
+import { getCertRequestStatus, postCertRequest } from "../../AC/caActions";
 import {
   ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, DEFAULT_CSR_PATH, HOME_DIR,
   KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
@@ -13,13 +13,14 @@ import {
   REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
 import * as jwt from "../../trusted/jwt";
-import { fileCoding, formatDate, mapToArr, randomSerial, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
+import { arrayToMap, fileCoding, formatDate, mapToArr, randomSerial, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
 import logger from "../../winstonLogger";
 import { ICertificateRequestCA } from "../Services/types";
 import HeaderTabs from "./HeaderTabs";
 import KeyParameters from "./KeyParameters";
 import SubjectNameInfo from "./SubjectNameInfo";
 import  ServiceListItem from "../Services/ServiceListitem";
+
 interface IKeyUsage {
   cRLSign: boolean;
   dataEncipherment: boolean;
@@ -32,9 +33,6 @@ interface IKeyUsage {
   nonRepudiation: boolean;
   [key: string]: boolean;
 }
-
-
- 
 
 interface IExtendedKeyUsage {
   "1.3.6.1.5.5.7.3.1": boolean;
@@ -81,11 +79,9 @@ interface ICertificateRequestCAProps {
   loadAllCertificates: () => void;
   removeAllCertificates: () => void;
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
-  postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
   ActiveService: (service: any) => void;
-
-  
-
+  postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) => void;
+  getCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
 }
 
 class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, ICertificateRequestCAState> {
@@ -95,8 +91,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   };
 
   constructor(props: any) {
-    super(props);
-    
+    super(props);    
     const template = getTemplateByCertificate(props.certificateTemplate);
 
     this.state = {
@@ -140,9 +135,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       template: template.snils || template.ogrnip || template.inn
         || template.OU || template.title ? REQUEST_TEMPLATE_ADDITIONAL : REQUEST_TEMPLATE_DEFAULT,
       title: template.title,
-     
     };
-    
   }
 
   componentDidMount() {
@@ -200,9 +193,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       });
     }
   }
- 
 
-  
   componentWillUnmount() {
     this.handelCancel();
   }
@@ -343,7 +334,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
             <div className="row halfbottom" />
 
             <div className="row halfbottom">
-              
               <div style={{ float: "right" }}>
                 <div style={{ display: "inline-block", margin: "10px" }}>
                   <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
@@ -397,9 +387,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   }
   
-  
-
-
   verifyFields = () => {
     const { algorithm, cn, containerName, email, inn, locality, ogrnip, province, snils, template } = this.state;
     const REQULAR_EXPRESSION = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
@@ -455,7 +442,8 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const { localize, locale } = this.context;
     const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
-    const { addCertificateRequestCA, licenseStatus, lic_error, servicesMap, regrequests, postCertRequest } = this.props;
+    const { addCertificateRequestCA, licenseStatus, lic_error, servicesMap, regrequests,
+      postCertRequest, getCertRequestStatus, certrequests } = this.props;
 
     const exts = new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
@@ -637,32 +625,37 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const uri = path.join(DEFAULT_CSR_PATH, `requestCA_${cn}_${algorithm}_${formatDate(new Date())}.req`);
     try {
       certReq.save(uri, trusted.DataFormat.PEM);
+      
+      let cmsContext = null;
+      if (fileCoding(uri) === trusted.DataFormat.PEM) {
+        cmsContext = fs.readFileSync(uri, "utf8");
+        cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE REQUEST-----\r\n", "");
+        cmsContext = cmsContext.replace("\r\n-----END CERTIFICATE REQUEST-----", "");
+        cmsContext = cmsContext.replace(/\r\n/g, "");
+      } else {
+        cmsContext = fs.readFileSync(uri, "base64");
+      }
+      const id = uuid();
+      const certificateRequestCA: ICertificateRequestCA = {
+        certRequestId: "",
+        certificateReq: cmsContext,
+        id,
+        status: "",
+      };
+
+      addCertificateRequestCA(certificateRequestCA);
+
+      const services = mapToArr(servicesMap);
+      const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === services[0].id);
+      postCertRequest(`${services[0].settings.url}`, certificateRequestCA, atrs, regRequest, services[0].id);
+      const certRequest = certrequests.find((obj: any) => obj.get("id") === certificateRequestCA.id);
+      //getCertRequestStatus(`${services[0].settings.url}`, certRequest, regRequest);
+
+      Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     } catch (e) {
       //
     }
-
-    let cmsContext = null;
-    if (fileCoding(uri) === trusted.DataFormat.PEM) {
-      cmsContext = fs.readFileSync(uri, "utf8");
-      cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE REQUEST-----\r\n", "");
-      cmsContext = cmsContext.replace("\r\n-----END CERTIFICATE REQUEST-----", "");
-      cmsContext = cmsContext.replace(/\r\n/g, "");
-    } else {
-      cmsContext = fs.readFileSync(uri, "base64");
-    }
-    const id = uuid();
-    const certificateRequestCA: ICertificateRequestCA = {
-      id,
-      certificateReq: cmsContext,
-    };
-
-    addCertificateRequestCA(certificateRequestCA);
-
-    const services = mapToArr(servicesMap);
-    const regRequest = regrequests.find((obj: any) => obj.get("serviceId") === services[0].id);
-    postCertRequest(`${services[0].settings.url}`, certificateRequestCA, regRequest, services[0].id);
-    this.handleReloadCertificates();
-    Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
+        
     this.handelCancel();
   }
 
@@ -933,7 +926,8 @@ export default connect((state) => {
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
     regrequests: state.regrequests.entities,
+    certrequests: state.certrequests.entities,
     servicesMap: state.services.entities,
     services: mapToArr(state.services.entities)
   };
-}, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest })(CertificateRequestCA);
+}, { loadAllCertificates, removeAllCertificates, addCertificateRequestCA, postCertRequest, getCertRequestStatus })(CertificateRequestCA);

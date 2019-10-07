@@ -1,20 +1,22 @@
 import * as fs from "fs";
 import * as path from "path";
 import { push } from "react-router-redux";
+import { ICertificateRequestCA } from "../components/Services/types";
 import {
-  ACTIVE_CONTAINER, ACTIVE_FILE, ADD_RECIPIENT_CERTIFICATE,
-  CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT,
-  CHANGE_DELETE_FILES_AFTER_ENCRYPT, CHANGE_ECRYPT_ENCODING,
-  CHANGE_ENCRYPT_OUTFOLDER, CHANGE_LOCALE, CHANGE_SETTINGS_NAME,
-  CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING, CHANGE_SIGNATURE_OUTFOLDER,
-  CHANGE_SIGNATURE_TIMESTAMP, DEFAULT_DOCUMENTS_PATH,
-  DELETE_FILE, DELETE_RECIPIENT_CERTIFICATE, FAIL,
-  GET_CERTIFICATE_FROM_CONTAINER, LOAD_ALL_CERTIFICATES, LOAD_ALL_CONTAINERS,
-  PACKAGE_DELETE_FILE, PACKAGE_SELECT_FILE, PACKAGE_SIGN,
-  REMOVE_ALL_CERTIFICATES, REMOVE_ALL_CONTAINERS, REMOVE_ALL_FILES,
-  REMOVE_ALL_REMOTE_FILES, SELECT_FILE,
-  SELECT_SIGNER_CERTIFICATE, SELECT_TEMP_CONTENT_OF_SIGNED_FILES, START,
-  SUCCESS, TOGGLE_SAVE_TO_DOCUMENTS, VERIFY_CERTIFICATE,
+  ACTIVE_CONTAINER, ACTIVE_FILE, ADD_CERTIFICATE_REQUEST_CA,
+  ADD_RECIPIENT_CERTIFICATE,
+  CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT, CHANGE_DELETE_FILES_AFTER_ENCRYPT,
+  CHANGE_ECRYPT_ENCODING, CHANGE_ENCRYPT_OUTFOLDER, CHANGE_LOCALE,
+  CHANGE_SETTINGS_NAME, CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING,
+  CHANGE_SIGNATURE_OUTFOLDER, CHANGE_SIGNATURE_TIMESTAMP,
+  DEFAULT_DOCUMENTS_PATH, DELETE_FILE, DELETE_RECIPIENT_CERTIFICATE,
+  FAIL, GET_CERTIFICATE_FROM_CONTAINER, LOAD_ALL_CERTIFICATES,
+  LOAD_ALL_CONTAINERS, PACKAGE_DELETE_FILE, PACKAGE_SELECT_FILE,
+  PACKAGE_SIGN, REMOVE_ALL_CERTIFICATES, REMOVE_ALL_CONTAINERS,
+  REMOVE_ALL_FILES, REMOVE_ALL_REMOTE_FILES,
+  SELECT_FILE, SELECT_SIGNER_CERTIFICATE, SELECT_TEMP_CONTENT_OF_SIGNED_FILES,
+  START, SUCCESS, TOGGLE_SAVE_TO_DOCUMENTS,
+  VERIFY_CERTIFICATE,
   VERIFY_SIGNATURE,
 } from "../constants";
 import { connectedSelector } from "../selectors";
@@ -129,7 +131,7 @@ export function packageSign(
                   issuerName: subjectCert.issuerName,
                   notAfter: new Date(subjectCert.notAfter).getTime(),
                   notBefore: new Date(subjectCert.notBefore).getTime(),
-                  signingTime: info.signingTime ? new Date(info.signingTime).getTime()  : undefined,
+                  signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
                   subjectFriendlyName: info.subject,
                   subjectName: subjectCert.subjectName,
 
@@ -598,5 +600,14 @@ export function deleteRecipient(recipient: number) {
   return {
     payload: { recipient },
     type: DELETE_RECIPIENT_CERTIFICATE,
+  };
+}
+
+export function addCertificateRequestCA(certificateRequestCA: ICertificateRequestCA) {
+  return {
+    payload: {
+      certificateRequestCA,
+    },
+    type: ADD_CERTIFICATE_REQUEST_CA,
   };
 }

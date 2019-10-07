@@ -74,6 +74,8 @@
       window.tcerr = err;
     }
 
+    var {Curl} = require("node-libcurl");
+
     path = require('path');
     fs = require('fs');
     os = require('os');
@@ -94,10 +96,16 @@
     window.DEFAULT_CERTSTORE_PATH = path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'CertStore');
     window.DEFAULT_DOCUMENTS_PATH = path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'Documents');
     window.DEFAULT_CSR_PATH = path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'CSR');
+    window.DEFAULT_CA_PATH = path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'CA');
     window.PLATFORM = process.platform;
     LICENSE_DIR = (PLATFORM == 'win32') ? process.env['LOCALAPPDATA'] : "/etc/opt";
     window.LICENSE_PATH = path.join(LICENSE_DIR, "/Trusted/CryptoARM GOST/license.lic");
     window.SETTINGS_JSON = path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "settings.json");
+    window.SERVICES_JSON = path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "services.json");
+    window.CA_REGREGUESTS_JSON = path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CA", "regrequests.json");
+    window.CA_CERTTEMPLATE_JSON = path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CA", "certtemplate.json");
+    window.CA_CERTREGUESTS_JSON = path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CA", "certrequests.json");
+    window.CA_CSR_JSON = path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CA", "csr.json");
     window.TRUSTED_CRYPTO_LOG = path.join(HOME_DIR, ".Trusted", "cryptoarm_gost.log");
     window.APP_LOG_FILE = path.join(HOME_DIR, ".Trusted", "cryptoarm_gost_operations.log");
     window.APP_ERRORS_LOG_FILE = path.join(HOME_DIR, ".Trusted", "cryptoarm_gost_errors.log");
@@ -119,6 +127,10 @@
 
     if (!fs.existsSync(path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'CertStore'))) {
       fs.mkdirSync(path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'CertStore'), { mode: 0o700 });
+    }
+
+    if (!fs.existsSync(path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'CA'))) {
+      fs.mkdirSync(path.join(HOME_DIR, '.Trusted', 'CryptoARM GOST', 'CA'), { mode: 0o700 });
     }
 
     document.ondragover = function (evt) {

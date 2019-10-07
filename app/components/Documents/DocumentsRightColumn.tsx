@@ -314,7 +314,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
   }
 
   handleClickSign = () => {
-   
+
     // tslint:disable-next-line:no-shadowed-variable
     const { activeDocumentsArr, signer, lic_error } = this.props;
     const { localize, locale } = this.context;
@@ -335,8 +335,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         },
         userName: USER_NAME,
       });
-      
-      
+
+
       return;
     }
 
@@ -381,7 +381,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       if (filesForResign && filesForResign.length) {
         this.resign(filesForResign, cert);
       }
-    
+
     }
   }
 
@@ -684,7 +684,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       const filesForDecryptInLocalCSP = [];
 
       for (const file of activeDocumentsArr) {
-         try {
+        try {
           const haveLocalRecipient = true;
           const haveDSSRecipient = false;
           const dssRecipient = undefined;
@@ -762,19 +762,19 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     const { documents, isDocumentsReviewed, signer, recipients } = this.props;
 
     if (!documents.length) {
-      
+
       return false;
     }
 
     switch (operation) {
       case SIGN:
         if (!isDocumentsReviewed || !signer) {
-          
+
           return false;
         } else {
           for (const document of documents) {
             if (document.extension === "enc") {
-              
+
               return false;
             }
           }
@@ -786,11 +786,11 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       case UNSIGN:
         for (const document of documents) {
           if (document.extension !== "sig") {
-            
+
             return false;
           }
         }
-        
+
         return true;
 
       case ENCRYPT:
@@ -799,7 +799,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         } else {
           for (const document of documents) {
             if (document.extension === "enc") {
-              
+
               return false;
             }
           }
@@ -810,19 +810,19 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       case DECRYPT:
         for (const document of documents) {
           if (document.extension !== "enc") {
-            
+
             return false;
           }
         }
-        
+
         return true;
 
       case REMOVE:
-          
+
         return true;
 
       default:
-          
+
         return false;
     }
   }
@@ -858,9 +858,9 @@ export default connect((state) => {
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
 }, {
-    addDocuments, arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
-    filePackageSelect, filePackageDelete, verifySignature, packageSign, loadAllDocuments,
-    removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
-    unselectAllDocuments, unselectDocument,
-    selectAllDocuments, selectDocument, selectSignerCertificate,
-  })(DocumentsRightColumn);
+  addDocuments, arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
+  filePackageSelect, filePackageDelete, verifySignature, packageSign, loadAllDocuments,
+  removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
+  unselectAllDocuments, unselectDocument,
+  selectAllDocuments, selectDocument, selectSignerCertificate,
+})(DocumentsRightColumn);

@@ -1,4 +1,8 @@
 {
+  "author": {
+    "name": "Сifrovye tekhnologii LLC"
+  },
+  "description": "CryptoARM GOST",
   "name": "cryptoarm-gost",
   "version": "2.0.0",
   "license": "Apache-2.0",
@@ -24,16 +28,12 @@
     "package-all": "npm run build && build -mwl",
     "cleanup": "mop -v"
   },
-  "browserslist": "electron 1.4",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TrustedPlus/esign.git"
-  },
-  "author": {
-    "name": "Trusted Plus development team"
+    "url": "git+https://github.com/TrustedRu/CryptoARMGOST.git"
   },
   "bugs": {
-    "url": "https://github.com/TrustedPlus/esign/issues"
+    "url": "https://github.com/TrustedRu/CryptoARMGOST/issues"
   },
   "keywords": [
     "crypto",
@@ -52,6 +52,7 @@
         ]
       }
     ],
+    "copyright": "Copyright 2019 Сifrovye tekhnologii LLC",
     "win": {
       "target": [
         {
@@ -125,9 +126,9 @@
     "cross-env": "^4.0.0",
     "css-loader": "^0.28.0",
     "devtron": "^1.4.0",
-    "electron": "1.6.6",
-    "electron-builder": "^20.38.2",
-    "electron-devtools-installer": "^2.2.0",
+    "electron": "3.1.13",
+    "electron-builder": "^20.44.4",
+    "electron-devtools-installer": "^2.2.4",
     "fbjs-scripts": "^0.7.1",
     "file-loader": "^2.0.0",
     "mini-css-extract-plugin": "^0.5.0",
@@ -144,7 +145,7 @@
     "typescript": "^2.6.2",
     "url-loader": "^1.1.2",
     "webpack": "^4.27.1",
-    "webpack-bundle-analyzer": "^3.0.3",
+    "webpack-bundle-analyzer": "^3.5.0",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.14",
     "webpack-merge": "^4.1.0"
@@ -156,7 +157,7 @@
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "immutable": "^4.0.0-rc.2",
-    "jquery": "^3.2.1",
+    "jquery": "^3.4.1",
     "prop-types": "^15.6.2",
     "react": "^16.8.2",
     "react-dom": "^16.4.1",

@@ -9,20 +9,9 @@ global.globalObj = {
   launch: null,
 };
 
-const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
-  if (mainWindow) {
-    if (mainWindow.isMinimized()) {
-      mainWindow.restore();
-    }
+const gotInstanceLock = app.requestSingleInstanceLock();
 
-    mainWindow.show();
-    mainWindow.focus();
-
-    mainWindow.webContents.send("cmdArgs", commandLine);
-  }
-});
-
-if (shouldQuit) {
+if (!gotInstanceLock) {
   app.quit();
 }
 
@@ -66,6 +55,8 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
+let trayIcon;
+let trayMenu;
 
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
@@ -80,11 +71,14 @@ app.on('ready', async () => {
     frame: false,
     toolbar: false,
     show: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
 
   preloader = new BrowserWindow({
-    alwaysOnTop: true,
+    alwaysOnTop: false,
     width: 496, height: 149,
     resizable: false,
     frame: false,
@@ -106,7 +100,7 @@ app.on('ready', async () => {
 
   const platform = require('os').platform();
   const lang = app.getLocale().split("-")[0];
-  let trayIcon;
+
 
   if (platform == 'win32') {
     trayIcon = new Tray(__dirname + '/resources/image/tray.ico');
@@ -136,7 +130,7 @@ app.on('ready', async () => {
     }
   ];
 
-  var trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
+  trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
   trayIcon.setContextMenu(trayMenu);
 
   if (process.platform === "darwin") {
@@ -209,4 +203,19 @@ app.on('web-contents-created', (event, win) => {
   })
 })
 
+app.on('second-instance', (e, argv) => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
 
+    mainWindow.show();
+    mainWindow.focus();
+
+    mainWindow.webContents.send("cmdArgs", argv);
+  }
+});
+
+app.on('before-quit', function (evt) {
+  tray.destroy();
+});

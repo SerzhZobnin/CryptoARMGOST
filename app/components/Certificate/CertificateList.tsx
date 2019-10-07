@@ -7,8 +7,10 @@ import { loadAllCertificates, verifyCertificate } from "../../AC";
 import accordion from "../../decorators/accordion";
 import { filteredCertificatesSelector } from "../../selectors";
 import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
+import { filteredRequestCASelector } from "../../selectors/requestCASelector";
 import CRLListItem from "../CRL/CRLListItem";
 import ProgressBars from "../ProgressBars";
+import RequestCAListItem from "../Request/RequestCAListItem";
 import CertificateListItem from "./CertificateListItem";
 import CertificateListItemBigWidth from "./CertificateListItemBigWidth";
 
@@ -19,11 +21,13 @@ const ROW_HEIGHT = 45;
 interface ICertificateListProps {
   activeCert: (certificate: any) => void;
   activeCrl: (crl: any) => void;
+  activeRequestCA: (requestCA: any) => void;
   certificates: any;
   crls: any;
   isLoaded: boolean;
   isLoading: boolean;
   operation: string;
+  certrequests: any;
   loadAllCertificates: () => void;
   verifyCertificate: (id: number) => void;
 }
@@ -55,7 +59,7 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
   }
 
   render() {
-    const { certificates, crls, isLoading, operation } = this.props;
+    const { certificates, crls, isLoading, operation, certrequests } = this.props;
     const { localize, locale } = this.context;
 
     if (isLoading) {
@@ -113,6 +117,10 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
       count++;
     }
 
+    if (certrequests.length && (operation === "certificate")) {
+      count++;
+    }
+
     return (
       <React.Fragment>
         <ul className="collapsible" data-collapsible="accordion">
@@ -122,6 +130,7 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
           {this.getCollapsibleElement(localize("Certificate.certs_root", locale), "root", root, count)}
           {this.getCollapsibleElement(localize("Certificate.certs_token", locale), "token", token, count)}
           {this.getCollapsibleElement(localize("Certificate.certs_request", locale), "request", request, count)}
+          {(operation === "certificate") ? this.getCollapsibleElementRequestCA("Запросы отправленные в УЦ", "ca", certrequests, count) : null}
           {(operation === "certificate") ? this.getCollapsibleElementCRL(localize("Certificate.crls", locale), "intermediate", crls, count) : null}
         </ul>
       </React.Fragment>
@@ -259,6 +268,66 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
       </li>
     );
   }
+
+  getCollapsibleElementRequestCA = (head: string, name: string, elements: object[], count: number, active: boolean = false) => {
+    const { activeRequestCA, operation, toggleOpenItem, isItemOpened } = this.props;
+
+    if (!elements || elements.length === 0) {
+      return null;
+    }
+
+    const activeSection = active ? "active" : "";
+
+    return (
+      <li>
+        <div className={`collapsible-header color ${activeSection}`} onClick={() => this.setState({ activeSection: name })}>
+          <i className={`material-icons left ${name}`}>
+          </i>
+          {head}
+        </div>
+        <div className="collapsible-body">
+          <div style={{ display: "flex" }}>
+            <div style={{ flex: "1 1 auto", height: `calc(100vh - 170px - ${45 * count}px)` }}>
+              <AutoSizer>
+                {({ height, width }) => (
+                  <List
+                    height={height}
+                    overscanRowCount={1}
+                    rowCount={elements.length}
+                    rowHeight={ROW_HEIGHT}
+                    rowRenderer={({ index, key, style }) => {
+                      if (!elements.length || this.state.activeSection !== name) {
+                        return null;
+                      }
+
+                      const request = elements[index];
+
+                      return (
+                        <ul
+                          key={key}
+                          style={style}
+                        >
+                          <RequestCAListItem
+                            key={request.id}
+                            requestCA={request}
+                            service={this.props.services.getIn(["entities", request.serviceId])}
+                            chooseCert={() => activeRequestCA(request)}
+                            operation={operation}
+                            isOpen={isItemOpened(request.id.toString())}
+                            toggleOpen={toggleOpenItem(request.id.toString())} />
+                        </ul>
+                      );
+                    }}
+                    width={width}
+                  />
+                )}
+              </AutoSizer>
+            </div>
+          </div>
+        </div>
+      </li>
+    );
+  }
 }
 
 interface IOwnProps {
@@ -271,5 +340,7 @@ export default connect((state, ownProps: IOwnProps) => {
     crls: filteredCrlsSelector(state),
     isLoaded: state.certificates.loaded,
     isLoading: state.certificates.loading,
+    certrequests: filteredRequestCASelector(state),
+    services: state.services,
   };
 }, { loadAllCertificates, verifyCertificate }, null, { pure: false })(accordion(CertificateList));

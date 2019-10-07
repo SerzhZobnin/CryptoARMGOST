@@ -1,6 +1,8 @@
 import {routerReducer as router} from "react-router-redux";
 import {combineReducers} from "redux";
 import certificates from "./certificates";
+import certrequests from "./certrequests";
+import certtemplate from "./certtemplate";
 import cloudCSP from "./cloudCSP";
 import connections from "./connections";
 import containers from "./containers";
@@ -10,7 +12,9 @@ import events from "./events";
 import files from "./files";
 import filters from "./filters";
 import license from "./license";
+import regrequests from "./regrequests";
 import remoteFiles from "./remoteFiles";
+import services from "./services";
 import settings from "./settings";
 import signatures from "./signatures";
 
@@ -27,6 +31,10 @@ export default combineReducers({
   filters,
   license,
   remoteFiles,
+  certrequests,
+  certtemplate,
   settings,
+  regrequests,
+  services,
   signatures,
 });
