@@ -125,48 +125,49 @@ if (fileExists(CA_CERTREGUESTS_JSON)) {
       //
     }
   }
+}
 
-  if (fileExists(CA_CERTTEMPLATE_JSON)) {
-    const certtemplate = fs.readFileSync(CA_CERTTEMPLATE_JSON, "utf8");
+if (fileExists(CA_CERTTEMPLATE_JSON)) {
+  const certtemplate = fs.readFileSync(CA_CERTTEMPLATE_JSON, "utf8");
 
-    if (requests) {
-      try {
-        let certtemplateMap = new DefaultCertTemplateReducerState();
+  if (certtemplate) {
+    try {
+      let certtemplateMap = new DefaultCertTemplateReducerState();
 
-        const data = JSON.parse(certtemplate);
+      const data = JSON.parse(certtemplate);
 
-        for (const template of data.certtemplate) {
-          const mreg = new CertTemplateModel({ ...template });
-          certtemplateMap = certtemplateMap.setIn(["entities", template.id], mreg);
-        }
-
-        odata.certtemplate = certtemplateMap;
-      } catch (e) {
-        //
+      for (const template of data.certtemplate) {
+        const mreg = new CertTemplateModel({ ...template });
+        certtemplateMap = certtemplateMap.setIn(["entities", template.id], mreg);
       }
+
+      odata.certtemplate = certtemplateMap;
+    } catch (e) {
+      //
+    }
+  }
+}
+
+if (fileExists(TEMPLATES_PATH)) {
+  const templates = fs.readFileSync(TEMPLATES_PATH, "utf8");
+
+  if (templates) {
+    try {
+      let templatesMap = new DefaultTemplatesReducerState();
+
+      const data = JSON.parse(templates);
+
+      for (const template of data.TEMPLATES) {
+        const mtemplate = new TemplateModel({ ...template });
+        templatesMap = templatesMap.update("entities", (entities) => entities.add(mtemplate));
+      }
+
+      odata.templates = templatesMap;
+    } catch (e) {
+      //
     }
   }
 
-  if (fileExists(TEMPLATES_PATH)) {
-    const templates = fs.readFileSync(TEMPLATES_PATH, "utf8");
-
-    if (templates) {
-      try {
-        let templatesMap = new DefaultTemplatesReducerState();
-
-        const data = JSON.parse(templates);
-
-        for (const template of data.TEMPLATES) {
-          const mtemplate = new TemplateModel({ ...template });
-          templatesMap = templatesMap.update("entities", (entities) => entities.add(mtemplate));
-        }
-
-        odata.templates = templatesMap;
-      } catch (e) {
-        //
-      }
-    }
-  }
 }
 
 export default odata;

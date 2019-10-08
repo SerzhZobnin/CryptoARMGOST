@@ -1,7 +1,5 @@
 import PropTypes from "prop-types";
 import React from "react";
-import ReactDOM from "react-dom";
-import ProgressBars from "../ProgressBars";
 
 export interface IRDNObject {
   /**
@@ -12,6 +10,10 @@ export interface IRDNObject {
    * Наименование OIDэлемента учетной записи пользователя
    */
   Name: string;
+  /**
+   * Максимально разренная длина
+   */
+  Length: number;
   /**
    * Локализованное наименование OIDэлемента учетной записи пользователя
    */
@@ -38,72 +40,37 @@ export interface IRDNObject {
   ProhibitEmpty: boolean;
 }
 
-interface IDynamicRegistrationFormProps {
-  /**
-   * URL вида  https://{веб сервер УЦ}/ui/api/{folder}
-   *
-   * @type {string}
-   * @memberof IDynamicRegistrationFormProps
-   */
-  caURL: string;
-  onCancel?: () => void;
-  onRDNmodelChange: (model: any) => void;
+interface ITemplate {
+  Description: string;
+  FriendlyName: string;
+  RDN: IRDNObject[];
+  Extensions: {
+    KeyUsage: any,
+    ExtendedKeyUsage: any,
+  };
+  MarkExportable: boolean;
 }
 
-interface IDynamicRegistrationFormState {
-  error: string;
-  isUserattrLoading: boolean;
-  isUserattrLoaded: boolean;
+interface IDynamicSubjectNameProps {
   model: any;
+  template: ITemplate;
+  onCancel?: () => void;
+  onSubjectChange: (subject: any) => void;
+}
+
+interface IDynamicSubjectNameState {
+  error: string;
+  subject: any;
   /**
    * Значения элементов учетных записей пользователейорганизованных в папке УЦ
    *
    * @type {IRDNObject[]}
-   * @memberof IDynamicRegistrationFormProps
+   * @memberof IDynamicSubjectNameProps
    */
   RDN: IRDNObject[];
 }
 
-export async function requestApi(url: string) {
-  return new Promise((resolve, reject) => {
-    const curl = new window.Curl();
-
-    curl.setOpt("URL", url);
-    curl.setOpt("FOLLOWLOCATION", true);
-
-    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
-      let data;
-
-      try {
-
-        if (statusCode !== 200) {
-          throw new Error(`Unexpected response, status code ${statusCode}, url is ${url}`);
-        }
-
-        data = JSON.parse(response.toString());
-
-      } catch (error) {
-        reject(`Cannot load data, error: ${error.message}`);
-        return;
-      } finally {
-        curl.close.bind(curl);
-      }
-
-      resolve(data);
-    });
-
-    curl.on("error", (error: { message: any; }) => {
-      console.log("error: ", error);
-
-      curl.close.bind(curl);
-      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
-    });
-
-    curl.perform();
-  });
-}
-
-class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormProps, IDynamicRegistrationFormState> {
+class DynamicSubjectName extends React.Component<IDynamicSubjectNameProps, IDynamicSubjectNameState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -111,12 +78,11 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
 
   constructor(props: any) {
     super(props);
+
     this.state = {
-      RDN: [],
+      RDN: this.props.template ? this.props.template.RDN : [],
       error: "",
-      isUserattrLoaded: false,
-      isUserattrLoading: false,
-      model: {},
+      subject: { ...this.props.model },
     };
   }
 
@@ -130,8 +96,6 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
     });
 
     Materialize.updateTextFields();
-
-    this.geCAtuserattr();
   }
 
   componentDidUpdate() {
@@ -139,18 +103,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
   }
 
   render() {
-    const { localize, locale } = this.context;
-    const { isUserattrLoading, isUserattrLoaded, RDN } = this.state;
-
-    if (isUserattrLoading) {
-      return <ProgressBars />;
-    }
-
-    if (isUserattrLoading === false && isUserattrLoaded === true && (!RDN || !RDN.length)) {
-      Materialize.toast("Ошибка получения свойств учетной записи", 3000, "toast-ca_empty_rdn");
-      Materialize.toast(this.state.error, 4000, "toast-ca_error");
-      this.handelCancel();
-    }
+    const { RDN, subject } = this.state;
 
     return (
       <div className="row">
@@ -159,14 +112,14 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
           RDN.map((field: IRDNObject) => {
             if (field.SettingsValues && field.SettingsValues.length) {
               return (
-                <div className="row">
+                <div className="row" key={field.Oid}>
                   <div className="input-field input-field-csr col s12">
                     <select
                       disabled={field.ProhibitChange}
                       id={field.Oid}
                       className="select"
                       name={field.Oid}
-                      value={field.DefaultValue}
+                      value={subject[field.Oid] ? subject[field.Oid].value : ""}
                       onChange={this.handleInputChange}
                     >
                       {
@@ -182,18 +135,19 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
                 </div>
               );
             } else {
-              const oidValue = this.state.model[field.Oid];
+              const oidValue = this.state.subject[field.Oid];
 
               return (
-                <div className="row">
+                <div className="row" key={field.Oid}>
                   <div className="input-field input-field-csr col s12">
                     <input
                       disabled={field.ProhibitChange}
                       id={field.Oid}
                       type="text"
                       className="validate"
+                      maxLength={field.Length}
                       name={field.Oid}
-                      value={oidValue}
+                      value={subject[field.Oid] ? subject[field.Oid].value : ""}
                       onChange={this.handleInputChange}
                       placeholder={`${field.LocalizedName} (oid: ${field.Oid})`}
                     />
@@ -213,36 +167,16 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
     const name = target.name;
     const value = ev.target.value;
 
-    const newModel = {
-      ...this.state.model,
-      [name]: value,
+    const newSubject = {
+      ...this.state.subject,
+      [name]: { type: name, value },
     };
 
     this.setState(({
-      model: { ...newModel },
+      subject: { ...newSubject },
     }));
 
-    this.props.onRDNmodelChange({ ...newModel });
-  }
-
-  geCAtuserattr = async () => {
-    const { caURL } = this.props;
-
-    this.setState({ isUserattrLoading: true });
-    let data: any;
-
-    try {
-      data = await requestApi(`${caURL}/userattr`);
-    } catch (err) {
-      this.setState({ isUserattrLoading: false, isUserattrLoaded: true, error: err });
-    }
-
-    const model: any = {};
-    data.RDN.map((field: IRDNObject) => model[field.Oid] = field.DefaultValue);
-
-    this.props.onRDNmodelChange(model);
-
-    this.setState({ isUserattrLoading: false, isUserattrLoaded: true, RDN: data.RDN, model: { ...model } });
+    this.props.onSubjectChange({ ...newSubject });
   }
 
   handelCancel = () => {
@@ -254,4 +188,4 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
   }
 }
 
-export default DynamicRegistrationForm;
+export default DynamicSubjectName;

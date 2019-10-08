@@ -1,9 +1,9 @@
 import fs from "fs";
 import { Map } from "immutable";
-import noUiSlider from "nouislider";
 import * as path from "path";
-import PropTypes from "prop-types";
+import PropTypes, { any } from "prop-types";
 import React from "react";
+import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { addCertificateRequestCA, loadAllCertificates, removeAllCertificates } from "../../AC";
 import { getCertRequestStatus, postCertRequest } from "../../AC/caActions";
@@ -14,13 +14,13 @@ import {
   REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
 import * as jwt from "../../trusted/jwt";
-import { arrayToMap, fileCoding, formatDate, mapToArr, randomSerial, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
+import { arrayToMap, fileCoding, formatDate, mapToArr, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
 import logger from "../../winstonLogger";
 import ServiceListItem from "../Services/ServiceListItem";
 import { ICertificateRequestCA, IRegRequest } from "../Services/types";
+import DynamicSubjectName from "./DynamicSubjectName";
 import HeaderTabs from "./HeaderTabs";
 import KeyParameters from "./KeyParameters";
-import SubjectNameInfo from "./SubjectNameInfo";
 
 interface IKeyUsage {
   cRLSign: boolean;
@@ -47,28 +47,18 @@ interface ICertificateRequestCAState {
   activeService: any;
   activeSubjectNameInfoTab: boolean;
   algorithm: string;
-  cn: string;
   containerName: string;
-  country: string;
-  email: string;
   exportableKey: boolean;
   extKeyUsage: IExtendedKeyUsage;
   formVerified: boolean;
-  inn?: string;
   keyLength: number;
   keyUsage: IKeyUsage;
   keyUsageGroup: string;
-  locality: string;
-  ogrnip?: string;
-  organization: string;
-  organizationUnitName?: string;
-  province: string;
   selfSigned: boolean;
-  snils?: string;
-  template: string;
-  title?: string;
-  organization1?: string;
+  template: any;
+  templateName: string;
   OpenButton: boolean;
+  RDNsubject: any;
 }
 
 interface ICertificateRequestCAProps {
@@ -94,17 +84,13 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   constructor(props: any) {
     super(props);
-    const template = getTemplateByCertificate(props.certificateTemplate);
 
     this.state = {
       activeService: "",
       OpenButton: false,
       activeSubjectNameInfoTab: true,
       algorithm: ALG_GOST12_256,
-      cn: template.CN,
       containerName: uuid(),
-      country: template.C,
-      email: template.emailAddress,
       exportableKey: false,
       extKeyUsage: {
         "1.3.6.1.5.5.7.3.1": false,
@@ -113,7 +99,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
         "1.3.6.1.5.5.7.3.4": true,
       },
       formVerified: false,
-      inn: template.inn,
       keyLength: 1024,
       keyUsage: {
         cRLSign: false,
@@ -127,73 +112,27 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
         nonRepudiation: true,
       },
       keyUsageGroup: KEY_USAGE_SIGN_AND_ENCIPHERMENT,
-      locality: template.localityName,
-      ogrnip: template.ogrnip,
-      organization: props.organization1,
-      organizationUnitName: template.OU,
-      province: template.stateOrProvinceName,
       selfSigned: false,
-      snils: template.snils,
-      template: template.snils || template.ogrnip || template.inn
-        || template.OU || template.title ? REQUEST_TEMPLATE_ADDITIONAL : REQUEST_TEMPLATE_DEFAULT,
-      title: template.title,
+      template: this.props.templates && this.props.templates.length ? this.props.templates[0] : null,
+      templateName: this.props.templates && this.props.templates.length ? this.props.templates[0].FriendlyName : null,
+      RDNsubject: null,
     };
   }
 
   componentDidMount() {
-    const self = this;
-    const slider = document.getElementById("key-length-slider");
+    $(document).ready(() => {
+      $("select").material_select();
+    });
 
-    if (slider) {
-      if (slider.noUiSlider) {
-        slider.noUiSlider.destroy();
-      }
-
-      noUiSlider.create(slider, {
-        format: wNumb({
-          decimals: 0,
-        }),
-        range: {
-          "min": 512,
-          "25%": 1024,
-          "50%": 2048,
-          "75%": 3072,
-          "max": 4096,
-        },
-        snap: true,
-        start: 1024,
-      });
-
-      slider.noUiSlider.on("update", (values, handle) => {
-        self.setState({ keyLength: values[handle] });
-      });
-    }
+    $(ReactDOM.findDOMNode(this.refs.templateSelect)).on("change", this.handleTemplateChange);
   }
 
   componentDidUpdate() {
-    const self = this;
-    const slider = document.getElementById("key-length-slider");
+    $(document).ready(() => {
+      $("select").material_select();
+    });
 
-    if (slider && !slider.noUiSlider) {
-      noUiSlider.create(slider, {
-        format: wNumb({
-          decimals: 0,
-        }),
-        range: {
-          "min": 512,
-          "25%": 1024,
-          "50%": 2048,
-          "75%": 3072,
-          "max": 4096,
-        },
-        snap: true,
-        start: self.state.keyLength,
-      });
-
-      slider.noUiSlider.on("update", (values, handle) => {
-        self.setState({ keyLength: values[handle] });
-      });
-    }
+    $(ReactDOM.findDOMNode(this.refs.templateSelect)).on("change", this.handleTemplateChange);
   }
 
   componentWillUnmount() {
@@ -202,10 +141,10 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   render() {
     const { localize, locale } = this.context;
-    const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email,
-      exportableKey, extKeyUsage, inn, keyLength, keyUsage, keyUsageGroup, locality, ogrnip, organization,
-      organizationUnitName, province, selfSigned, snils, template, title, activeService, OpenButton } = this.state;
-    const { regrequests, services } = this.props;
+    const { activeSubjectNameInfoTab, algorithm, containerName, formVerified,
+      exportableKey, extKeyUsage, keyLength, keyUsage, keyUsageGroup,
+      template, templateName, activeService, OpenButton, RDNsubject } = this.state;
+    const { regrequests, services, templates } = this.props;
 
     const elements = services.map((service: any) => {
       const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
@@ -226,7 +165,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       disabled = " ";
     }
     if (OpenButton === true) {
-
       return (
         <React.Fragment>
           <div className="modal-body">
@@ -240,23 +178,11 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                   <div className="content-wrapper z-depth-1 tbody" style={{ height: "400px" }}>
                     <div className="content-item-relative">
                       <div className="row halfbottom" />
-                      <SubjectNameInfo
-                        template={template}
-                        cn={cn}
-                        email={email}
-                        organization={organization}
-                        organizationUnitName={organizationUnitName}
-                        locality={locality}
-                        formVerified={formVerified}
-                        province={province}
-                        country={country}
-                        inn={inn}
-                        ogrnip={ogrnip}
-                        snils={snils}
-                        title={title}
-                        handleCountryChange={this.handleCountryChange}
-                        handleTemplateChange={this.handleTemplateChange}
-                        handleInputChange={this.handleInputChange}
+
+                      <DynamicSubjectName
+                        model={RDNsubject}
+                        template={this.state.template}
+                        onSubjectChange={this.onSubjectChange}
                       />
                     </div>
                   </div>
@@ -307,7 +233,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       <div className="modal-body">
         <div className="row halftop">
           <div className="col s12">
-            <div className="content-wrapper tbody border_group" style={{ height: "450px" }}>
+            <div className="content-wrapper tbody border_group" style={activeService ? { height: "300px" } : { height: "450px" }}>
               <div className="row">
                 <div className="col s12">
                   <span className="card-infos sub">
@@ -323,6 +249,31 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
               </div>
             </div>
           </div>
+
+          {
+            activeService ?
+              <React.Fragment>
+                <div className="row" />
+                <div className="col s12">
+                  <div className="content-wrapper tbody border_group" style={{ height: "100px" }}>
+                    <div className="row">
+                      <div className="row" />
+                      <div className="input-field input-field-csr col s12">
+                        <select className="select" ref="templateSelect" defaultValue={templateName} onChange={this.handleTemplateChange} >
+                          {
+                            templates.map((template: any) => {
+                              return <option key={template.FriendlyName} value={template.FriendlyName}>{template.FriendlyName}</option>;
+                            })
+                          }
+                        </select>
+                        <label>{localize("CSR.template_label", locale)}</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ React.Fragment> :
+              null
+          }
 
           <div className="row halfbottom" />
 
@@ -342,6 +293,10 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     );
   }
 
+  onSubjectChange = (model: any) => {
+    this.setState({ RDNsubject: { ...model } });
+  }
+
   activeItemChose = (service: any) => {
     if (this.state.activeService && this.state.activeService === service.id) {
       this.setState({ activeService: null });
@@ -354,7 +309,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     this.setState({ OpenButton: true });
   }
 
-  verifyFields = () => {
+  /*verifyFields = () => {
     const { algorithm, cn, containerName, email, inn, locality, ogrnip, province, snils, template } = this.state;
     const REQULAR_EXPRESSION = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
@@ -399,7 +354,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     }
 
     return false;
-  }
+  }*/
 
   handleChangeActiveTab = (activeSubjectNameInfoTab: boolean) => {
     this.setState({ activeSubjectNameInfoTab });
@@ -407,8 +362,8 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   handelReady = () => {
     const { localize, locale } = this.context;
-    const { activeService, algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn,
-      keyUsage, locality, ogrnip, organization, organizationUnitName, province, snils, template, title } = this.state;
+    const { activeService, algorithm, containerName, exportableKey, extKeyUsage,
+      keyUsage, template, RDNsubject } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { addCertificateRequestCA, postCertRequest } = this.props;
     const { licenseStatus, lic_error, servicesMap, regrequests } = this.props;
@@ -438,16 +393,16 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       return;
     }
 
-    if (!this.verifyFields()) {
-      $(".toast-required_fields").remove();
-      Materialize.toast(localize("CSR.fill_required_fields", locale), 2000, "toast-required_fields");
+    // if (!this.verifyFields()) {
+    //   $(".toast-required_fields").remove();
+    //   Materialize.toast(localize("CSR.fill_required_fields", locale), 2000, "toast-required_fields");
 
-      if (!this.state.formVerified) {
-        this.setState({ formVerified: true });
-      }
+    //   if (!this.state.formVerified) {
+    //     this.setState({ formVerified: true });
+    //   }
 
-      return;
-    }
+    //   return;
+    // }
 
     if (exportableKey) {
       pkeyopt.push("exportable:true");
@@ -545,31 +500,9 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
     const certReq = new trusted.pki.CertificationRequest();
 
-    const atrs = [
-      { type: "C", value: country },
-      { type: "CN", value: cn },
-      { type: "E", value: email },
-      { type: "L", value: locality },
-      { type: "S", value: province },
-      { type: "O", value: organization },
-      { type: "OU", value: organizationUnitName },
-      { type: "T", value: title },
-    ];
+    const values = Object.keys(RDNsubject).map((key) => RDNsubject[key]);
 
-    if (template !== REQUEST_TEMPLATE_DEFAULT) {
-      atrs.push(
-        { type: "1.2.643.3.131.1.1", value: inn },
-        { type: "1.2.643.100.3", value: snils },
-      );
-    }
-
-    if (template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_ADDITIONAL) {
-      atrs.push(
-        { type: "1.2.643.100.5", value: ogrnip },
-      );
-    }
-
-    certReq.subject = atrs;
+    certReq.subject = values;
     certReq.version = 0;
     certReq.extensions = exts;
     certReq.pubKeyAlgorithm = algorithm;
@@ -580,7 +513,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       fs.mkdirSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"), { mode: 0o700 });
     }
 
-    const uri = path.join(DEFAULT_CSR_PATH, `requestCA_${cn}_${algorithm}_${formatDate(new Date())}.req`);
+    const uri = path.join(DEFAULT_CSR_PATH, `requestCA_${RDNsubject["2.5.4.3"] ? RDNsubject["2.5.4.3"].value : ""}_${algorithm}_${formatDate(new Date())}.req`);
     try {
       certReq.save(uri, trusted.DataFormat.PEM);
 
@@ -603,9 +536,9 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
       addCertificateRequestCA(certificateRequestCA);
 
-      const service = servicesMap.getIn(["entities"], activeService);
+      const service = servicesMap.get(activeService);
       const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
-      postCertRequest(`${service.settings.url}`, certificateRequestCA, atrs, regrequest, service.id);
+      postCertRequest(`${service.settings.url}`, certificateRequestCA, values, regrequest, service.id);
 
       Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     } catch (e) {
@@ -613,21 +546,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     }
 
     this.handelCancel();
-  }
-
-  handleImportCertificationRequest = (csr: trusted.pki.CertificationRequest, contName: string) => {
-    const { localize, locale } = this.context;
-    const OS_TYPE = os.type();
-
-    let providerType: string;
-
-    providerType = PROVIDER_CRYPTOPRO;
-
-    window.PKISTORE.importCertificationRequest(csr, providerType, contName, (err: Error) => {
-      if (err) {
-        Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
-      }
-    });
   }
 
   handleReloadCertificates = () => {
@@ -649,24 +567,15 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     }
   }
 
-  toggleSelfSigned = () => {
-    const { selfSigned } = this.state;
-
-    this.setState({
-      keyUsage: {
-        ...this.state.keyUsage,
-        keyCertSign: !selfSigned,
-      },
-      selfSigned: !selfSigned,
-    });
-  }
-
   toggleExportableKey = () => {
     this.setState({ exportableKey: !this.state.exportableKey });
   }
 
   handleTemplateChange = (ev: any) => {
-    this.setState({ template: ev.target.value });
+    const { templates } = this.props;
+    const name = ev.target.value;
+
+    this.setState({ templateName: name, template: templates.find((item: any) => item.FriendlyName === name) });
   }
 
   handleAlgorithmChange = (ev: any) => {
@@ -693,11 +602,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     }
 
     this.setState({ [name]: value });
-  }
-
-  handleCountryChange = (ev: any) => {
-    ev.preventDefault();
-    this.setState({ country: ev.target.value });
   }
 
   handleKeyUsageChange = (ev: any) => {
@@ -792,90 +696,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 }
 
-const oidsName = [
-  "C",
-  "CN",
-  "emailAddress",
-  "localityName",
-  "stateOrProvinceName",
-  "O",
-  "OU",
-  "title",
-  "snils",
-  "inn",
-  "ogrn",
-  "ogrnip",
-];
-
-const oidValues: { [index: string]: string } = {
-  CN: "CN",
-  SN: "SN",
-  serialNumber: "2.5.4.5",
-  // tslint:disable-next-line:object-literal-sort-keys
-  C: "C",
-  localityName: "L",
-  stateOrProvinceName: "ST",
-  streetAddress: "STREET",
-  O: "O",
-  OU: "OU",
-  title: "Title",
-  postalCode: "2.5.4.17",
-  GN: "GivenName",
-  initials: "Initials",
-  emailAddress: "Email",
-  snils: "1.2.643.100.3",
-  inn: "1.2.643.3.131.1.1",
-  ogrn: "1.2.643.100.1",
-  ogrnip: "1.2.643.100.5",
-};
-
-const getTemplateByCertificate = (certificate: any) => {
-  const template: {
-    [index: string]: string,
-    C: string,
-    CN: string,
-    emailAddress: string,
-    localityName: string,
-    stateOrProvinceName: string,
-    O: string,
-    OU: string,
-    title: string,
-    snils: string,
-    inn: string,
-    ogrn: string,
-    ogrnip: string,
-  } = {
-    C: "",
-    CN: "",
-    emailAddress: "",
-    localityName: "",
-    stateOrProvinceName: "",
-    // tslint:disable-next-line:object-literal-sort-keys
-    O: "",
-    OU: "",
-    title: "",
-    snils: "",
-    inn: "",
-    ogrn: "",
-    ogrnip: "",
-  };
-
-  if (certificate) {
-    const subjectName = certificate.subjectName + "/";
-
-    oidsName.map((oidName: string) => {
-      const oidValue = subjectName.match(`${oidValues[oidName]}=([^\/]*)/`);
-
-      if (oidValue) {
-        template[oidName] = oidValue[1];
-      }
-    });
-
-  }
-
-  return template;
-};
-
 export default connect((state) => {
   return {
     certificateLoading: state.certificates.loading,
@@ -885,6 +705,7 @@ export default connect((state) => {
     regrequests: state.regrequests.entities,
     services: mapToArr(state.services.entities),
     servicesMap: state.services.entities,
+    templates: state.templates.entities.toArray(),
   };
 }, {
   addCertificateRequestCA, getCertRequestStatus, loadAllCertificates, postCertRequest, removeAllCertificates,
