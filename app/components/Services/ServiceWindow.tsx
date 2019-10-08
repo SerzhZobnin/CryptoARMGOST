@@ -8,13 +8,22 @@ import { mapToArr } from "../../utils";
 import BlockNotElements from "../BlockNotElements";
 import BlockWithReference from "../BlockWithReference";
 import Modal from "../Modal";
+import CertificateRequestCA from "../Request/CertificateRequestCA";
 import AddService from "./AddService";
 import DeleteService from "./DeleteService";
 import ServiceInfo from "./ServiceInfo";
 import ServicesList from "./ServiceList";
 import { IService } from "./types";
 
-class ServiceWindow extends React.Component<any, any> {
+interface IServiceWindowState {
+  activeService: any;
+  service: any;
+  showModalAddService: boolean;
+  showModalCertificateRequestCA: boolean;
+  showModalDeleteService: boolean;
+}
+
+class ServiceWindow extends React.Component<any, IServiceWindowState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -27,6 +36,7 @@ class ServiceWindow extends React.Component<any, any> {
       activeService: undefined,
       service: null,
       showModalAddService: false,
+      showModalCertificateRequestCA: false,
       showModalDeleteService: false,
     };
   }
@@ -111,7 +121,7 @@ class ServiceWindow extends React.Component<any, any> {
                   <div className="col s12">
                     <hr />
                   </div>
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleShowModalCertificateRequestCA}>
                     <div className="col s12 svg_icon">
                       <a data-position="bottom">
                         <i className="material-icons ca new_request" />
@@ -136,6 +146,7 @@ class ServiceWindow extends React.Component<any, any> {
         </div>
         {this.showModalAddService()}
         {this.showModalDeleteService()}
+        {this.showModalCertificateRequestCA()}
       </div>
     );
   }
@@ -206,6 +217,14 @@ class ServiceWindow extends React.Component<any, any> {
     this.setState({ showModalDeleteService: false });
   }
 
+  handleShowModalCertificateRequestCA = () => {
+    this.setState({ showModalCertificateRequestCA: true });
+  }
+
+  handleCloseModalCertificateRequestCA = () => {
+    this.setState({ showModalCertificateRequestCA: false });
+  }
+
   handleOnCancelAddService = (service: IService) => {
     if (service) {
       this.setState({
@@ -255,6 +274,29 @@ class ServiceWindow extends React.Component<any, any> {
           deleteService={this.handleDeleteService}
           service={service}
           onCancel={this.handleCloseModalDeleteService} />
+      </Modal>
+    );
+  }
+
+  showModalCertificateRequestCA = () => {
+    const { localize, locale } = this.context;
+    const { showModalCertificateRequestCA } = this.state;
+
+    if (!showModalCertificateRequestCA) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalCertificateRequestCA}
+        header={localize("CSR.create_request", locale)}
+        onClose={() => this.handleCloseModalCertificateRequestCA()}>
+
+        <CertificateRequestCA
+          certificateTemplate={undefined}
+          onCancel={() => this.handleCloseModalCertificateRequestCA()}
+          selfSigned={false}
+        />
       </Modal>
     );
   }
