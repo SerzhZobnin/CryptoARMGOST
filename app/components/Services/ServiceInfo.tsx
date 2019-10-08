@@ -69,25 +69,30 @@ export default class ServiceInfo extends React.Component<IServiceInfoProps, ISer
 
         <div className="col s12">
           <div className="collection cert-info-list">
-            <div className="collection-item certs-collection certificate-info">
-              <div className="collection-info cert-info-blue">{localize("Services.login", locale)}</div>
-              <div className="collection-title selectable-text">{service.login}</div>
-            </div>
+            {
+              certificate ?
+                null :
+                <React.Fragment>
+                  <div className="collection-item certs-collection certificate-info">
+                    <div className="collection-info cert-info-blue">{localize("Services.login", locale)}</div>
+                    <div className="collection-title selectable-text">{service.login}</div>
+                  </div>
 
-            <div className="collection-item certs-collection certificate-info">
-              <div className="col s11" style={{ padding: 0 }}>
-                <div className="collection-info cert-info-blue">{localize("Services.password", locale)}</div>
-                <div className={`collection-title selectable-text ${passwordIsMasked ? "text-security" : ""}`}>{service.password}</div>
-              </div>
-              <div className="col s1">
-                <i className="file-setting-item waves-effect material-icons secondary-content"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    this.togglePasswordMask();
-                  }}>visibility</i>
-              </div>
-            </div>
-
+                  <div className="collection-item certs-collection certificate-info">
+                    <div className="col s11" style={{ padding: 0 }}>
+                      <div className="collection-info cert-info-blue">{localize("Services.password", locale)}</div>
+                      <div className={`collection-title selectable-text ${passwordIsMasked ? "text-security" : ""}`}>{service.password}</div>
+                    </div>
+                    <div className="col s1">
+                      <i className="file-setting-item waves-effect material-icons secondary-content"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          this.togglePasswordMask();
+                        }}>visibility</i>
+                    </div>
+                  </div>
+                </React.Fragment>
+            }
             {
               certificate ?
                 <div className="collection-item certs-collection certificate-info">
