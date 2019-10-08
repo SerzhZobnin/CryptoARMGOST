@@ -108,7 +108,7 @@ class DynamicSubjectName extends React.Component<IDynamicSubjectNameProps, IDyna
           RDN.map((field: IRDNObject) => {
             if (field.SettingsValues && field.SettingsValues.length) {
               return (
-                <div className="row" key={field.Oid}>
+                <div key={field.Oid} className="row" >
                   <div className="input-field input-field-csr col s12">
                     <select
                       disabled={field.ProhibitChange}
@@ -121,7 +121,7 @@ class DynamicSubjectName extends React.Component<IDynamicSubjectNameProps, IDyna
                     >
                       {
                         field.SettingsValues.map((settingsValue) =>
-                          <option value={settingsValue}>
+                          <option key={settingsValue} value={settingsValue}>
                             {settingsValue}
                           </option>)
                       }
@@ -136,7 +136,7 @@ class DynamicSubjectName extends React.Component<IDynamicSubjectNameProps, IDyna
 
               return (
                 <div className="row" key={field.Oid}>
-                  <div className="input-field input-field-csr col s12">
+                  <div key={field.Oid} className="input-field input-field-csr col s12">
                     <input
                       disabled={field.ProhibitChange}
                       id={field.Oid}

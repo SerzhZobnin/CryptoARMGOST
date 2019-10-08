@@ -165,7 +165,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
           RDN.map((field: IRDNObject) => {
             if (field.SettingsValues && field.SettingsValues.length) {
               return (
-                <div className="row">
+                <div key={field.Oid} className="row">
                   <div className="input-field input-field-csr col s12">
                     <select
                       disabled={field.ProhibitChange}
@@ -191,7 +191,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
               const oidValue = this.state.model[field.Oid];
 
               return (
-                <div className="row">
+                <div key={field.Oid} className="row">
                   <div className="input-field input-field-csr col s12">
                     <input
                       disabled={field.ProhibitChange}

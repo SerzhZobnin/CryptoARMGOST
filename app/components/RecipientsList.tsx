@@ -64,7 +64,7 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
               curKeyStyle = "";
             }
 
-            return <div className="row certificate-list-item" id={recipient.id}
+            return <div key={recipient.id} className="row certificate-list-item" id={recipient.id}
               onMouseOver={() => this.handleOnRowMouseOver(recipient)}>
               <div className="collection-item avatar certs-collection "
                 onClick={() => this.handleClick(recipient)}>
