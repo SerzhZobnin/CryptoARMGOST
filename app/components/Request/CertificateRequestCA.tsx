@@ -548,9 +548,9 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       let cmsContext = null;
       if (fileCoding(uri) === trusted.DataFormat.PEM) {
         cmsContext = fs.readFileSync(uri, "utf8");
-        cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE REQUEST-----\r\n", "");
-        cmsContext = cmsContext.replace("\r\n-----END CERTIFICATE REQUEST-----", "");
-        cmsContext = cmsContext.replace(/\r\n/g, "");
+        cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE REQUEST-----", "");
+        cmsContext = cmsContext.replace("-----END CERTIFICATE REQUEST-----", "");
+        cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
       } else {
         cmsContext = fs.readFileSync(uri, "base64");
       }
