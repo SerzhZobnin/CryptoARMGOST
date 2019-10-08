@@ -121,7 +121,7 @@ class ServiceWindow extends React.Component<any, IServiceWindowState> {
                   <div className="col s12">
                     <hr />
                   </div>
-                  <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleShowModalCertificateRequestCA}>
+                  <div className="col s6 waves-effect waves-cryptoarm" onClick={this.handleShowModalCertificateRequestCA}>
                     <div className="col s12 svg_icon">
                       <a data-position="bottom">
                         <i className="material-icons ca new_request" />
