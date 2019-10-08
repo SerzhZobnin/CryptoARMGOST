@@ -50,6 +50,13 @@
         "filter": [
           "**/*.pem"
         ]
+      },
+      {
+        "from": "app/resources/certreq_templates",
+        "to": "../certreq_templates",
+        "filter": [
+          "**/*.json"
+        ]
       }
     ],
     "copyright": "Copyright 2019 Сifrovye tekhnologii LLC",
