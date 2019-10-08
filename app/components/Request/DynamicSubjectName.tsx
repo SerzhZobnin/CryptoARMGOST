@@ -98,10 +98,6 @@ class DynamicSubjectName extends React.Component<IDynamicSubjectNameProps, IDyna
     Materialize.updateTextFields();
   }
 
-  componentDidUpdate() {
-    Materialize.updateTextFields();
-  }
-
   render() {
     const { RDN, subject } = this.state;
 

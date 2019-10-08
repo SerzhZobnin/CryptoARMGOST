@@ -134,8 +134,14 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
     this.geCAtuserattr();
   }
 
-  componentDidUpdate() {
-    Materialize.updateTextFields();
+  componentDidUpdate(prevProps: IDynamicRegistrationFormProps, prevState: IDynamicRegistrationFormState) {
+    if (prevState.isUserattrLoading && !this.state.isUserattrLoading) {
+      $(document).ready(() => {
+        $("select").material_select();
+      });
+
+      Materialize.updateTextFields();
+    }
   }
 
   render() {
