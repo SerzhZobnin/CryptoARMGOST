@@ -188,7 +188,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
                 </div>
               );
             } else {
-              const oidValue = this.state.model[field.Oid];
+              const oidValue = this.state.model[field.Oid] ? this.state.model[field.Oid] : "";
 
               return (
                 <div key={field.Oid} className="row">
