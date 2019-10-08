@@ -62,8 +62,8 @@
                     ],
                     "DefaultValue":"RU",
                     "ProhibitAnyValue":false,
-                    "ProhibitChange":false,
-                    "ProhibitEmpty":false
+                    "ProhibitChange":true,
+                    "ProhibitEmpty":true
                 },
                 {
                     "Oid":"1.2.840.113549.1.9.1",
