@@ -239,7 +239,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       <div className="modal-body">
         <div className="row halftop">
           <div className="col s12">
-            <div className="content-wrapper tbody border_group" style={activeService ? { height: "300px" } : { height: "450px" }}>
+            <div className="content-wrapper tbody border_group" style={activeService ? { height: "200px" } : { height: "450px" }}>
               <div className="row">
                 <div className="col s12">
                   <span className="card-infos sub">
@@ -261,7 +261,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
               <React.Fragment>
                 <div className="row" />
                 <div className="col s12">
-                  <div className="content-wrapper tbody border_group" style={{ height: "100px" }}>
+                  <div className="content-wrapper tbody border_group" style={{ height: "200px" }}>
                     <div className="row">
                       <div className="row" />
                       <div className="input-field input-field-csr col s12">
