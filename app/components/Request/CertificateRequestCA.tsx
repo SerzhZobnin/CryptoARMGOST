@@ -115,7 +115,12 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       selfSigned: false,
       template: this.props.templates && this.props.templates.length ? this.props.templates[0] : null,
       templateName: this.props.templates && this.props.templates.length ? this.props.templates[0].FriendlyName : null,
-      RDNsubject: null,
+      RDNsubject: {
+        "2.5.4.6": {
+          type: "2.5.4.6",
+          value: "RU",
+        },
+      },
     };
   }
 
@@ -164,6 +169,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     if (activeService) {
       disabled = " ";
     }
+
     if (OpenButton === true) {
       return (
         <React.Fragment>
@@ -298,10 +304,32 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   activeItemChose = (service: any) => {
+    const { regrequests } = this.props;
+
     if (this.state.activeService && this.state.activeService === service.id) {
       this.setState({ activeService: null });
     } else {
       this.setState({ activeService: service.id });
+
+      const request = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
+      if (request && request.RDN) {
+        let newSubject = {
+          ...this.state.RDNsubject,
+        };
+
+        Object.keys(request.RDN).map((key) => {
+          const value = request.RDN[key];
+
+          if (value) {
+            newSubject = {
+              ...newSubject,
+              [key]: { type: key, value },
+            };
+          }
+        });
+
+        this.setState({ RDNsubject: { ...newSubject } });
+      }
     }
   }
 

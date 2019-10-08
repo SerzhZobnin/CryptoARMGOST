@@ -118,6 +118,7 @@ class DynamicSubjectName extends React.Component<IDynamicSubjectNameProps, IDyna
                       disabled={field.ProhibitChange}
                       id={field.Oid}
                       className="select"
+                      defaultValue={subject[field.Oid] ? subject[field.Oid].value : ""}
                       name={field.Oid}
                       value={subject[field.Oid] ? subject[field.Oid].value : ""}
                       onChange={this.handleInputChange}
