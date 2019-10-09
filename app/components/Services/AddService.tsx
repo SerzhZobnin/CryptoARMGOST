@@ -51,8 +51,8 @@ interface IAddServiceProps {
   addService: (service: IService) => void;
   mapServices: Map<any, any>;
   onCancel: (service?: IService) => void;
-  getRegRequest: (url: string, login: string, password: string, id: string) => void;
-  postRegRequest: (url: string, comment: string, description: string, email: string, keyPhrase: string, oids: any, serviceId: string) => void;
+  getRegRequest: (url: string, login: string, password: string, service: IService) => void;
+  postRegRequest: (url: string, comment: string, description: string, email: string, keyPhrase: string, oids: any, service: IService) => void;
 }
 
 class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
@@ -296,12 +296,12 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
         this.handelCancel();
       }
 
-      addService(service);
-      postRegRequest(`${serviceSettings.url}`, comment, description, email, keyPhrase, RDNmodel, id);
+      postRegRequest(`${serviceSettings.url}`, comment, description, email, keyPhrase, RDNmodel, service);
       onCancel(service);
     } else {
-      addService(service);
-      getRegRequest(`${serviceSettings.url}`, login, password, id);
+      Materialize.toast("Отправлен запрос на проверку статуса регистрации в УЦ", 3000, "toast-ca_get_req_send");
+
+      getRegRequest(`${serviceSettings.url}`, login, password, service);
       onCancel(service);
     }
   }

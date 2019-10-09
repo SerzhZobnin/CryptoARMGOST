@@ -4,7 +4,7 @@ import { OrderedMap, Record } from "immutable";
 import { mapToArr } from "../../app/utils";
 import {
   ADD_SERVICE, CHANGE_SERVICE_NAME, CHANGE_SERVICE_SETTINGS,
-  DELETE_SERVICE, SERVICES_JSON,
+  DELETE_SERVICE, GET_CA_REGREQUEST, POST_CA_REGREQUEST, SERVICES_JSON, SUCCESS,
 } from "../constants";
 
 export const ServiceModel = Record({
@@ -26,6 +26,8 @@ export default (services = new DefaultReducerState(), action) => {
   const { type, payload } = action;
 
   switch (type) {
+    case POST_CA_REGREQUEST + SUCCESS:
+    case GET_CA_REGREQUEST + SUCCESS:
     case ADD_SERVICE:
       services = services.setIn(["entities", payload.service.id], new ServiceModel(payload.service));
       if (payload.settings) {

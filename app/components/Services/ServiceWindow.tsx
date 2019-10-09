@@ -45,6 +45,12 @@ class ServiceWindow extends React.Component<any, IServiceWindowState> {
     $(".btn-floated").dropdown();
   }
 
+  componentDidUpdate(prevProps: any) {
+    if (prevProps.servicesMap.size < this.props.servicesMap.size) {
+      Materialize.toast("Добавлен новый сервис УЦ", 3000, "toast-ca_req_new");
+    }
+  }
+
   render() {
     const { localize, locale } = this.context;
     const { isDefaultFilters, searchValue } = this.props;
@@ -303,5 +309,6 @@ export default connect((state) => {
     regrequests: state.regrequests.entities,
     searchValue: state.filters.searchValue,
     services: filteredServicesSelector(state),
+    servicesMap: state.services.entities,
   };
 }, { changeSearchValue, deleteService })(ServiceWindow);
