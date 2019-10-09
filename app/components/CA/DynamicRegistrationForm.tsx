@@ -48,6 +48,7 @@ interface IDynamicRegistrationFormProps {
   caURL: string;
   onCancel?: () => void;
   onRDNmodelChange: (model: any) => void;
+  toggleDisableSecondStep: () => void;
 }
 
 interface IDynamicRegistrationFormState {
@@ -235,6 +236,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
     const { caURL } = this.props;
 
     this.setState({ isUserattrLoading: true });
+    this.props.toggleDisableSecondStep();
     let data: any;
 
     try {
@@ -249,6 +251,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
     this.props.onRDNmodelChange(model);
 
     this.setState({ isUserattrLoading: false, isUserattrLoaded: true, RDN: data.RDN, model: { ...model } });
+    this.props.toggleDisableSecondStep();
   }
 
   handelCancel = () => {
