@@ -290,6 +290,7 @@ class ServiceWindow extends React.Component<any, IServiceWindowState> {
           certificateTemplate={undefined}
           onCancel={() => this.handleCloseModalCertificateRequestCA()}
           selfSigned={false}
+          service={this.state.service}
         />
       </Modal>
     );

@@ -63,6 +63,7 @@ interface ICertificateRequestCAState {
 
 interface ICertificateRequestCAProps {
   regrequests: Map<any, any>;
+  service?: any;
   servicesMap: Map<any, any>;
   certificateTemplate: any;
   onCancel?: () => void;
@@ -86,7 +87,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     super(props);
 
     this.state = {
-      activeService: "",
+      activeService: props.service ? props.service.id : "",
       OpenButton: false,
       activeSubjectNameInfoTab: true,
       algorithm: ALG_GOST12_256,
@@ -238,30 +239,34 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     return (
       <div className="modal-body">
         <div className="row halftop">
-          <div className="col s12">
-            <div className="content-wrapper tbody border_group" style={activeService ? { height: "200px" } : { height: "450px" }}>
-              <div className="row">
-                <div className="col s12">
-                  <span className="card-infos sub">
-                    Доступные подключения к сервисам Удостоверяющих Центров
-                </span>
-                  <div className="col-12">
-                    <div className="row halfbottom" />
-                    <div className="collection">
-                      {elements}
+          {
+            this.props.service ?
+              null :
+              <div className="col s12">
+                <div className="content-wrapper tbody border_group" style={activeService ? { height: "200px" } : { height: "450px" }}>
+                  <div className="row">
+                    <div className="col s12">
+                      <span className="card-infos sub">
+                        Доступные подключения к сервисам Удостоверяющих Центров
+                      </span>
+                      <div className="col-12">
+                        <div className="row halfbottom" />
+                        <div className="collection">
+                          {elements}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <div className="row" />
               </div>
-            </div>
-          </div>
+          }
 
           {
             activeService ?
               <React.Fragment>
-                <div className="row" />
                 <div className="col s12">
-                  <div className="content-wrapper tbody border_group" style={{ height: "200px" }}>
+                  <div className="content-wrapper tbody border_group" style={this.props.service ? { height: "420px" } : { height: "200px" }}>
                     <div className="row">
                       <div className="row" />
                       <div className="input-field input-field-csr col s12">
