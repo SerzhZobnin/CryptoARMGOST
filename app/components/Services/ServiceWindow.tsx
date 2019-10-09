@@ -63,7 +63,7 @@ class ServiceWindow extends React.Component<any, IServiceWindowState> {
                   <i className="file-setting-item waves-effect material-icons secondary-content pulse">add</i>
                 </a>
               </div>
-              <div className="col" style={{ width: "calc(100% - 140px)" }}>
+              <div className="col" style={{ width: "calc(100% - 60px)" }}>
                 <div className="input-field input-field-csr col s12 border_element find_box">
                   <i className="material-icons prefix">search</i>
                   <input
@@ -74,18 +74,6 @@ class ServiceWindow extends React.Component<any, IServiceWindowState> {
                     onChange={this.handleSearchValueChange} />
                   <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
                 </div>
-              </div>
-              <div className="col" style={{ width: "40px" }}>
-                <a>
-                  <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
-                </a>
-              </div>
-              <div className="col" style={{ width: "40px" }}>
-                <a>
-                  <i className={`file-setting-item waves-effect material-icons secondary-content`}>
-                    <i className={`material-icons ${classDefaultFilters}`} />
-                  </i>
-                </a>
               </div>
             </div>
             <div className={"collection"}>
