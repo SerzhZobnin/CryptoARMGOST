@@ -2,7 +2,7 @@
   "author": "Сifrovye tekhnologii LLC",
   "description": "CryptoARM GOST",
   "name": "cryptoarm-gost",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "./main.js",
   "license": "Apache-2.0",
   "dependencies": {
