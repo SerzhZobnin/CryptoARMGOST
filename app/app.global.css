@@ -3263,6 +3263,10 @@ svg:hover {
     background: url(./resources/image/ca/new_request_to_ca.svg);
   }
 
+  i.material-icons.ca.export_request {
+    background: url(./resources/image/ca/export_request.svg);
+  }
+
   i.material-icons.settings {
     background-size: 36px 36px !important;
     width: 36px;

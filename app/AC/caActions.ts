@@ -1,8 +1,8 @@
 import { ICertificateRequestCA, IRegRequest } from "../components/Services/types";
 import {
-  FAIL, GET_CA_CERTREQUEST,
-  GET_CA_CERTREQUEST_STATUS, GET_CA_REGREQUEST, HOME_DIR, POST_CA_CERTREQUEST,
-  POST_CA_CERTREQUEST_СONFIRMATION, POST_CA_REGREQUEST, START, SUCCESS, GET_CA_CERTTEMPLATE,
+  DELETE_CERTIFICATE_REQUEST_CA, FAIL, GET_CA_CERTREQUEST,
+  GET_CA_CERTREQUEST_STATUS, GET_CA_REGREQUEST, HOME_DIR,
+  POST_CA_CERTREQUEST, POST_CA_CERTREQUEST_СONFIRMATION, POST_CA_REGREQUEST, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -386,5 +386,14 @@ export function getCertRequest(url: string, certRequest: ICertificateRequestCA, 
         });
       }
     }, 0);
+  };
+}
+
+export function deleteRequestCA(id: string) {
+  return {
+    payload: {
+      id,
+    },
+    type: DELETE_CERTIFICATE_REQUEST_CA,
   };
 }

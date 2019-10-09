@@ -121,7 +121,7 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
 
     return certrequest.subject.map((field: any) => {
       return (
-        <div className="collection-item certs-collection certificate-info">
+        <div key={field.type} className="collection-item certs-collection certificate-info">
           <div className={"collection-info cert-info-blue"}>{field.type}</div>
           <div className={"collection-title selectable-text"}>{field.value ? field.value : "-"}</div>
         </div>
