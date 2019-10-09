@@ -87,7 +87,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     super(props);
 
     this.state = {
-      activeService: props.service ? props.service.id : "",
+      activeService: "",
       OpenButton: false,
       activeSubjectNameInfoTab: true,
       algorithm: ALG_GOST12_256,
@@ -126,6 +126,12 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   componentDidMount() {
+    const {service} = this.props;
+
+    if (service) {
+      this.activeItemChose(service);
+    }
+
     $(document).ready(() => {
       $("select").material_select();
     });
