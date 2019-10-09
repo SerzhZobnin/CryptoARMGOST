@@ -114,15 +114,17 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
 
   getRequestInfo = () => {
     const { certrequest } = this.props;
+    const { localize, locale } = this.context;
 
     if (!certrequest || !certrequest.subject || !certrequest.subject.length) {
       return null;
     }
 
     return certrequest.subject.map((field: any) => {
+      const type = localize(`OIDs.${field.type}`, locale);
       return (
         <div key={field.type} className="collection-item certs-collection certificate-info">
-          <div className={"collection-info cert-info-blue"}>{field.type}</div>
+          <div className={"collection-info cert-info-blue"}>{type ? type : field.type}</div>
           <div className={"collection-title selectable-text"}>{field.value ? field.value : "-"}</div>
         </div>
       );
