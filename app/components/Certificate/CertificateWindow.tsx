@@ -5,7 +5,7 @@ import React from "react";
 import Media from "react-media";
 import { connect } from "react-redux";
 import { loadAllCertificates, loadAllContainers, removeAllCertificates, removeAllContainers } from "../../AC";
-import { deleteRequestCA, getCertRequestStatus } from "../../AC/caActions";
+import { deleteRequestCA } from "../../AC/caActions";
 import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
 import {
@@ -1348,5 +1348,4 @@ export default connect((state) => {
 }, {
   changeSearchValue, deleteRequestCA, loadAllCertificates, loadAllContainers,
   removeAllCertificates, removeAllContainers, resetCloudCSP,
-  getCertRequestStatus,
 })(CertWindow);
