@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { addCertificateRequestCA, loadAllCertificates, removeAllCertificates } from "../../AC";
-import { getCertRequestStatus, postCertRequest } from "../../AC/caActions";
+import { postCertRequest, postCertRequestAuthCert } from "../../AC/caActions";
 import {
   ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, DEFAULT_CSR_PATH, HOME_DIR,
   KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
@@ -83,6 +83,7 @@ interface ICertificateRequestCAProps {
   removeAllCertificates: () => void;
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
   postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) => void;
+  postCertRequestAuthCert: (url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) => void;
   getCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
 }
 
@@ -410,11 +411,10 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const { activeService, algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, snils, template, title } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
-    const { addCertificateRequestCA, postCertRequest } = this.props;
+    const { addCertificateRequestCA, postCertRequest, postCertRequestAuthCert } = this.props;
     const { licenseStatus, lic_error, servicesMap, regrequests } = this.props;
 
     const exts = new trusted.pki.ExtensionCollection();
-    const pkeyopt: string[] = [];
     let keyUsageStr = "critical";
     let extendedKeyUsageStr = "";
     let oid;
@@ -447,10 +447,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       }
 
       return;
-    }
-
-    if (exportableKey) {
-      pkeyopt.push("exportable:true");
     }
 
     if (keyUsage.cRLSign) {
@@ -527,24 +523,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     ext = new trusted.pki.Extension(oid, "1.2.643.2.2.46.0.8");
     exts.push(ext);
 
-    try {
-      switch (algorithm) {
-        case ALG_GOST2001:
-        case ALG_GOST12_256:
-        case ALG_GOST12_512:
-          pkeyopt.push(`container:${containerName}`);
-          break;
-        default:
-          return;
-      }
-    } catch (e) {
-      $(".toast-key_generation_error").remove();
-      Materialize.toast(localize("CSR.key_generation_error", locale), 3000, "toast-key_generation_error");
-      return;
-    }
-
     const certReq = new trusted.pki.CertificationRequest();
-
     const atrs = [
       { type: "C", value: country },
       { type: "CN", value: cn },
@@ -573,8 +552,17 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     certReq.version = 0;
     certReq.extensions = exts;
     certReq.pubKeyAlgorithm = algorithm;
-    certReq.containerName = containerName;
     certReq.exportableFlag = exportableKey;
+
+    const service = servicesMap.get(activeService);
+    const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
+    if (!regrequest.certThumbprint) {
+      certReq.newKeysetFlag = true;
+      certReq.containerName = containerName;
+    } else {
+      // certReq.newKeysetFlag = false;
+      // certReq.containerName = "zxc123";
+    }
 
     if (!fs.existsSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"))) {
       fs.mkdirSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"), { mode: 0o700 });
@@ -603,9 +591,11 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
       addCertificateRequestCA(certificateRequestCA);
 
-      const service = servicesMap.getIn(["entities"], activeService);
-      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
-      postCertRequest(`${service.settings.url}`, certificateRequestCA, atrs, regrequest, service.id);
+      if (!regrequest.certThumbprint) {
+        postCertRequest(`${service.settings.url}`, certificateRequestCA, atrs, regrequest, service.id);
+      } else {
+        postCertRequestAuthCert(`${service.settings.url}`, certificateRequestCA, atrs, regrequest, service.id);
+      }
 
       Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     } catch (e) {
@@ -887,5 +877,5 @@ export default connect((state) => {
     servicesMap: state.services.entities,
   };
 }, {
-  addCertificateRequestCA, getCertRequestStatus, loadAllCertificates, postCertRequest, removeAllCertificates,
+  addCertificateRequestCA, loadAllCertificates, postCertRequest, postCertRequestAuthCert, removeAllCertificates,
 })(CertificateRequestCA);
