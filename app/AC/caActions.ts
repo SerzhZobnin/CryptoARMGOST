@@ -1,8 +1,8 @@
 import { ICertificateRequestCA, IRegRequest } from "../components/Services/types";
 import {
-  FAIL, GET_CA_CERTREQUEST,
-  GET_CA_CERTREQUEST_STATUS, GET_CA_REGREQUEST, HOME_DIR, POST_CA_CERTREQUEST,
-  POST_CA_CERTREQUEST_СONFIRMATION, POST_CA_REGREQUEST, START, SUCCESS, GET_CA_CERTTEMPLATE,
+  DELETE_CERTIFICATE_REQUEST_CA, FAIL, GET_CA_CERTREQUEST,
+  GET_CA_CERTREQUEST_STATUS, GET_CA_REGREQUEST, HOME_DIR,
+  POST_CA_CERTREQUEST, POST_CA_CERTREQUEST_СONFIRMATION, POST_CA_REGREQUEST, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -52,7 +52,7 @@ export async function getApi(url: string, headerfields: string[]) {
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
       let data;
 
       try {
@@ -119,7 +119,7 @@ export async function getCertApi(url: string, headerfields: string[]) {
   });
 }
 
-export function postRegRequest(url: string, comment: string, description: string, email: string, keyPhrase: string, oids: any, serviceId: string) {
+export function postRegRequest(url: string, comment: string, description: string, email: string, keyPhrase: string, oids: any[], service: any) {
   return (dispatch) => {
     dispatch({
       type: POST_CA_REGREQUEST + START,
@@ -130,21 +130,22 @@ export function postRegRequest(url: string, comment: string, description: string
       let data2: any;
 
       try {
-        const OidArray = Object.keys(oids).map(function (key) {
-          return { [key]: oids[key] };
-        });
+        Materialize.toast("Отправлен запрос на регистрацию в УЦ", 3000, "toast-ca_req_send");
 
         data = await postApi(`${url}/regrequest`, JSON.stringify({
           Comment: comment,
           Description: description,
           Email: email,
           KeyPhrase: keyPhrase,
-          OidArray,
+          OidArray: oids,
         }),
           [
             "Content-Type: application/json",
             "Accept: application/json",
           ]);
+
+        $(".toast-ca_req_send").remove();
+        Materialize.toast("Пользователь зарегестирован в УЦ", 3000, "toast-ca_req_ok");
 
         data2 = await getApi(
           `${url}/certtemplate`,
@@ -163,12 +164,15 @@ export function postRegRequest(url: string, comment: string, description: string
             RDN: oids,
             id: data.RegRequest.RegRequestId,
             regRequest: data.RegRequest,
-            serviceId,
+            service,
             template: data2.Template,
           },
           type: POST_CA_REGREQUEST + SUCCESS,
         });
       } catch (e) {
+        $(".toast-ca_req_send").remove();
+
+        Materialize.toast("Ошибка регистрации в УЦ", 3000, "toast-ca_req_fail");
         Materialize.toast(e, 4000, "toast-ca_error");
 
         dispatch({
@@ -179,7 +183,7 @@ export function postRegRequest(url: string, comment: string, description: string
   };
 }
 
-export function getRegRequest(url: string, Token: string, Password: string, serviceId: string) {
+export function getRegRequest(url: string, Token: string, Password: string, service: any) {
   return (dispatch) => {
     dispatch({
       type: GET_CA_REGREQUEST + START,
@@ -211,6 +215,8 @@ export function getRegRequest(url: string, Token: string, Password: string, serv
         const profile = data.Profile.reduce((obj, item) => ({ ...obj, ...item }), {});
         const regRequestId = uuid();
 
+        $(".toast-ca_get_req_send").remove();
+
         dispatch({
           payload: {
             RDN: profile,
@@ -221,11 +227,13 @@ export function getRegRequest(url: string, Token: string, Password: string, serv
               Status: statusRegRequest,
               Token,
             },
-            serviceId,
+            service,
           },
           type: GET_CA_REGREQUEST + SUCCESS,
         });
       } catch (e) {
+        $(".toast-ca_get_req_send").remove();
+
         Materialize.toast(e, 4000, "toast-ca_error");
 
         dispatch({
@@ -386,5 +394,14 @@ export function getCertRequest(url: string, certRequest: ICertificateRequestCA, 
         });
       }
     }, 0);
+  };
+}
+
+export function deleteRequestCA(id: string) {
+  return {
+    payload: {
+      id,
+    },
+    type: DELETE_CERTIFICATE_REQUEST_CA,
   };
 }

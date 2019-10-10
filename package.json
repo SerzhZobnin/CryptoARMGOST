@@ -4,7 +4,7 @@
   },
   "description": "CryptoARM GOST",
   "name": "cryptoarm-gost",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "Apache-2.0",
   "main": "main.js",
   "scripts": {
@@ -49,6 +49,13 @@
         "to": "../ssl",
         "filter": [
           "**/*.pem"
+        ]
+      },
+      {
+        "from": "app/resources/certreq_templates",
+        "to": "../certreq_templates",
+        "filter": [
+          "**/*.json"
         ]
       }
     ],

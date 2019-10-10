@@ -13,7 +13,7 @@ import Modal from "../Modal";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 import SignatureAndEncryptRightColumn from "./SignatureAndEncryptRightColumn";
 import {
-TRUSTED_CRYPTO_LOG,
+  TRUSTED_CRYPTO_LOG,
 } from "../../constants";
 const dialog = window.electron.remote.dialog;
 
@@ -62,7 +62,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
   componentWillReceiveProps(nextProps: ISignatureAndEncryptWindowProps) {
     const { localize, locale } = this.context;
     const { activeFilesArr, signatures } = this.props;
-    
+
     if (activeFilesArr.length !== nextProps.activeFilesArr.length || signatures.length !== nextProps.signatures.length) {
       if (nextProps.activeFilesArr && nextProps.activeFilesArr.length === 1) {
         if (nextProps.signatures && nextProps.signatures.length) {
@@ -80,20 +80,15 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
         }
       }
     }
-    const remote = window.electron.remote;
-    
+
     if (!activeFilesArr || !activeFilesArr.length || !nextProps.activeFilesArr || !nextProps.activeFilesArr.length || nextProps.activeFilesArr.length > 1 || activeFilesArr[0].id !== nextProps.activeFilesArr[0].id) {
       this.setState({ showSignatureInfo: false, signerCertificate: null });
     }
-    
-    if (remote.getGlobal("sharedObject").logcrypto) {
-      window.logger = trusted.common.Logger.start(TRUSTED_CRYPTO_LOG);
-    }
+
     if (!this.props.signedPackage && nextProps.signedPackage) {
       if (nextProps.packageSignResult) {
         $(".toast-files_signed").remove();
         Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
-        remote.getCurrentWindow().minimize();
       } else {
         $(".toast-files_signed_failed").remove();
         Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
@@ -133,7 +128,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
               </div>
               <div className="col" style={{ width: "40px" }}>
                 <a onClick={this.handleShowModalFilterDocuments}>
-                <i className={`file-setting-item waves-effect material-icons secondary-content`}>
+                  <i className={`file-setting-item waves-effect material-icons secondary-content`}>
                     <i className={`material-icons ${classDefaultFilters}`} />
                   </i>
                 </a>

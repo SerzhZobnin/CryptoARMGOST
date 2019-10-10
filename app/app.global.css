@@ -1239,7 +1239,7 @@ i.material-icons.left.connect {
 }
 
 i.material-icons.left.ca {
-  background: url(./resources/image/CA/service_ca.svg);
+  background: url(./resources/image/ca/service_ca.svg);
   width: 24px;
   height: 24px;
   background-size: 100% !important;
@@ -3261,6 +3261,10 @@ svg:hover {
 
   i.material-icons.ca.new_request {
     background: url(./resources/image/ca/new_request_to_ca.svg);
+  }
+
+  i.material-icons.ca.export_request {
+    background: url(./resources/image/ca/export_request.svg);
   }
 
   i.material-icons.settings {

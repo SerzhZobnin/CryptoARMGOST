@@ -120,6 +120,7 @@ class ServiceList extends React.Component<IServiceListProps, any> {
                                   chooseCert={() => activeService(service)}
                                   isOpen={isItemOpened(service.id.toString())}
                                   toggleOpen={toggleOpenItem(service.id.toString())}
+                                  regRequest={regrequest}
                                   service={service} />
                             }
                           </Media>

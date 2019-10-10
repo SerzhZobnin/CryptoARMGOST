@@ -8,13 +8,22 @@ import { mapToArr } from "../../utils";
 import BlockNotElements from "../BlockNotElements";
 import BlockWithReference from "../BlockWithReference";
 import Modal from "../Modal";
+import CertificateRequestCA from "../Request/CertificateRequestCA";
 import AddService from "./AddService";
 import DeleteService from "./DeleteService";
 import ServiceInfo from "./ServiceInfo";
 import ServicesList from "./ServiceList";
 import { IService } from "./types";
 
-class ServiceWindow extends React.Component<any, any> {
+interface IServiceWindowState {
+  activeService: any;
+  service: any;
+  showModalAddService: boolean;
+  showModalCertificateRequestCA: boolean;
+  showModalDeleteService: boolean;
+}
+
+class ServiceWindow extends React.Component<any, IServiceWindowState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -27,12 +36,19 @@ class ServiceWindow extends React.Component<any, any> {
       activeService: undefined,
       service: null,
       showModalAddService: false,
+      showModalCertificateRequestCA: false,
       showModalDeleteService: false,
     };
   }
 
   componentDidMount() {
     $(".btn-floated").dropdown();
+  }
+
+  componentDidUpdate(prevProps: any) {
+    if (prevProps.servicesMap.size < this.props.servicesMap.size) {
+      Materialize.toast("Добавлен новый сервис УЦ", 3000, "toast-ca_req_new");
+    }
   }
 
   render() {
@@ -53,7 +69,7 @@ class ServiceWindow extends React.Component<any, any> {
                   <i className="file-setting-item waves-effect material-icons secondary-content pulse">add</i>
                 </a>
               </div>
-              <div className="col" style={{ width: "calc(100% - 140px)" }}>
+              <div className="col" style={{ width: "calc(100% - 60px)" }}>
                 <div className="input-field input-field-csr col s12 border_element find_box">
                   <i className="material-icons prefix">search</i>
                   <input
@@ -64,18 +80,6 @@ class ServiceWindow extends React.Component<any, any> {
                     onChange={this.handleSearchValueChange} />
                   <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
                 </div>
-              </div>
-              <div className="col" style={{ width: "40px" }}>
-                <a>
-                  <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
-                </a>
-              </div>
-              <div className="col" style={{ width: "40px" }}>
-                <a>
-                  <i className={`file-setting-item waves-effect material-icons secondary-content`}>
-                    <i className={`material-icons ${classDefaultFilters}`} />
-                  </i>
-                </a>
               </div>
             </div>
             <div className={"collection"}>
@@ -111,7 +115,7 @@ class ServiceWindow extends React.Component<any, any> {
                   <div className="col s12">
                     <hr />
                   </div>
-                  <div className="col s4 waves-effect waves-cryptoarm">
+                  <div className="col s6 waves-effect waves-cryptoarm" onClick={this.handleShowModalCertificateRequestCA}>
                     <div className="col s12 svg_icon">
                       <a data-position="bottom">
                         <i className="material-icons ca new_request" />
@@ -136,6 +140,7 @@ class ServiceWindow extends React.Component<any, any> {
         </div>
         {this.showModalAddService()}
         {this.showModalDeleteService()}
+        {this.showModalCertificateRequestCA()}
       </div>
     );
   }
@@ -206,6 +211,14 @@ class ServiceWindow extends React.Component<any, any> {
     this.setState({ showModalDeleteService: false });
   }
 
+  handleShowModalCertificateRequestCA = () => {
+    this.setState({ showModalCertificateRequestCA: true });
+  }
+
+  handleCloseModalCertificateRequestCA = () => {
+    this.setState({ showModalCertificateRequestCA: false });
+  }
+
   handleOnCancelAddService = (service: IService) => {
     if (service) {
       this.setState({
@@ -259,6 +272,30 @@ class ServiceWindow extends React.Component<any, any> {
     );
   }
 
+  showModalCertificateRequestCA = () => {
+    const { localize, locale } = this.context;
+    const { showModalCertificateRequestCA } = this.state;
+
+    if (!showModalCertificateRequestCA) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalCertificateRequestCA}
+        header={localize("CSR.create_request", locale)}
+        onClose={() => this.handleCloseModalCertificateRequestCA()}>
+
+        <CertificateRequestCA
+          certificateTemplate={undefined}
+          onCancel={() => this.handleCloseModalCertificateRequestCA()}
+          selfSigned={false}
+          service={this.state.service}
+        />
+      </Modal>
+    );
+  }
+
   handleDeleteService = (serviceId: string) => {
     this.setState({ service: null });
     this.props.deleteService(serviceId);
@@ -273,5 +310,6 @@ export default connect((state) => {
     regrequests: state.regrequests.entities,
     searchValue: state.filters.searchValue,
     services: filteredServicesSelector(state),
+    servicesMap: state.services.entities,
   };
 }, { changeSearchValue, deleteService })(ServiceWindow);

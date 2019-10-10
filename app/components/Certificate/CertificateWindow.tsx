@@ -5,7 +5,7 @@ import React from "react";
 import Media from "react-media";
 import { connect } from "react-redux";
 import { loadAllCertificates, loadAllContainers, removeAllCertificates, removeAllContainers } from "../../AC";
-import { getCertRequestStatus } from "../../AC/caActions";
+import { deleteRequestCA, getCertRequestStatus } from "../../AC/caActions";
 import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
 import {
@@ -28,6 +28,8 @@ import PasswordDialog from "../PasswordDialog";
 import ProgressBars from "../ProgressBars";
 import CertificateRequest from "../Request/CertificateRequest";
 import CertificateRequestCA from "../Request/CertificateRequestCA";
+import RequestCADelete from "../Request/RequestCADelete";
+import RequestCAExport from "../Request/RequestCAExport";
 import RequestCAInfo from "../Request/RequestCAInfo";
 import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateDelete from "./CertificateDelete";
@@ -42,6 +44,8 @@ const MODAL_DELETE_CERTIFICATE = "MODAL_DELETE_CERTIFICATE";
 const MODAL_EXPORT_CERTIFICATE = "MODAL_EXPORT_CERTIFICATE";
 const MODAL_EXPORT_CRL = "MODAL_EXPORT_CRL";
 const MODAL_DELETE_CRL = "MODAL_DELETE_CRL";
+const MODAL_EXPORT_REQUEST_CA = "MODAL_EXPORT_REQUEST_CA";
+const MODAL_DELETE_REQUEST_CA = "MODAL_DELETE_REQUEST_CA";
 const MODAL_CERTIFICATE_REQUEST = "MODAL_CERTIFICATE_REQUEST";
 const MODAL_CERTIFICATE_REQUEST_CA = "MODAL_CERTIFICATE_REQUEST_CA";
 const MODAL_CLOUD_CSP = "MODAL_CLOUD_CSP";
@@ -69,8 +73,10 @@ class CertWindow extends React.Component<any, any> {
       showModalCloudCSP: false,
       showModalDeleteCRL: false,
       showModalDeleteCertifiacte: false,
+      showModalDeleteRequestCA: false,
       showModalExportCRL: false,
       showModalExportCertifiacte: false,
+      showModalExportRequestCA: false,
     });
   }
 
@@ -91,6 +97,12 @@ class CertWindow extends React.Component<any, any> {
         break;
       case MODAL_DELETE_CRL:
         this.setState({ showModalDeleteCRL: true });
+        break;
+      case MODAL_EXPORT_REQUEST_CA:
+        this.setState({ showModalExportRequestCA: true });
+        break;
+      case MODAL_DELETE_REQUEST_CA:
+        this.setState({ showModalDeleteRequestCA: true });
         break;
       case MODAL_CERTIFICATE_REQUEST:
         this.setState({ showModalCertificateRequest: true });
@@ -122,6 +134,12 @@ class CertWindow extends React.Component<any, any> {
         break;
       case MODAL_CERTIFICATE_REQUEST:
         this.setState({ showModalCertificateRequest: false });
+        break;
+      case MODAL_EXPORT_REQUEST_CA:
+        this.setState({ showModalExportRequestCA: false });
+        break;
+      case MODAL_DELETE_REQUEST_CA:
+        this.setState({ showModalDeleteRequestCA: false });
         break;
       case MODAL_CERTIFICATE_REQUEST_CA:
         this.setState({ showModalCertificateRequestCA: false });
@@ -695,7 +713,7 @@ class CertWindow extends React.Component<any, any> {
 
     return (
       <div className="add-certs">
-        <RequestCAInfo requestCA={requestCA} handleReloadCertificates={this.handleReloadCertificates}/>
+        <RequestCAInfo requestCA={requestCA} handleReloadCertificates={this.handleReloadCertificates} />
       </div>
     );
   }
@@ -810,6 +828,51 @@ class CertWindow extends React.Component<any, any> {
           crl={crl}
           onCancel={() => this.handleCloseModalByType(MODAL_DELETE_CRL)}
           reloadCertificates={this.handleReloadCertificates} />
+      </Modal>
+    );
+  }
+
+  showModalExportRequestCA = () => {
+    const { localize, locale } = this.context;
+    const { requestCA, showModalExportRequestCA } = this.state;
+
+    if (!requestCA || !showModalExportRequestCA) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalExportRequestCA}
+        header={localize("Request.export_request", locale)}
+        onClose={() => this.handleCloseModalByType(MODAL_EXPORT_REQUEST_CA)}>
+
+        <RequestCAExport
+          requestCA={requestCA}
+          onSuccess={() => this.handleCloseModalByType(MODAL_EXPORT_REQUEST_CA)}
+          onCancel={() => this.handleCloseModalByType(MODAL_EXPORT_REQUEST_CA)}
+          onFail={() => this.handleCloseModalByType(MODAL_EXPORT_REQUEST_CA)} />
+      </Modal>
+    );
+  }
+
+  showModalDeleteRequestCA = () => {
+    const { localize, locale } = this.context;
+    const { requestCA, showModalDeleteRequestCA } = this.state;
+
+    if (!requestCA || !showModalDeleteRequestCA) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalDeleteRequestCA}
+        header={localize("Request.delete_request", locale)}
+        onClose={() => this.handleCloseModalByType(MODAL_DELETE_REQUEST_CA)}>
+
+        <RequestCADelete
+          deleteRequestCA={this.handleDeleteRequestCA}
+          requestCA={requestCA}
+          onCancel={() => this.handleCloseModalByType(MODAL_DELETE_REQUEST_CA)} />
       </Modal>
     );
   }
@@ -963,7 +1026,7 @@ class CertWindow extends React.Component<any, any> {
 
   render() {
     const { certificates, crls, isLoading, isLoadingFromDSS, searchValue } = this.props;
-    const { certificate, crl } = this.state;
+    const { certificate, crl, requestCA } = this.state;
     const { localize, locale } = this.context;
 
     if (isLoading || isLoadingFromDSS) {
@@ -1090,10 +1153,39 @@ class CertWindow extends React.Component<any, any> {
                 : null
             }
 
+            {
+              requestCA ?
+                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "70px" }}>
+                  <div className="col s12">
+                    <hr />
+                  </div>
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.handleShowModalByType(MODAL_EXPORT_REQUEST_CA)}>
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons ca export_request" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Certificate.cert_export", locale)}</div>
+                  </div>
+
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.handleShowModalByType(MODAL_DELETE_REQUEST_CA)}>
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons certificate remove" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+                  </div>
+                </div>
+                : null
+            }
+
             {this.showModalDeleteCertificate()}
             {this.showModalExportCertificate()}
             {this.showModalExportCRL()}
             {this.showModalDeleteCrl()}
+            {this.showModalExportRequestCA()}
+            {this.showModalDeleteRequestCA()}
             {this.showModalCertificateRequest()}
             {this.showModalCertificateRequestCA()}
             {this.showModalCloudCSP()}
@@ -1106,6 +1198,11 @@ class CertWindow extends React.Component<any, any> {
         <PasswordDialog value={this.state.password} onChange={this.handlePasswordChange} />
       </div>
     );
+  }
+
+  handleDeleteRequestCA = (requestId: string) => {
+    this.setState({ requestCA: null });
+    this.props.deleteRequestCA(requestId);
   }
 
   handleSearchValueChange = (ev: any) => {
@@ -1249,7 +1346,7 @@ export default connect((state) => {
     servicesMap: state.services.entities,
   };
 }, {
-  changeSearchValue, loadAllCertificates, loadAllContainers,
+  changeSearchValue, deleteRequestCA, loadAllCertificates, loadAllContainers,
   removeAllCertificates, removeAllContainers, resetCloudCSP,
   getCertRequestStatus,
 })(CertWindow);

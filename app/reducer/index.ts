@@ -17,6 +17,7 @@ import remoteFiles from "./remoteFiles";
 import services from "./services";
 import settings from "./settings";
 import signatures from "./signatures";
+import templates from "./templates";
 
 export default combineReducers({
   router,
@@ -37,4 +38,5 @@ export default combineReducers({
   regrequests,
   services,
   signatures,
+  templates,
 });
