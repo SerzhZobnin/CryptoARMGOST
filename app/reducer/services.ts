@@ -50,7 +50,8 @@ export default (services = new DefaultReducerState(), action) => {
   }
 
   if (type === ADD_SERVICE || type === DELETE_SERVICE ||
-    type === CHANGE_SERVICE_SETTINGS || type === CHANGE_SERVICE_NAME) {
+    type === CHANGE_SERVICE_SETTINGS || type === CHANGE_SERVICE_NAME ||
+    type === POST_CA_REGREQUEST + SUCCESS || type === GET_CA_REGREQUEST + SUCCESS) {
 
     const state = {
       services: mapToArr(services.entities),
