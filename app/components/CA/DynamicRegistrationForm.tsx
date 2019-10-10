@@ -189,7 +189,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
                 </div>
               );
             } else {
-              const oidValue = this.state.model[field.Oid] ? this.state.model[field.Oid].value : "";
+              const oidValue = this.state.model[field.Oid] ? this.state.model[field.Oid] : "";
 
               return (
                 <div key={field.Oid} className="row">
@@ -222,10 +222,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
 
     const newModel = {
       ...this.state.model,
-      [name]: {
-        ...this.state.model[name],
-        value,
-      },
+      [name]: value,
     };
 
     this.setState(({
@@ -249,10 +246,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
     }
 
     const model: any = {};
-    data.RDN.map((field: IRDNObject) => model[field.Oid] = {
-      prohibitEmpty: field.ProhibitEmpty,
-      value: field.DefaultValue,
-    });
+    data.RDN.map((field: IRDNObject) => model[field.Oid] = field.DefaultValue);
 
     this.props.onRDNmodelChange(model);
 
