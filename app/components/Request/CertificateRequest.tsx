@@ -347,7 +347,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const exts =
       new trusted.pki.ExtensionCollection();
     const pkeyopt: string[] = [];
-    const OS_TYPE = os.type(); 1
+    const OS_TYPE = os.type();
     let providerType: string = PROVIDER_SYSTEM;
     let keyUsageStr = "critical";
     let extendedKeyUsageStr = "";
