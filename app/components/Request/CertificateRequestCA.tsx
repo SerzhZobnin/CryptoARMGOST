@@ -284,7 +284,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                             })
                           }
                         </select>
-                        <label>{localize("CSR.template_label", locale)}</label>
+                        <label>{localize("Services.type_certificate_holder", locale)}</label>
                       </div>
                     </div>
                   </div>

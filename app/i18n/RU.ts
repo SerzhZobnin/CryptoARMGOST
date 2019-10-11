@@ -571,6 +571,7 @@ export default {
     services_not_found: "Сервисы отсутствуют",
     services_not_select: "Сервис не выбран",
     services_user_profile_inf: "Информация о профиле пользователя",
+    type_certificate_holder: "Тип владельца сертификата",
     write_service_description: "Введите описание сервиса",
   },
   Settings: {
