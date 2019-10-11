@@ -47,6 +47,8 @@ interface ICertificateRequestCAState {
   activeService: any;
   activeSubjectNameInfoTab: boolean;
   algorithm: string;
+  caTemplate: any;
+  caTemplatesArray: any[];
   containerName: string;
   exportableKey: boolean;
   extKeyUsage: IExtendedKeyUsage;
@@ -89,6 +91,8 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
     this.state = {
       activeService: "",
+      caTemplate: null,
+      caTemplatesArray: [],
       OpenButton: false,
       activeSubjectNameInfoTab: true,
       algorithm: ALG_GOST12_256,
@@ -127,7 +131,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   componentDidMount() {
-    const {service} = this.props;
+    const { service } = this.props;
 
     if (service) {
       this.activeItemChose(service);
@@ -207,6 +211,8 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                       <div className="row halfbottom" />
                       <KeyParameters
                         algorithm={algorithm}
+                        caTemplate={this.state.caTemplate}
+                        caTemplates={this.state.caTemplatesArray}
                         containerName={containerName}
                         exportableKey={exportableKey}
                         extKeyUsage={extKeyUsage}
@@ -215,6 +221,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                         keyUsage={keyUsage}
                         keyUsageGroup={keyUsageGroup}
                         handleAlgorithmChange={this.handleAlgorithmChange}
+                        handleCATemplateChange={this.handleCATemplateChange}
                         handleInputChange={this.handleInputChange}
                         handleKeyUsageChange={this.handleKeyUsageChange}
                         handleKeyUsageGroupChange={this.handleKeyUsageGroupChange}
@@ -346,7 +353,23 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   funcOpenButton = () => {
-    this.setState({ OpenButton: true });
+    const { activeService } = this.state;
+    const { regrequests } = this.props;
+
+    const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === activeService);
+    const caTemplatesObj = this.props.caTemplates.get(regrequest.id);
+    let caTemplatesArray;
+    let caTemplate;
+
+    if (caTemplatesObj) {
+      caTemplatesArray = caTemplatesObj.template;
+    }
+
+    if (caTemplatesArray && caTemplatesArray.length) {
+      caTemplate = caTemplatesArray[0].Oid;
+    }
+
+    this.setState({ OpenButton: true, caTemplate, caTemplatesArray });
   }
 
   /*verifyFields = () => {
@@ -507,11 +530,11 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       exts.push(ext);
     }
 
-    if (template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_ADDITIONAL || REQUEST_TEMPLATE_KEP_FIZ) {
-      oid = new trusted.pki.Oid("1.2.643.100.111");
-      ext = new trusted.pki.Extension(oid, `КриптоПро CSP (версия ${this.getCPCSPVersion()})`);
-      exts.push(ext);
-    }
+    // if (template === REQUEST_TEMPLATE_KEP_IP || template === REQUEST_TEMPLATE_ADDITIONAL || REQUEST_TEMPLATE_KEP_FIZ) {
+    oid = new trusted.pki.Oid("1.2.643.100.111");
+    ext = new trusted.pki.Extension(oid, `КриптоПро CSP (версия ${this.getCPCSPVersion()})`);
+    exts.push(ext);
+    // }
 
     oid = new trusted.pki.Oid("1.3.6.1.4.1.311.21.7");
     ext = new trusted.pki.Extension(oid, "1.2.643.2.2.46.0.8");
@@ -612,6 +635,10 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   handleAlgorithmChange = (ev: any) => {
     this.setState({ algorithm: ev.target.value });
+  }
+
+  handleCATemplateChange = (ev: any) => {
+    this.setState({ caTemplate: ev.target.value });
   }
 
   handleInputChange = (ev: any) => {
@@ -730,6 +757,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
 export default connect((state) => {
   return {
+    caTemplates: state.certtemplate.entities,
     certificateLoading: state.certificates.loading,
     certrequests: state.certrequests.entities,
     lic_error: state.license.lic_error,
