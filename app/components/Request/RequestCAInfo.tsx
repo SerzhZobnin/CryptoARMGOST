@@ -33,7 +33,6 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
       return;
     }
 
-
     if (certrequest.status !== REQUEST_STATUS.K) {
       getCertRequestStatus(`${service.settings.url}`, certrequest, regrequest);
     }

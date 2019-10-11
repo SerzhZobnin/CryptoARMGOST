@@ -555,6 +555,7 @@ export default {
     delete_service_ok: "Сервис успешно удалён",
     description: "Описание",
     email: "E-mail",
+    fill_required_fields: "Заполните обязательные поля",
     key_information: "Ключевая информация",
     login: "Логин",
     name: "Наименование",

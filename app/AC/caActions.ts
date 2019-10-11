@@ -15,7 +15,7 @@ export async function postApi(url: string, postfields: any, headerfields: string
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
 
-    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function(statusCode: number, response: any) {
       let data;
 
       try {
