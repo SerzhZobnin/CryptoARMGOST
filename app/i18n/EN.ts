@@ -115,6 +115,7 @@ export default {
     country: "Country",
     create_request: "Create request",
     create_request_created: "Certificate request was successfully created",
+    create_request_error: "Error generation certificate request",
     create_selfSigned: "Create self-signed certificate",
     csp_label: "Cryptography service provider",
     csp_microsoft_base: "Microsoft Base Cryptografic Provaider v1.0",

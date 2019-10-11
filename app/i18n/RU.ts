@@ -115,6 +115,7 @@ export default {
     country: "Страна",
     create_request: "Создать запрос",
     create_request_created: "Запрос на сертификат успешно создан",
+    create_request_error: "Ошибка генерации запроса на сертификат",
     create_selfSigned: "Создать самоподписанный сертификат",
     csp_label: "Используемый криптопровайдер",
     csp_microsoft_base: "Microsoft Base Cryptografic Provaider v1.0",
