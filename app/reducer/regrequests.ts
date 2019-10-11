@@ -31,7 +31,7 @@ export default (regrequests = new DefaultReducerState(), action) => {
         id: payload.id,
         ...payload.regRequest,
         RDN: { ...payload.RDN },
-        serviceId: payload.serviceId,
+        serviceId: payload.service.id,
         Comment: payload.Comment,
         Description: payload.Description,
         Email: payload.Email,

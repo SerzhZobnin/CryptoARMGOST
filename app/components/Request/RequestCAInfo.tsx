@@ -28,6 +28,12 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
     // tslint:disable-next-line: no-shadowed-variable
     const { getCertRequestStatus } = this.props;
     const { certrequest, service, regrequest } = this.props;
+
+    if (!service || !service.settings || !service.settings.url) {
+      return;
+    }
+
+
     if (certrequest.status !== REQUEST_STATUS.K) {
       getCertRequestStatus(`${service.settings.url}`, certrequest, regrequest);
     }
@@ -38,6 +44,11 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
     const { getCertRequest, postCertRequestСonfirmation } = this.props;
     const { certrequest, service, regrequest, handleReloadCertificates } = this.props;
     const { localize, locale } = this.context;
+
+    if (!service || !service.settings || !service.settings.url) {
+      return;
+    }
+
     if ((certrequest.status !== prevProps.certrequest.status) && (certrequest.status === REQUEST_STATUS.C)) {
       getCertRequest(`${service.settings.url}`, certrequest, regrequest);
     }
@@ -103,15 +114,17 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
 
   getRequestInfo = () => {
     const { certrequest } = this.props;
+    const { localize, locale } = this.context;
 
     if (!certrequest || !certrequest.subject || !certrequest.subject.length) {
       return null;
     }
 
     return certrequest.subject.map((field: any) => {
+      const type = localize(`OIDs.${field.type}`, locale);
       return (
-        <div className="collection-item certs-collection certificate-info">
-          <div className={"collection-info cert-info-blue"}>{field.type}</div>
+        <div key={field.type} className="collection-item certs-collection certificate-info">
+          <div className={"collection-info cert-info-blue"}>{type ? type : field.type}</div>
           <div className={"collection-title selectable-text"}>{field.value ? field.value : "-"}</div>
         </div>
       );

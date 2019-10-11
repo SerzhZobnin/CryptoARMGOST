@@ -13,6 +13,7 @@ import { ICAServiceSettings, IService } from "./types";
 
 interface IAddServiceState {
   activeSettingsTab: boolean;
+  disableSecondStep: boolean;
   comment: string;
   description: string;
   email: string;
@@ -31,6 +32,7 @@ const initialState = {
   activeSettingsTab: true,
   comment: "",
   description: "",
+  disableSecondStep: false,
   email: "",
   isUserattrLoading: false,
   keyPhrase: "",
@@ -49,8 +51,8 @@ interface IAddServiceProps {
   addService: (service: IService) => void;
   mapServices: Map<any, any>;
   onCancel: (service?: IService) => void;
-  getRegRequest: (url: string, login: string, password: string, id: string) => void;
-  postRegRequest: (url: string, comment: string, description: string, email: string, keyPhrase: string, oids: any, serviceId: string) => void;
+  getRegRequest: (url: string, login: string, password: string, service: IService) => void;
+  postRegRequest: (url: string, comment: string, description: string, email: string, keyPhrase: string, oids: any, service: IService) => void;
 }
 
 class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
@@ -79,7 +81,9 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
 
   render() {
     const { localize, locale } = this.context;
-    const { activeSettingsTab, regNewUser, serviceType, serviceSettings } = this.state;
+    const { activeSettingsTab, disableSecondStep, regNewUser, serviceType, serviceSettings } = this.state;
+
+    const disabledSecondStep = disableSecondStep ? "disabled" : "";
 
     return (
       <div className="add_new_service_modal">
@@ -123,6 +127,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                           caURL={serviceSettings.url}
                           onCancel={this.handelCancel}
                           onRDNmodelChange={this.onRDNmodelChange}
+                          toggleDisableSecondStep={this.toggleDisableSecondStep}
                         />
                         : <LoginForm login={this.state.login} password={this.state.password} loginChange={this.handleLoginChange} passwordChange={this.handlePasswordChange} />
                     }
@@ -156,7 +161,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                       <a className={"btn btn-text waves-effect waves-light modal-close "} onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
                     </div>
                     <div style={{ display: "inline-block", margin: "10px" }}>
-                      <a className={"btn btn-outlined waves-effect waves-light"} onClick={this.handleAdd}>{localize("Services.connect", locale)}</a>
+                      <a className={"btn btn-outlined waves-effect waves-light "} onClick={this.handleAdd}>{localize("Services.connect", locale)}</a>
                     </div>
                   </div>
                 </div>
@@ -164,7 +169,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                 <div className="row halfbottom">
                   <div style={{ float: "right" }}>
                     <div style={{ display: "inline-block", margin: "10px" }}>
-                      <a className={"btn btn-outlined waves-effect waves-light"} onClick={this.handleCAUserRegrequest}>{localize("Services.connect", locale)}</a>
+                      <a className={"btn btn-outlined waves-effect waves-light " + disabledSecondStep} onClick={this.handleCAUserRegrequest}>{localize("Services.connect", locale)}</a>
                     </div>
                   </div>
                 </div>
@@ -177,7 +182,6 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
 
   getServiceSettings = () => {
     const { regNewUser, serviceName, serviceType, serviceSettings } = this.state;
-    const { localize, locale } = this.context;
 
     switch (serviceType) {
       case CA_SERVICE:
@@ -207,6 +211,10 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
 
   toggleRegNewUser = () => {
     this.setState({ regNewUser: !this.state.regNewUser });
+  }
+
+  toggleDisableSecondStep = () => {
+    this.setState({ disableSecondStep: !this.state.disableSecondStep });
   }
 
   handleServiceNameChange = (ev: any) => {
@@ -269,6 +277,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
   }
 
   handleCAUserRegrequest = () => {
+    const { localize, locale } = this.context;
     // tslint:disable-next-line:no-shadowed-variable
     const { addService, getRegRequest, onCancel, postRegRequest } = this.props;
     const { comment, description, email, keyPhrase, login, password, regNewUser, serviceName,
@@ -287,14 +296,40 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
         this.handelCancel();
       }
 
-      addService(service);
-      postRegRequest(`${serviceSettings.url}`, comment, description, email, keyPhrase, RDNmodel, id);
+      if (!this.verifyProhibitEmptyFields()) {
+        $(".toast-required_fields").remove();
+        Materialize.toast(localize("CSR.fill_required_fields", locale), 3000, "toast-required_fields");
+
+        return;
+      }
+
+      const oids = Object.keys(RDNmodel).map(function (key) {
+        return { [key]: RDNmodel[key].value };
+      });
+
+      postRegRequest(`${serviceSettings.url}`, comment, description, email, keyPhrase, oids, service);
       onCancel(service);
     } else {
-      addService(service);
-      getRegRequest(`${serviceSettings.url}`, login, password, id);
+      Materialize.toast("Отправлен запрос на проверку статуса регистрации в УЦ", 3000, "toast-ca_get_req_send");
+
+      getRegRequest(`${serviceSettings.url}`, login, password, service);
       onCancel(service);
     }
+  }
+
+  verifyProhibitEmptyFields = () => {
+    const { RDNmodel } = this.state;
+    let result = true;
+
+    Object.keys(RDNmodel).map((key) => {
+      const field = RDNmodel[key];
+
+      if (field.prohibitEmpty && !field.value) {
+        result = false;
+      }
+    });
+
+    return result;
   }
 }
 
