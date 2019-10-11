@@ -527,7 +527,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     certReq.extensions = exts;
     certReq.pubKeyAlgorithm = algorithm;
     certReq.exportableFlag = exportableKey;
-    certReq.newKeysetFlag = true;
+    //certReq.newKeysetFlag = true;
     certReq.containerName = containerName;
 
     if (!fs.existsSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"))) {
