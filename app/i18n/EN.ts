@@ -570,6 +570,7 @@ export default {
     services_not_found: "The service is not found",
     services_not_select: "A service is not selected",
     services_user_profile_inf: "User profile information",
+    type_certificate_holder: "Type of certificate holder",
     write_service_description: "Write service description",
   },
   Settings: {
