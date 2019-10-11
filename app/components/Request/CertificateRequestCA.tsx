@@ -63,6 +63,8 @@ interface ICertificateRequestCAState {
 
 interface ICertificateRequestCAProps {
   regrequests: Map<any, any>;
+  certrequests: Map<any, any>;
+  certificates: Map<any, any>;
   service?: any;
   servicesMap: Map<any, any>;
   certificateTemplate: any;
@@ -74,7 +76,7 @@ interface ICertificateRequestCAProps {
   removeAllCertificates: () => void;
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
   postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) => void;
-  postCertRequestAuthCert: (url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) => void;
+  postCertRequestAuthCert: (url: string, certificateRequestCA: ICertificateRequestCA, certificateReq: string, subject: any, regRequest: any, serviceId: string) => void;
   getCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
 }
 
@@ -406,7 +408,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       keyUsage, template, RDNsubject } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { addCertificateRequestCA, postCertRequest, postCertRequestAuthCert } = this.props;
-    const { licenseStatus, lic_error, servicesMap, regrequests } = this.props;
+    const { licenseStatus, lic_error, servicesMap, regrequests, certrequests, certificates } = this.props;
 
     const exts = new trusted.pki.ExtensionCollection();
     let keyUsageStr = "critical";
@@ -520,40 +522,54 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const certReq = new trusted.pki.CertificationRequest();
 
     const values = Object.keys(RDNsubject).map((key) => RDNsubject[key]);
-
     certReq.subject = values;
     certReq.version = 0;
     certReq.extensions = exts;
     certReq.pubKeyAlgorithm = algorithm;
     certReq.exportableFlag = exportableKey;
-
-    const service = servicesMap.get(activeService);
-    const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
-    if (!regrequest.certThumbprint) {
-      certReq.newKeysetFlag = true;
-      certReq.containerName = containerName;
-    } else {
-      // certReq.newKeysetFlag = false;
-      // certReq.containerName = "zxc123";
-    }
+    certReq.newKeysetFlag = true;
+    certReq.containerName = containerName;
 
     if (!fs.existsSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"))) {
       fs.mkdirSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"), { mode: 0o700 });
     }
 
-    const uri = path.join(DEFAULT_CSR_PATH, `requestCA_${RDNsubject["2.5.4.3"] ? RDNsubject["2.5.4.3"].value : ""}_${algorithm}_${formatDate(new Date())}.req`);
+    const url = path.join(DEFAULT_CSR_PATH, `requestCA_${RDNsubject["2.5.4.3"] ? RDNsubject["2.5.4.3"].value : ""}_${algorithm}_${formatDate(new Date())}.req`);
+    const urlSig = path.join(DEFAULT_CSR_PATH, `requestCAsign_${RDNsubject["2.5.4.3"] ? RDNsubject["2.5.4.3"].value : ""}_${algorithm}_${formatDate(new Date())}.req`);
     try {
-      certReq.save(uri, trusted.DataFormat.PEM);
+      certReq.save(url, trusted.DataFormat.PEM);
 
-      let cmsContext = null;
-      if (fileCoding(uri) === trusted.DataFormat.PEM) {
-        cmsContext = fs.readFileSync(uri, "utf8");
+      const service = servicesMap.get(activeService);
+      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
+      let cmsContext = fs.readFileSync(url, "utf8");
+      let cmsContextSig = "";
+      if (regrequest.certThumbprint) {
+        const sd1: trusted.cms.SignedData = new trusted.cms.SignedData();
+        const sd2: trusted.cms.SignedData = new trusted.cms.SignedData();
+        const certificate = certificates.get(`CRYPTOPRO_MY_${regrequest.certThumbprint}`);
+        const cert = window.PKISTORE.getPkiObject(certificate);
+        sd1.content = {
+          data: cmsContext,
+          type: trusted.cms.SignedDataContentType.buffer,
+        };
+        sd1.sign(cert);
+        sd1.save(urlSig, trusted.DataFormat.PEM);
+        sd2.content = {
+          data: urlSig,
+          type: trusted.cms.SignedDataContentType.url,
+        };
+        sd2.sign(cert);
+        sd2.save(urlSig, trusted.DataFormat.PEM);
+        cmsContextSig = fs.readFileSync(urlSig, "utf8");
+      }
+      if (fileCoding(url) === trusted.DataFormat.PEM) {
         cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE REQUEST-----", "");
         cmsContext = cmsContext.replace("-----END CERTIFICATE REQUEST-----", "");
         cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
       } else {
-        cmsContext = fs.readFileSync(uri, "base64");
+        cmsContext = fs.readFileSync(url, "base64");
       }
+
       const id = uuid();
       const certificateRequestCA: ICertificateRequestCA = {
         certRequestId: "",
@@ -564,17 +580,15 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
       addCertificateRequestCA(certificateRequestCA);
 
-      const service = servicesMap.get(activeService);
-      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
       if (!regrequest.certThumbprint) {
         postCertRequest(`${service.settings.url}`, certificateRequestCA, values, regrequest, service.id);
       } else {
-        postCertRequestAuthCert(`${service.settings.url}`, certificateRequestCA, values, regrequest, service.id);
+        postCertRequestAuthCert(`${service.settings.url}`, certificateRequestCA, cmsContextSig, values, regrequest, service.id);
       }
 
       Materialize.toast(localize("CSR.create_request_created", locale), 2000, "toast-csr_created");
     } catch (e) {
-      //
+      Materialize.toast(localize("CSR.create_request_error", locale), 4000, "toast-csr_error");
     }
 
     this.handelCancel();
@@ -731,6 +745,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 export default connect((state) => {
   return {
     certificateLoading: state.certificates.loading,
+    certificates: state.certificates.entities,
     certrequests: state.certrequests.entities,
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
