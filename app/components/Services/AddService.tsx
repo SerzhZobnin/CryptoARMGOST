@@ -182,7 +182,6 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
 
   getServiceSettings = () => {
     const { regNewUser, serviceName, serviceType, serviceSettings } = this.state;
-    const { localize, locale } = this.context;
 
     switch (serviceType) {
       case CA_SERVICE:
@@ -278,6 +277,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
   }
 
   handleCAUserRegrequest = () => {
+    const { localize, locale } = this.context;
     // tslint:disable-next-line:no-shadowed-variable
     const { addService, getRegRequest, onCancel, postRegRequest } = this.props;
     const { comment, description, email, keyPhrase, login, password, regNewUser, serviceName,
@@ -296,7 +296,18 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
         this.handelCancel();
       }
 
-      postRegRequest(`${serviceSettings.url}`, comment, description, email, keyPhrase, RDNmodel, service);
+      if (!this.verifyProhibitEmptyFields()) {
+        $(".toast-required_fields").remove();
+        Materialize.toast(localize("CSR.fill_required_fields", locale), 3000, "toast-required_fields");
+
+        return;
+      }
+
+      const oids = Object.keys(RDNmodel).map(function (key) {
+        return { [key]: RDNmodel[key].value };
+      });
+
+      postRegRequest(`${serviceSettings.url}`, comment, description, email, keyPhrase, oids, service);
       onCancel(service);
     } else {
       Materialize.toast("Отправлен запрос на проверку статуса регистрации в УЦ", 3000, "toast-ca_get_req_send");
@@ -304,6 +315,21 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
       getRegRequest(`${serviceSettings.url}`, login, password, service);
       onCancel(service);
     }
+  }
+
+  verifyProhibitEmptyFields = () => {
+    const { RDNmodel } = this.state;
+    let result = true;
+
+    Object.keys(RDNmodel).map((key) => {
+      const field = RDNmodel[key];
+
+      if (field.prohibitEmpty && !field.value) {
+        result = false;
+      }
+    });
+
+    return result;
   }
 }
 

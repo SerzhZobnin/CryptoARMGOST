@@ -119,7 +119,7 @@ export async function getCertApi(url: string, headerfields: string[]) {
   });
 }
 
-export function postRegRequest(url: string, comment: string, description: string, email: string, keyPhrase: string, oids: any, service: any) {
+export function postRegRequest(url: string, comment: string, description: string, email: string, keyPhrase: string, oids: any[], service: any) {
   return (dispatch) => {
     dispatch({
       type: POST_CA_REGREQUEST + START,
@@ -130,10 +130,6 @@ export function postRegRequest(url: string, comment: string, description: string
       let data2: any;
 
       try {
-        const OidArray = Object.keys(oids).map(function (key) {
-          return { [key]: oids[key] };
-        });
-
         Materialize.toast("Отправлен запрос на регистрацию в УЦ", 3000, "toast-ca_req_send");
 
         data = await postApi(`${url}/regrequest`, JSON.stringify({
@@ -141,7 +137,7 @@ export function postRegRequest(url: string, comment: string, description: string
           Description: description,
           Email: email,
           KeyPhrase: keyPhrase,
-          OidArray,
+          OidArray: oids,
         }),
           [
             "Content-Type: application/json",
@@ -159,13 +155,19 @@ export function postRegRequest(url: string, comment: string, description: string
           ],
         );
 
+        let RDN = {};
+
+        oids.forEach((oidvalue) => {
+          RDN = {...RDN, ...oidvalue};
+        });
+
         dispatch({
           payload: {
             Comment: comment,
             Description: description,
             Email: email,
             KeyPhrase: keyPhrase,
-            RDN: oids,
+            RDN,
             id: data.RegRequest.RegRequestId,
             regRequest: data.RegRequest,
             service,
