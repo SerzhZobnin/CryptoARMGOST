@@ -80,7 +80,6 @@ interface ICertificateRequestCAProps {
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
   postCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, subject: any, regRequest: any, serviceId: string) => void;
   postCertRequestAuthCert: (url: string, certificateRequestCA: ICertificateRequestCA, certificateReq: string, subject: any, regRequest: any, serviceId: string) => void;
-  getCertRequest: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: any) => void;
 }
 
 class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, ICertificateRequestCAState> {
@@ -551,7 +550,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     certReq.extensions = exts;
     certReq.pubKeyAlgorithm = algorithm;
     certReq.exportableFlag = exportableKey;
-    //certReq.newKeysetFlag = true;
+    // certReq.newKeysetFlag = true;
     certReq.containerName = containerName;
 
     if (!fs.existsSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"))) {

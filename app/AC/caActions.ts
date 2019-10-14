@@ -59,9 +59,7 @@ export async function postApiAuthCert(url: string, postfields: any, headerfields
       let data;
 
       try {
-
         if (statusCode !== 200) {
-          console.log(response);
           throw new Error(`Unexpected response, status code ${statusCode}`);
         }
         data = JSON.parse(response.toString());
@@ -120,6 +118,42 @@ export async function getApi(url: string, headerfields: string[]) {
   });
 }
 
+export async function getApiAuthCert(url: string, headerfields: string[], thumbprint: string) {
+  return new Promise((resolve, reject) => {
+    const curl = new window.Curl();
+
+    curl.setOpt("URL", url);
+    curl.setOpt("FOLLOWLOCATION", true);
+    curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
+    curl.setOpt(window.Curl.option.SSLCERT, `CurrentUser\\MY\\${thumbprint}`);
+    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+      let data;
+
+      try {
+        if (statusCode !== 200) {
+          throw new Error(`Unexpected response, status code ${statusCode}`);
+        }
+      } catch (error) {
+        reject(`Cannot load data, error: ${error.message}`);
+        return;
+      } finally {
+        curl.close.bind(curl);
+      }
+
+      data = JSON.parse(response.toString());
+
+      resolve(data);
+    });
+
+    curl.on("error", (error: { message: any; }) => {
+      curl.close.bind(curl);
+      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
+    });
+
+    curl.perform();
+  });
+}
+
 export async function getCertApi(url: string, headerfields: string[]) {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
@@ -128,7 +162,47 @@ export async function getCertApi(url: string, headerfields: string[]) {
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+      try {
+        if (statusCode !== 200) {
+          throw new Error(`Unexpected response, status code ${statusCode}`);
+        }
+      } catch (error) {
+        reject(`Cannot load data, error: ${error.message}`);
+        return;
+      } finally {
+        curl.close.bind(curl);
+      }
+
+      const cert = new trusted.pki.Certificate();
+      cert.import(data);
+      resolve(cert.export(trusted.DataFormat.PEM).toString());
+    });
+
+    curl.on('data', (chunk, curlInstance) => {
+      data = Buffer.concat([data, chunk]);
+      return chunk.length;
+    });
+
+    curl.on("error", (error: { message: any; }) => {
+      curl.close.bind(curl);
+      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
+    });
+
+    curl.perform();
+  });
+}
+
+export async function getCertApiAuthCert(url: string, headerfields: string[], thumbprint: string) {
+  return new Promise((resolve, reject) => {
+    const curl = new window.Curl();
+    let data = new Buffer("");
+
+    curl.setOpt("URL", url);
+    curl.setOpt("FOLLOWLOCATION", true);
+    curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
+    curl.setOpt(window.Curl.option.SSLCERT, `CurrentUser\\MY\\${thumbprint}`);
+    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
       try {
         if (statusCode !== 200) {
           throw new Error(`Unexpected response, status code ${statusCode}`);
@@ -305,6 +379,7 @@ export function postCertRequest(url: string, certificateRequestCA: ICertificateR
 
       try {
         url = url.substr(0, url.lastIndexOf("/"));
+
         data = await postApi(
           `${url}/certrequest`,
           certificateRequestCA.certificateReq,
@@ -378,7 +453,7 @@ export function postCertRequestAuthCert(url: string, certificateRequestCA: ICert
   };
 }
 
-export function postCertRequestСonfirmation(url: string, certificateRequestCA: ICertificateRequestCA, regrequest: IRegRequest) {
+export function postCertRequestСonfirmation(url: string, certrequest: ICertificateRequestCA, regrequest: IRegRequest) {
   return (dispatch) => {
     dispatch({
       type: POST_CA_CERTREQUEST_СONFIRMATION + START,
@@ -391,8 +466,9 @@ export function postCertRequestСonfirmation(url: string, certificateRequestCA: 
       };
       try {
         url = url.substr(0, url.lastIndexOf("/"));
+
         data = await postApi(
-          `${url}/certrequest/${certificateRequestCA.certRequestId}`,
+          `${url}/certrequest/${certrequest.certRequestId}`,
           JSON.stringify(dataStatus),
           [
             "Content-Type: application/json",
@@ -402,7 +478,55 @@ export function postCertRequestСonfirmation(url: string, certificateRequestCA: 
         );
         dispatch({
           payload: {
-            id: certificateRequestCA.id,
+            certificate: certrequest.certificate,
+            id: certrequest.id,
+            serviceId: certrequest.serviceId,
+            status: data.CertRequest.Status,
+          },
+          type: POST_CA_CERTREQUEST_СONFIRMATION + SUCCESS,
+        });
+      } catch (e) {
+        Materialize.toast(e, 4000, "toast-ca_error");
+
+        dispatch({
+          type: POST_CA_CERTREQUEST_СONFIRMATION + FAIL,
+        });
+      }
+    }, 0);
+  };
+}
+
+export function postCertRequestСonfirmationAuthCert(url: string, certrequest: ICertificateRequestCA, regrequest: IRegRequest) {
+  return (dispatch) => {
+    dispatch({
+      type: POST_CA_CERTREQUEST_СONFIRMATION + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+      const dataStatus = {
+        Status: "K",
+      };
+      try {
+        url = url.substr(0, url.lastIndexOf("/"));
+        const a = url.split("");
+        a.splice(url.indexOf("/api"), 0, "/2");
+        url = a.join("");
+
+        data = await postApiAuthCert(
+          `${url}/certrequest/${certrequest.certRequestId}`,
+          JSON.stringify(dataStatus),
+          [
+            "Content-Type: application/json",
+            "Accept: */*",
+          ],
+          regrequest.certThumbprint,
+        );
+        dispatch({
+          payload: {
+            certificate: certrequest.certificate,
+            id: certrequest.id,
+            serviceId: certrequest.serviceId,
             status: data.CertRequest.Status,
           },
           type: POST_CA_CERTREQUEST_СONFIRMATION + SUCCESS,
@@ -454,6 +578,46 @@ export function getCertRequestStatus(url: string, certrequest: ICertificateReque
   };
 }
 
+export function getCertRequestStatusAuthCert(url: string, certrequest: ICertificateRequestCA, regrequest: IRegRequest) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_CA_CERTREQUEST_STATUS + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+
+      try {
+        url = url.substr(0, url.lastIndexOf("/"));
+        const a = url.split("");
+        a.splice(url.indexOf("/api"), 0, "/2");
+        url = a.join("");
+
+        data = await getApiAuthCert(
+          `${url}/certrequest/${certrequest.certRequestId}`,
+          [
+          ],
+          regrequest.certThumbprint,
+        );
+
+        dispatch({
+          payload: {
+            id: certrequest.id,
+            status: data.CertRequest.Status,
+          },
+          type: GET_CA_CERTREQUEST_STATUS + SUCCESS,
+        });
+      } catch (e) {
+        Materialize.toast(e, 4000, "toast-ca_error");
+
+        dispatch({
+          type: GET_CA_CERTREQUEST_STATUS + FAIL,
+        });
+      }
+    }, 0);
+  };
+}
+
 export function getCertRequest(url: string, certrequest: ICertificateRequestCA, regrequest: IRegRequest) {
   return (dispatch) => {
     dispatch({
@@ -465,12 +629,56 @@ export function getCertRequest(url: string, certrequest: ICertificateRequestCA, 
 
       try {
         url = url.substr(0, url.lastIndexOf("/"));
+
         data = await getCertApi(
           `${url}/certrequest/${certrequest.certRequestId}/rawcert`,
           [
             "Content-Type: application/octet-stream",
             `Authorization: Basic ${Buffer.from(regrequest.Token + ":" + regrequest.Password).toString("base64")}`,
           ],
+        );
+
+        data = data.replace(/\r\n|\n|\r/gm, "");
+        dispatch({
+          payload: {
+            certificate: data,
+            id: certrequest.id,
+            serviceId: certrequest.serviceId,
+          },
+          type: GET_CA_CERTREQUEST + SUCCESS,
+        });
+      } catch (e) {
+        Materialize.toast(e, 4000, "toast-ca_error");
+
+        dispatch({
+          type: GET_CA_CERTREQUEST + FAIL,
+        });
+      }
+    }, 0);
+  };
+}
+
+export function getCertRequestAuthCert(url: string, certrequest: ICertificateRequestCA, regrequest: IRegRequest) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_CA_CERTREQUEST + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+
+      try {
+        url = url.substr(0, url.lastIndexOf("/"));
+        const a = url.split("");
+        a.splice(url.indexOf("/api"), 0, "/2");
+        url = a.join("");
+
+        data = await getCertApiAuthCert(
+          `${url}/certrequest/${certrequest.certRequestId}/rawcert`,
+          [
+            "Content-Type: application/octet-stream",
+          ],
+          regrequest.certThumbprint,
         );
 
         data = data.replace(/\r\n|\n|\r/gm, "");

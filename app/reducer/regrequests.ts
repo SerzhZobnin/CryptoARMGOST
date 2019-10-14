@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { CA_REGREGUESTS_JSON, FAIL, GET_CA_REGREQUEST, POST_CA_REGREQUEST, START, SUCCESS, GET_CA_CERTREQUEST } from "../constants";
+import { CA_REGREGUESTS_JSON, FAIL, GET_CA_REGREQUEST, POST_CA_REGREQUEST,
+  START, SUCCESS, GET_CA_CERTREQUEST, POST_CA_CERTREQUEST_СONFIRMATION } from "../constants";
 import { mapToArr } from "../utils";
 
 export const RegRequestModel = Record({
@@ -40,7 +41,7 @@ export default (regrequests = new DefaultReducerState(), action) => {
       }));
       break;
 
-    case GET_CA_CERTREQUEST + SUCCESS:
+    case POST_CA_CERTREQUEST_СONFIRMATION + SUCCESS:
       const { certificate } = payload;
 
       let certThumbprint = null;
@@ -60,7 +61,7 @@ export default (regrequests = new DefaultReducerState(), action) => {
   }
 
   if (type === POST_CA_REGREQUEST + SUCCESS || type === GET_CA_REGREQUEST + SUCCESS ||
-    type === GET_CA_CERTREQUEST + SUCCESS) {
+    type === POST_CA_CERTREQUEST_СONFIRMATION + SUCCESS) {
     const state = {
       regrequests: mapToArr(regrequests.entities),
     };

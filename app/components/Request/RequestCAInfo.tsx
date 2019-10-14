@@ -2,7 +2,8 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { loadAllCertificates, removeAllCertificates } from "../../AC";
-import { getCertRequest, getCertRequestStatus, postCertRequestСonfirmation } from "../../AC/caActions";
+import { getCertRequest, getCertRequestAuthCert, getCertRequestStatus,
+  getCertRequestStatusAuthCert, postCertRequestСonfirmation, postCertRequestСonfirmationAuthCert } from "../../AC/caActions";
 import { MY, PROVIDER_CRYPTOPRO, REQUEST_STATUS } from "../../constants";
 import { filteredRequestCASelector } from "../../selectors/requestCASelector";
 import { ICertificateRequestCA, IRegRequest, IService } from "../Services/types";
@@ -13,8 +14,11 @@ interface IRequestCAInfoProps {
   service: IService;
   regrequest: IRegRequest;
   getCertRequestStatus: (url: string, certRequest: ICertificateRequestCA, regRequest: IRegRequest) => void;
+  getCertRequestStatusAuthCert: (url: string, certRequest: ICertificateRequestCA, regRequest: IRegRequest) => void;
   getCertRequest: (url: string, certRequest: ICertificateRequestCA, regRequest: IRegRequest) => void;
+  getCertRequestAuthCert: (url: string, certRequest: ICertificateRequestCA, regRequest: IRegRequest) => void;
   postCertRequestСonfirmation: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: IRegRequest) => void;
+  postCertRequestСonfirmationAuthCert: (url: string, certificateRequestCA: ICertificateRequestCA, regRequest: IRegRequest) => void;
   handleReloadCertificates: () => void;
 }
 
@@ -26,7 +30,7 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
 
   componentDidMount() {
     // tslint:disable-next-line: no-shadowed-variable
-    const { getCertRequestStatus } = this.props;
+    const { getCertRequestStatus, getCertRequestStatusAuthCert } = this.props;
     const { certrequest, service, regrequest } = this.props;
 
     if (!service || !service.settings || !service.settings.url) {
@@ -34,13 +38,17 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
     }
 
     if (certrequest.status !== REQUEST_STATUS.K) {
-      getCertRequestStatus(`${service.settings.url}`, certrequest, regrequest);
+      if (regrequest.certThumbprint) {
+        getCertRequestStatusAuthCert(`${service.settings.url}`, certrequest, regrequest);
+      } else {
+        getCertRequestStatus(`${service.settings.url}`, certrequest, regrequest);
+      }
     }
   }
 
   componentDidUpdate(prevProps: any) {
     // tslint:disable-next-line: no-shadowed-variable
-    const { getCertRequest, postCertRequestСonfirmation } = this.props;
+    const { getCertRequest, getCertRequestAuthCert, postCertRequestСonfirmation, postCertRequestСonfirmationAuthCert } = this.props;
     const { certrequest, service, regrequest, handleReloadCertificates } = this.props;
     const { localize, locale } = this.context;
 
@@ -49,7 +57,11 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
     }
 
     if ((certrequest.status !== prevProps.certrequest.status) && (certrequest.status === REQUEST_STATUS.C)) {
-      getCertRequest(`${service.settings.url}`, certrequest, regrequest);
+      if (regrequest.certThumbprint) {
+        getCertRequestAuthCert(`${service.settings.url}`, certrequest, regrequest);
+      } else {
+        getCertRequest(`${service.settings.url}`, certrequest, regrequest);
+      }
     }
 
     if ((certrequest.status === REQUEST_STATUS.C) &&
@@ -72,7 +84,11 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
       } catch (e) {
         //
       }
-      postCertRequestСonfirmation(`${service.settings.url}`, certrequest, regrequest);
+      if (regrequest.certThumbprint) {
+        postCertRequestСonfirmationAuthCert(`${service.settings.url}`, certrequest, regrequest);
+      } else {
+        postCertRequestСonfirmation(`${service.settings.url}`, certrequest, regrequest);
+      }
       handleReloadCertificates();
     }
   }
@@ -150,5 +166,6 @@ export default connect((state, ownProps) => {
     services,
   };
 }, {
-  getCertRequest, getCertRequestStatus, loadAllCertificates, postCertRequestСonfirmation, removeAllCertificates,
+  getCertRequest, getCertRequestAuthCert, getCertRequestStatus, getCertRequestStatusAuthCert,
+  loadAllCertificates, postCertRequestСonfirmation, postCertRequestСonfirmationAuthCert, removeAllCertificates,
 })(RequestCAInfo);
