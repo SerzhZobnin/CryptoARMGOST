@@ -15,7 +15,7 @@ export async function postApi(url: string, postfields: any, headerfields: string
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
 
-    curl.on("end", function(statusCode: number, response: any) {
+    curl.on("end", function (statusCode: number, response: any) {
       let data;
 
       try {
@@ -55,7 +55,7 @@ export async function postApiAuthCert(url: string, postfields: any, headerfields
     curl.setOpt(window.Curl.option.SSLCERT, `CurrentUser\\MY\\${thumbprint}`);
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
 
-    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
       let data;
 
       try {
@@ -99,14 +99,14 @@ export async function getApi(url: string, headerfields: string[]) {
         if (statusCode !== 200) {
           throw new Error(`Unexpected response, status code ${statusCode}`);
         }
+
+        data = JSON.parse(response.toString());
       } catch (error) {
         reject(`Cannot load data, error: ${error.message}`);
         return;
       } finally {
         curl.close.bind(curl);
       }
-
-      data = JSON.parse(response.toString());
 
       resolve(data);
     });
@@ -140,9 +140,13 @@ export async function getCertApi(url: string, headerfields: string[]) {
         curl.close.bind(curl);
       }
 
-      const cert = new trusted.pki.Certificate();
-      cert.import(data);
-      resolve(cert.export(trusted.DataFormat.PEM).toString());
+      try {
+        const cert = new trusted.pki.Certificate();
+        cert.import(data);
+        resolve(cert.export(trusted.DataFormat.PEM).toString());
+      } catch (e) {
+        reject(new Error("trusted-crypto: Error export Certificate"));
+      }
     });
 
     curl.on('data', (chunk, curlInstance) => {
@@ -198,7 +202,7 @@ export function postRegRequest(url: string, comment: string, description: string
         let RDN = {};
 
         oids.forEach((oidvalue) => {
-          RDN = {...RDN, ...oidvalue};
+          RDN = { ...RDN, ...oidvalue };
         });
 
         dispatch({
