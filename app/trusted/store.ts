@@ -93,18 +93,22 @@ export class Store {
     const selfSigned = cert.isSelfSigned;
     const hasKey = provider.hasPrivateKey(cert);
 
-    if (category) {
-      store.addCert(provider.handle, category, cert, contName, 75);
-    } else {
-      if (hasKey) {
-        store.addCert(provider.handle, MY, cert, contName, 75);
-      } else if (!hasKey && !bCA) {
-        store.addCert(provider.handle, ADDRESS_BOOK, cert, contName, 75);
-      } else if (bCA) {
-        if (OS_TYPE === "Windows_NT") {
-          selfSigned ? store.addCert(provider.handle, ROOT, cert, contName, 75) : store.addCert(provider.handle, CA, cert, contName, 75);
+    try {
+      if (category) {
+        store.addCert(provider.handle, category, cert, contName, 75);
+      } else {
+        if (hasKey) {
+          store.addCert(provider.handle, MY, cert, contName, 75);
+        } else if (!hasKey && !bCA) {
+          store.addCert(provider.handle, ADDRESS_BOOK, cert, contName, 75);
+        } else if (bCA) {
+          if (OS_TYPE === "Windows_NT") {
+            selfSigned ? store.addCert(provider.handle, ROOT, cert, contName, 75) : store.addCert(provider.handle, CA, cert, contName, 75);
+          }
         }
       }
+    } catch (e) {
+      return callback(e);
     }
 
     return callback();

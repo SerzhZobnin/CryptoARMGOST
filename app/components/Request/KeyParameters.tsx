@@ -141,7 +141,7 @@ class KeyParameters extends React.Component<IKeyParametersProps, {}> {
           <label>{localize("CSR.key_usage_group", locale)}</label>
         </div>
         <div className="col s6 input-radio input-field-csr">
-        <div className="row halftop" />
+          <div className="row halftop" />
           <input
             name="exportableKey"
             className="filled-in"

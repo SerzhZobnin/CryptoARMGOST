@@ -62,6 +62,8 @@ class RequestCAInfo extends React.Component<IRequestCAInfoProps, any> {
       window.PKISTORE.importCertificate(cert, PROVIDER_CRYPTOPRO, (err: Error) => {
         if (err) {
           Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
+        } else {
+          Materialize.toast(localize("Certificate.cert_import_ok", locale), 2000, "toast-cert_imported");
         }
       }, MY, containerName);
 
