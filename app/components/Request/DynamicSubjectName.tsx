@@ -52,6 +52,7 @@ interface ITemplate {
 }
 
 interface IDynamicSubjectNameProps {
+  formVerified: boolean;
   model: any;
   template: ITemplate;
   onCancel?: () => void;
@@ -132,7 +133,7 @@ class DynamicSubjectName extends React.Component<IDynamicSubjectNameProps, IDyna
                 </div>
               );
             } else {
-              const oidValue = this.state.subject[field.Oid];
+              const oidValue = subject[field.Oid] ? subject[field.Oid].value : "";
 
               return (
                 <div className="row" key={field.Oid}>
@@ -141,10 +142,10 @@ class DynamicSubjectName extends React.Component<IDynamicSubjectNameProps, IDyna
                       disabled={field.ProhibitChange}
                       id={field.Oid}
                       type="text"
-                      className="validate"
+                      className={!this.props.formVerified ? "validate" : field.ProhibitEmpty ? oidValue && oidValue.length > 0 ? "valid" : "invalid" : "valid"}
                       maxLength={field.Length}
                       name={field.Oid}
-                      value={subject[field.Oid] ? subject[field.Oid].value : ""}
+                      value={oidValue}
                       onChange={this.handleInputChange}
                       placeholder={`${field.LocalizedName} (oid: ${field.Oid})`}
                     />

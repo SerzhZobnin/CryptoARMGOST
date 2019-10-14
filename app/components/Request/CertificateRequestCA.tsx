@@ -200,6 +200,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                       <div className="row halfbottom" />
 
                       <DynamicSubjectName
+                        formVerified={formVerified}
                         model={RDNsubject}
                         template={this.state.template}
                         onSubjectChange={this.onSubjectChange}
@@ -368,52 +369,27 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     this.setState({ OpenButton: true, caTemplatesArray });
   }
 
-  /*verifyFields = () => {
-    const { algorithm, cn, containerName, email, inn, locality, ogrnip, province, snils, template } = this.state;
-    const REQULAR_EXPRESSION = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-
-    if (cn.length > 0) {
-      if (template === REQUEST_TEMPLATE_KEP_FIZ) {
-        if (!snils || !snils.length || !validateSnils(snils) || !province.length || !locality.length) {
-          return false;
-        }
-      }
-
-      if (template === REQUEST_TEMPLATE_KEP_IP) {
-        if (!snils || !snils.length || !ogrnip || !ogrnip.length || !validateOgrnip(ogrnip) || !province.length || !locality.length) {
-          return false;
-        }
-      }
-
-      if (algorithm === ALG_GOST2001 || algorithm === ALG_GOST12_256 || algorithm === ALG_GOST12_512) {
-        if (!containerName.length) {
-          return false;
-        }
-      }
-
-      if (template !== REQUEST_TEMPLATE_DEFAULT) {
-        if (inn && inn.length && !validateInn(inn)) {
-          return false;
-        }
-      }
-
-      if (template === REQUEST_TEMPLATE_ADDITIONAL) {
-        if (snils && snils.length && !validateSnils(snils) ||
-          ogrnip && ogrnip.length && !validateOgrnip(ogrnip)
-        ) {
-          return false;
-        }
-      }
-
-      if (email && email.length && !REQULAR_EXPRESSION.test(email)) {
-        return false;
-      }
-
-      return true;
+  verifyFields = () => {
+    const { template, RDNsubject } = this.state;
+    if (!template || !template.RDN) {
+      return false;
     }
 
-    return false;
-  }*/
+    let result = true;
+
+    Object.keys(template.RDN).map((key) => {
+      const field = template.RDN[key];
+      if (field) {
+        const RDNsubjectValue = RDNsubject[field.Oid];
+
+        if (field.ProhibitEmpty && (!RDNsubjectValue || !RDNsubjectValue.value)) {
+          result = false;
+        }
+      }
+    });
+
+    return result;
+  }
 
   handleChangeActiveTab = (activeSubjectNameInfoTab: boolean) => {
     this.setState({ activeSubjectNameInfoTab });
@@ -461,16 +437,16 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       return;
     }
 
-    // if (!this.verifyFields()) {
-    //   $(".toast-required_fields").remove();
-    //   Materialize.toast(localize("CSR.fill_required_fields", locale), 2000, "toast-required_fields");
+    if (!this.verifyFields()) {
+      $(".toast-required_fields").remove();
+      Materialize.toast(localize("Services.fill_required_fields", locale), 3000, "toast-required_fields");
 
-    //   if (!this.state.formVerified) {
-    //     this.setState({ formVerified: true });
-    //   }
+      if (!this.state.formVerified) {
+        this.setState({ formVerified: true });
+      }
 
-    //   return;
-    // }
+      return;
+    }
 
     if (keyUsage.cRLSign) {
       keyUsageStr += ",cRLSign";
