@@ -8,11 +8,12 @@ import { connect } from "react-redux";
 import { addCertificateRequestCA, loadAllCertificates, removeAllCertificates } from "../../AC";
 import { postCertRequest, postCertRequestAuthCert } from "../../AC/caActions";
 import {
-  ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, DEFAULT_CSR_PATH, HOME_DIR,
-  KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
-  PROVIDER_CRYPTOPRO, PROVIDER_SYSTEM, REQUEST, REQUEST_TEMPLATE_ADDITIONAL,
-  REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
+  ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, CA_SERVICE, DEFAULT_CSR_PATH,
+  HOME_DIR, KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT,
+  MY, PROVIDER_CRYPTOPRO, PROVIDER_SYSTEM, REQUEST,
+  REQUEST_TEMPLATE_ADDITIONAL, REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
+import { filteredServicesByType } from "../../selectors/servicesSelectors";
 import * as jwt from "../../trusted/jwt";
 import { arrayToMap, fileCoding, formatDate, mapToArr, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
 import logger from "../../winstonLogger";
@@ -778,7 +779,7 @@ export default connect((state) => {
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
     regrequests: state.regrequests.entities,
-    services: mapToArr(state.services.entities),
+    services: mapToArr(filteredServicesByType(state, {type: CA_SERVICE})),
     servicesMap: state.services.entities,
     templates: state.templates.entities.toArray(),
   };
