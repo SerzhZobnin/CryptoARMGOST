@@ -267,7 +267,7 @@ export function getRegRequest(url: string, Token: string, Password: string, serv
           payload: {
             RDN: profile,
             id: regRequestId,
-            regrequest: {
+            regRequest: {
               Password,
               RegRequestId: regRequestId,
               Status: statusRegRequest,
