@@ -51,7 +51,6 @@ export async function postApiAuthCert(url: string, postfields: any, headerfields
 
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
-    curl.setOpt(window.Curl.option.VERBOSE, true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.setOpt(window.Curl.option.SSLCERT, `CurrentUser\\MY\\${thumbprint}`);
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);

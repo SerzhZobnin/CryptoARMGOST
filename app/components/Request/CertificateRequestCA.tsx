@@ -427,7 +427,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   handelReady = () => {
     const { localize, locale } = this.context;
-    const { activeService, algorithm, containerName, exportableKey, extKeyUsage,
+    const { activeService, algorithm, caTemplate, containerName, exportableKey, extKeyUsage,
       keyUsage, template, RDNsubject } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { addCertificateRequestCA, postCertRequest, postCertRequestAuthCert } = this.props;
@@ -539,7 +539,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     // }
 
     oid = new trusted.pki.Oid("1.3.6.1.4.1.311.21.7");
-    ext = new trusted.pki.Extension(oid, "1.2.643.2.2.46.0.8");
+    ext = caTemplate ? new trusted.pki.Extension(oid, caTemplate) : new trusted.pki.Extension(oid, "1.2.643.2.2.46.0.8");
     exts.push(ext);
 
     const certReq = new trusted.pki.CertificationRequest();
