@@ -70,6 +70,8 @@ export default {
     current_status: "Текущий статус запроса",
     description: "Описание запроса регистрации",
     email: "Адрес электронной почты",
+    goto_keyparams_set_template: "Укажите шаблон сертификата УЦ",
+    goto_keyparams_set_template_subject: "Укажите шаблон сертификата УЦ (вкладка Параметры ключа)",
     keyPhrase: "Ключевая фраза запроса",
     login: "Логин",
     password: "Пароль",

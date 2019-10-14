@@ -70,6 +70,8 @@ export default {
     current_status: "Current request status",
     description: "Description",
     email: "Email",
+    goto_keyparams_set_template: "Set certificate template CA",
+    goto_keyparams_set_template_subject: "Set certificate template CA (goto key parameters)",
     keyPhrase: "Key phrase",
     login: "Login",
     password: "Password",

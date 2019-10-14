@@ -29,7 +29,6 @@ interface IExtendedKeyUsage {
 
 interface IKeyParametersProps {
   algorithm: string;
-  caTemplate?: any;
   caTemplates?: any[];
   containerName: string;
   exportableKey: boolean;
@@ -85,7 +84,7 @@ class KeyParameters extends React.Component<IKeyParametersProps, {}> {
 
   render() {
     const { localize, locale } = this.context;
-    const { algorithm, caTemplate, caTemplates, containerName, exportableKey, extKeyUsage, keyUsage, keyUsageGroup,
+    const { algorithm, caTemplates, containerName, exportableKey, extKeyUsage, keyUsage, keyUsageGroup,
       handleAlgorithmChange, handleCATemplateChange, handleExtendedKeyUsageChange,
       handleInputChange, handleKeyUsageChange, handleKeyUsageGroupChange, toggleExportableKey } = this.props;
 
@@ -115,10 +114,11 @@ class KeyParameters extends React.Component<IKeyParametersProps, {}> {
           </div>
         </div>
         {
-          caTemplate && handleCATemplateChange && caTemplates && caTemplates.length ?
+          handleCATemplateChange && caTemplates && caTemplates.length ?
             <React.Fragment>
               <div className="input-field input-field-csr col s12">
-                <select className="select" ref="templateSelect" value={caTemplate.Oid} name="templateSelect" onChange={handleCATemplateChange} >
+                <select className="select" ref="templateSelect" name="templateSelect" onChange={handleCATemplateChange} >
+                <option disabled selected >Выберите шаблон</option>
                   {
                     caTemplates.map((template) =>
                       <option key={template.Oid} value={template.Oid}>
@@ -126,7 +126,7 @@ class KeyParameters extends React.Component<IKeyParametersProps, {}> {
                       </option>)
                   }
                 </select>
-                <label>{localize("CA.cert_template", locale)}</label>
+                <label>{localize("CA.cert_template", locale)} *</label>
               </div>
               <div className="row" />
             </React.Fragment> :

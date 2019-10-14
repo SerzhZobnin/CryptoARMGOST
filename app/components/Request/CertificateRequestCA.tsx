@@ -93,7 +93,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
     this.state = {
       activeService: "",
-      caTemplate: null,
+      caTemplate: "",
       caTemplatesArray: [],
       OpenButton: false,
       activeSubjectNameInfoTab: true,
@@ -213,7 +213,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                       <div className="row halfbottom" />
                       <KeyParameters
                         algorithm={algorithm}
-                        caTemplate={this.state.caTemplate}
                         caTemplates={this.state.caTemplatesArray}
                         containerName={containerName}
                         exportableKey={exportableKey}
@@ -361,17 +360,12 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === activeService);
     const caTemplatesObj = this.props.caTemplates.get(regrequest.id);
     let caTemplatesArray;
-    let caTemplate;
 
     if (caTemplatesObj) {
       caTemplatesArray = caTemplatesObj.template;
     }
 
-    if (caTemplatesArray && caTemplatesArray.length) {
-      caTemplate = caTemplatesArray[0].Oid;
-    }
-
-    this.setState({ OpenButton: true, caTemplate, caTemplatesArray });
+    this.setState({ OpenButton: true, caTemplatesArray });
   }
 
   /*verifyFields = () => {
@@ -427,7 +421,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   handelReady = () => {
     const { localize, locale } = this.context;
-    const { activeService, algorithm, caTemplate, containerName, exportableKey, extKeyUsage,
+    const { activeService, activeSubjectNameInfoTab, caTemplatesArray, algorithm, caTemplate, containerName, exportableKey, extKeyUsage,
       keyUsage, template, RDNsubject } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { addCertificateRequestCA, postCertRequest, postCertRequestAuthCert } = this.props;
@@ -438,6 +432,16 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     let extendedKeyUsageStr = "";
     let oid;
     let ext;
+
+    if (caTemplatesArray && caTemplatesArray.length && !caTemplate) {
+      $(".toast-set_template").remove();
+      if (activeSubjectNameInfoTab) {
+        Materialize.toast(localize("CA.goto_keyparams_set_template_subject", locale), 3000, "toast-set_template");
+      } else {
+        Materialize.toast(localize("CA.goto_keyparams_set_template", locale), 3000, "toast-set_template");
+      }
+      return;
+    }
 
     if (licenseStatus !== true) {
       $(".toast-jwtErrorLicense").remove();
@@ -778,7 +782,7 @@ export default connect((state) => {
     lic_error: state.license.lic_error,
     licenseStatus: state.license.status,
     regrequests: state.regrequests.entities,
-    services: mapToArr(filteredServicesByType(state, {type: CA_SERVICE})),
+    services: mapToArr(filteredServicesByType(state, { type: CA_SERVICE })),
     servicesMap: state.services.entities,
     templates: state.templates.entities.toArray(),
   };
