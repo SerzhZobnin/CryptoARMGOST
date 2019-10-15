@@ -1,7 +1,9 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { connect } from "react-redux";
 import { USER_NAME } from "../../constants";
 import logger from "../../winstonLogger";
+import { Certificate } from "crypto";
 
 interface ICertificateDeleteState {
   certificate: string;
@@ -10,6 +12,7 @@ interface ICertificateDeleteState {
 
 interface IContainerDeleteProps {
   container: any;
+  certificates: any[];
   onCancel?: () => void;
   reloadContainers: () => void;
 }
@@ -31,11 +34,9 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
 
   componentDidMount() {
     const { container } = this.props;
+    const {certificate} = this.state;
 
-    if (container) {
-      const certificate = this.getCertificateByContainer(container);
-      this.setState({ certificate });
-    }
+    this.setState({ certificate: container.certificate});
   }
 
   componentWillUnmount() {
@@ -46,8 +47,7 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
     const { certificate, deleteCertificate } = this.state;
     const { localize, locale } = this.context;
     const { container, reloadContainers } = this.props;
-    console.log(certificate)
-
+      
     return (
       <React.Fragment>
         <div className="row halftop">
@@ -92,7 +92,7 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
     );
   }
  
-
+  
   handelCancel = () => {
     const { onCancel } = this.props;
 
@@ -107,13 +107,24 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
 
   handleRemove = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { container, reloadContainers } = this.props;
+    const { container, reloadContainers,certificates } = this.props;
     const { localize, locale } = this.context;
     const { certificate, deleteCertificate } = this.state;
     if (!container) {
       return;
     }
-
+    
+    if(deleteCertificate == true)
+    {
+      console.log(certificate)
+      if (!window.PKISTORE.deleteCertificate(certificate)) {
+        $(".toast-cert_delete_failed").remove();
+        Materialize.toast(localize("Certificate.cert_delete_failed", locale), 2000, "toast-cert_delete_failed");
+  
+        return;
+      }
+    }
+    
     try {
       trusted.utils.Csp.deleteContainer(container.name, 75);
 
@@ -132,15 +143,7 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
         userName: USER_NAME,
       });
 
-      if(deleteCertificate == true)
-      {
-        if (!window.PKISTORE.deleteCertificate(container.certificate)) {
-          $(".toast-cert_delete_failed").remove();
-          Materialize.toast(localize("Certificate.cert_delete_failed", locale), 2000, "toast-cert_delete_failed");
-    
-          return;
-        }
-      }
+      
 
       reloadContainers();
     } catch (err) {
@@ -160,20 +163,9 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
       });
     }
   }
-  getCertificateByContainer = (container: any) => {
-    let certificate = "";
-
-    if (container.category === "MY" && container.key) {
-      try {
-        const x509 = window.PKISTORE.getPkiObject(container);
-        container = trusted.utils.Csp.getContainerNameByCertificate(x509);
-      } catch (e) {
-        // console.log("error get container by certificate", e);
-      }
-    }
-
-    return container;
-  }
+  
 }
 
-export default ContainerDelete;
+export default connect((state) => ({
+  certificates: state.certificates.entities,
+}))(ContainerDelete)
