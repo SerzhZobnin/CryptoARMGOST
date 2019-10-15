@@ -1,3 +1,4 @@
+import * as os from "os";
 import { ICertificateRequestCA, IRegRequest } from "../components/Services/types";
 import {
   DELETE_CERTIFICATE_REQUEST_CA, FAIL, GET_CA_CERTREQUEST,
@@ -125,7 +126,12 @@ export async function getApiAuthCert(url: string, headerfields: string[], thumbp
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.setOpt(window.Curl.option.SSLCERT, `CurrentUser\\MY\\${thumbprint}`);
+    if (os.type() === "Windows_NT") {
+      curl.setOpt(window.Curl.option.SSLCERT, `CurrentUser\\MY\\${thumbprint}`);
+    } else {
+      curl.setOpt(window.Curl.option.SSLCERTTYPE, 'CERT_SHA1_HASH_PROP_ID:CERT_SYSTEM_STORE_CURRENT_USER:MY');
+      curl.setOpt(window.Curl.option.SSLCERT, `${thumbprint}`);
+    }
     curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
       let data;
 
