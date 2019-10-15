@@ -12,9 +12,6 @@ import FileSelector from "../Files/FileSelector";
 import Modal from "../Modal";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 import SignatureAndEncryptRightColumn from "./SignatureAndEncryptRightColumn";
-import {
-  TRUSTED_CRYPTO_LOG,
-} from "../../constants";
 const dialog = window.electron.remote.dialog;
 
 interface ISignatureAndEncryptWindowProps {
