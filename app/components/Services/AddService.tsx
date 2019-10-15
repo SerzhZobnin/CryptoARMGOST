@@ -43,7 +43,7 @@ const initialState = {
   regNewUser: true,
   serviceName: "КриптоПро УЦ 2.0",
   serviceSettings: {
-    url: "https://testca2012.cryptopro.ru/ui/api/b1ca4992-d7cd-4f7e-b56e-a81e00db58ee",
+    url: "",
   },
   serviceType: CA_SERVICE,
   RDNmodel: null,
