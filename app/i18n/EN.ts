@@ -474,7 +474,7 @@ export default {
     license_key: "The license key",
     license_request: "Request for a temporary license",
     link_buy_license: "https://cryptoarm.ru/shop/cryptoarm-gost",
-    link_buy_license_csp: "https://cryptoarm.ru/shop/skzi-cryptopro-csp-4-0",
+    link_buy_license_csp: "https://cryptoarm.ru/shop/skzi-cryptopro-csp-5-0",
     overtimes_license: "In the absence of a permanent license, you can request a temporary license. The temporary license is issued for a period of 14 days and provides full-fledged work with the application.",
     overtimes_license_confirm: "To send a request for a temporary license for the CryptoARM GOST product, for a period of 14 days, fill out the form floor. A temporary license is issued once per workplace to familiarize yourself with all the features of the software product.",
     overtimes_license_error: "The request for obtaining a temporary license for the CryptoARM GOST product was rejected. Perhaps, for the email address you have already issued a license. To resolve this issue, please contact technical support at info@trusted.ru.",
