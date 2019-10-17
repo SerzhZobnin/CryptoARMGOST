@@ -53,7 +53,12 @@ export async function postApiAuthCert(url: string, postfields: any, headerfields
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.setOpt(window.Curl.option.SSLCERT, `CurrentUser\\MY\\${thumbprint}`);
+    if (os.type() === "Windows_NT") {
+      curl.setOpt(window.Curl.option.SSLCERT, `CurrentUser\\MY\\${thumbprint}`);
+    } else {
+      curl.setOpt(window.Curl.option.SSLCERTTYPE, 'CERT_SHA1_HASH_PROP_ID:CERT_SYSTEM_STORE_CURRENT_USER:MY');
+      curl.setOpt(window.Curl.option.SSLCERT, `${thumbprint}`);
+    }
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
 
     curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
@@ -207,7 +212,12 @@ export async function getCertApiAuthCert(url: string, headerfields: string[], th
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.setOpt(window.Curl.option.SSLCERT, `CurrentUser\\MY\\${thumbprint}`);
+    if (os.type() === "Windows_NT") {
+      curl.setOpt(window.Curl.option.SSLCERT, `CurrentUser\\MY\\${thumbprint}`);
+    } else {
+      curl.setOpt(window.Curl.option.SSLCERTTYPE, 'CERT_SHA1_HASH_PROP_ID:CERT_SYSTEM_STORE_CURRENT_USER:MY');
+      curl.setOpt(window.Curl.option.SSLCERT, `${thumbprint}`);
+    }
     curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
       try {
         if (statusCode !== 200) {
