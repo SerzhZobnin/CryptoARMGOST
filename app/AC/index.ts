@@ -405,6 +405,7 @@ export function getCertificateFromContainer(container: number) {
           signatureDigestAlgorithm: certificate.signatureDigestAlgorithm,
           subjectFriendlyName: certificate.subjectFriendlyName,
           subjectName: null,
+          provider: "CRYPTOPRO",
         };
 
         dispatch({

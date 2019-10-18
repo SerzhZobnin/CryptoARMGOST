@@ -3,7 +3,6 @@ import React from "react";
 import { connect } from "react-redux";
 import { USER_NAME } from "../../constants";
 import logger from "../../winstonLogger";
-import { Certificate } from "crypto";
 
 interface ICertificateDeleteState {
   certificate: string;
@@ -14,10 +13,12 @@ interface IContainerDeleteProps {
   container: any;
   certificates: any[];
   onCancel?: () => void;
+  reloadCertificates: () => void;
   reloadContainers: () => void;
+
 }
 
-class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificateDeleteState, {}> {
+class ContainerDelete extends React.Component<IContainerDeleteProps, ICertificateDeleteState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -36,7 +37,7 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
     const { container } = this.props;
     const {certificate} = this.state;
 
-    this.setState({ certificate: container.certificate});
+    this.setState({ certificate: container.certificateItem});
   }
 
   componentWillUnmount() {
@@ -44,34 +45,43 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
   }
 
   render() {
-    const { certificate, deleteCertificate } = this.state;
+    const { deleteCertificate } = this.state;
     const { localize, locale } = this.context;
-    const { container, reloadContainers } = this.props;
-      
+    const { container, reloadContainers, certificates } = this.props;
+    let body: any  = " ";
+    if(container.certificateItem !== null)
+    {
+       body = certificates.get(`CRYPTOPRO_MY_${container.certificateItem.hash}`) ?
+      (
+          <div className="input-field col s12">
+                <input
+                  name="groupDelCont"
+                  type="checkbox"
+                  id="delCont"
+                  className="checkbox-red"
+                  checked={deleteCertificate}
+                  onClick={this.toggleDeleteCertificate}
+                />
+                <label htmlFor="delCont">{localize("Certificate.delete_certificate_and_container", locale)}</label>
+              </div>
+      ) :
+      (
+        <div className="input-field col s12"></div>
+      );
+    }
+
+
     return (
       <React.Fragment>
         <div className="row halftop">
           <div className="col s12">
             <div className="content-wrapper tbody border_group">
               <div className="col s12">
-                
                 <span className="card-infos sub">
-                  {localize("Containers.realy_delete_container", locale)}  
-                            
+                  {localize("Containers.realy_delete_container", locale)}
                 </span>
-
               </div>
-              <div className="input-field col s12">
-          <input
-            name="groupDelCont"
-            type="checkbox"
-            id="delCont"
-            className="checkbox-red"
-            checked={deleteCertificate}
-            onClick={this.toggleDeleteCertificate}
-          />
-          <label htmlFor="delCont">{localize("Certificate.delete_certificate_and_container", locale)}</label>
-        </div>
+              {body}
             </div>
           </div>
         </div>
@@ -91,8 +101,8 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
       </React.Fragment>
     );
   }
- 
-  
+
+
   handelCancel = () => {
     const { onCancel } = this.props;
 
@@ -107,24 +117,13 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
 
   handleRemove = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { container, reloadContainers,certificates } = this.props;
+    const { container, reloadContainers, reloadCertificates, certificates } = this.props;
     const { localize, locale } = this.context;
-    const { certificate, deleteCertificate } = this.state;
+    const { deleteCertificate } = this.state;
+
     if (!container) {
       return;
     }
-    
-    if(deleteCertificate == true)
-    {
-      console.log(certificate)
-      if (!window.PKISTORE.deleteCertificate(certificate)) {
-        $(".toast-cert_delete_failed").remove();
-        Materialize.toast(localize("Certificate.cert_delete_failed", locale), 2000, "toast-cert_delete_failed");
-  
-        return;
-      }
-    }
-    
     try {
       trusted.utils.Csp.deleteContainer(container.name, 75);
 
@@ -143,8 +142,6 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
         userName: USER_NAME,
       });
 
-      
-
       reloadContainers();
     } catch (err) {
       $(".toast-container_delete_failed").remove();
@@ -162,8 +159,19 @@ class ContainerDelete extends React.Component<IContainerDeleteProps,ICertificate
         userName: USER_NAME,
       });
     }
+    if(deleteCertificate == true)
+   {
+       const certificate = certificates.get(`CRYPTOPRO_MY_${container.certificateItem.hash}`);
+       if (!window.PKISTORE.deleteCertificate(certificate)) {
+       $(".toast-cert_delete_failed").remove();
+       Materialize.toast(localize("Certificate.cert_delete_failed", locale), 2000, "toast-cert_delete_failed");
+
+       return;
+     }
+   }
   }
-  
+
+
 }
 
 export default connect((state) => ({
