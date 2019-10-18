@@ -30,6 +30,7 @@ export interface ICertificateRequestCA {
   certificateReq: string;
   id: string;
   status: string;
+  serviceId: string;
 }
 
 export interface IRegRequest {
@@ -44,4 +45,5 @@ export interface IRegRequest {
   Token: string;
   id: string;
   serviceId: string;
+  certThumbprint: string;
 }

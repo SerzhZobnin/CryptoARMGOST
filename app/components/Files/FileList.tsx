@@ -5,10 +5,8 @@ import { connect } from "react-redux";
 import { AutoSizer, List } from "react-virtualized";
 import { activeFile, deleteFile, selectTempContentOfSignedFiles } from "../../AC";
 import { ENCRYPT, SIGN } from "../../constants";
-import { loadingRemoteFilesSelector } from "../../selectors";
 import { mapToArr } from "../../utils";
 import FileListItem from "./FileListItem";
-import RemoteFileListItem from "./RemoteFileListItem";
 
 const HEIGHT_FOR_SIGN = 377;
 const HEIGHT_FOR_ENCRYPT = 427;
@@ -20,7 +18,6 @@ interface IFileRedux {
   fullpath: string;
   id: number;
   mtime: Date;
-  socket: string;
 }
 
 export interface IRemoteFile {
@@ -37,7 +34,6 @@ export interface IRemoteFile {
 interface IFilelistProps {
   activeFile: (id: number, active?: boolean) => void;
   deleteFile: (fileId: number) => void;
-  loadingFiles: IRemoteFile[];
   location: any;
   files: IFileRedux[];
   operation: string;
@@ -61,13 +57,9 @@ class FileList extends React.Component<IFilelistProps, {}> {
   }
 
   shouldComponentUpdate(nextProps: IFilelistProps) {
-    const { files, loadingFiles, selectingFilesPackage } = this.props;
+    const { files, selectingFilesPackage } = this.props;
 
     if (selectingFilesPackage !== nextProps.selectingFilesPackage) {
-      return true;
-    }
-
-    if (loadingFiles.length !== nextProps.loadingFiles.length) {
       return true;
     }
 
@@ -93,7 +85,7 @@ class FileList extends React.Component<IFilelistProps, {}> {
   }
 
   render() {
-    const { files, loadingFiles } = this.props;
+    const { files } = this.props;
 
     return (
       <div style={{ display: "flex" }}>
@@ -101,13 +93,13 @@ class FileList extends React.Component<IFilelistProps, {}> {
           <AutoSizer>
             {({ height, width }) => (
               <List
-                rowCount={files.length + loadingFiles.length}
+                rowCount={files.length}
                 height={height}
                 width={width}
                 overscanRowCount={5}
                 rowHeight={45}
                 rowRenderer={this.rowRenderer}
-                files={loadingFiles.concat(files)}
+                files={files}
                 style={{ outline: "none" }}
               />
             )}
@@ -118,27 +110,13 @@ class FileList extends React.Component<IFilelistProps, {}> {
   }
 
   rowRenderer = ({ index, key, style }) => {
-    const { files, operation, loadingFiles, selectTempContentOfSignedFiles } = this.props;
+    const { files, operation, selectTempContentOfSignedFiles } = this.props;
 
-    if (!files.length && !loadingFiles.length) {
+    if (!files.length) {
       return null;
     }
 
-    if (index > files.length - 1 && loadingFiles.length) {
-      const realIndex = index - files.length;
-
-      return (
-        <RemoteFileListItem
-          removeFiles={() => this.removeFile(loadingFiles[realIndex].id)}
-          onClickBtn={() => this.toggleActive(loadingFiles[realIndex])}
-          file={loadingFiles[realIndex]}
-          operation={operation}
-          key={key}
-          index={realIndex.toString()}
-          style={style}
-        />
-      );
-    } else if (index < files.length) {
+    if (index < files.length) {
       return (
         <FileListItem
           removeFiles={() => this.removeFile(files[index].id)}
@@ -168,9 +146,7 @@ class FileList extends React.Component<IFilelistProps, {}> {
   }
 
   onClick = (file: IFileRedux) => {
-    if (!file.socket) {
       this.toggleActive(file);
-    }
   }
 
   noGridOverflow() {
@@ -199,7 +175,6 @@ class FileList extends React.Component<IFilelistProps, {}> {
 export default connect((state) => {
   return {
     files: mapToArr(state.files.entities),
-    loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     selectedFilesPackage: state.files.selectedFilesPackage,
     selectingFilesPackage: state.files.selectingFilesPackage,
   };

@@ -46,6 +46,7 @@ interface IDynamicRegistrationFormProps {
    * @memberof IDynamicRegistrationFormProps
    */
   caURL: string;
+  formVerified: boolean;
   onCancel?: () => void;
   onRDNmodelChange: (model: any) => void;
   toggleDisableSecondStep: () => void;
@@ -198,7 +199,7 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
                       disabled={field.ProhibitChange}
                       id={field.Oid}
                       type="text"
-                      className="validate"
+                      className={!this.props.formVerified ? "validate" : field.ProhibitEmpty ? oidValue && oidValue.length > 0 ? "valid" : "invalid" : "valid"}
                       name={field.Oid}
                       value={oidValue}
                       onChange={this.handleInputChange}

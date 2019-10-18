@@ -17,6 +17,7 @@ interface IAddServiceState {
   comment: string;
   description: string;
   email: string;
+  formVerified: boolean;
   isUserattrLoading: boolean;
   keyPhrase: string;
   login: string;
@@ -34,6 +35,7 @@ const initialState = {
   description: "",
   disableSecondStep: false,
   email: "",
+  formVerified: false,
   isUserattrLoading: false,
   keyPhrase: "",
   login: "",
@@ -41,7 +43,7 @@ const initialState = {
   regNewUser: true,
   serviceName: "КриптоПро УЦ 2.0",
   serviceSettings: {
-    url: "https://testca2012.cryptopro.ru/ui/api/b1ca4992-d7cd-4f7e-b56e-a81e00db58ee",
+    url: "",
   },
   serviceType: CA_SERVICE,
   RDNmodel: null,
@@ -125,6 +127,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
                       regNewUser ?
                         <DynamicRegistrationForm
                           caURL={serviceSettings.url}
+                          formVerified={this.state.formVerified}
                           onCancel={this.handelCancel}
                           onRDNmodelChange={this.onRDNmodelChange}
                           toggleDisableSecondStep={this.toggleDisableSecondStep}
@@ -298,7 +301,7 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
 
       if (!this.verifyProhibitEmptyFields()) {
         $(".toast-required_fields").remove();
-        Materialize.toast(localize("CSR.fill_required_fields", locale), 3000, "toast-required_fields");
+        Materialize.toast(localize("Services.fill_required_fields", locale), 3000, "toast-required_fields");
 
         return;
       }
@@ -328,6 +331,10 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
         result = false;
       }
     });
+
+    if (!this.state.formVerified) {
+      this.setState({ formVerified: true });
+    }
 
     return result;
   }

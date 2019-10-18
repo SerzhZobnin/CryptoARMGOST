@@ -66,7 +66,7 @@
     var trusted;
     try {
       trusted = require('trusted-crypto');
-      const LICENSE_MNG  = new trusted.utils.License_Mng();
+      const LICENSE_MNG = new trusted.utils.License_Mng();
       window.LICENSE_MNG = LICENSE_MNG;
       var result = LICENSE_MNG.generateTrial();
       console.log("result", result);
@@ -74,7 +74,7 @@
       window.tcerr = err;
     }
 
-    var {Curl} = require("node-libcurl");
+    var { Curl } = require("trusted-curl");
 
     path = require('path');
     fs = require('fs');

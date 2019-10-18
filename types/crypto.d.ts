@@ -1,3 +1,4 @@
+/// <reference types="node" />
 declare namespace trusted {
     /**
      *
@@ -129,6 +130,8 @@ declare namespace native {
             getPubKeyAlgorithm(): string;
             setExportableFlag(ExportableFlag: boolean): void;
             getExportableFlag(): boolean;
+            setNewKeysetFlag(newKeysetFlag: boolean): void;
+            getNewKeysetFlag(): boolean;
         }
         class PKCS12 {
             load(filename: string): void;
@@ -159,6 +162,7 @@ declare namespace native {
             installCertificateFromContainer(contName: string, provType: number, provName?: string): void;
             installCertificateToContainer(cert: PKI.Certificate, contName: string, provType: number, provName?: string): void;
             deleteContainer(contName: string, provType: number, provName?: string): void;
+            hasPrivateKey(cert: PKI.Certificate): boolean;
             buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             verifyCertificateChain(cert: PKI.Certificate): boolean;
             isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
@@ -315,6 +319,7 @@ declare namespace native {
         }
         class ProviderCryptopro extends Provider {
             constructor();
+            hasPrivateKey(cert: PKI.Certificate): boolean;
         }
         class PkiStore {
             constructor(json: string);
@@ -836,6 +841,15 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static getContainerNameByCertificate(cert: pki.Certificate, category?: string): string;
+        /**
+         * Ensure that the certificate's private key is available
+         *
+         * @static
+         * @param {Certificate} cert
+         * @returns {boolean}
+         * @memberOf Csp
+         */
+        hasPrivateKey(cert: pki.Certificate): boolean;
         static buildChain(cert: pki.Certificate): pki.CertificateCollection;
         static verifyCertificateChain(cert: pki.Certificate): boolean;
         /**
@@ -1713,6 +1727,21 @@ declare namespace trusted.pki {
         * @memberof CertificationRequest
         */
         exportableFlag: boolean;
+        /**
+         * Rerutn newKeysetFlag
+         *
+         * @readonly
+         * @type {boolean}
+         * @memberof CertificationRequest
+         */
+        /**
+        * Set newKeysetFlag
+        *
+        * @readonly
+        * @type {boolean}
+        * @memberof CertificationRequest
+        */
+        newKeysetFlag: boolean;
     }
 }
 declare namespace trusted.pki {
@@ -2108,6 +2137,15 @@ declare namespace trusted.pkistore {
      */
     class ProviderCryptopro extends BaseObject<native.PKISTORE.ProviderCryptopro> {
         constructor();
+        /**
+        * Ensure that the certificate's private key is available
+        *
+        * @static
+        * @param {Certificate} cert
+        * @returns {boolean}
+        * @memberOf ProviderCryptopro
+        */
+        hasPrivateKey(cert: pki.Certificate): boolean;
     }
 }
 declare namespace trusted.pkistore {

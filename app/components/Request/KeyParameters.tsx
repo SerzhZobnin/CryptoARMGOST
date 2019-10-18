@@ -29,6 +29,7 @@ interface IExtendedKeyUsage {
 
 interface IKeyParametersProps {
   algorithm: string;
+  caTemplates?: any[];
   containerName: string;
   exportableKey: boolean;
   extKeyUsage: IExtendedKeyUsage;
@@ -37,6 +38,7 @@ interface IKeyParametersProps {
   keyUsage: IKeyUsage;
   keyUsageGroup: string;
   handleAlgorithmChange: (ev: any) => void;
+  handleCATemplateChange?: (ev: any) => void;
   handleInputChange: (ev: any) => void;
   handleKeyUsageChange: (ev: any) => void;
   handleKeyUsageGroupChange: (ev: any) => void;
@@ -65,6 +67,10 @@ class KeyParameters extends React.Component<IKeyParametersProps, {}> {
     $(ReactDOM.findDOMNode(this.refs.algorithmSelect)).on("change", this.props.handleAlgorithmChange);
     $(ReactDOM.findDOMNode(this.refs.keyUsageGroup)).on("change", this.props.handleKeyUsageGroupChange);
 
+    if (this.props.handleCATemplateChange) {
+      $(ReactDOM.findDOMNode(this.refs.templateSelect)).on("change", this.props.handleCATemplateChange);
+    }
+
     Materialize.updateTextFields();
   }
 
@@ -78,8 +84,8 @@ class KeyParameters extends React.Component<IKeyParametersProps, {}> {
 
   render() {
     const { localize, locale } = this.context;
-    const { algorithm, containerName, exportableKey, extKeyUsage, keyUsage, keyUsageGroup,
-      handleAlgorithmChange, handleExtendedKeyUsageChange,
+    const { algorithm, caTemplates, containerName, exportableKey, extKeyUsage, keyUsage, keyUsageGroup,
+      handleAlgorithmChange, handleCATemplateChange, handleExtendedKeyUsageChange,
       handleInputChange, handleKeyUsageChange, handleKeyUsageGroupChange, toggleExportableKey } = this.props;
 
     return (
@@ -107,6 +113,25 @@ class KeyParameters extends React.Component<IKeyParametersProps, {}> {
             </label>
           </div>
         </div>
+        {
+          handleCATemplateChange && caTemplates && caTemplates.length ?
+            <React.Fragment>
+              <div className="input-field input-field-csr col s12">
+                <select className="select" ref="templateSelect" name="templateSelect" onChange={handleCATemplateChange} >
+                <option disabled selected >Выберите шаблон</option>
+                  {
+                    caTemplates.map((template) =>
+                      <option key={template.Oid} value={template.Oid}>
+                        {template.LocalizedName}
+                      </option>)
+                  }
+                </select>
+                <label>{localize("CA.cert_template", locale)} *</label>
+              </div>
+              <div className="row" />
+            </React.Fragment> :
+            null
+        }
         <div className="input-field input-field-csr col s6">
           <select className="select" ref="keyUsageGroup" value={keyUsageGroup} name="keyUsageGroup" onChange={handleKeyUsageGroupChange} >
             <option value={KEY_USAGE_SIGN}>{localize("CSR.key_usage_sign", locale)}</option>
@@ -116,6 +141,7 @@ class KeyParameters extends React.Component<IKeyParametersProps, {}> {
           <label>{localize("CSR.key_usage_group", locale)}</label>
         </div>
         <div className="col s6 input-radio input-field-csr">
+          <div className="row halftop" />
           <input
             name="exportableKey"
             className="filled-in"

@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { CA_REGREGUESTS_JSON, FAIL, GET_CA_REGREQUEST, POST_CA_REGREQUEST, START, SUCCESS } from "../constants";
+import { CA_REGREGUESTS_JSON, FAIL, GET_CA_REGREQUEST, POST_CA_REGREQUEST,
+  START, SUCCESS, GET_CA_CERTREQUEST, POST_CA_CERTREQUEST_СONFIRMATION } from "../constants";
 import { mapToArr } from "../utils";
 
 export const RegRequestModel = Record({
@@ -15,6 +16,7 @@ export const RegRequestModel = Record({
   Token: null,
   id: null,
   serviceId: null,
+  certThumbprint: "",
 });
 
 export const DefaultReducerState = Record({
@@ -38,9 +40,28 @@ export default (regrequests = new DefaultReducerState(), action) => {
         KeyPhrase: payload.KeyPhrase,
       }));
       break;
+
+    case POST_CA_CERTREQUEST_СONFIRMATION + SUCCESS:
+      const { certificate } = payload;
+
+      let certThumbprint = null;
+
+      try {
+        const cert = new trusted.pki.Certificate();
+        cert.import(new Buffer(certificate), trusted.DataFormat.PEM);
+
+        certThumbprint = `${cert.thumbprint}`;
+      } catch (e) {
+        //
+      }
+      const regrequest = regrequests.entities.find((obj: any) => obj.get("serviceId") === payload.serviceId);
+      regrequests = regrequests
+        .setIn(["entities", regrequest.id, "certThumbprint"], certThumbprint);
+      break;
   }
 
-  if (type === POST_CA_REGREQUEST + SUCCESS || type === GET_CA_REGREQUEST + SUCCESS) {
+  if (type === POST_CA_REGREQUEST + SUCCESS || type === GET_CA_REGREQUEST + SUCCESS ||
+    type === POST_CA_CERTREQUEST_СONFIRMATION + SUCCESS) {
     const state = {
       regrequests: mapToArr(regrequests.entities),
     };

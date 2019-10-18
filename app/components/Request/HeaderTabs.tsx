@@ -15,10 +15,6 @@ class HeaderTabs extends React.Component<IHeaderTabsProps, {}> {
     $(document).ready(() => {
       $("ul.tabs").tabs();
     });
-
-    $(document).ready(() => {
-      $("ul.tabs").tabs("select_tab", "tab_id");
-    });
   }
 
   render() {

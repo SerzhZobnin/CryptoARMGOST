@@ -29,7 +29,7 @@ export default (certtemplate = new DefaultReducerState(), action) => {
 
   if (type === POST_CA_REGREQUEST + SUCCESS || type === GET_CA_REGREQUEST + SUCCESS) {
     const state = {
-      regrequests: mapToArr(certtemplate.entities),
+      certtemplate: mapToArr(certtemplate.entities),
     };
 
     const sstate = JSON.stringify(state, null, 4);
