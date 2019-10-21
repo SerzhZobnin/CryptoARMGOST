@@ -1,6 +1,6 @@
 {
   "author": {
-    "name": "Сifrovye tekhnologii LLC"
+    "name": "Cifrovye tekhnologii LLC"
   },
   "description": "CryptoARM GOST",
   "name": "cryptoarm-gost",
@@ -59,7 +59,7 @@
         ]
       }
     ],
-    "copyright": "Copyright 2019 Сifrovye tekhnologii LLC",
+    "copyright": "Copyright 2019 Cifrovye tekhnologii LLC",
     "win": {
       "target": [
         {
