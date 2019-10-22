@@ -8,11 +8,14 @@
   "dependencies": {
     "archiver": "^3.0.0",
     "async": "2.3.0",
+    "aws-sdk": "^2.553.0",
     "history": "^4.6.3",
     "immutable": "^3.8.1",
+    "node-pre-gyp": "^0.13.0",
     "request": "^2.88.0",
     "reselect": "^3.0.1",
     "sudo-prompt": "^8.2.3",
+    "tslib": "^1.10.0",
     "winston": "^3.0.0"
   }
 }
