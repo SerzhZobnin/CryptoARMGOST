@@ -230,6 +230,7 @@ export default {
     subject: "Владелец сертификата",
     thumbprint: "Отпечаток",
     version: "Версия",
+    delete_certificate_and_container: "Удалить связанный с контейнером сертификат (не рекомендуется)",
   },
   CloudCSP: {
     auth: "Сервер авторизации",
@@ -279,7 +280,7 @@ export default {
     container_delete_ok: "Контейнер успешно удалён",
     containers: "Контейнеры",
     containersNotFound: "Контейнеры не найдены",
-    delete_container: "удалить связанный с сертификатом контейнер (не рекомендуется)",
+    delete_container: "Удалить связанный с сертификатом контейнер (не рекомендуется)",
     get_certificate_fail: "В контейнере отсутствуют сертификаты",
     installCertificate: "Установить сертификат",
     invalid_character: "Недопустимый символ",

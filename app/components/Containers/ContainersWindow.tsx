@@ -148,7 +148,9 @@ class ContainersWindow extends React.Component<any, any> {
         <ContainerDelete
           container={container}
           onCancel={this.handleCloseModalDeleteContainer}
-          reloadContainers={this.handleReloadContainers} />
+          reloadContainers={this.handleReloadContainers}
+          reloadCertificates={this.handleReloadCertificates} />
+
       </Modal>
     );
   }
@@ -216,6 +218,19 @@ class ContainersWindow extends React.Component<any, any> {
     if (!isLoading) {
       loadAllContainers();
     }
+  }
+  handleReloadCertificates = () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { isLoading, loadAllCertificates, removeAllCertificates } = this.props;
+
+    this.setState({ certificate: null, crl: null, requestCA: null });
+
+    removeAllCertificates();
+
+    if (!isLoading) {
+      loadAllCertificates();
+    }
+
   }
 
   getCertificateInfoBody() {
