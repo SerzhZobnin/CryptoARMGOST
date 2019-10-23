@@ -521,7 +521,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
       if (policies.archiveFiles) {
         let outURI: string;
-        const archiveName = activeFilesArr.length === 1 ? `${path.parse(activeFilesArr[0].filename).name}.zip` : localize("Encrypt.archive_name", locale);
+        const archiveName = activeFilesArr.length === 1 ? `${activeFilesArr[0].filename}.zip` : localize("Encrypt.archive_name", locale);
         if (folderOut.length > 0) {
           outURI = path.join(folderOut, archiveName);
         } else {
