@@ -197,7 +197,7 @@ app.on('ready', async () => {
             role: 'quit',
             click: function () {
               global.sharedObject.isQuiting = true;
-              mainWindow.close();
+              app.quit();
             }
           },
         ],
