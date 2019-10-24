@@ -90,7 +90,7 @@ app.on('ready', async () => {
   preloader.loadURL(`file://${__dirname}/resources/preloader_index.html`);
 
   protocol.registerHttpProtocol('urn', (request, callback) => {
-		callback({url: request.url, method: request.method});
+    callback({ url: request.url, method: request.method });
   });
 
   if (options.indexOf("devtools") !== -1) {
@@ -188,8 +188,44 @@ app.on('ready', async () => {
     return false;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  if (process.platform === 'darwin') {
+    // Create our menu entries so that we can use MAC shortcuts
+    const template = [
+      {
+        label: app.getName(), submenu: [
+          {
+            role: 'quit',
+            click: function () {
+              global.sharedObject.isQuiting = true;
+              mainWindow.close();
+            }
+          },
+        ],
+      },
+      {
+        label: 'Edit', submenu: [
+          { role: 'undo' },
+          { role: 'redo' },
+          { type: 'separator' },
+          { role: 'cut' },
+          { role: 'copy' },
+          { role: 'paste' },
+          { role: 'pasteandmatchstyle' },
+          { role: 'delete' },
+          { role: 'selectall' },
+        ],
+      },
+      {
+        label: 'Help', submenu: [
+          {
+            role: 'help',
+            click() { require('electron').shell.openExternal('https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost-2-0.pdf') }
+          }
+        ],
+      },
+    ];
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  }
 });
 
 app.on('web-contents-created', (event, win) => {
@@ -217,5 +253,7 @@ app.on('second-instance', (e, argv) => {
 });
 
 app.on('before-quit', function (evt) {
-  tray.destroy();
+  setTimeout(() => {
+    trayIcon.destroy()
+  }, 0)
 });
