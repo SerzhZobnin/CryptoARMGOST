@@ -558,7 +558,7 @@ export default {
     delete_service_ok: "The service is successfully deleted",
     description: "Description",
     email: "E-mail",
-    fill_required_fields: "Fill required fields",
+    fill_required_fields: "Fill out the required fields",
     key_information: "Key information",
     login: "Login",
     name: "Name",
