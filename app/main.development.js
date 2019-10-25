@@ -188,6 +188,8 @@ app.on('ready', async () => {
     return false;
   });
 
+  const menuBuilder = new MenuBuilder(mainWindow);
+  menuBuilder.buildMenu();
   if (process.platform === 'darwin') {
     // Create our menu entries so that we can use MAC shortcuts
     const template = [
