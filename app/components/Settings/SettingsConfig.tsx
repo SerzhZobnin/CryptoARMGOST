@@ -13,6 +13,7 @@ import {
   LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
 } from "../../constants";
+import { loadingRemoteFilesSelector } from "../../selectors";
 import { mapToArr } from "../../utils";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 import EncodingTypeSelector from "../EncodingTypeSelector";
@@ -282,6 +283,20 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
   }
 
   getDisabled = () => {
+    const { files, loadingFiles } = this.props;
+
+    if (loadingFiles && loadingFiles.length) {
+      return true;
+    }
+
+    if (files && files.length) {
+      for (const file of files) {
+        if (file.socket) {
+          return true;
+        }
+      }
+    }
+
     return false;
   }
 
@@ -328,7 +343,9 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
       settings: settings
         .setIn(["outfolder"], directory)
         .setIn(["saveToDocuments"], !settings.saveToDocuments),
+        
     });
+  
   }
 
   handleEncodingChange = (encoding: string) => {
@@ -378,10 +395,11 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
 export default connect((state) => {
   return {
     files: mapToArr(state.files.entities),
+    loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.active]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
     settings: state.settings.getIn(["entities", state.settings.active]),
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
   };
-}, { applySettings, deleteRecipient, selectSignerCertificate })(SettingsWindow);
+}, { applySettings, deleteRecipient, selectSignerCertificate })(SettingsWindow); 
