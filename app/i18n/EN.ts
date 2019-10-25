@@ -41,9 +41,9 @@ export default {
     send: "Send",
     support: "Support",
     username: "Name",
-    version: "2.0.1",
+    version: "2.1.0",
     version_app: "Application version",
-    version_full: "Version: 2.0.1",
+    version_full: "Version: 2.1.0",
   },
   Agreement: {
     Agreement: "AGREEMENT",
