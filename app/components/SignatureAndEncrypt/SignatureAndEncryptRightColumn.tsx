@@ -18,9 +18,10 @@ import {
   DECRYPT, ENCRYPT, HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_SETTINGS_CONFIG,
   LOCATION_SETTINGS_SELECT,
-  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
+  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,TRUSTED_CRYPTO_LOG,
 } from "../../constants";
-import { activeFilesSelector } from "../../selectors";
+import { activeFilesSelector, connectedSelector } from "../../selectors";
+import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
 import * as trustedEncrypts from "../../trusted/encrypt";
 import * as jwt from "../../trusted/jwt";
 import { checkLicense } from "../../trusted/jwt";
@@ -31,6 +32,9 @@ import RecipientsList from "../RecipientsList";
 import SignerInfo from "../Signature/SignerInfo";
 
 const dialog = window.electron.remote.dialog;
+
+
+
 
 interface ISignatureAndEncryptRightColumnSettingsProps {
   activeFilesArr: any;
@@ -322,7 +326,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (activeFilesArr.length > 0) {
-
+    
       const cert = window.PKISTORE.getPkiObject(signer);
 
       const filesForSign = [];
@@ -351,7 +355,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     // tslint:disable-next-line:no-shadowed-variable
     const { packageSign } = this.props;
     const { localize, locale } = this.context;
-
+    
+    
     if (files.length > 0) {
       const policies = ["noAttributes"];
 
@@ -362,7 +367,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         if (!dirExists(folderOut)) {
           $(".toast-failed_find_directory").remove();
           Materialize.toast(localize("Settings.failed_find_directory", locale), 2000, "toast-failed_find_directory");
-
+          
           return;
         }
       }
@@ -384,7 +389,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   resign = (files: IFile[], cert: any) => {
-    const { setting, uploader } = this.props;
+    const { connections, connectedList, setting, uploader } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { deleteFile, selectFile } = this.props;
     const { localize, locale } = this.context;
@@ -415,8 +420,83 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         const newPath = trustedSign.resignFile(file.fullpath, cert, policies, format, folderOut);
 
         if (newPath) {
+          if (file.socket) {
+            const connection = connections.getIn(["entities", file.socket]);
+
+            if (connection && connection.connected && connection.socket) {
+              connection.socket.emit(SIGNED, { id: file.remoteId });
+            } else if (connectedList.length) {
+              const connectedSocket = connectedList[0].socket;
+
+              connectedSocket.emit(SIGNED, { id: file.remoteId });
+              connectedSocket.broadcast.emit(SIGNED, { id: file.remoteId });
+            }
+
+            if (uploader) {
+              let cms = trustedSign.loadSign(newPath);
+
+              if (cms.isDetached()) {
+                if (!(cms = trustedSign.setDetachedContent(cms, newPath))) {
+                  throw ("err");
+                }
+              }
+
+              const signatureInfo = trustedSign.getSignPropertys(cms);
+
+              const normalyzeSignatureInfo: any[] = [];
+
+              signatureInfo.forEach((info) => {
+                const subjectCert = info.certs[info.certs.length - 1];
+
+                normalyzeSignatureInfo.push({
+                  subjectFriendlyName: info.subject,
+                  issuerFriendlyName: subjectCert.issuerFriendlyName,
+                  notBefore: new Date(subjectCert.notBefore).getTime(),
+                  notAfter: new Date(subjectCert.notAfter).getTime(),
+                  digestAlgorithm: subjectCert.signatureDigestAlgorithm,
+                  signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
+                  subjectName: subjectCert.subjectName,
+                  issuerName: subjectCert.issuerName,
+                });
+              });
+
+              window.request.post({
+                formData: {
+                  extra: JSON.stringify(file.extra),
+                  file: fs.createReadStream(newPath),
+                  id: file.remoteId,
+                  signers: JSON.stringify(normalyzeSignatureInfo),
+                },
+                url: uploader,
+              }, (err) => {
+                if (err) {
+                  if (connection && connection.connected && connection.socket) {
+                    connection.socket.emit(ERROR, { id: file.remoteId, error: err });
+                  } else if (connectedList.length) {
+                    const connectedSocket = connectedList[0].socket;
+
+                    connectedSocket.emit(ERROR, { id: file.remoteId, error: err });
+                    connectedSocket.broadcast.emit(ERROR, { id: file.remoteId, error: err });
+                  }
+                } else {
+                  if (connection && connection.connected && connection.socket) {
+                    connection.socket.emit(UPLOADED, { id: file.remoteId });
+                  } else if (connectedList.length) {
+                    const connectedSocket = connectedList[0].socket;
+
+                    connectedSocket.emit(UPLOADED, { id: file.remoteId });
+                    connectedSocket.broadcast.emit(UPLOADED, { id: file.remoteId });
+                  }
+                }
+
+                deleteFile(file.id);
+              },
+              );
+            }
+          } else {
             deleteFile(file.id);
             selectFile(newPath);
+          }
         } else {
           res = false;
         }
@@ -493,7 +573,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   encrypt = () => {
-    const { activeFilesArr, setting, deleteFile, selectFile, recipients } = this.props;
+    const { connectedList, connections, activeFilesArr, setting, deleteFile, selectFile, recipients } = this.props;
     const { localize, locale } = this.context;
 
     if (activeFilesArr.length > 0) {
@@ -545,6 +625,17 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           if (newPath) {
             activeFilesArr.forEach((file) => {
               deleteFile(file.id);
+              if (file.socket) {
+                const connection = connections.getIn(["entities", file.socket]);
+                if (connection && connection.connected && connection.socket) {
+                  connection.socket.emit(ENCRYPTED, { id: file.remoteId });
+                } else if (connectedList.length) {
+                  const connectedSocket = connectedList[0].socket;
+
+                  connectedSocket.emit(ENCRYPTED, { id: file.remoteId });
+                  connectedSocket.broadcast.emit(ENCRYPTED, { id: file.remoteId });
+                }
+              }
             });
             selectFile(newPath);
           } else {
@@ -578,6 +669,18 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           if (newPath) {
             deleteFile(file.id);
             selectFile(newPath);
+
+            if (file.socket) {
+              const connection = connections.getIn(["entities", file.socket]);
+              if (connection && connection.connected && connection.socket) {
+                connection.socket.emit(ENCRYPTED, { id: file.remoteId });
+              } else if (connectedList.length) {
+                const connectedSocket = connectedList[0].socket;
+
+                connectedSocket.emit(ENCRYPTED, { id: file.remoteId });
+                connectedSocket.broadcast.emit(ENCRYPTED, { id: file.remoteId });
+              }
+            }
           } else {
             res = false;
           }
@@ -595,7 +698,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   decrypt = () => {
-    const { activeFilesArr, setting, deleteFile, selectFile, licenseStatus, lic_error } = this.props;
+    const { connectedList, connections, activeFilesArr, setting, deleteFile, selectFile, licenseStatus, lic_error } = this.props;
     const { localize, locale } = this.context;
 
     if (licenseStatus !== true) {
@@ -687,6 +790,18 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           if (newPath) {
             deleteFile(file.id);
             selectFile(newPath);
+
+            if (file.socket) {
+              const connection = connections.getIn(["entities", file.socket]);
+              if (connection && connection.connected && connection.socket) {
+                connection.socket.emit(DECRYPTED, { id: file.remoteId });
+              } else if (connectedList.length) {
+                const connectedSocket = connectedList[0].socket;
+
+                connectedSocket.emit(DECRYPTED, { id: file.remoteId });
+                connectedSocket.broadcast.emit(DECRYPTED, { id: file.remoteId });
+              }
+            }
           } else {
             res = false;
           }
@@ -854,6 +969,8 @@ export default connect((state) => {
   return {
     activeFiles: activeFilesSelector(state, { active: true }),
     activeFilesArr: mapToArr(activeFilesSelector(state, { active: true })),
+    connectedList: connectedSelector(state, { connected: true }),
+    connections: state.connections,
     files: mapToArr(state.files.entities),
     isDocumentsReviewed: state.files.documentsReviewed,
     licenseStatus: state.license.status,
