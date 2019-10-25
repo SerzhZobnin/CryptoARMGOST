@@ -194,7 +194,7 @@ app.on('ready', async () => {
       {
         label: app.getName(), submenu: [
           {
-            role: 'quit',
+            label: 'Quit',
             click: function () {
               global.sharedObject.isQuiting = true;
               app.quit();
