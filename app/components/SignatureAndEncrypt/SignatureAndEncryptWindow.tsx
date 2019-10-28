@@ -6,7 +6,7 @@ import {
   activeFile, filePackageDelete, filePackageSelect, removeAllRemoteFiles,
 } from "../../AC";
 import { deleteAllTemporyLicenses } from "../../AC/licenseActions";
-import { activeFilesSelector, connectedSelector } from "../../selectors";
+import { activeFilesSelector, connectedSelector, loadingRemoteFilesSelector } from "../../selectors";
 import { CANCELLED, ERROR, SIGN, SIGNED, UPLOADED } from "../../server/constants";
 import { mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
@@ -22,6 +22,8 @@ interface ISignatureAndEncryptWindowProps {
   activeFilesArr: any;
   isDefaultFilters: boolean;
   deleteAllTemporyLicenses: () => void;
+  loadingFiles: any;
+  files: any;
   method: string;
   packageSignResult: any;
   removeAllRemoteFiles: () => void;
@@ -115,6 +117,8 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
     const { isDefaultFilters } = this.props;
 
     const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
+    const disabledNavigate = this.isFilesFromSocket();
+    const classDisabled = disabledNavigate ? "disabled" : "";
 
     return (
       <div className="content-noflex">
@@ -123,8 +127,8 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
             <div className="row halfbottom">
               <div className="row halfbottom" />
               <div className="col" style={{ width: "40px", paddingLeft: "40px" }}>
-                <a onClick={this.addFiles.bind(this)}>
-                  <i className="file-setting-item waves-effect material-icons secondary-content pulse">add</i>
+                <a className={`${classDisabled}`} onClick={this.addFiles.bind(this)}>
+                  <i className={`file-setting-item waves-effect material-icons secondary-content pulse ${classDisabled}`}>add</i>
                 </a>
               </div>
               <div className="col" style={{ width: "calc(100% - 140px)" }}>
@@ -140,16 +144,16 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
                 </div>
               </div>
               <div className="col" style={{ width: "40px" }}>
-                <a onClick={this.handleShowModalFilterDocuments}>
+                <a className={`${classDisabled}`} onClick={this.handleShowModalFilterDocuments}>
                   <i className={`file-setting-item waves-effect material-icons secondary-content`}>
-                    <i className={`material-icons ${classDefaultFilters}`} />
+                    <i className={`material-icons ${classDefaultFilters}`} style={disabledNavigate ? {opacity: 0.38} : {opacity: 1}}/>
                   </i>
                 </a>
               </div>
               <div className="col" style={{ width: "40px" }}>
                 <div>
                   <a className="btn-floated" data-activates="dropdown-btn-set-add-files">
-                    <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                    <i className={`file-setting-item waves-effect material-icons secondary-content ${classDisabled}`}>more_vert</i>
                   </a>
                   <ul id="dropdown-btn-set-add-files" className="dropdown-content">
                     <li><a onClick={this.selectedAll}>{localize("Settings.selected_all", locale)}</a></li>
@@ -293,6 +297,24 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
   handleCloseModalFilterDocuments = () => {
     this.setState({ showModalFilterDocments: false });
   }
+
+  isFilesFromSocket = () => {
+    const { files, loadingFiles } = this.props;
+
+    if (loadingFiles.length) {
+      return true;
+    }
+
+    if (files.length) {
+      for (const file of files) {
+        if (file.socket) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 }
 
 export default connect((state) => {
@@ -308,6 +330,7 @@ export default connect((state) => {
     connections: state.connections,
     files: mapToArr(state.files.entities),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
+    loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     method: state.remoteFiles.method,
     packageSignResult: state.signatures.packageSignResult,
     signatures,

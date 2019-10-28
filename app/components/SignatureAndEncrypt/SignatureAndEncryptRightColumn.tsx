@@ -18,9 +18,9 @@ import {
   DECRYPT, ENCRYPT, HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_SETTINGS_CONFIG,
   LOCATION_SETTINGS_SELECT,
-  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY, TRUSTED_CRYPTO_LOG,
+  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
-import { activeFilesSelector, connectedSelector } from "../../selectors";
+import { activeFilesSelector, connectedSelector, loadingRemoteFilesSelector } from "../../selectors";
 import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
 import * as trustedEncrypts from "../../trusted/encrypt";
 import * as jwt from "../../trusted/jwt";
@@ -33,13 +33,12 @@ import SignerInfo from "../Signature/SignerInfo";
 
 const dialog = window.electron.remote.dialog;
 
-
-
-
 interface ISignatureAndEncryptRightColumnSettingsProps {
   activeFilesArr: any;
   isDefaultFilters: boolean;
   isDocumentsReviewed: boolean;
+  loadingFiles: any;
+  files: any;
   packageSignResult: any;
   signatures: any;
   signedPackage: any;
@@ -83,6 +82,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { localize, locale } = this.context;
     const { activeFiles, isDocumentsReviewed, recipients, setting, settings, signer } = this.props;
     const { file } = this.state;
+
+    const disabledNavigate = this.isFilesFromSocket();
+    const classDisabled = disabledNavigate ? "disabled" : "";
 
     return (
       <React.Fragment>
@@ -166,10 +168,10 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           <hr />
         </div>
 
-        <div className="col s2">
+        <div className={`col s2 ${classDisabled}`}>
           <div className="right import-col">
             <a className="btn-floated" data-activates="dropdown-btn-encrypt">
-              <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+              <i className={`file-setting-item waves-effect material-icons secondary-content ${classDisabled}`}>more_vert</i>
             </a>
             <ul id="dropdown-btn-encrypt" className="dropdown-content">
               <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
@@ -184,16 +186,16 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         {
           (recipients && recipients.length) ?
             <div style={{ height: "calc(100vh - 400px)" }}>
-              <div className="add-certs">
+              <div className={`add-certs ${classDisabled}`}>
                 <RecipientsList recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
               </div>
             </div> :
-            <div className="col s12">
+            <div className={`col s12 ${classDisabled}`}>
               <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
                 <a onClick={() => {
                   this.props.activeSetting(this.props.setting.id);
                 }}
-                  className="btn btn-outlined waves-effect waves-light"
+                  className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}
                   style={{ width: "100%" }}>
                   {localize("Settings.Choose", locale)}
                 </a>
@@ -955,6 +957,24 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     return bytesToSize(sizeInBytes);
   }
+
+  isFilesFromSocket = () => {
+    const { files, loadingFiles } = this.props;
+
+    if (loadingFiles.length) {
+      return true;
+    }
+
+    if (files.length) {
+      for (const file of files) {
+        if (file.socket) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 }
 
 export default connect((state) => {
@@ -973,6 +993,7 @@ export default connect((state) => {
     isDocumentsReviewed: state.files.documentsReviewed,
     licenseStatus: state.license.status,
     lic_error: state.license.lic_error,
+    loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     mapCertificates: state.certificates,
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
