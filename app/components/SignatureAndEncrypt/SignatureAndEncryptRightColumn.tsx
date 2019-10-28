@@ -18,7 +18,7 @@ import {
   DECRYPT, ENCRYPT, HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_SETTINGS_CONFIG,
   LOCATION_SETTINGS_SELECT,
-  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,TRUSTED_CRYPTO_LOG,
+  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY, TRUSTED_CRYPTO_LOG,
 } from "../../constants";
 import { activeFilesSelector, connectedSelector } from "../../selectors";
 import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
@@ -326,7 +326,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (activeFilesArr.length > 0) {
-    
       const cert = window.PKISTORE.getPkiObject(signer);
 
       const filesForSign = [];
@@ -355,8 +354,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     // tslint:disable-next-line:no-shadowed-variable
     const { packageSign } = this.props;
     const { localize, locale } = this.context;
-    
-    
+
     if (files.length > 0) {
       const policies = ["noAttributes"];
 
@@ -367,7 +365,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         if (!dirExists(folderOut)) {
           $(".toast-failed_find_directory").remove();
           Materialize.toast(localize("Settings.failed_find_directory", locale), 2000, "toast-failed_find_directory");
-          
+
           return;
         }
       }
@@ -746,32 +744,32 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           const haveDSSRecipient = false;
           const dssRecipient = undefined;
 
-        /*  const ris = cipher.getRecipientInfos(uri, format);
+          /*  const ris = cipher.getRecipientInfos(uri, format);
 
-          let ri: trusted.cms.CmsRecipientInfo;
-          let haveLocalRecipient = false;
-          let haveDSSRecipient = false;
-          let dssRecipient;
+            let ri: trusted.cms.CmsRecipientInfo;
+            let haveLocalRecipient = false;
+            let haveDSSRecipient = false;
+            let dssRecipient;
 
-          for (let i = 0; i < ris.length; i++) {
-            ri = ris.items(i);
+            for (let i = 0; i < ris.length; i++) {
+              ri = ris.items(i);
 
-            certWithKey = this.props.mapCertificates
-              .get("entities")
-              .find((item) => item.issuerName === ri.issuerName && item.serial === ri.serialNumber && item.key);
+              certWithKey = this.props.mapCertificates
+                .get("entities")
+                .find((item) => item.issuerName === ri.issuerName && item.serial === ri.serialNumber && item.key);
 
-            if (certWithKey) {
-              if (!certWithKey.service) {
-                haveLocalRecipient = true;
-                break;
+              if (certWithKey) {
+                if (!certWithKey.service) {
+                  haveLocalRecipient = true;
+                  break;
+                } else {
+                  haveDSSRecipient = true;
+                  dssRecipient = certWithKey;
+                }
               } else {
-                haveDSSRecipient = true;
-                dssRecipient = certWithKey;
+                res = false;
               }
-            } else {
-              res = false;
-            }
-          }*/
+            }*/
 
           if (haveLocalRecipient) {
             filesForDecryptInLocalCSP.push(file);
@@ -979,13 +977,14 @@ export default connect((state) => {
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
+    uploader: state.remoteFiles.uploader,
     setting: state.settings.getIn(["entities", state.settings.default]),
     settings: state.settings.entities,
     signatures,
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
 }, {
-    activeFile, activeSetting, deleteFile, deleteRecipient, documentsReviewed,
-    filePackageSelect, filePackageDelete, packageSign, selectFile,
-    verifyCertificate, selectSignerCertificate, verifySignature,
-  })(SignatureAndEncryptRightColumnSettings);
+  activeFile, activeSetting, deleteFile, deleteRecipient, documentsReviewed,
+  filePackageSelect, filePackageDelete, packageSign, selectFile,
+  verifyCertificate, selectSignerCertificate, verifySignature,
+})(SignatureAndEncryptRightColumnSettings);
