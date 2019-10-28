@@ -60,6 +60,12 @@ io.on(CONNECTION, (socket) => {
   store.dispatch({ type: SET_CONNECTED, payload: { id: socket.id } });
 
   socket.on(SIGN, (data: ISignRequest) => {
+    try {
+      $(".side-nav").sideNav("hide");
+    } catch (e) {
+      //
+    }
+
     cleanFileLists();
     openWindow(SIGN);
     downloadFiles(data, socket);
@@ -75,6 +81,12 @@ io.on(CONNECTION, (socket) => {
   });
 
   socket.on(VERIFY, (data: ISignRequest) => {
+    try {
+      $(".side-nav").sideNav("hide");
+    } catch (e) {
+      //
+    }
+
     cleanFileLists();
     openWindow(VERIFY);
     downloadFiles(data, socket);
@@ -86,12 +98,24 @@ io.on(CONNECTION, (socket) => {
   });
 
   socket.on(ENCRYPT, (data: IEncryptRequest) => {
+    try {
+      $(".side-nav").sideNav("hide");
+    } catch (e) {
+      //
+    }
+
     cleanFileLists();
     openWindow(ENCRYPT);
     downloadFiles(data, socket);
   });
 
   socket.on(DECRYPT, (data: IEncryptRequest) => {
+    try {
+      $(".side-nav").sideNav("hide");
+    } catch (e) {
+      //
+    }
+
     cleanFileLists();
     openWindow(DECRYPT);
     downloadFiles(data, socket);
