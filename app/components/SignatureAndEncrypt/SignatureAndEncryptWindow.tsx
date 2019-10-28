@@ -3,24 +3,28 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import {
-  activeFile, filePackageDelete, filePackageSelect,
+  activeFile, filePackageDelete, filePackageSelect, removeAllRemoteFiles,
 } from "../../AC";
-import { activeFilesSelector } from "../../selectors";
+import { deleteAllTemporyLicenses } from "../../AC/licenseActions";
+import { activeFilesSelector, connectedSelector } from "../../selectors";
+import { CANCELLED, ERROR, SIGN, SIGNED, UPLOADED } from "../../server/constants";
 import { mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
 import FileSelector from "../Files/FileSelector";
 import Modal from "../Modal";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 import SignatureAndEncryptRightColumn from "./SignatureAndEncryptRightColumn";
-import {
-  TRUSTED_CRYPTO_LOG,
-} from "../../constants";
+
+const remote = window.electron.remote;
 const dialog = window.electron.remote.dialog;
 
 interface ISignatureAndEncryptWindowProps {
   activeFilesArr: any;
   isDefaultFilters: boolean;
+  deleteAllTemporyLicenses: () => void;
+  method: string;
   packageSignResult: any;
+  removeAllRemoteFiles: () => void;
   signatures: any;
   signedPackage: any;
 }
@@ -57,6 +61,15 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
       inDuration: 300,
       outDuration: 225,
     });
+  }
+
+  componentDidUpdate(prevProps: ISignatureAndEncryptWindowProps) {
+    if (this.props.method === SIGN && prevProps.activeFilesArr && prevProps.activeFilesArr.length && (!this.props.activeFilesArr || !this.props.activeFilesArr.length)) {
+      this.props.removeAllRemoteFiles();
+      remote.getCurrentWindow().close();
+
+      this.props.deleteAllTemporyLicenses();
+    }
   }
 
   componentWillReceiveProps(nextProps: ISignatureAndEncryptWindowProps) {
@@ -209,12 +222,25 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   removeAllFiles = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { filePackageDelete, files } = this.props;
+    const { connections, connectedList, filePackageDelete, files } = this.props;
 
     const filePackage: number[] = [];
 
     for (const file of files) {
       filePackage.push(file.id);
+
+      if (file.socket) {
+        const connection = connections.getIn(["entities", file.socket]);
+
+        if (connection && connection.connected && connection.socket) {
+          connection.socket.emit(CANCELLED, { id: file.remoteId });
+        } else if (connectedList.length) {
+          const connectedSocket = connectedList[0].socket;
+
+          connectedSocket.emit(CANCELLED, { id: file.remoteId });
+          connectedSocket.broadcast.emit(CANCELLED, { id: file.remoteId });
+        }
+      }
     }
 
     filePackageDelete(filePackage);
@@ -278,10 +304,13 @@ export default connect((state) => {
 
   return {
     activeFilesArr: mapToArr(activeFilesSelector(state, { active: true })),
-    isDefaultFilters: state.filters.documents.isDefaultFilters,
+    connectedList: connectedSelector(state, { connected: true }),
+    connections: state.connections,
     files: mapToArr(state.files.entities),
+    isDefaultFilters: state.filters.documents.isDefaultFilters,
+    method: state.remoteFiles.method,
     packageSignResult: state.signatures.packageSignResult,
     signatures,
     signedPackage: state.signatures.signedPackage,
   };
-}, { activeFile, filePackageSelect, filePackageDelete })(SignatureAndEncryptWindow);
+}, { activeFile, deleteAllTemporyLicenses, filePackageSelect, filePackageDelete, removeAllRemoteFiles })(SignatureAndEncryptWindow);
