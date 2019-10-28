@@ -40,6 +40,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   loadingFiles: any;
   files: any;
   packageSignResult: any;
+  removeAllFiles: () => void;
   signatures: any;
   signedPackage: any;
 }
@@ -229,66 +230,116 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               null
           }
 
-          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
-            <div className="col s12 svg_icon">
-              <a data-position="bottom">
-                <i className="material-icons docmenu sign" />
-              </a>
-            </div>
-            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_sign", locale)}</div>
-          </div>
+          {
+            disabledNavigate ?
+              this.props.method === "sign" ?
+                <React.Fragment>
+                  <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons docmenu sign" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Documents.docmenu_sign", locale)}</div>
+                  </div>
 
-          <div className={`col s4 waves-effect waves-cryptoarm  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`} onClick={this.verifySign}>
-            <div className="col s12 svg_icon">
-              <a data-position="bottom"
-                data-tooltip={localize("Sign.sign_and_verify", locale)}>
-                <i className="material-icons docmenu verifysign" />
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={this.props.removeAllFiles}>
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons docmenu cancel" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Common.cancel", locale)}</div>
+                  </div>
+                </React.Fragment>
 
-              </a>
-            </div>
-            <div className="col s12 svg_icon_text">{"Проверить"}</div>
-          </div>
+                :
 
-          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} onClick={this.unSign}>
-            <div className="col s12 svg_icon">
-              <a data-position="bottom">
-                <i className="material-icons docmenu removesign" />
-              </a>
-            </div>
-            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_removesign", locale)}</div>
-          </div>
+                <React.Fragment>
+                  <div className={`col s4 waves-effect waves-cryptoarm  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`} onClick={this.verifySign}>
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom"
+                        data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                        <i className="material-icons docmenu verifysign" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{"Проверить"}</div>
+                  </div>
 
-          <div className="col s12">
-            <div className="row halfbottom" />
-          </div>
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={this.props.removeAllFiles}>
+                    <div className="col s12 svg_icon">
+                      <a data-position="bottom">
+                        <i className="material-icons docmenu cancel" />
+                      </a>
+                    </div>
+                    <div className="col s12 svg_icon_text">{localize("Common.cancel", locale)}</div>
+                  </div>
+                </React.Fragment>
 
-          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`} onClick={this.encrypt}>
-            <div className="col s12 svg_icon">
-              <a data-position="bottom">
-                <i className="material-icons docmenu encrypt" />
-              </a>
-            </div>
-            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_enctypt", locale)}</div>
-          </div>
+              :
 
-          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} onClick={this.decrypt}>
-            <div className="col s12 svg_icon">
-              <a data-position="bottom">
-                <i className="material-icons docmenu decrypt" />
-              </a>
-            </div>
-            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_dectypt", locale)}</div>
-          </div>
+              <React.Fragment>
+                <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom">
+                      <i className="material-icons docmenu sign" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("Documents.docmenu_sign", locale)}</div>
+                </div>
 
-          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleRemoveFiles}>
-            <div className="col s12 svg_icon">
-              <a data-position="bottom"
-                data-tooltip={localize("Sign.sign_and_verify", locale)}>
-                <i className="material-icons docmenu remove" />
-              </a>
-            </div>
-            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
-          </div>
+                <div className={`col s4 waves-effect waves-cryptoarm  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`} onClick={this.verifySign}>
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom"
+                      data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                      <i className="material-icons docmenu verifysign" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{"Проверить"}</div>
+                </div>
+
+                <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} onClick={this.unSign}>
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom">
+                      <i className="material-icons docmenu removesign" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("Documents.docmenu_removesign", locale)}</div>
+                </div>
+
+                <div className="col s12">
+                  <div className="row halfbottom" />
+                </div>
+
+                <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`} onClick={this.encrypt}>
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom">
+                      <i className="material-icons docmenu encrypt" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("Documents.docmenu_enctypt", locale)}</div>
+                </div>
+
+                <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} onClick={this.decrypt}>
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom">
+                      <i className="material-icons docmenu decrypt" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("Documents.docmenu_dectypt", locale)}</div>
+                </div>
+
+                <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleRemoveFiles}>
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom"
+                      data-tooltip={localize("Sign.sign_and_verify", locale)}>
+                      <i className="material-icons docmenu remove" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+                </div>
+              </React.Fragment>
+          }
 
         </div>
       </React.Fragment>
@@ -837,37 +888,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     recipients.forEach((recipient) => deleteRecipient(recipient.id));
   }
 
-  selectedAll = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { files, activeFile } = this.props;
-
-    for (const file of files) {
-      activeFile(file.id);
-    }
-  }
-
-  removeSelectedAll = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { files, activeFile } = this.props;
-
-    for (const file of files) {
-      activeFile(file.id, false);
-    }
-  }
-
-  removeAllFiles = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { filePackageDelete, files } = this.props;
-
-    const filePackage: number[] = [];
-
-    for (const file of files) {
-      filePackage.push(file.id);
-    }
-
-    filePackageDelete(filePackage);
-  }
-
   checkEnableOperationButton = (operation: string) => {
     const { activeFilesArr, isDocumentsReviewed, signer, recipients } = this.props;
 
@@ -995,6 +1015,7 @@ export default connect((state) => {
     lic_error: state.license.lic_error,
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     mapCertificates: state.certificates,
+    method: state.remoteFiles.method,
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),

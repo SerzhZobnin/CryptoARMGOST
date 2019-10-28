@@ -192,7 +192,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
                   </div>
                 </React.Fragment>
               ) :
-              <SignatureAndEncryptRightColumn />
+              <SignatureAndEncryptRightColumn removeAllFiles={this.removeAllFiles} />
             }
 
           </div>
