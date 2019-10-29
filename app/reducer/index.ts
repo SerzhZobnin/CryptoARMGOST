@@ -8,6 +8,7 @@ import connections from "./connections";
 import containers from "./containers";
 import crls from "./crls";
 import documents from "./documents";
+import DSSCertificates from "./DSSCertificates";
 import events from "./events";
 import files from "./files";
 import filters from "./filters";
@@ -28,6 +29,7 @@ export default combineReducers({
   containers,
   crls,
   documents,
+  DSSCertificates,
   events,
   files,
   filters,

@@ -1,9 +1,10 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON, CA_CSR_JSON, CA_REGREGUESTS_JSON, DSS_TOKENS_JSON,
-  SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH } from "../constants";
+import { CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON, CA_CSR_JSON, CA_REGREGUESTS_JSON, DSS_CERTIFICATES_JSON,
+  DSS_TOKENS_JSON, SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH } from "../constants";
 import { CertificateRequestCAModel, DefaultReducerState as DefaultRequestsReducerState } from "../reducer/certrequests";
 import { CertTemplateModel, DefaultReducerState as DefaultCertTemplateReducerState } from "../reducer/certtemplate";
+import { DefaultReducerState as DefaultDSSCertificatesState, DSSCertificateModel } from "../reducer/DSSCertificates";
 import { DefaultReducerState as DefaultRegrequestsReducerState, RegRequestModel } from "../reducer/regrequests";
 import { DefaultReducerState as DefaultServicesReducerState, ServiceModel,
   SettingsModel as ServiceSettingsModel } from "../reducer/services";
@@ -166,6 +167,27 @@ if (fileExists(DSS_TOKENS_JSON)) {
       }
 
       odata.tokens = tokenMap;
+    } catch (e) {
+      //
+    }
+  }
+}
+
+if (fileExists(DSS_CERTIFICATES_JSON)) {
+  const DSSCertificates = fs.readFileSync(DSS_CERTIFICATES_JSON, "utf8");
+
+  if (DSSCertificates) {
+    try {
+      let certificateMap = new DefaultDSSCertificatesState();
+
+      const data = JSON.parse(DSSCertificates);
+
+      for (const cert of data.DSSCertificates) {
+        const mcert = new DSSCertificateModel({ ...cert });
+        certificateMap = certificateMap.setIn(["entities", cert.id], mcert);
+      }
+
+      odata.DSSCertificates = certificateMap;
     } catch (e) {
       //
     }
