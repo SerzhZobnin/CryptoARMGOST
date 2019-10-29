@@ -18,6 +18,7 @@ import services from "./services";
 import settings from "./settings";
 import signatures from "./signatures";
 import templates from "./templates";
+import tokens from "./tokens";
 
 export default combineReducers({
   router,
@@ -39,4 +40,5 @@ export default combineReducers({
   services,
   signatures,
   templates,
+  tokens,
 });
