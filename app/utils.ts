@@ -5,7 +5,6 @@ import { OrderedMap } from "immutable";
 import PropTypes from "prop-types";
 import React from "react";
 
-
 let err_hint: string[] = ["Доступны только цифры", "Проверьте количество цифр", "Не правильно введены данные"];
 interface ISignatureStatusProps {
   signature: any;
@@ -136,6 +135,7 @@ export const randomSerial = () => {
 };
 export let err_snils = "";
 export let err_inn = "";
+export let err_ogrn = "";
 export let err_ogrnip = "";
 
 export const validateSnils = (snils: string | number) => {
@@ -184,7 +184,6 @@ export const validateSnils = (snils: string | number) => {
       return false;
     }
   }
-
 
   return result;
 };
@@ -261,11 +260,11 @@ export const validateOgrn = (ogrn: string | number) => {
     return false;
   } else if (/[^0-9]/.test(ogrn)) {
 
-    err_ogrnip = err_hint[0];
+    err_ogrn = err_hint[0];
     return false;
   } else if (ogrn.length !== 13) {
 
-    err_ogrnip = err_hint[1];
+    err_ogrn = err_hint[1];
     return false;
   } else {
     const n13 = parseInt((parseInt(ogrn.slice(0, -1), 10) % 11).toString().slice(-1), 10);
@@ -273,7 +272,7 @@ export const validateOgrn = (ogrn: string | number) => {
       result = true;
     } else {
 
-      err_ogrnip = err_hint[2];
+      err_ogrn = err_hint[2];
       return false;
     }
   }
