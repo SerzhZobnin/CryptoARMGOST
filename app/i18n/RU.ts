@@ -213,7 +213,7 @@ export default {
     certs_token: "Сертификаты внешних носителей",
     crls: "Список отзыва сертификатов",
     delete_certificate: "Удаление сертификата",
-    delete_certificate_and_container: "Удалить связанный с контейнером сертификат (не рекомендуется)",
+    delete_certificate_and_container: "Удалить связанный с контейнером сертификат",
     export_cert: "Экспорт сертификата",
     import_key: "Импортировать ключ",
     issuer: "Кем выдан",
