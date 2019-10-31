@@ -375,37 +375,33 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     if (!template || !template.RDN) {
       return false;
     }
-
     let result = true;
-
-    Object.keys(template.RDN).map((key) => {
-      const field = template.RDN[key];
+    for (let key of Object.keys(template.RDN)) {
+      const templateField = template.RDN[key];
+      const field = RDNsubject[templateField.Oid];
       if (field) {
-        const RDNsubjectValue = RDNsubject[field.Oid];
-
-        if (field.ProhibitEmpty && (!RDNsubjectValue || !RDNsubjectValue.value)) {
+        if (templateField.ProhibitEmpty && (!field || !field.value)) {
           result = false;
-          return;
+          break;
         }
-
-        if ((RDNsubjectValue && RDNsubjectValue.value) && (field.Oid === "1.2.643.3.131.1.1")) {
-          result = validateInn(RDNsubjectValue);
-          return;
-        } else if ((RDNsubjectValue && RDNsubjectValue.value) && (field.Oid === "1.2.643.100.1")) {
-          result = validateOgrn(RDNsubjectValue);
-          return;
-        } else if ((RDNsubjectValue && RDNsubjectValue.value) && (field.Oid === "1.2.643.100.3")) {
-          result = validateSnils(RDNsubjectValue);
-          return;
-        } else if ((RDNsubjectValue && RDNsubjectValue.value) && (field.Oid === "1.2.643.100.5")) {
-          result = validateOgrnip(RDNsubjectValue);
-          return;
-        } else if ((RDNsubjectValue && RDNsubjectValue.value) && (field.Oid === "1.2.840.113549.1.9.1")) {
-          result = REQULAR_EXPRESSION.test(RDNsubjectValue);
-          return;
+        if (field.value && (field.type === "1.2.643.3.131.1.1")) {
+          result = validateInn(field.value);
+          break;
+        } else if (field.value && (field.type === "1.2.643.100.1")) {
+          result = validateOgrn(field.value);
+          break;
+        } else if (field.value && (field.type === "1.2.643.100.3")) {
+          result = validateSnils(field.value);
+          break;
+        } else if (field.value && (field.type === "1.2.643.100.5")) {
+          result = validateOgrnip(field.value);
+          break;
+        } else if (field.value && (field.type === "1.2.840.113549.1.9.1")) {
+          result = REQULAR_EXPRESSION.test(field.value);
+          break;
         }
       }
-    });
+    }
 
     return result;
   }
