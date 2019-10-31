@@ -29,7 +29,6 @@ export default (tokens = new DefaultReducerState(), action) => {
   }
 
   if (type === DSS_POST_AUTHORIZATION_USER + SUCCESS) {
-    console.log(tokens);
     const state = {
       tokens: mapToArr(tokens.entities),
     };
