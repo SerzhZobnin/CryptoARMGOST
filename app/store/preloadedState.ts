@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON, CA_CSR_JSON, CA_REGREGUESTS_JSON, DSS_CERTIFICATES_JSON,
-  DSS_TOKENS_JSON, SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH, POLICY_DSS_JSON } from "../constants";
+import { CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON, CA_CSR_JSON, CA_REGREGUESTS_JSON, CERTIFICATES_DSS_JSON,
+  DSS_TOKENS_JSON, POLICY_DSS_JSON, SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH } from "../constants";
+import { DefaultReducerState as DefaultCertificatesDSSState, CertificateDSSModel } from "../reducer/certificatesDSS";
 import { CertificateRequestCAModel, DefaultReducerState as DefaultRequestsReducerState } from "../reducer/certrequests";
 import { CertTemplateModel, DefaultReducerState as DefaultCertTemplateReducerState } from "../reducer/certtemplate";
-import { DefaultReducerState as DefaultDSSCertificatesState, DSSCertificateModel } from "../reducer/DSSCertificates";
 import { DefaultReducerState as DefaultPolicyDSSState, PolicyDSSModel } from "../reducer/policyDSS";
 import { DefaultReducerState as DefaultRegrequestsReducerState, RegRequestModel } from "../reducer/regrequests";
 import { DefaultReducerState as DefaultServicesReducerState, ServiceModel,
@@ -174,21 +174,21 @@ if (fileExists(DSS_TOKENS_JSON)) {
   }
 }
 
-if (fileExists(DSS_CERTIFICATES_JSON)) {
-  const DSSCertificates = fs.readFileSync(DSS_CERTIFICATES_JSON, "utf8");
+if (fileExists(CERTIFICATES_DSS_JSON)) {
+  const certificatesDSS = fs.readFileSync(CERTIFICATES_DSS_JSON, "utf8");
 
-  if (DSSCertificates) {
+  if (certificatesDSS) {
     try {
-      let certificateMap = new DefaultDSSCertificatesState();
+      let certificateMap = new DefaultCertificatesDSSState();
 
-      const data = JSON.parse(DSSCertificates);
+      const data = JSON.parse(certificatesDSS);
 
-      for (const cert of data.DSSCertificates) {
-        const mcert = new DSSCertificateModel({ ...cert });
+      for (const cert of data.certificatesDSS) {
+        const mcert = new CertificateDSSModel({ ...cert });
         certificateMap = certificateMap.setIn(["entities", cert.id], mcert);
       }
 
-      odata.DSSCertificates = certificateMap;
+      odata.certificatesDSS = certificateMap;
     } catch (e) {
       //
     }
@@ -204,7 +204,7 @@ if (fileExists(POLICY_DSS_JSON)) {
 
       const data = JSON.parse(policyDSS);
 
-      for (const policy of data.DSSCertificates) {
+      for (const policy of data.policyDSS) {
         const mpolicy = new PolicyDSSModel({ ...policy });
         policyMap = policyMap.setIn(["entities", policy.id], mpolicy);
       }

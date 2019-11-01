@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { DSS_CERTIFICATES_JSON, DSS_GET_CERTIFICATES, START, SUCCESS, GET_POLICY_DSS, POLICY_DSS_JSON, } from "../constants";
+import { CERTIFICATES_DSS_JSON, GET_CERTIFICATES_DSS, START, SUCCESS, GET_POLICY_DSS, POLICY_DSS_JSON, } from "../constants";
 import { arrayToMap, mapToArr } from "../utils";
 
 export const PolicyDSSModel = Record({

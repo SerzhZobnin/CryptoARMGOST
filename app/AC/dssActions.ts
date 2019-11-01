@@ -1,6 +1,6 @@
 import * as os from "os";
 import {
-  DSS_GET_CERTIFICATES, DSS_POST_AUTHORIZATION_USER, FAIL, START, SUCCESS, GET_POLICY_DSS,
+  GET_CERTIFICATES_DSS, POST_AUTHORIZATION_USER_DSS, FAIL, START, SUCCESS, GET_POLICY_DSS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -68,7 +68,7 @@ export async function getApi(url: string, headerfields: string[]) {
 export function dssPostMFAAuthUser(url: string, login: string, password: string) {
   return (dispatch) => {
     dispatch({
-      type: DSS_POST_AUTHORIZATION_USER + START,
+      type: POST_AUTHORIZATION_USER_DSS + START,
     });
 
     setTimeout(async () => {
@@ -95,7 +95,12 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
               expires_in: data1.ExpiresIn,
               id: uuid(),
             },
-            type: DSS_POST_AUTHORIZATION_USER + SUCCESS,
+            type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
+          });
+        } else if (data1.IsError === true) {
+          Materialize.toast(data2.ErrorDescription, 4000, "toast-ca_error");
+          dispatch({
+            type: POST_AUTHORIZATION_USER_DSS + FAIL,
           });
         } else {
           const challengeResponse = {
@@ -116,7 +121,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
             if (timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
               Materialize.toast(`Время ожидания подтверждения истекло`, 4000, "toast-ca_error");
               dispatch({
-                type: DSS_POST_AUTHORIZATION_USER + FAIL,
+                type: POST_AUTHORIZATION_USER_DSS + FAIL,
               });
               if ( timerHandle instanceof NodeJS.Timeout ) {
                 clearTimeout(timerHandle);
@@ -137,7 +142,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
                   expires_in: data2.ExpiresIn,
                   id: uuid(),
                 },
-                type: DSS_POST_AUTHORIZATION_USER + SUCCESS,
+                type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
               });
               if ( timerHandle instanceof NodeJS.Timeout ) {
                 clearTimeout(timerHandle);
@@ -146,7 +151,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
             } else if (data2.IsError === true) {
               Materialize.toast(data2.ErrorDescription, 4000, "toast-ca_error");
               dispatch({
-                type: DSS_POST_AUTHORIZATION_USER + FAIL,
+                type: POST_AUTHORIZATION_USER_DSS + FAIL,
               });
               if ( timerHandle instanceof NodeJS.Timeout ) {
                 clearTimeout(timerHandle);
@@ -158,7 +163,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");
         dispatch({
-          type: DSS_POST_AUTHORIZATION_USER + FAIL,
+          type: POST_AUTHORIZATION_USER_DSS + FAIL,
         });
       }
     }, 0);
@@ -168,7 +173,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
 export function dssPostAuthUser(url: string, login: string, password: string) {
   return (dispatch) => {
     dispatch({
-      type: DSS_POST_AUTHORIZATION_USER + START,
+      type: POST_AUTHORIZATION_USER_DSS + START,
     });
 
     setTimeout(async () => {
@@ -194,23 +199,23 @@ export function dssPostAuthUser(url: string, login: string, password: string) {
             id: uuid(),
             token_type: data.token_type,
           },
-          type: DSS_POST_AUTHORIZATION_USER + SUCCESS,
+          type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");
 
         dispatch({
-          type: DSS_POST_AUTHORIZATION_USER + FAIL,
+          type: POST_AUTHORIZATION_USER_DSS + FAIL,
         });
       }
     }, 0);
   };
 }
 
-export function getCertificates(url: string, token: string) {
+export function getCertificatesDSS(url: string, token: string) {
   return (dispatch) => {
     dispatch({
-      type: DSS_GET_CERTIFICATES + START,
+      type: GET_CERTIFICATES_DSS + START,
     });
 
     setTimeout(async () => {
@@ -231,13 +236,13 @@ export function getCertificates(url: string, token: string) {
           payload: {
             certificateMap: hcertificates,
           },
-          type: DSS_GET_CERTIFICATES + SUCCESS,
+          type: GET_CERTIFICATES_DSS + SUCCESS,
         });
       } catch (e) {
         Materialize.toast(e, 4000, "toast-ca_error");
 
         dispatch({
-          type: DSS_GET_CERTIFICATES + FAIL,
+          type: GET_CERTIFICATES_DSS + FAIL,
         });
       }
     }, 0);

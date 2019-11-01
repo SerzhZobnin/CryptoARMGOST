@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { DSS_POST_AUTHORIZATION_USER, DSS_TOKENS_JSON, SUCCESS } from "../constants";
+import { POST_AUTHORIZATION_USER_DSS, DSS_TOKENS_JSON, SUCCESS } from "../constants";
 import { mapToArr } from "../utils";
 
 export const TokenDSSModel = Record({
@@ -18,7 +18,7 @@ export default (tokens = new DefaultReducerState(), action) => {
   const { type, payload } = action;
 
   switch (type) {
-    case DSS_POST_AUTHORIZATION_USER + SUCCESS:
+    case POST_AUTHORIZATION_USER_DSS + SUCCESS:
       tokens = tokens.setIn(["entities", payload.id], new TokenDSSModel({
         access_token: payload.access_token,
         expires_in: payload.expires_in,
@@ -28,7 +28,7 @@ export default (tokens = new DefaultReducerState(), action) => {
       break;
   }
 
-  if (type === DSS_POST_AUTHORIZATION_USER + SUCCESS) {
+  if (type === POST_AUTHORIZATION_USER_DSS + SUCCESS) {
     const state = {
       tokens: mapToArr(tokens.entities),
     };
