@@ -218,6 +218,7 @@ export const POST_CA_CERTREQUEST_СONFIRMATION = "POST_CA_CERTREQUEST_СONFIRMAT
 export const POST_AUTHORIZATION_USER_DSS = "POST_AUTHORIZATION_USER_DSS";
 export const GET_CERTIFICATES_DSS = "GET_CERTIFICATES_DSS";
 export const GET_POLICY_DSS = "GET_POLICY_DSS";
+export const POST_TRANSACTION_DSS = "POST_TRANSACTION_DSS";
 
 export const REQUEST_STATUS = {
   Q: "Q", // запрос установлен в очередь на обработку(Новый, Queued);
