@@ -1,10 +1,11 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
 import { CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON, CA_CSR_JSON, CA_REGREGUESTS_JSON, DSS_CERTIFICATES_JSON,
-  DSS_TOKENS_JSON, SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH } from "../constants";
+  DSS_TOKENS_JSON, SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH, POLICY_DSS_JSON } from "../constants";
 import { CertificateRequestCAModel, DefaultReducerState as DefaultRequestsReducerState } from "../reducer/certrequests";
 import { CertTemplateModel, DefaultReducerState as DefaultCertTemplateReducerState } from "../reducer/certtemplate";
 import { DefaultReducerState as DefaultDSSCertificatesState, DSSCertificateModel } from "../reducer/DSSCertificates";
+import { DefaultReducerState as DefaultPolicyDSSState, PolicyDSSModel } from "../reducer/policyDSS";
 import { DefaultReducerState as DefaultRegrequestsReducerState, RegRequestModel } from "../reducer/regrequests";
 import { DefaultReducerState as DefaultServicesReducerState, ServiceModel,
   SettingsModel as ServiceSettingsModel } from "../reducer/services";
@@ -188,6 +189,27 @@ if (fileExists(DSS_CERTIFICATES_JSON)) {
       }
 
       odata.DSSCertificates = certificateMap;
+    } catch (e) {
+      //
+    }
+  }
+}
+
+if (fileExists(POLICY_DSS_JSON)) {
+  const policyDSS = fs.readFileSync(POLICY_DSS_JSON, "utf8");
+
+  if (policyDSS) {
+    try {
+      let policyMap = new DefaultPolicyDSSState();
+
+      const data = JSON.parse(policyDSS);
+
+      for (const policy of data.DSSCertificates) {
+        const mpolicy = new PolicyDSSModel({ ...policy });
+        policyMap = policyMap.setIn(["entities", policy.id], mpolicy);
+      }
+
+      odata.policyDSS = policyMap;
     } catch (e) {
       //
     }

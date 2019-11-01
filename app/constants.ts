@@ -140,6 +140,7 @@ export const CA_CERTTEMPLATE_JSON = window.CA_CERTTEMPLATE_JSON;
 export const CA_CSR_JSON = window.CA_CSR_JSON;
 export const DSS_TOKENS_JSON = window.DSS_TOKENS_JSON;
 export const DSS_CERTIFICATES_JSON = window.DSS_CERTIFICATES_JSON;
+export const POLICY_DSS_JSON = window.POLICY_DSS_JSON;
 export const TEMPLATES_PATH = window.TEMPLATES_PATH;
 
 export const LicenseManager: trusted.utils.License_Mng = window.LICENSE_MNG;
@@ -216,6 +217,7 @@ export const POST_CA_CERTREQUEST_СONFIRMATION = "POST_CA_CERTREQUEST_СONFIRMAT
 
 export const DSS_POST_AUTHORIZATION_USER = "DSS_POST_AUTHORIZATION_USER";
 export const DSS_GET_CERTIFICATES = "DSS_GET_CERTIFICATES";
+export const GET_POLICY_DSS = "GET_POLICY_DSS";
 
 export const REQUEST_STATUS = {
   Q: "Q", // запрос установлен в очередь на обработку(Новый, Queued);

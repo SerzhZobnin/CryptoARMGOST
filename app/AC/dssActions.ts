@@ -1,6 +1,6 @@
 import * as os from "os";
 import {
-  DSS_GET_CERTIFICATES, DSS_POST_AUTHORIZATION_USER, FAIL, START, SUCCESS,
+  DSS_GET_CERTIFICATES, DSS_POST_AUTHORIZATION_USER, FAIL, START, SUCCESS, GET_POLICY_DSS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -238,6 +238,42 @@ export function getCertificates(url: string, token: string) {
 
         dispatch({
           type: DSS_GET_CERTIFICATES + FAIL,
+        });
+      }
+    }, 0);
+  };
+}
+
+export function getPolicyDSS(url: string, token: string) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_POLICY_DSS + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+      try {
+        // https://dss.cryptopro.ru/SignServer/rest
+        data = await getApi(
+          `${url}/api/policy`,
+          [
+            `Authorization: Bearer ${token}`,
+          ],
+        );
+        const policy = data.ActionPolicy.filter(function(item: any) {
+           return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments"; });
+        dispatch({
+          payload: {
+            id: uuid(),
+            policy,
+          },
+          type: GET_POLICY_DSS + SUCCESS,
+        });
+      } catch (e) {
+        Materialize.toast(e, 4000, "toast-ca_error");
+
+        dispatch({
+          type: GET_POLICY_DSS + FAIL,
         });
       }
     }, 0);

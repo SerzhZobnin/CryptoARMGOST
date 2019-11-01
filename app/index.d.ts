@@ -22,6 +22,7 @@ interface Window {
     CA_CSR_JSON: string;
     DSS_TOKENS_JSON: string;
     DSS_CERTIFICATES_JSON: string,
+    DSS_POLICY_JSON: string,
     LICENSE_PATH: string;
     LICENSE_MNG: any;
     PLATFORM: string;

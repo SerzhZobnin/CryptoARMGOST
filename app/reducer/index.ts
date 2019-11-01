@@ -9,6 +9,7 @@ import containers from "./containers";
 import crls from "./crls";
 import documents from "./documents";
 import DSSCertificates from "./DSSCertificates";
+import policyDSS from "./policyDSS";
 import events from "./events";
 import files from "./files";
 import filters from "./filters";
@@ -30,6 +31,7 @@ export default combineReducers({
   crls,
   documents,
   DSSCertificates,
+  policyDSS,
   events,
   files,
   filters,
