@@ -335,19 +335,19 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
         }
         if (field.value && (key === "1.2.643.3.131.1.1")) {
           result = validateInn(field.value);
-          break;
+          if (!result) { break; }
         } else if (field.value && (key === "1.2.643.100.1")) {
           result = validateOgrn(field.value);
-          break;
+          if (!result) { break; }
         } else if (field.value && (key === "1.2.643.100.3")) {
           result = validateSnils(field.value);
-          break;
+          if (!result) { break; }
         } else if (field.value && (key === "1.2.643.100.5")) {
           result = validateOgrnip(field.value);
-          break;
+          if (!result) { break; }
         } else if (field.value && (key === "1.2.840.113549.1.9.1")) {
           result = REQULAR_EXPRESSION.test(field.value);
-          break;
+          if (!result) { break; }
         }
       }
     }
