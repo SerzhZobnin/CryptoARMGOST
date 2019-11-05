@@ -6,18 +6,6 @@ import PropTypes from "prop-types";
 import React from "react";
 
 let err_hint: string[] = ["Доступны только цифры", "Проверьте количество цифр", "Не правильно введены данные"];
-interface ISignatureStatusProps {
-  signature: any;
-  handleActiveCert: (cert: any) => void;
-}
-
-class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
-  static contextTypes = {
-    locale: PropTypes.string,
-    localize: PropTypes.func,
-  };
-
-}
 
 export function arrayToMap(arr, RecordModel) {
   return arr.reduce((acc, el) => acc.set(el.id, RecordModel ? new RecordModel(el) : el), new OrderedMap({}))
