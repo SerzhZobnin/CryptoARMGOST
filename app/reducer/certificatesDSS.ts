@@ -33,7 +33,7 @@ export default (certificatesDSS = new DefaultReducerState(), action) => {
       break;
   }
 
-  if (type === GET_CERTIFICATES_DSS + SUCCESS) {
+  if (type === GET_CERTIFICATES_DSS + SUCCESS && CERTIFICATES_DSS_JSON) {
     const state = {
       certificatesDSS: mapToArr(certificatesDSS.entities),
     };

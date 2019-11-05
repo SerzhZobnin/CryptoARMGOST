@@ -5,6 +5,7 @@ import {
   FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, START, SUCCESS,
 } from "../../app/constants";
 import { uuid } from "../../app/utils";
+import CERTIFICATES, { certificateMap } from "../__fixtures__/certificates";
 
 const URL = "https://dss.cryptopro.ru/STS/oauth";
 const LOGIN = "test";
@@ -38,7 +39,7 @@ const header = [
 
 actions.getApi = jest.fn((url: string, headerfields: string[]) => {
   if (headerfields[0] === header[0]) {
-    return Promise.resolve(DATA);
+    return Promise.resolve(CERTIFICATES);
   } else {
     return Promise.reject("Cannot load data");
   }
@@ -86,26 +87,23 @@ describe("DSS actions", () => {
     });
   });
 
-  // it("creates GET_CERTIFICATES_DSS + SUCCESS", () => {
-  //   const store = mockStore({});
+  it("creates GET_CERTIFICATES_DSS + SUCCESS", () => {
+    const store = mockStore({});
 
-  //   const expectedActions = [
-  //     { type: GET_CERTIFICATES_DSS + START },
-  //     {
-  //       payload: {
-  //         access_token: TOKEN,
-  //         expires_in: 300,
-  //         id: UID,
-  //         token_type: "Bearer",
-  //       },
-  //       type: GET_CERTIFICATES_DSS + SUCCESS,
-  //     },
-  //   ];
+    const expectedActions = [
+      { type: GET_CERTIFICATES_DSS + START },
+      {
+        payload: {
+          certificateMap,
+        },
+        type: GET_CERTIFICATES_DSS + SUCCESS,
+      },
+    ];
 
-  //   return store.dispatch(actions.getCertificatesDSS(URL, TOKEN)).then(() => {
-  //     expect(store.getActions()).toEqual(expectedActions);
-  //   });
-  // });
+    return store.dispatch(actions.getCertificatesDSS(URL, TOKEN)).then(() => {
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
 
   it("creates GET_CERTIFICATES_DSS + FAIL", () => {
     const store = mockStore({});

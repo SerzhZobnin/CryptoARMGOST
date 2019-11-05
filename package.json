@@ -213,6 +213,7 @@
         "isolatedModules": false
       }
     },
+    "testPathIgnorePatterns" : ["/node_modules/", "/__fixtures__/"],
     "transform": {
       "^.+\\.(ts|tsx)$": "ts-jest"
     },

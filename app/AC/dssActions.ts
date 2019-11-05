@@ -34,7 +34,7 @@ export const postApi = async (url: string, postfields: any, headerfields: string
     });
     curl.perform();
   });
-}
+};
 
 export const getApi = async (url: string, headerfields: string[]) => {
   return new Promise((resolve, reject) => {
@@ -63,7 +63,7 @@ export const getApi = async (url: string, headerfields: string[]) => {
     });
     curl.perform();
   });
-}
+};
 
 function postAuthorizationUserSuccess(body: any) {
   return {
