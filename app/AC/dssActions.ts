@@ -1,6 +1,7 @@
 import * as os from "os";
+import { ITransaction } from "../components/Services/types";
 import {
-  GET_CERTIFICATES_DSS, POST_AUTHORIZATION_USER_DSS, FAIL, START, SUCCESS, GET_POLICY_DSS, POST_TRANSACTION_DSS,
+  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_TRANSACTION_DSS, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -296,7 +297,7 @@ export function getPolicyDSS(url: string, token: string) {
   };
 }
 
-export function createTransactionDSS(url: string, token: string, body: string) {
+export function createTransactionDSS(url: string, token: string, body: ITransaction) {
   return (dispatch) => {
     dispatch({
       type: POST_TRANSACTION_DSS + START,
@@ -308,7 +309,7 @@ export function createTransactionDSS(url: string, token: string, body: string) {
         // https://dss.cryptopro.ru/STS/oauth
         data = await postApi(
           `${url}/api/transactions`,
-          body,
+          JSON.stringify(body),
           [
             `Authorization: Bearer ${token}`,
             "Content-Type: application/json; charset=utf-8",
