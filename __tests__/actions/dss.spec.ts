@@ -6,6 +6,7 @@ import {
 } from "../../app/constants";
 import { uuid } from "../../app/utils";
 import CERTIFICATES, { certificateMap } from "../__fixtures__/certificates";
+import POLICY, {NORMALIZE_POLICY} from "../__fixtures__/policy";
 
 const URL = "https://dss.cryptopro.ru/STS/oauth";
 const LOGIN = "test";
@@ -119,6 +120,33 @@ describe("DSS actions", () => {
     ];
 
     return store.dispatch(actions.getCertificatesDSS(URL, INCORRECT_TOKEN)).then(() => {
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
+  it("creates GET_POLICY_DSS + SUCCESS", () => {
+    actions.getApi = jest.fn((url: string, headerfields: string[]) => {
+      if (headerfields[0] === header[0]) {
+        return Promise.resolve(POLICY);
+      } else {
+        return Promise.reject("Cannot load data");
+      }
+    });
+
+    const store = mockStore({});
+
+    const expectedActions = [
+      { type: GET_POLICY_DSS + START },
+      {
+        payload: {
+          id: UID,
+          policy: NORMALIZE_POLICY,
+        },
+        type: GET_POLICY_DSS + SUCCESS,
+      },
+    ];
+
+    return store.dispatch(actions.getPolicyDSS(URL, TOKEN)).then(() => {
       expect(store.getActions()).toEqual(expectedActions);
     });
   });

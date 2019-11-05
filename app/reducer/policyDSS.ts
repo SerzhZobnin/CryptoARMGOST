@@ -21,7 +21,7 @@ export default (policyDSS = new DefaultReducerState(), action) => {
       break;
   }
 
-  if (type === GET_POLICY_DSS + SUCCESS) {
+  if (type === GET_POLICY_DSS + SUCCESS && POLICY_DSS_JSON) {
     const state = {
       policyDSS: mapToArr(policyDSS.entities),
     };

@@ -256,40 +256,38 @@ export function getCertificatesDSS(url: string, token: string) {
 }
 
 export function getPolicyDSS(url: string, token: string) {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch({
       type: GET_POLICY_DSS + START,
     });
 
-    setTimeout(async () => {
-      let data: any;
-      try {
-        // https://dss.cryptopro.ru/SignServer/rest
-        data = await getApi(
-          `${url}/api/policy`,
-          [
-            `Authorization: Bearer ${token}`,
-          ],
-        );
-        const policy = data.ActionPolicy.filter(function (item: any) {
-          return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments";
-        });
-        dispatch({
-          payload: {
-            id: uuid(),
-            policy,
-          },
-          type: GET_POLICY_DSS + SUCCESS,
-        });
-      } catch (e) {
-        dispatch({
-          type: GET_POLICY_DSS + FAIL,
-          payload: {
-            error: e,
-          },
-        });
-      }
-    }, 0);
+    let data: any;
+    try {
+      // https://dss.cryptopro.ru/SignServer/rest
+      data = await getApi(
+        `${url}/api/policy`,
+        [
+          `Authorization: Bearer ${token}`,
+        ],
+      );
+      const policy = data.ActionPolicy.filter(function (item: any) {
+        return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments";
+      });
+      dispatch({
+        payload: {
+          id: uuid(),
+          policy,
+        },
+        type: GET_POLICY_DSS + SUCCESS,
+      });
+    } catch (e) {
+      dispatch({
+        type: GET_POLICY_DSS + FAIL,
+        payload: {
+          error: e,
+        },
+      });
+    }
   };
 }
 
