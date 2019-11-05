@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { POST_AUTHORIZATION_USER_DSS, DSS_TOKENS_JSON, SUCCESS } from "../constants";
+import { DSS_TOKENS_JSON, POST_AUTHORIZATION_USER_DSS, SUCCESS } from "../constants";
 import { mapToArr } from "../utils";
 
 export const TokenDSSModel = Record({

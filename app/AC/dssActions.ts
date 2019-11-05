@@ -1,17 +1,17 @@
 import * as os from "os";
 import {
-  GET_CERTIFICATES_DSS, POST_AUTHORIZATION_USER_DSS, FAIL, START, SUCCESS, GET_POLICY_DSS,
+  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
 
-export async function postApi(url: string, postfields: any, headerfields: string[]) {
+export const postApi = (url: string, postfields: any, headerfields: string[]) => {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
-    curl.on("end", function(statusCode: number, response: any) {
+    curl.on("end", function (statusCode: number, response: any) {
       let data;
       try {
 
@@ -20,7 +20,6 @@ export async function postApi(url: string, postfields: any, headerfields: string
         }
         data = JSON.parse(response.toString());
       } catch (error) {
-        console.log(response);
         reject(`Cannot load data, error: ${error.message}`);
         return;
       } finally {
@@ -42,7 +41,7 @@ export async function getApi(url: string, headerfields: string[]) {
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.on("end", function(statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
       let data;
       try {
         if (statusCode !== 200) {
@@ -88,7 +87,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
             `Authorization: Basic ${Buffer.from(login + ":" + password).toString("base64")}`,
           ],
         );
-        if ( data1.IsFinal === true ) {
+        if (data1.IsFinal === true) {
           dispatch({
             payload: {
               access_token: data1.AccessToken,
@@ -108,9 +107,10 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
             ChallengeResponse:
             {
               TextChallengeResponse:
-              [{
-                RefId: `${data1.Challenge.ContextData.RefID}`},
-              ],
+                [{
+                  RefId: `${data1.Challenge.ContextData.RefID}`
+                },
+                ],
             },
           };
           const deploy: number = 10000;
@@ -123,7 +123,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
               dispatch({
                 type: POST_AUTHORIZATION_USER_DSS + FAIL,
               });
-              if ( timerHandle instanceof NodeJS.Timeout ) {
+              if (timerHandle instanceof NodeJS.Timeout) {
                 clearTimeout(timerHandle);
               }
               timerHandle = null;
@@ -135,7 +135,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
                 `Authorization: Basic ${Buffer.from(login + ":" + password).toString("base64")}`,
               ],
             );
-            if ( data2.IsFinal === true ) {
+            if (data2.IsFinal === true) {
               dispatch({
                 payload: {
                   access_token: data2.AccessToken,
@@ -144,7 +144,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
                 },
                 type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
               });
-              if ( timerHandle instanceof NodeJS.Timeout ) {
+              if (timerHandle instanceof NodeJS.Timeout) {
                 clearTimeout(timerHandle);
               }
               timerHandle = null;
@@ -153,7 +153,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
               dispatch({
                 type: POST_AUTHORIZATION_USER_DSS + FAIL,
               });
-              if ( timerHandle instanceof NodeJS.Timeout ) {
+              if (timerHandle instanceof NodeJS.Timeout) {
                 clearTimeout(timerHandle);
               }
               timerHandle = null;
@@ -171,44 +171,41 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
 }
 
 export function dssPostAuthUser(url: string, login: string, password: string) {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch({
       type: POST_AUTHORIZATION_USER_DSS + START,
     });
 
-    setTimeout(async () => {
-      let data: any;
-      let body: string;
+    let data: any;
+    let body: string;
 
-      try {
-        // https://dss.cryptopro.ru/STS/oauth
-        body = "grant_type=password" + "&client_id=" + encodeURIComponent("cryptoarm") + "&scope=dss" +
-          "&username=" + encodeURIComponent(login) + "&password=" + encodeURIComponent(password) +
-          "&resource=https://dss.cryptopro.ru/SignServer/rest/api/certificates";
-        data = await postApi(
-          `${url}/token`,
-          body,
-          [
-            "Content-Type: application/x-www-form-urlencoded",
-          ],
-        );
-        dispatch({
-          payload: {
-            access_token: data.access_token,
-            expires_in: data.expires_in,
-            id: uuid(),
-            token_type: data.token_type,
-          },
-          type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
-        });
-      } catch (e) {
-        Materialize.toast(e, 4000, "toast-ca_error");
-
-        dispatch({
-          type: POST_AUTHORIZATION_USER_DSS + FAIL,
-        });
-      }
-    }, 0);
+    try {
+      // https://dss.cryptopro.ru/STS/oauth
+      body = "grant_type=password" + "&client_id=" + encodeURIComponent("cryptoarm") + "&scope=dss" +
+        "&username=" + encodeURIComponent(login) + "&password=" + encodeURIComponent(password) +
+        "&resource=https://dss.cryptopro.ru/SignServer/rest/api/certificates";
+      data = await postApi(
+        `${url}/token`,
+        body,
+        [
+          "Content-Type: application/x-www-form-urlencoded",
+        ],
+      );
+      dispatch({
+        payload: {
+          access_token: data.access_token,
+          expires_in: data.expires_in,
+          id: uuid(),
+          token_type: data.token_type,
+        },
+        type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
+      });
+    } catch (e) {
+      // Materialize.toast(e, 4000, "toast-ca_error");
+      dispatch({
+        type: POST_AUTHORIZATION_USER_DSS + FAIL,
+      });
+    }
   };
 }
 
@@ -230,7 +227,7 @@ export function getCertificatesDSS(url: string, token: string) {
         );
         const hcertificates: any[] = [];
         for (const certificate of data) {
-          hcertificates.push({id: certificate.ID, ...certificate});
+          hcertificates.push({ id: certificate.ID, ...certificate });
         }
         dispatch({
           payload: {
@@ -265,8 +262,9 @@ export function getPolicyDSS(url: string, token: string) {
             `Authorization: Bearer ${token}`,
           ],
         );
-        const policy = data.ActionPolicy.filter(function(item: any) {
-           return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments"; });
+        const policy = data.ActionPolicy.filter(function (item: any) {
+          return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments";
+        });
         dispatch({
           payload: {
             id: uuid(),
