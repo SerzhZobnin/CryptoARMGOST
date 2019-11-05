@@ -1,7 +1,7 @@
 import * as os from "os";
 import { ITransaction } from "../components/Services/types";
 import {
-  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_TRANSACTION_DSS, START, SUCCESS,
+  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_TRANSACTION_DSS, START, SUCCESS, POST_PERFORM_OPERATION,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -322,6 +322,43 @@ export function createTransactionDSS(url: string, token: string, body: ITransact
       } catch (e) {
         dispatch({
           type: POST_TRANSACTION_DSS + FAIL,
+          payload: {
+            error: e,
+          },
+        });
+      }
+    }, 0);
+  };
+}
+
+export function dssPerformOperation(url: string, token: string, body: any) {
+  return (dispatch) => {
+    dispatch({
+      type: POST_PERFORM_OPERATION + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+
+      try {
+        // https://dss.cryptopro.ru/SignServer/rest
+        data = await postApi(
+          `${url}/api/documents`,
+          JSON.stringify(body),
+          [
+            `Authorization: Bearer ${token}`,
+            "Content-Type: application/json; charset=utf-8",
+          ],
+        );
+        // dispatch({
+        //   payload: {
+        //     id: data,
+        //   },
+        //   type: POST_PERFORM_OPERATION + SUCCESS,
+        // });
+      } catch (e) {
+        dispatch({
+          type: POST_PERFORM_OPERATION + FAIL,
           payload: {
             error: e,
           },

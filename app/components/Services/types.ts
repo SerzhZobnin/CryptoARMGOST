@@ -47,20 +47,3 @@ export interface IRegRequest {
   serviceId: string;
   certThumbprint: string;
 }
-
-export interface ITransactionParameter {
-  Name: string;
-  Value: string;
-}
-
-export interface IDocumentContent {
-  Name: string;
-  Content: string;
-}
-
-export interface ITransaction {
-  OperationCode: number;
-  Document: string;
-  Parameters: ITransactionParameter[];
-  Documents: IDocumentContent[];
-}
