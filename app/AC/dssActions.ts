@@ -1,6 +1,7 @@
 import * as os from "os";
+import { ITransaction } from "../components/Services/types";
 import {
-  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, START, SUCCESS,
+  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_TRANSACTION_DSS, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -97,13 +98,14 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
             type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
           });
         } else if (data1.IsError === true) {
-          Materialize.toast(data2.ErrorDescription, 4000, "toast-ca_error");
           dispatch({
             type: POST_AUTHORIZATION_USER_DSS + FAIL,
+            payload: {
+              error: data2.ErrorDescription,
+            },
           });
         } else {
           const challengeResponse = {
-            Resource: "urn:cryptopro:dss:signserver:signserver",
             ChallengeResponse:
             {
               TextChallengeResponse:
@@ -112,6 +114,7 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
                 },
                 ],
             },
+            Resource: "urn:cryptopro:dss:signserver:signserver",
           };
           const deploy: number = 10000;
           var timeout: number = 0;
@@ -119,9 +122,11 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
           timerHandle = setTimeout(async function req() {
             timeout += deploy;
             if (timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
-              Materialize.toast(`Время ожидания подтверждения истекло`, 4000, "toast-ca_error");
               dispatch({
                 type: POST_AUTHORIZATION_USER_DSS + FAIL,
+                payload: {
+                  error: `Время ожидания подтверждения истекло`,
+                },
               });
               if (timerHandle instanceof NodeJS.Timeout) {
                 clearTimeout(timerHandle);
@@ -149,9 +154,11 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
               }
               timerHandle = null;
             } else if (data2.IsError === true) {
-              Materialize.toast(data2.ErrorDescription, 4000, "toast-ca_error");
               dispatch({
                 type: POST_AUTHORIZATION_USER_DSS + FAIL,
+                payload: {
+                  error: data2.ErrorDescription,
+                },
               });
               if (timerHandle instanceof NodeJS.Timeout) {
                 clearTimeout(timerHandle);
@@ -161,9 +168,11 @@ export function dssPostMFAAuthUser(url: string, login: string, password: string)
           }, deploy);
         }
       } catch (e) {
-        Materialize.toast(e, 4000, "toast-ca_error");
         dispatch({
           type: POST_AUTHORIZATION_USER_DSS + FAIL,
+          payload: {
+            error: e,
+          },
         });
       }
     }, 0);
@@ -236,10 +245,11 @@ export function getCertificatesDSS(url: string, token: string) {
           type: GET_CERTIFICATES_DSS + SUCCESS,
         });
       } catch (e) {
-        Materialize.toast(e, 4000, "toast-ca_error");
-
         dispatch({
           type: GET_CERTIFICATES_DSS + FAIL,
+          payload: {
+            error: e,
+          },
         });
       }
     }, 0);
@@ -273,10 +283,47 @@ export function getPolicyDSS(url: string, token: string) {
           type: GET_POLICY_DSS + SUCCESS,
         });
       } catch (e) {
-        Materialize.toast(e, 4000, "toast-ca_error");
-
         dispatch({
           type: GET_POLICY_DSS + FAIL,
+          payload: {
+            error: e,
+          },
+        });
+      }
+    }, 0);
+  };
+}
+
+export function createTransactionDSS(url: string, token: string, body: ITransaction) {
+  return (dispatch) => {
+    dispatch({
+      type: POST_TRANSACTION_DSS + START,
+    });
+
+    setTimeout(async () => {
+      let data: any;
+      try {
+        // https://dss.cryptopro.ru/STS/oauth
+        data = await postApi(
+          `${url}/api/transactions`,
+          JSON.stringify(body),
+          [
+            `Authorization: Bearer ${token}`,
+            "Content-Type: application/json; charset=utf-8",
+          ],
+        );
+        dispatch({
+          payload: {
+            id: data,
+          },
+          type: POST_TRANSACTION_DSS + SUCCESS,
+        });
+      } catch (e) {
+        dispatch({
+          type: POST_TRANSACTION_DSS + FAIL,
+          payload: {
+            error: e,
+          },
         });
       }
     }, 0);

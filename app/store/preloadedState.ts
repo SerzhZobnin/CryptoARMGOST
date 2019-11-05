@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
 import { CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON, CA_CSR_JSON, CA_REGREGUESTS_JSON, CERTIFICATES_DSS_JSON,
   DSS_TOKENS_JSON, POLICY_DSS_JSON, SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH } from "../constants";
-import { DefaultReducerState as DefaultCertificatesDSSState, CertificateDSSModel } from "../reducer/certificatesDSS";
+import { CertificateDSSModel, DefaultReducerState as DefaultCertificatesDSSState } from "../reducer/certificatesDSS";
 import { CertificateRequestCAModel, DefaultReducerState as DefaultRequestsReducerState } from "../reducer/certrequests";
 import { CertTemplateModel, DefaultReducerState as DefaultCertTemplateReducerState } from "../reducer/certtemplate";
 import { DefaultReducerState as DefaultPolicyDSSState, PolicyDSSModel } from "../reducer/policyDSS";
