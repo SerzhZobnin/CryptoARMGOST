@@ -35,12 +35,14 @@ export default (tokens = new DefaultReducerState(), action) => {
 
     const sstate = JSON.stringify(state, null, 4);
 
-    fs.writeFile(DSS_TOKENS_JSON, sstate, (err: any) => {
-      if (err) {
-        // tslint:disable-next-line:no-console
-        console.log("------- error write to ", DSS_TOKENS_JSON);
-      }
-    });
+    if (DSS_TOKENS_JSON) {
+      fs.writeFile(DSS_TOKENS_JSON, sstate, (err: any) => {
+        if (err) {
+          // tslint:disable-next-line:no-console
+          console.log("------- error write to ", DSS_TOKENS_JSON);
+        }
+      });
+    }
   }
 
   return tokens;
