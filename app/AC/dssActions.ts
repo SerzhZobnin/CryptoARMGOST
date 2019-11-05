@@ -5,7 +5,7 @@ import {
 } from "../constants";
 import { uuid } from "../utils";
 
-export const postApi = (url: string, postfields: any, headerfields: string[]) => {
+export async function postApi(url: string, postfields: any, headerfields: string[]) {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
     curl.setOpt("URL", url);
@@ -65,117 +65,118 @@ export async function getApi(url: string, headerfields: string[]) {
   });
 }
 
-export function dssPostMFAAuthUser(url: string, login: string, password: string) {
-  return (dispatch) => {
+function postAuthorizationUserSuccess(body: any) {
+  return {
+    payload: {
+      access_token: body.AccessToken,
+      expires_in: body.ExpiresIn,
+      id: uuid(),
+    },
+    type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
+  };
+}
+
+function postAuthorizationUserFail(error: string) {
+  return {
+    payload: {
+      error,
+    },
+    type: POST_AUTHORIZATION_USER_DSS + FAIL,
+  };
+}
+
+export function dssAuthIssue(url: string, login: string, password: string) {
+  let headerfield: string[];
+  let body: any;
+  headerfield = [
+    "Content-Type: application/x-www-form-urlencoded",
+    `Authorization: Basic ${Buffer.from(login + ":" + password).toString("base64")}`,
+  ];
+  body = {
+    Resource: "urn:cryptopro:dss:signserver:signserver",
+  };
+  return dssPostMFAUser(url, headerfield, body);
+}
+
+export function dssOperationConfirmation(url: string, token: string, TransactionTokenId: string) {
+  let headerfield: string[];
+  let body: any;
+  headerfield = [
+    "Content-Type: application/json; charset=utf-8",
+    `Authorization: Bearer ${token}`,
+  ];
+  body = {
+    Resource: "urn:cryptopro:dss:signserver:signserver",
+    TransactionTokenId,
+  };
+  return dssPostMFAUser(url, headerfield, body);
+}
+
+export function dssPostMFAUser(url: string, headerfield: string[], body: any) {
+  return async (dispatch) => {
     dispatch({
       type: POST_AUTHORIZATION_USER_DSS + START,
     });
 
-    setTimeout(async () => {
-      let data1: any;
-      let data2: any;
-      const body = {
-        Resource: "urn:cryptopro:dss:signserver:signserver",
-      };
+    let data1: any;
+    let data2: any;
 
-      try {
-        // https://dss.cryptopro.ru/STS/confirmation
-        data1 = await postApi(
-          `${url}`,
-          JSON.stringify(body),
-          [
-            "Content-Type: application/x-www-form-urlencoded",
-            `Authorization: Basic ${Buffer.from(login + ":" + password).toString("base64")}`,
-          ],
-        );
-        if (data1.IsFinal === true) {
-          dispatch({
-            payload: {
-              access_token: data1.AccessToken,
-              expires_in: data1.ExpiresIn,
-              id: uuid(),
-            },
-            type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
-          });
-        } else if (data1.IsError === true) {
-          dispatch({
-            type: POST_AUTHORIZATION_USER_DSS + FAIL,
-            payload: {
-              error: data2.ErrorDescription,
-            },
-          });
-        } else {
-          const challengeResponse = {
-            ChallengeResponse:
-            {
-              TextChallengeResponse:
-                [{
-                  RefId: `${data1.Challenge.ContextData.RefID}`
-                },
-                ],
-            },
-            Resource: "urn:cryptopro:dss:signserver:signserver",
-          };
-          const deploy: number = 10000;
-          var timeout: number = 0;
-          var timerHandle: NodeJS.Timeout | null;
-          timerHandle = setTimeout(async function req() {
-            timeout += deploy;
-            if (timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
-              dispatch({
-                type: POST_AUTHORIZATION_USER_DSS + FAIL,
-                payload: {
-                  error: `Время ожидания подтверждения истекло`,
-                },
-              });
-              if (timerHandle instanceof NodeJS.Timeout) {
-                clearTimeout(timerHandle);
-              }
-              timerHandle = null;
-            }
-            data2 = await postApi(
-              `${url}`,
-              JSON.stringify(challengeResponse),
-              [
-                `Authorization: Basic ${Buffer.from(login + ":" + password).toString("base64")}`,
+    try {
+      // https://dss.cryptopro.ru/STS/confirmation
+      data1 = await postApi(
+        `${url}`,
+        JSON.stringify(body),
+        headerfield,
+      );
+      if (data1.IsFinal === true) {
+        dispatch(postAuthorizationUserSuccess(data1));
+      } else {
+        const challengeResponse = {
+          ChallengeResponse:
+          {
+            TextChallengeResponse:
+              [{
+                RefId: `${data1.Challenge.ContextData.RefID}`,
+              },
               ],
-            );
-            if (data2.IsFinal === true) {
-              dispatch({
-                payload: {
-                  access_token: data2.AccessToken,
-                  expires_in: data2.ExpiresIn,
-                  id: uuid(),
-                },
-                type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
-              });
-              if (timerHandle instanceof NodeJS.Timeout) {
-                clearTimeout(timerHandle);
-              }
-              timerHandle = null;
-            } else if (data2.IsError === true) {
-              dispatch({
-                type: POST_AUTHORIZATION_USER_DSS + FAIL,
-                payload: {
-                  error: data2.ErrorDescription,
-                },
-              });
-              if (timerHandle instanceof NodeJS.Timeout) {
-                clearTimeout(timerHandle);
-              }
-              timerHandle = null;
-            } else { setTimeout(req, deploy); }
-          }, deploy);
-        }
-      } catch (e) {
-        dispatch({
-          type: POST_AUTHORIZATION_USER_DSS + FAIL,
-          payload: {
-            error: e,
           },
-        });
+          Resource: "urn:cryptopro:dss:signserver:signserver",
+        };
+        const deploy: number = 10000;
+        var timeout: number = 0;
+        var timerHandle: NodeJS.Timeout | null;
+        timerHandle = setTimeout(async function req() {
+          timeout += deploy;
+          if (timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
+            dispatch(postAuthorizationUserFail(`Время ожидания подтверждения истекло`));
+            if (timerHandle instanceof NodeJS.Timeout) {
+              clearTimeout(timerHandle);
+            }
+            timerHandle = null;
+          }
+          data2 = await postApi(
+            `${url}`,
+            JSON.stringify(challengeResponse),
+            headerfield,
+          );
+          if (data2.IsFinal === true) {
+            dispatch(postAuthorizationUserSuccess(data2));
+            if (timerHandle instanceof NodeJS.Timeout) {
+              clearTimeout(timerHandle);
+            }
+            timerHandle = null;
+          } else if (data2.IsError === true) {
+            dispatch(postAuthorizationUserFail(data2.ErrorDescription));
+            if (timerHandle instanceof NodeJS.Timeout) {
+              clearTimeout(timerHandle);
+            }
+            timerHandle = null;
+          } else { setTimeout(req, deploy); }
+        }, deploy);
       }
-    }, 0);
+    } catch (e) {
+      dispatch(postAuthorizationUserFail(e));
+    }
   };
 }
 
