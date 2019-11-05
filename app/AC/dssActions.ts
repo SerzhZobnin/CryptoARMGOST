@@ -1,11 +1,11 @@
 import * as os from "os";
 import { ITransaction } from "../components/Services/types";
 import {
-  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_TRANSACTION_DSS, START, SUCCESS, POST_PERFORM_OPERATION,
+  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_TRANSACTION_DSS, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
 
-export const postApi = (url: string, postfields: any, headerfields: string[]) => {
+export const postApi = async (url: string, postfields: any, headerfields: string[]) => {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
     curl.setOpt("URL", url);
@@ -36,7 +36,7 @@ export const postApi = (url: string, postfields: any, headerfields: string[]) =>
   });
 }
 
-export const getApi = (url: string, headerfields: string[]) => {
+export const getApi = async (url: string, headerfields: string[]) => {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
     curl.setOpt("URL", url);
@@ -181,34 +181,41 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any) {
 }
 
 export function dssPostAuthUser(url: string, login: string, password: string) {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch({
       type: POST_AUTHORIZATION_USER_DSS + START,
     });
 
+    let data: any;
     let body: string;
 
-    // https://dss.cryptopro.ru/STS/oauth
-    body = "grant_type=password" + "&client_id=" + encodeURIComponent("cryptoarm") + "&scope=dss" +
-      "&username=" + encodeURIComponent(login) + "&password=" + encodeURIComponent(password) +
-      "&resource=https://dss.cryptopro.ru/SignServer/rest/api/certificates";
-
-    return postApi(
-      `${url}/token`,
-      body,
-      [
-        "Content-Type: application/x-www-form-urlencoded",
-      ],
-    ).then((response: any) => dispatch({
-      payload: {
-        access_token: response.access_token,
-        expires_in: response.expires_in,
-        id: uuid(),
-        token_type: response.token_type,
-      },
-      type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
-    }))
-      .catch(ex => dispatch({ type: POST_AUTHORIZATION_USER_DSS + FAIL }));
+    try {
+      // https://dss.cryptopro.ru/STS/oauth
+      body = "grant_type=password" + "&client_id=" + encodeURIComponent("cryptoarm") + "&scope=dss" +
+        "&username=" + encodeURIComponent(login) + "&password=" + encodeURIComponent(password) +
+        "&resource=https://dss.cryptopro.ru/SignServer/rest/api/certificates";
+      data = await postApi(
+        `${url}/token`,
+        body,
+        [
+          "Content-Type: application/x-www-form-urlencoded",
+        ],
+      );
+      dispatch({
+        payload: {
+          access_token: data.access_token,
+          expires_in: data.expires_in,
+          id: uuid(),
+          token_type: data.token_type,
+        },
+        type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
+      });
+    } catch (e) {
+      // Materialize.toast(e, 4000, "toast-ca_error");
+      dispatch({
+        type: POST_AUTHORIZATION_USER_DSS + FAIL,
+      });
+    }
   };
 }
 
@@ -249,38 +256,40 @@ export function getCertificatesDSS(url: string, token: string) {
 }
 
 export function getPolicyDSS(url: string, token: string) {
-  return async (dispatch) => {
+  return (dispatch) => {
     dispatch({
       type: GET_POLICY_DSS + START,
     });
 
-    let data: any;
-    try {
-      // https://dss.cryptopro.ru/SignServer/rest
-      data = await getApi(
-        `${url}/api/policy`,
-        [
-          `Authorization: Bearer ${token}`,
-        ],
-      );
-      const policy = data.ActionPolicy.filter(function (item: any) {
-        return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments";
-      });
-      dispatch({
-        payload: {
-          id: uuid(),
-          policy,
-        },
-        type: GET_POLICY_DSS + SUCCESS,
-      });
-    } catch (e) {
-      dispatch({
-        payload: {
-          error: e,
-        },
-        type: GET_POLICY_DSS + FAIL,
-      });
-    }
+    setTimeout(async () => {
+      let data: any;
+      try {
+        // https://dss.cryptopro.ru/SignServer/rest
+        data = await getApi(
+          `${url}/api/policy`,
+          [
+            `Authorization: Bearer ${token}`,
+          ],
+        );
+        const policy = data.ActionPolicy.filter(function (item: any) {
+          return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments";
+        });
+        dispatch({
+          payload: {
+            id: uuid(),
+            policy,
+          },
+          type: GET_POLICY_DSS + SUCCESS,
+        });
+      } catch (e) {
+        dispatch({
+          type: GET_POLICY_DSS + FAIL,
+          payload: {
+            error: e,
+          },
+        });
+      }
+    }, 0);
   };
 }
 
@@ -290,57 +299,27 @@ export function createTransactionDSS(url: string, token: string, body: ITransact
       type: POST_TRANSACTION_DSS + START,
     });
 
-    // https://dss.cryptopro.ru/STS/oauth
-    postApi(
-      `${url}/api/transactions`,
-      JSON.stringify(body),
-      [
-        `Authorization: Bearer ${token}`,
-        "Content-Type: application/json; charset=utf-8",
-      ],
-    ).then((response) => dispatch({
-      payload: {
-        id: response,
-      },
-      type: POST_TRANSACTION_DSS + SUCCESS,
-    }))
-      .catch(ex => dispatch({
-        payload: {
-          error: ex,
-        },
-        type: POST_TRANSACTION_DSS + FAIL,
-      }));
-  };
-}
-
-export function dssPerformOperation(url: string, token: string, body: any) {
-  return (dispatch) => {
-    dispatch({
-      type: POST_PERFORM_OPERATION + START,
-    });
-
     setTimeout(async () => {
       let data: any;
-
       try {
-        // https://dss.cryptopro.ru/SignServer/rest
+        // https://dss.cryptopro.ru/STS/oauth
         data = await postApi(
-          `${url}/api/documents`,
+          `${url}/api/transactions`,
           JSON.stringify(body),
           [
             `Authorization: Bearer ${token}`,
             "Content-Type: application/json; charset=utf-8",
           ],
         );
-        // dispatch({
-        //   payload: {
-        //     id: data,
-        //   },
-        //   type: POST_PERFORM_OPERATION + SUCCESS,
-        // });
+        dispatch({
+          payload: {
+            id: data,
+          },
+          type: POST_TRANSACTION_DSS + SUCCESS,
+        });
       } catch (e) {
         dispatch({
-          type: POST_PERFORM_OPERATION + FAIL,
+          type: POST_TRANSACTION_DSS + FAIL,
           payload: {
             error: e,
           },
