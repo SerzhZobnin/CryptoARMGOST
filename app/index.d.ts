@@ -1,3 +1,20 @@
+interface ITransactionParameter {
+  Name: string;
+  Value: string;
+}
+
+interface IDocumentContent {
+  Name: string;
+  Content: string;
+}
+
+interface ITransaction {
+  OperationCode: number;
+  Document: string;
+  Parameters: ITransactionParameter[];
+  Documents: IDocumentContent[];
+}
+
 interface Window {
     APP_LOG_FILE: string;
     APP_ERRORS_LOG_FILE: string;

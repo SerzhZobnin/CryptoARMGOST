@@ -219,6 +219,13 @@ export const POST_AUTHORIZATION_USER_DSS = "POST_AUTHORIZATION_USER_DSS";
 export const GET_CERTIFICATES_DSS = "GET_CERTIFICATES_DSS";
 export const GET_POLICY_DSS = "GET_POLICY_DSS";
 export const POST_TRANSACTION_DSS = "POST_TRANSACTION_DSS";
+export const POST_PERFORM_OPERATION = "POST_PERFORM_OPERATION";
+
+export const DSS_ACTIONS = {
+  Issue: 1, // Подтверждение входа пользователя
+  SignDocument: 2,  // Подпись документа
+  SignDocuments: 4, // Подпись пакета документов
+};
 
 export const REQUEST_STATUS = {
   Q: "Q", // запрос установлен в очередь на обработку(Новый, Queued);
