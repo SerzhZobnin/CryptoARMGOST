@@ -1,9 +1,10 @@
 import { DSS_TOKENS_JSON, POST_AUTHORIZATION_USER_DSS, SUCCESS } from "../../app/constants";
 import tokens, { DefaultReducerState, TokenDSSModel } from "../../app/reducer/tokens";
+import TOKEN from "../__fixtures__/tokens";
 
 const ACTION = {
   payload: {
-    access_token: "eyJ0eXAiOiJKeyJ1bmlxdWVfbmFtZSI6ImFsZzIi",
+    access_token: TOKEN,
     expires_in: 300,
     id: "051fbf41-3bc5-8c69-9f59-a80e11a5157b",
     token_type: "Bearer",
