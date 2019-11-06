@@ -227,6 +227,15 @@ export const DSS_ACTIONS = {
   SignDocuments: 4, // Подпись пакета документов
 };
 
+export const SIGNATURE_TYPE = {
+  XMLDSig: 0, // Подпись документа в формате XMLDSig
+  GOST3410: 1,  // Электронная подпись по ГОСТ Р 34.10 - 2001 или ГОСТ Р 34.10 - 2012
+  CAdES: 2, // Подпись формата CAdES-BES, CAdES-T, CAdES-X Long Type 1
+  PDF: 3, // Подпись PDF документов
+  MSOffice: 4,  // Подпись документов MS Word и Excel
+  CMS: 5, // Подпись формата CAdES-BES
+};
+
 export const REQUEST_STATUS = {
   Q: "Q", // запрос установлен в очередь на обработку(Новый, Queued);
   // tslint:disable-next-line: object-literal-sort-keys

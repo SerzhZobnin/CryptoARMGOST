@@ -1,7 +1,6 @@
 import * as os from "os";
-import { ITransaction } from "../components/Services/types";
 import {
-  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_TRANSACTION_DSS, START, SUCCESS,
+  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -292,37 +291,67 @@ export function getPolicyDSS(url: string, token: string) {
 }
 
 export function createTransactionDSS(url: string, token: string, body: ITransaction) {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch({
       type: POST_TRANSACTION_DSS + START,
     });
 
-    setTimeout(async () => {
-      let data: any;
-      try {
-        // https://dss.cryptopro.ru/STS/oauth
-        data = await postApi(
-          `${url}/api/transactions`,
-          JSON.stringify(body),
-          [
-            `Authorization: Bearer ${token}`,
-            "Content-Type: application/json; charset=utf-8",
-          ],
-        );
-        dispatch({
-          payload: {
-            id: data,
-          },
-          type: POST_TRANSACTION_DSS + SUCCESS,
-        });
-      } catch (e) {
-        dispatch({
-          type: POST_TRANSACTION_DSS + FAIL,
-          payload: {
-            error: e,
-          },
-        });
-      }
-    }, 0);
+    let data: any;
+    try {
+      // https://dss.cryptopro.ru/STS/oauth
+      data = await postApi(
+        `${url}/api/transactions`,
+        JSON.stringify(body),
+        [
+          `Authorization: Bearer ${token}`,
+          "Content-Type: application/json; charset=utf-8",
+        ],
+      );
+      dispatch({
+        payload: {
+          id: data,
+        },
+        type: POST_TRANSACTION_DSS + SUCCESS,
+      });
+    } catch (e) {
+      dispatch({
+        type: POST_TRANSACTION_DSS + FAIL,
+        payload: {
+          error: e,
+        },
+      });
+    }
+  };
+}
+
+export function dssPerformOperation(url: string, token: string, body: IDocumentDSS | IDocumentPackageDSS) {
+  return async (dispatch) => {
+    dispatch({
+      type: POST_PERFORM_OPERATION + START,
+    });
+    let data: any;
+    try {
+      data = await postApi(
+        `${url}`,
+        JSON.stringify(body),
+        [
+          `Authorization: Bearer ${token}`,
+          "Content-Type: application/json; charset=utf-8",
+        ],
+      );
+      // dispatch({
+      //   payload: {
+      //     id: data,
+      //   },
+      //   type: POST_PERFORM_OPERATION + SUCCESS,
+      // });
+    } catch (e) {
+      dispatch({
+        type: POST_PERFORM_OPERATION + FAIL,
+        payload: {
+          error: e,
+        },
+      });
+    }
   };
 }

@@ -6,6 +6,7 @@ interface ITransactionParameter {
 interface IDocumentContent {
   Name: string;
   Content: string;
+  OriginalContent?: string;
 }
 
 interface ITransaction {
@@ -13,6 +14,24 @@ interface ITransaction {
   Document: string;
   Parameters: ITransactionParameter[];
   Documents: IDocumentContent[];
+}
+
+interface IDocumentSignature {
+  Type: number;
+  Parameters: Object;
+  CertificateId: number;
+  PinCode: string;
+}
+
+interface IDocumentDSS {
+  Content: string;
+  Name: string;
+  Signature: IDocumentSignature;
+}
+
+interface IDocumentPackageDSS {
+  Documents: IDocumentContent[];
+  Signature: IDocumentSignature;
 }
 
 interface Window {
