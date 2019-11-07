@@ -3,7 +3,7 @@ import thunk from "redux-thunk";
 import * as actions from "../../app/AC/dssActions";
 import {
   FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS,
-  POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS,
+  POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS, SIGNATURE_TYPE,
 } from "../../app/constants";
 import { uuid } from "../../app/utils";
 import CERTIFICATES, { certificateMap } from "../__fixtures__/certificates";
@@ -200,6 +200,40 @@ describe("DSS actions", () => {
     ];
 
     return store.dispatch(actions.dssOperationConfirmation(URL, TOKEN, TRANSACTION_ID)).then(() => {
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
+  it("creates POST_TRANSACTION_DSS + SUCCESS", () => {
+    actions.postApi = jest.fn((url: string, postfields: any, headerfields: string[]) => Promise.resolve("MIIE2wYJKoZIhvc"));
+
+    const BODY_SIG: IDocumentDSS = {
+      Content: "VBERi0xLjUNCiW1tbW14Kfu",
+      Name: "test",
+      Signature: {
+        Type: SIGNATURE_TYPE.CAdES,
+        Parameters: {
+          CADESType: "BES",
+          IsDetached: "false",
+        },
+        CertificateId: 1,
+        PinCode: "",
+      },
+    };
+
+    const store = mockStore({});
+
+    const expectedActions = [
+      { type: POST_PERFORM_OPERATION + START },
+      {
+        payload: {
+          id: "MIIE2wYJKoZIhvc",
+        },
+        type: POST_PERFORM_OPERATION + SUCCESS,
+      },
+    ];
+
+    return store.dispatch(actions.dssPerformOperation(URL, TOKEN, BODY_SIG)).then(() => {
       expect(store.getActions()).toEqual(expectedActions);
     });
   });

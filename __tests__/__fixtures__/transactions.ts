@@ -9,7 +9,7 @@ const TRANSACTION = {
       { Name: "IsDetached", Value: "false" },
       { Name: "CADESType", Value: "BES" },
     ],
-  Document: "JVBERi0xLjUNCiW1tbW14Kfu ....",
+  Document: "JVBERi0xLjUNCiW1tbW14Kfu",
 };
 
 export default TRANSACTION;
