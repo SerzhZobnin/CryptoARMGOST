@@ -252,7 +252,8 @@ app.on('second-instance', (e, argv) => {
 });
 
 app.on('before-quit', function (evt) {
-  setTimeout(() => {
-    trayIcon.destroy()
-  }, 0)
+    if(trayIcon != null) {
+      trayIcon.destroy();
+      trayIcon = null;
+    }
 });
