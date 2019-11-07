@@ -51,6 +51,7 @@ interface IFilePath {
 }
 
 interface INormalizedSignInfo {
+  serialNumber: string;
   subjectFriendlyName: string;
   issuerFriendlyName: string;
   notBefore: number;
@@ -125,7 +126,24 @@ export function packageSign(
               signatureInfo.forEach((info: any) => {
                 const subjectCert = info.certs[info.certs.length - 1];
 
+                let x509;
+
+                if (subjectCert.object) {
+                  try {
+                    let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
+
+                    cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
+                    cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
+                    cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
+
+                    x509 = cmsContext;
+                  } catch (e) {
+                    //
+                  }
+                }
+
                 normalyzeSignatureInfo.push({
+                  serialNumber: subjectCert.serial,
                   digestAlgorithm: subjectCert.signatureDigestAlgorithm,
                   issuerFriendlyName: subjectCert.issuerFriendlyName,
                   issuerName: subjectCert.issuerName,
@@ -135,7 +153,7 @@ export function packageSign(
                   signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
                   subjectFriendlyName: info.subject,
                   subjectName: subjectCert.subjectName,
-
+                  x509,
                 });
               });
 
