@@ -498,8 +498,24 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
               signatureInfo.forEach((info) => {
                 const subjectCert = info.certs[info.certs.length - 1];
+                let x509;
+
+                if (subjectCert.object) {
+                  try {
+                    let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
+
+                    cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
+                    cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
+                    cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
+
+                    x509 = cmsContext;
+                  } catch (e) {
+                    //
+                  }
+                }
 
                 normalyzeSignatureInfo.push({
+                  serialNumber: subjectCert.serial,
                   subjectFriendlyName: info.subject,
                   issuerFriendlyName: subjectCert.issuerFriendlyName,
                   notBefore: new Date(subjectCert.notBefore).getTime(),
@@ -509,6 +525,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
                   subjectName: subjectCert.subjectName,
                   issuerName: subjectCert.issuerName,
+                  x509,
                 });
               });
 
