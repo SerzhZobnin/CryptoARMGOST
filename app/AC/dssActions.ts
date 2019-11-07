@@ -339,12 +339,12 @@ export function dssPerformOperation(url: string, token: string, body: IDocumentD
           "Content-Type: application/json; charset=utf-8",
         ],
       );
-      // dispatch({
-      //   payload: {
-      //     id: data,
-      //   },
-      //   type: POST_PERFORM_OPERATION + SUCCESS,
-      // });
+      dispatch({
+        payload: {
+          id: data,
+        },
+        type: POST_PERFORM_OPERATION + SUCCESS,
+      });
     } catch (e) {
       dispatch({
         type: POST_PERFORM_OPERATION + FAIL,
