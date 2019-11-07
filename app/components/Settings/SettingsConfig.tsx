@@ -183,9 +183,6 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                 <div className="h4">{localize("Encrypt.encrypt_setting", locale)}</div>
                 <div className="settings-content">
                   <div className="col s12 m12 l6">
-                    <EncodingTypeSelector EncodingValue={settings.encrypt.encoding} handleChange={this.handleEncryptEncodingChange} />
-                  </div>
-                  <div className="col s12 m12 l6">
                     <CheckBoxWithLabel
                       disabled={disabled}
                       onClickCheckBox={this.handleDeleteClick}
@@ -200,6 +197,9 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                       isChecked={settings.encrypt.archive}
                       elementId="archive_files"
                       title={localize("Encrypt.archive_files_before", locale)} />
+                  </div>
+                  <div className="col s12 m12 l6">
+                    <EncodingTypeSelector EncodingValue={settings.encrypt.encoding} handleChange={this.handleEncryptEncodingChange} />
                   </div>
                 </div>
 

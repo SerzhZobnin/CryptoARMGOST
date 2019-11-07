@@ -201,7 +201,7 @@ body {
     height: 600px;
 }
 .settings-content {
-    overflow: auto;
+    overflow: visible;
     height: calc(100% - 35px);
     white-space: nowrap;
     font-size: 14px;
