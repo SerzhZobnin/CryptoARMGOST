@@ -13,3 +13,4 @@ const TRANSACTION = {
 };
 
 export default TRANSACTION;
+export const TRANSACTION_ID = "1";

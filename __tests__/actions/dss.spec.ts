@@ -2,13 +2,14 @@ import configureMockStore from "redux-mock-store";
 import thunk from "redux-thunk";
 import * as actions from "../../app/AC/dssActions";
 import {
-  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_TRANSACTION_DSS, START, SUCCESS,
+  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS,
+  POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS,
 } from "../../app/constants";
 import { uuid } from "../../app/utils";
 import CERTIFICATES, { certificateMap } from "../__fixtures__/certificates";
-import POLICY, {NORMALIZE_POLICY} from "../__fixtures__/policy";
-import TOKEN, {INCORRECT_TOKEN} from "../__fixtures__/tokens";
-import TRANSACTION from "../__fixtures__/transactions";
+import POLICY, { NORMALIZE_POLICY } from "../__fixtures__/policy";
+import TOKEN, { INCORRECT_TOKEN } from "../__fixtures__/tokens";
+import TRANSACTION, { TRANSACTION_ID } from "../__fixtures__/transactions";
 
 const URL = "https://dss.cryptopro.ru/STS/oauth";
 const LOGIN = "test";
@@ -173,6 +174,32 @@ describe("DSS actions", () => {
     ];
 
     return store.dispatch(actions.createTransactionDSS(URL, TOKEN, TRANSACTION)).then(() => {
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
+  it("creates POST_TRANSACTION_DSS + SUCCESS", () => {
+    actions.postApi = jest.fn((url: string, postfields: any, headerfields: string[]) => Promise.resolve({
+      AccessToken: DATA.access_token,
+      ExpiresIn: DATA.expires_in,
+      IsFinal: true,
+    }));
+
+    const store = mockStore({});
+
+    const expectedActions = [
+      { type: POST_AUTHORIZATION_USER_DSS + START },
+      {
+        payload: {
+          access_token: TOKEN,
+          expires_in: 300,
+          id: UID,
+        },
+        type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
+      },
+    ];
+
+    return store.dispatch(actions.dssOperationConfirmation(URL, TOKEN, TRANSACTION_ID)).then(() => {
       expect(store.getActions()).toEqual(expectedActions);
     });
   });
