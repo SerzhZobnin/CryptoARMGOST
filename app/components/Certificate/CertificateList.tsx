@@ -115,6 +115,8 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
     if (crls.length && (operation === "certificate")) {
       count++;
       count++;
+    } else {
+      count++;
     }
 
     if (certrequests.length && (operation === "certificate")) {
