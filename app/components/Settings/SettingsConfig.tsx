@@ -160,9 +160,9 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                   </div>
                   {
                     (signer) ? <SignerInfo signer={signer} style={{ fontSize: "75%" }} /> :
-                      <div className="col s12">
+                      <div className="col s12 right-align">
                         <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
-                          <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%" }}>
+                          <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%", maxWidth: "505px" }}>
                             {localize("Settings.Choose", locale)}
                           </a>
                         </Link>
@@ -229,10 +229,10 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                       <div className="col s12">
                         <RecipientsList recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
                       </div> :
-                      <div className="col s12">
+                      <div className="col s12 right-align">
                         <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
                           <a className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}
-                            style={{ width: "100%" }}>
+                            style={{ width: "100%", maxWidth: "505px" }}>
                             {localize("Settings.Choose", locale)}
                           </a>
                         </Link>
