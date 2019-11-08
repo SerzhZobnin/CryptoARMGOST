@@ -2,6 +2,13 @@ import * as fs from "fs";
 import * as path from "path";
 import { DSS_ACTIONS, SIGNATURE_TYPE } from "../../constants";
 
+/**
+ * Вспомогательная функция создания объекта ITransaction для операции создания транзакции
+ * @param {tring | IDocumentContent[]} document путь до файла или массив объектов, содержащих информацию о документах
+ * @param certificateId идентификатор сертификата подписи на Сервисе Подписи
+ * @param isDetached флаг, определяющий отделённую/присоединённую подпись
+ * @param operationCode код операции на Сервисе Подписи
+ */
 export function buildTransaction(document: string | IDocumentContent[], certificateId: number,
                                  isDetached: boolean, operationCode: number) {
 
@@ -40,6 +47,14 @@ export function buildTransaction(document: string | IDocumentContent[], certific
   return body;
 }
 
+/**
+ * Вспомогательная функция создания объекта IDocumentDSS для операции подписи документов
+ * @param pathDocument путь до файла
+ * @param certificateId идентификатор сертификата подписи на Сервисе Подписи
+ * @param isDetached флаг, определяющий отделённую/присоединённую подпись
+ * @param cmsSignatureType тип подписи (sign, cosign)
+ * @param pathOriginalDocument путь до исходного файла (необходимо для соподписи)
+ */
 export function buildDocumentDSS(pathDocument: string, certificateId: number,
                                  isDetached: boolean, cmsSignatureType?: string, pathOriginalDocument?: string) {
 
@@ -65,6 +80,13 @@ export function buildDocumentDSS(pathDocument: string, certificateId: number,
   return body;
 }
 
+/**
+ * Вспомогательная функция создания объекта IDocumentPackageDSS для операции подписи пакета документов
+ * @param documents массив объектов, содержащих информацию о документах
+ * @param certificateId идентификатор сертификата подписи на Сервисе Подписи
+ * @param isDetached флаг, определяющий отделённую/присоединённую подпись
+ * @param cmsSignatureType тип подписи (Sign, Сosign)
+ */
 export function buildDocumentPackageDSS(documents: IDocumentContent[], certificateId: number,
                                         isDetached: boolean, cmsSignatureType?: string) {
 

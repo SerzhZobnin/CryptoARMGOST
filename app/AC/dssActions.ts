@@ -4,7 +4,13 @@ import {
 } from "../constants";
 import { uuid } from "../utils";
 
-export const postApi = async (url: string, postfields: any, headerfields: string[]) => {
+/**
+ * Отправка POST запроса
+ * @param url адрес электронного ресурса, на который отправляется POST запрос
+ * @param postfields тело POST запроса
+ * @param headerfields заголовок POST запроса
+ */
+export const postApi = async (url: string, postfields: string, headerfields: string[]) => {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
     curl.setOpt("URL", url);
@@ -35,6 +41,11 @@ export const postApi = async (url: string, postfields: any, headerfields: string
   });
 };
 
+/**
+ * Отправка GET запроса
+ * @param url адрес электронного ресурса, на который отправляется GET запрос
+ * @param headerfields заголовок GET запроса
+ */
 export const getApi = async (url: string, headerfields: string[]) => {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
@@ -84,6 +95,12 @@ function postAuthorizationUserFail(error: string) {
   };
 }
 
+/**
+ * Функция формирования и отправки запроса к ЦИ на инициализацию процедуры аутентификации
+ * @param url электронный адрес Сервиса Подписи
+ * @param login логин пользователя
+ * @param password пароль пользователя
+ */
 export function dssAuthIssue(url: string, login: string, password: string) {
   let headerfield: string[];
   let body: any;
@@ -97,6 +114,12 @@ export function dssAuthIssue(url: string, login: string, password: string) {
   return dssPostMFAUser(url, headerfield, body);
 }
 
+/**
+ * Функция подтверждения операции (транзакции)
+ * @param url электронный адрес Сервиса Подписи
+ * @param token маркер доступа
+ * @param TransactionTokenId идентификатор транзакции, созданной на Cервисе Подписи
+ */
 export function dssOperationConfirmation(url: string, token: string, TransactionTokenId: string) {
   let headerfield: string[];
   let body: any;
@@ -111,6 +134,12 @@ export function dssOperationConfirmation(url: string, token: string, Transaction
   return dssPostMFAUser(url, headerfield, body);
 }
 
+/**
+ * Функция обычной и двухфакторной аутентификации
+ * @param url электронный адрес Сервиса Подписи
+ * @param headerfield заголовок запроса, содержащий в себе базовые аутентификационные данные пользователя
+ * @param body объект, содержащий идентификатор ресурса и транзакции (при подтверждения операции)
+ */
 export function dssPostMFAUser(url: string, headerfield: string[], body: any) {
   return async (dispatch) => {
     dispatch({
@@ -121,7 +150,6 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any) {
     let data2: any;
 
     try {
-      // https://dss.cryptopro.ru/STS/confirmation
       data1 = await postApi(
         `${url}`,
         JSON.stringify(body),
@@ -179,6 +207,12 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any) {
   };
 }
 
+/**
+ * Функция обычной аутентификации пользователя
+ * @param url электронный адрес Сервиса Подписи
+ * @param login логин пользователя
+ * @param password пароль пользователя
+ */
 export function dssPostAuthUser(url: string, login: string, password: string) {
   return async (dispatch) => {
     dispatch({
@@ -189,7 +223,6 @@ export function dssPostAuthUser(url: string, login: string, password: string) {
     let body: string;
 
     try {
-      // https://dss.cryptopro.ru/STS/oauth
       body = "grant_type=password" + "&client_id=" + encodeURIComponent("cryptoarm") + "&scope=dss" +
         "&username=" + encodeURIComponent(login) + "&password=" + encodeURIComponent(password) +
         "&resource=https://dss.cryptopro.ru/SignServer/rest/api/certificates";
@@ -218,6 +251,11 @@ export function dssPostAuthUser(url: string, login: string, password: string) {
   };
 }
 
+/**
+ * Функция получения сертификатов пользователя Сервиса Подписи
+ * @param url электронный адрес Сервиса Подписи
+ * @param token маркер доступа
+ */
 export function getCertificatesDSS(url: string, token: string) {
   return async (dispatch) => {
     dispatch({
@@ -254,6 +292,11 @@ export function getCertificatesDSS(url: string, token: string) {
   };
 }
 
+/**
+ * Функция получения политики Сервиса Подписи
+ * @param url электронный адрес Сервиса Подписи
+ * @param token маркер доступа
+ */
 export function getPolicyDSS(url: string, token: string) {
   return async (dispatch) => {
     dispatch({
@@ -269,7 +312,7 @@ export function getPolicyDSS(url: string, token: string) {
           `Authorization: Bearer ${token}`,
         ],
       );
-      const policy = data.ActionPolicy.filter(function (item: any) {
+      const policy = data.ActionPolicy.filter(function(item: any) {
         return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments";
       });
       dispatch({
@@ -290,6 +333,12 @@ export function getPolicyDSS(url: string, token: string) {
   };
 }
 
+/**
+ * Функция создания транзакции на Сервисе Подписи
+ * @param url электронный адрес Сервиса Подписи
+ * @param token маркер доступа
+ * @param {ITransaction} body объект, содержащий параметры транзакции
+ */
 export function createTransactionDSS(url: string, token: string, body: ITransaction) {
   return async (dispatch) => {
     dispatch({
@@ -324,6 +373,12 @@ export function createTransactionDSS(url: string, token: string, body: ITransact
   };
 }
 
+/**
+ * Функция выполнения и получения результата операции на Сервисе Подписи
+ * @param url электронный адрес Сервиса Подписи
+ * @param token маркер доступа
+ * @param {IDocumentDSS | IDocumentPackageDSS} body объект, содержащий информацию о документе или пакете документов
+ */
 export function dssPerformOperation(url: string, token: string, body: IDocumentDSS | IDocumentPackageDSS) {
   return async (dispatch) => {
     dispatch({
