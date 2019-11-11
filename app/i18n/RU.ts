@@ -296,6 +296,17 @@ export default {
     noProvider2001: "Не обнаружен провайдер для работы с ГОСТ 2001",
     noProvider2012: "Не обнаружен провайдер для работы с ГОСТ 2012",
   },
+  DSS: {
+    DSS_authorization_server_address: "Адрес сервера авторизации DSS",
+    DSS_connection: "Подключение DSS",
+    DSS_server_address: "Адрес сервера DSS",
+    cert_import_from_DSS: "Импорт из DSS",
+    enter_your_login: "Введите свой логин для сервиса DSS",
+    enter_your_password: "Введите свой пароль для сервиса DSS",
+    login_dss: "Логин",
+    password_dss: "Пароль",
+    use_cryptopro_dss_test_service: "Использовать тестовый сервис КриптоПРО DSS",
+  },
   Diagnostic: {
     close: "Закрыть",
     header: "Диагностика приложения",

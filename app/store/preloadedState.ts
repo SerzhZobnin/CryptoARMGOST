@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
 import { CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON, CA_CSR_JSON, CA_REGREGUESTS_JSON, CERTIFICATES_DSS_JSON,
-  DSS_TOKENS_JSON, POLICY_DSS_JSON, SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH } from "../constants";
+  DSS_TOKENS_JSON, DSS_USERS_JSON, POLICY_DSS_JSON, SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH } from "../constants";
 import { CertificateDSSModel, DefaultReducerState as DefaultCertificatesDSSState } from "../reducer/certificatesDSS";
 import { CertificateRequestCAModel, DefaultReducerState as DefaultRequestsReducerState } from "../reducer/certrequests";
 import { CertTemplateModel, DefaultReducerState as DefaultCertTemplateReducerState } from "../reducer/certtemplate";
@@ -15,6 +15,7 @@ import {
 } from "../reducer/settings";
 import { DefaultReducerState as DefaultTemplatesReducerState, TemplateModel } from "../reducer/templates";
 import { DefaultReducerState as DefaultTokenReducerState, TokenDSSModel } from "../reducer/tokens";
+import { DefaultReducerState as DefaultUsersDSSReducerState, UsersDSSModel } from "../reducer/users";
 import { fileExists, mapToArr } from "../utils";
 
 let odata = {};
@@ -153,21 +154,21 @@ if (fileExists(CA_CERTTEMPLATE_JSON)) {
   }
 }
 
-if (fileExists(DSS_TOKENS_JSON)) {
-  const tokens = fs.readFileSync(DSS_TOKENS_JSON, "utf8");
+if (fileExists(DSS_USERS_JSON)) {
+  const users = fs.readFileSync(DSS_USERS_JSON, "utf8");
 
-  if (tokens) {
+  if (users) {
     try {
-      let tokenMap = new DefaultTokenReducerState();
+      let userMap = new DefaultUsersDSSReducerState();
 
-      const data = JSON.parse(tokens);
+      const data = JSON.parse(users);
 
-      for (const token of data.tokens) {
-        const mtoken = new TokenDSSModel({ ...token });
-        tokenMap = tokenMap.setIn(["entities", token.id], mtoken);
+      for (const user of data.users) {
+        const mtoken = new UsersDSSModel({ ...user });
+        userMap = userMap.setIn(["entities", user.id], mtoken);
       }
 
-      odata.tokens = tokenMap;
+      odata.users = userMap;
     } catch (e) {
       //
     }
