@@ -296,6 +296,17 @@ export default {
     noProvider2001: "GOST 2001 provider not available",
     noProvider2012: "GOST 2012 provider not available",
   },
+  DSS: {
+    DSS_authorization_server_address: "DSS authorization server address",
+    DSS_connection: "DSS connection",
+    DSS_server_address: "DSS server address",
+    cert_import_from_DSS: "Import from DSS",
+    enter_your_login: "Enter your login for the DSS service",
+    enter_your_password: "Enter your password for the DSS service",
+    login_dss: "Login",
+    password_dss: "Password",
+    use_cryptopro_dss_test_service: "Use CryptoPro DSS test service",
+  },
   Diagnostic: {
     close: "Close",
     header: "Application Diagnostics",

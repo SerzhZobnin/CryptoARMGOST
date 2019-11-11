@@ -1,6 +1,6 @@
 import * as os from "os";
 import {
-  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS,
+  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS, POST_OPERATION_CONFIRMATION, CREATE_TEMP_USER_DSS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -75,23 +75,23 @@ export const getApi = async (url: string, headerfields: string[]) => {
   });
 };
 
-function postAuthorizationUserSuccess(body: any) {
+function postAuthorizationUserSuccess(type: string, body: any, userId: string) {
   return {
     payload: {
       access_token: body.AccessToken,
       expires_in: body.ExpiresIn,
-      id: uuid(),
+      id: userId,
     },
-    type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
+    type: type + SUCCESS,
   };
 }
 
-function postAuthorizationUserFail(error: string) {
+function postAuthorizationUserFail(type: string, error: string) {
   return {
     payload: {
       error,
     },
-    type: POST_AUTHORIZATION_USER_DSS + FAIL,
+    type: type + FAIL,
   };
 }
 
@@ -101,17 +101,28 @@ function postAuthorizationUserFail(error: string) {
  * @param login логин пользователя
  * @param password пароль пользователя
  */
-export function dssAuthIssue(url: string, login: string, password: string) {
-  let headerfield: string[];
-  let body: any;
-  headerfield = [
-    "Content-Type: application/x-www-form-urlencoded",
-    `Authorization: Basic ${Buffer.from(login + ":" + password).toString("base64")}`,
-  ];
-  body = {
-    Resource: "urn:cryptopro:dss:signserver:signserver",
+export function dssAuthIssue(user: IUserDSS) {
+  return (dispatch) => {
+    dispatch({
+      payload: {
+        authUrl: user.authUrl,
+        dssUrl: user.dssUrl,
+        id: user.id,
+        login: user.user,
+      },
+      type: CREATE_TEMP_USER_DSS + START,
+    });
+    let headerfield: string[];
+    let body: any;
+    headerfield = [
+      "Content-Type: application/x-www-form-urlencoded",
+      `Authorization: Basic ${Buffer.from(user.user + ":" + user.password).toString("base64")}`,
+    ];
+    body = {
+      Resource: "urn:cryptopro:dss:signserver:signserver",
+    };
+    dispatch(dssPostMFAUser(user.authUrl.replace("/oauth", "/confirmation"), headerfield, body, user.id, POST_AUTHORIZATION_USER_DSS));
   };
-  return dssPostMFAUser(url, headerfield, body);
 }
 
 /**
@@ -120,7 +131,7 @@ export function dssAuthIssue(url: string, login: string, password: string) {
  * @param token маркер доступа
  * @param TransactionTokenId идентификатор транзакции, созданной на Cервисе Подписи
  */
-export function dssOperationConfirmation(url: string, token: string, TransactionTokenId: string) {
+export function dssOperationConfirmation(url: string, token: string, TransactionTokenId: string, userId: string) {
   let headerfield: string[];
   let body: any;
   headerfield = [
@@ -131,7 +142,7 @@ export function dssOperationConfirmation(url: string, token: string, Transaction
     Resource: "urn:cryptopro:dss:signserver:signserver",
     TransactionTokenId,
   };
-  return dssPostMFAUser(url, headerfield, body);
+  dssPostMFAUser(url, headerfield, body, userId, POST_OPERATION_CONFIRMATION);
 }
 
 /**
@@ -140,10 +151,10 @@ export function dssOperationConfirmation(url: string, token: string, Transaction
  * @param headerfield заголовок запроса, содержащий в себе базовые аутентификационные данные пользователя
  * @param body объект, содержащий идентификатор ресурса и транзакции (при подтверждения операции)
  */
-export function dssPostMFAUser(url: string, headerfield: string[], body: any) {
+export function dssPostMFAUser(url: string, headerfield: string[], body: any, userId: string, type: string) {
   return async (dispatch) => {
     dispatch({
-      type: POST_AUTHORIZATION_USER_DSS + START,
+      type: type + START,
     });
 
     let data1: any;
@@ -156,7 +167,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any) {
         headerfield,
       );
       if (data1.IsFinal === true) {
-        dispatch(postAuthorizationUserSuccess(data1));
+        dispatch(postAuthorizationUserSuccess(type, data1, userId));
       } else {
         const challengeResponse = {
           ChallengeResponse:
@@ -175,7 +186,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any) {
         timerHandle = setTimeout(async function req() {
           timeout += deploy;
           if (timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
-            dispatch(postAuthorizationUserFail(`Время ожидания подтверждения истекло`));
+            dispatch(postAuthorizationUserFail(type, `Время ожидания подтверждения истекло`));
             if (timerHandle instanceof NodeJS.Timeout) {
               clearTimeout(timerHandle);
             }
@@ -187,13 +198,13 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any) {
             headerfield,
           );
           if (data2.IsFinal === true) {
-            dispatch(postAuthorizationUserSuccess(data2));
+            dispatch(postAuthorizationUserSuccess(type, data2, userId));
             if (timerHandle instanceof NodeJS.Timeout) {
               clearTimeout(timerHandle);
             }
             timerHandle = null;
           } else if (data2.IsError === true) {
-            dispatch(postAuthorizationUserFail(data2.ErrorDescription));
+            dispatch(postAuthorizationUserFail(type, data2.ErrorDescription));
             if (timerHandle instanceof NodeJS.Timeout) {
               clearTimeout(timerHandle);
             }
@@ -202,7 +213,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any) {
         }, deploy);
       }
     } catch (e) {
-      dispatch(postAuthorizationUserFail(e));
+      dispatch(postAuthorizationUserFail(type, e));
     }
   };
 }
