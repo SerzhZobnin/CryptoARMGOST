@@ -112,7 +112,6 @@ export function dssAuthIssue(user: IUserDSS) {
       },
       type: CREATE_TEMP_USER_DSS + START,
     });
-    console.log("!!!!!!");
     let headerfield: string[];
     let body: any;
     headerfield = [
@@ -154,7 +153,6 @@ export function dssOperationConfirmation(url: string, token: string, Transaction
  */
 export function dssPostMFAUser(url: string, headerfield: string[], body: any, userId: string, type: string) {
   return async (dispatch) => {
-    console.log("dispatch");
     dispatch({
       type: type + START,
     });
