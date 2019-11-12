@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { verifyCertificate } from "../AC";
+import { CRYPTOPRO_DSS } from "../constants";
 
 const rectangleValidStyle = {
   background: "#4caf50",
@@ -57,8 +58,15 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
 
             if (recipient.key.length > 0) {
               curKeyStyle = "key ";
+
               if (curKeyStyle) {
-                curKeyStyle += "localkey";
+                if (recipient.service) {
+                  if (recipient.service === CRYPTOPRO_DSS) {
+                    curKeyStyle += "dsskey";
+                  }
+                } else {
+                  curKeyStyle += "localkey";
+                }
               }
             } else {
               curKeyStyle = "";

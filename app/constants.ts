@@ -224,6 +224,7 @@ export const GET_POLICY_DSS = "GET_POLICY_DSS";
 export const POST_TRANSACTION_DSS = "POST_TRANSACTION_DSS";
 export const POST_PERFORM_OPERATION = "POST_PERFORM_OPERATION";
 
+export const CRYPTOPRO_DSS = "CRYPTOPRO_DSS";
 export const DSS_ACTIONS = {
   Issue: 1, // Подтверждение входа пользователя
   SignDocument: 2,  // Подпись документа

@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { verifyCertificate } from "../../AC";
+import { CRYPTOPRO_DSS } from "../../constants";
 
 const rectangleValidStyle = {
   background: "#4caf50",
@@ -75,7 +76,13 @@ class CertificateListItemBigWidth extends React.Component<ICertificateListItemPr
     curKeyStyle = cert.key.length > 0 ? curKeyStyle = "key " : curKeyStyle = "";
 
     if (curKeyStyle) {
-      curKeyStyle += "localkey";
+      if (cert.service) {
+        if (cert.service === CRYPTOPRO_DSS) {
+          curKeyStyle += "dsskey";
+        }
+      } else {
+        curKeyStyle += "localkey";
+      }
     }
 
     if (isOpen) {

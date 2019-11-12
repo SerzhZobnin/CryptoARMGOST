@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { CRYPTOPRO_DSS } from "../../constants";
 
 class CertificateChainInfo extends React.Component<any, any> {
   static contextTypes = {
@@ -95,8 +96,15 @@ class CertificateChainInfo extends React.Component<any, any> {
 
         if (j === 0) {
           curKeyStyle = certificate.key.length > 0 ? "key " : "";
+
           if (curKeyStyle) {
-            curKeyStyle += "localkey";
+            if (certificate.service) {
+              if (certificate.service === CRYPTOPRO_DSS) {
+                curKeyStyle += "dsskey";
+              }
+            } else {
+              curKeyStyle += "localkey";
+            }
           }
         }
 
