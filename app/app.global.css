@@ -90,11 +90,6 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
     width: 240px;
 }
 
-.nav-searchbar {
-    width: 50%;
-    overflow: hidden;
-}
-
 .input-field {
   margin-top: 0;
   width: 110px;
@@ -244,9 +239,7 @@ body {
 #directory {
     margin: 0;
 }
-.sign-set-add-folder {
-    width: 100%
-}
+
 /*---input-file components---*/
 #cert-key-import, #choose-file, #choose-cert, #choose-folder, #choose-folder-export {
   visibility: hidden;
@@ -334,10 +327,6 @@ body {
     overflow: initial;
     margin: 0;
     border: none;
-}
-
-.small_cert_collection {
-    font-size: 13px;
 }
 
 .collection-info {
@@ -773,27 +762,6 @@ i.material-icons.left.license{
     display: block;
     overflow: auto;
 }
-/*.add-btn {
-    background-color: rgb(135, 134, 159);
-    border-radius: 100%;
-    overflow: hidden;
-    text-align: center;
-    width: 0;
-    height: 0;
-    visibility: hidden;
-    top: -26px;
-    left: 20px;
-}
-
-.add-btn.active {
-    width: 30px;
-    height: 30px;
-    visibility: visible;
-    z-index: 101;
-}
-.add-btn:hover {
-    background-color: rgb(135, 134, 159);
-}*/
 
 i.material-icons.headbutton {
   height: 30px;
@@ -910,15 +878,6 @@ nav .cert-seacrh label i {
     overflow: auto;
     z-index: 2;
 }
-
-.add-certs-cervices {
-  width: 100%;
-  height: calc(100% - 35px);
-  position: relative;
-  overflow: auto;
-  border-top: 2px solid #ffffff;
-}
-
 
 .add-certs-item {
     position: relative;
@@ -1123,33 +1082,6 @@ nav .cert-seacrh label i {
     display: none;
 }
 
-/*.add-modal-cert-btn{
-    background-color: rgb(135, 134, 159);
-    border-radius: 100%;
-    overflow: hidden;
-    text-align: center;
-    visibility: hidden;
-    width: 0;
-    height: 0;
-    top: -26px;
-    left: 20px;
-}
-
-.add-modal-cert-btn .add-cert-icon {
-    height: 30px;
-    font-size: 1rem;
-    line-height: 30px;
-}
-.add-modal-cert-btn.active {
-    visibility: visible;
-    z-index: 101;
-    width: 30px;
-    height: 30px;
-}
-.add-modal-cert-btn:hover {
-    background-color: rgb(135, 134, 159);
-}*/
-
 .modal {
   max-height: 87% !important ;
   width:  87%;
@@ -1247,25 +1179,12 @@ i.material-icons.left.ca {
 
 
 /*-----------------Главная страница--------------------*/
-.maincontent{
-    height: 54%;
-}
-
 .header .image {
   padding-top: 10px;
   padding-left: 10px;
   padding-right: 10px;
   padding-bottom: 10px;
   height: 184px;
-}
-
-.mainfooter{
-  height: 68px;
-  background-color: #bf3817;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
 }
 
 .logo{
@@ -1279,116 +1198,14 @@ i.material-icons.left.ca {
   margin-left: 55px;
 }
 
-.facebook:hover, .vk:hover, .twitter:hover, .mail:hover, .google:hover{
-    cursor: pointer;
-    opacity:0.5;
-}
-
-
-.r-socials{
-    float: right;
-    padding: 10px 0;
-}
-
-.r-socials-list{
-    margin: 0 -2px;
-}
-
-.r-socials-item{
-    margin: 0px;
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
-    padding-right: 5px;
-    padding-left: 5px;
-}
-
-.r-socials-item-link {
-    display: block;
-    text-align: center;
-    font-size: 18px;
-    line-height: 40px;
-    height: 40px;
-    width: 40px;
-}
-
-.r-iconbox {
-    position: relative;
-    margin-top: 5px;
-}
-
-.r-iconbox .iconpos_left {
-    text-align: left;
-}
-
 .r-iconbox-link {
     display: inline;
-}
-
-.r-iconbox .iconpos_left .with_circle .r-iconbox-icon {
-    font-size: 28px;
-    line-height: 70px;
-    height: 70px;
-    width: 70px;
-}
-
-.r-iconbox .iconpos_left{
-    display: block;
-}
-
-
-
-.w-iconbox-title {
-    margin-left: 95px;
-    padding-top: 0;
-    padding-bottom: 12px;
-    margin-bottom: 0;
-}
-
-.w-iconbox-text {
-    margin-left: 95px;
-}
-
-.r-iconbox-icon {
-  float: left;
-}
-
-.r-iconbox-cert-icon {
-  float: left;
-}
-
-h5.r-iconbox-title {
-  font-size: 1.3rem;
-  line-height: 110%;
-  padding-left: 75px;
-  padding-top: 16px;
-  color: #bf3817;
-}
-
-h6.r-iconbox-title {
-display: inline-block;
-    position: absolute;
-    margin-left: 18px;
-    color: #bf3817;
-    font-size: 1.3rem;
-    margin-top: 14px;
-}
-
-.r-iconbox-text p {
-  font-size: 13px;
-  padding-left: 10px;
-  padding-right: 10px;
-  color: gray;
 }
 
 .about{
     margin-top: 1px;
     width: 900px;
     height: 700px;
-    background: url(./resources/image/geo_gray.png);
-}
-
-.license_background{
     background: url(./resources/image/geo_gray.png);
 }
 
@@ -1815,14 +1632,6 @@ h5.bmark_onlinelic{
    text-align: center;
 }
 
-p.message_onlinelic{
-  font-size: 1.10rem;
-  color:white;
-  line-height: 110%;
-  margin: 0.82rem 0 0.656rem 0;
- text-align: center;
-}
-
 .desktoplic_text_item{
     font-size: 14px;
 }
@@ -1922,15 +1731,6 @@ p.message_onlinelic{
   overflow: hidden;
 }
 
-.password-modal-main {
-    height: 100%;
-}
-
-.password-modal-content {
-  height: calc(100% - 35px);
-  padding: 10px;
-  font-size: 80%;
-}
 .input-field-password {
   width: calc(100%);
 }
@@ -1954,10 +1754,6 @@ p.message_onlinelic{
   bottom: 10%;
   align-items: center;
   position: absolute;
-}
-.icon-info-modal-password {
-  display: flex;
-  align-items: center;
 }
 
 .icon-info {
@@ -2122,21 +1918,6 @@ a.cert-back-btn.waves-effect.waves-light {
     height: 100%;
     margin-bottom: 0;
 }
-.enter-service {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: calc(100% - 32px);
-}
-.info-texts {
-    font-size: 85%;
-    padding-left: 20px;
-}
-.cryptobanner {
-    height: 100%;
-    padding-left: 20px;
-}
 .info-main {
     display: flex;
     flex-direction: row;
@@ -2179,18 +1960,6 @@ a.cert-back-btn.waves-effect.waves-light {
 .diamond:active {
   box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, 0 -1px 0 rgba(255, 255, 255, .1);
 }
-.reg-login-diamond {
-    top: 28%;
-    left: 26%;
-}
-.reg-social-diamond {
-    top: 55%;
-    left: 42%;
-}
-.exit-diamond {
-    top: 55%;
-    left: 74%;
-}
 .reg-cert-diamond {
     top: 28%;
     left: 58%;
@@ -2209,26 +1978,6 @@ a.cert-back-btn.waves-effect.waves-light {
 .diamond:hover .external-diamond {
     background-color: rgba(182, 71, 41, 0.5);
     border: 2px solid rgba(182, 71, 41, 0.5);
-}
-.diamond-text {
-    transform: rotate(45deg);
-    font-size: 80%;
-    position: absolute;
-    bottom: 30px;
-    width: 90px;
-    text-align: center;
-    color: #ffffff;
-}
-.diamond-text-bottom {
-    bottom: 40px;
-}
-.enter-service-but {
-    background-color: #ffffff;
-    font-size: 60%;
-    color: #000000;
-}
-.enter-service-but:hover {
-    background-color: #ffffff;
 }
 .material-icons.exit-app {
     transform: rotate(45deg);
@@ -2280,51 +2029,7 @@ a.cert-back-btn.waves-effect.waves-light {
     width: 40px;
     height: 40px;
 }
-.around-border {
-    background-size: 100%;
-    width: 90px;
-    height: 90px;
-}
-.social-border {
-    width: 100px;
-    height: 100px;
-    border: 3px solid #ffffff;
-    border-radius: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.twit-size {
-    height: 70px;
-}
-.vk-size {
-    height: 50px;
-}
-.google-size {
-    width: 70px;
-    height: 70px;
-}
-.mail-size {
-    width: 64px;
-    height: 65px;
-}
-.down-social-icons {
-    padding: 10px 180px;
-    align-items: flex-start;
-}
-.social-border:hover {
-    cursor: pointer;
-    opacity: 0.5;
-}
-.diam-icon {
-    transform: rotate(45deg);
-    width: 70px;
-    height: 70px;
-    background-size: 100%;
-    left: 70px;
-    position: absolute;
-    top: 30px;
-}
+
 .login-password-diam {
     width: 90px;
     height: 90px;
@@ -2545,18 +2250,7 @@ i.material-icons.left.chain_10 {
     padding: 4px;
     min-height: 40px;
 }
-.cs-icon {
-    padding-top: 6px;
-    padding-right: 5px;
-}
-.cs-icon-size {
-    width: 30px;
-    height: 30px;
-    background-size: 100%;
-}
-.cs-title, .cs-info {
-    padding: 0;
-}
+
 .collection .collection-item .collection-title.si-title,
 .collection .collection-item .collection-info.si-info {
     padding: 0;
@@ -2581,37 +2275,6 @@ i.material-icons.left.chain_10 {
     color: #ffffff;
 }
 
-.numberCircle {
-  border-radius: 50%;
-  position: relative;
-  width: 36px;
-  height: 36px;
-  padding: 8px;
-
-  background: #fff;
-  border: 2px solid #2196f3;
-  color: #2196f3;
-  text-align: center;
-
-  font: 32px;
-  z-index: 2;
-}
-
-.statusOval {
-  background-color: #fff;
-  border-radius: 50%;
-  -moz-border-radius: 10px; -webkit-border-radius: 10px;
-  display: table;
-  font-size: 1em;
-  height: 100%;
-  margin: 0 auto;
-  width: 125px;
-  display: table-cell;
-  text-align: center;
-  vertical-align: middle;
-  float: right;
-}
-
 .rectangle {
 	width: 3px;
 	height: 45px;
@@ -2628,19 +2291,6 @@ i.material-icons.left.chain_10 {
     margin-top: 36px;
     height: 18px;
     width: 2px;
-    z-index: 2;
-}
-
-.csr-window__workspace {
-  margin-top: 20px;
-}
-
-.trlink_block{
-    width: 100%;
-    height: calc(100% - 48px);
-    position: relative;
-    overflow: auto;
-    border-top: 2px solid #ffffff;
     z-index: 2;
 }
 
