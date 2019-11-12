@@ -37,6 +37,7 @@ import CertificateExport from "./CertificateExport";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
+import DSSConnection from "../DSS/DSSConnection";
 
 const OS_TYPE = os.type();
 
@@ -46,6 +47,7 @@ const MODAL_EXPORT_CRL = "MODAL_EXPORT_CRL";
 const MODAL_DELETE_CRL = "MODAL_DELETE_CRL";
 const MODAL_EXPORT_REQUEST_CA = "MODAL_EXPORT_REQUEST_CA";
 const MODAL_DELETE_REQUEST_CA = "MODAL_DELETE_REQUEST_CA";
+const MODAL_CERTIFICATE_IMPORT_DSS = "MODAL_CERTIFICATE_IMPORT_DSS";
 const MODAL_CERTIFICATE_REQUEST = "MODAL_CERTIFICATE_REQUEST";
 const MODAL_CERTIFICATE_REQUEST_CA = "MODAL_CERTIFICATE_REQUEST_CA";
 const MODAL_CLOUD_CSP = "MODAL_CLOUD_CSP";
@@ -68,6 +70,7 @@ class CertWindow extends React.Component<any, any> {
       password: "",
       requestCA: null,
       showDialogInstallRootCertificate: false,
+      showModalCertificateImportDSS: false,
       showModalCertificateRequest: false,
       showModalCertificateRequestCA: false,
       showModalCloudCSP: false,
@@ -104,6 +107,9 @@ class CertWindow extends React.Component<any, any> {
       case MODAL_DELETE_REQUEST_CA:
         this.setState({ showModalDeleteRequestCA: true });
         break;
+      case MODAL_CERTIFICATE_IMPORT_DSS:
+        this.setState({ showModalCertificateImportDSS: true });
+        break;
       case MODAL_CERTIFICATE_REQUEST:
         this.setState({ showModalCertificateRequest: true });
         break;
@@ -132,6 +138,9 @@ class CertWindow extends React.Component<any, any> {
       case MODAL_DELETE_CRL:
         this.setState({ showModalDeleteCRL: false });
         break;
+      case MODAL_CERTIFICATE_IMPORT_DSS:
+        this.setState({ showModalCertificateImportDSS: false });
+        break;
       case MODAL_CERTIFICATE_REQUEST:
         this.setState({ showModalCertificateRequest: false });
         break;
@@ -154,6 +163,7 @@ class CertWindow extends React.Component<any, any> {
 
   handleCloseModals = () => {
     this.setState({
+      showModalCertificateImportDSS: false,
       showModalCertificateRequest: false,
       showModalCertificateRequestCA: false,
       showModalCloudCSP: false,
@@ -927,6 +937,27 @@ class CertWindow extends React.Component<any, any> {
     );
   }
 
+  showModalCertificateImportDSS = () => {
+    const { localize, locale } = this.context;
+    const { certificate, showModalCertificateImportDSS } = this.state;
+
+    if (!showModalCertificateImportDSS) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalCertificateImportDSS}
+        header={localize("DSS.DSS_connection", locale)}
+        onClose={() => this.handleCloseModalByType(MODAL_CERTIFICATE_IMPORT_DSS)}
+        style={{ width: "500px" }}>
+        <DSSConnection
+          onCancel={() => this.handleCloseModalByType(MODAL_CERTIFICATE_IMPORT_DSS)}
+        />
+      </Modal>
+    );
+  }
+
   showModalCloudCSP = () => {
     const { localize, locale } = this.context;
     const { showModalCloudCSP } = this.state;
@@ -1068,8 +1099,8 @@ class CertWindow extends React.Component<any, any> {
                     {
                       (Number(this.getCPCSPVersion().charAt(0)) < 5) ? null :
                         <li>
-                          <a onClick={this.importFromCloudCSP}>
-                            {localize("CloudCSP.cert_import_from_cloudCSP", locale)}
+                          <a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_IMPORT_DSS)}>
+                            {localize("DSS.cert_import_from_DSS", locale)}
                           </a>
                         </li>
                     }
@@ -1186,6 +1217,7 @@ class CertWindow extends React.Component<any, any> {
             {this.showModalDeleteCrl()}
             {this.showModalExportRequestCA()}
             {this.showModalDeleteRequestCA()}
+            {this.showModalCertificateImportDSS()}
             {this.showModalCertificateRequest()}
             {this.showModalCertificateRequestCA()}
             {this.showModalCloudCSP()}
