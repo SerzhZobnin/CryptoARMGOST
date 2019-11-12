@@ -1279,25 +1279,6 @@ i.material-icons.left.ca {
   margin-left: 55px;
 }
 
-.ctlogo{
-  display: block;
-  text-indent: -9999px;
-  width: 48px;
-  height: 48px;
-  background: url(./resources/image/logo_ct.svg);
-  background-size: 48px 48px;
-}
-
-.appfunction{
-  padding: 30px;
-  height: 100%;
-}
-
-.copyright{
-  font-size: 12px;
-  padding-top: 6px;
-}
-
 .facebook:hover, .vk:hover, .twitter:hover, .mail:hover, .google:hover{
     cursor: pointer;
     opacity:0.5;
