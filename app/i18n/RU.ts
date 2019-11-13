@@ -304,6 +304,7 @@ export default {
     enter_your_login: "Введите свой логин для сервиса DSS",
     enter_your_password: "Введите свой пароль для сервиса DSS",
     login_dss: "Логин",
+    need_reauth: "Токен аутентификации не найден или истекло время его действия. Повторите ввод пароля",
     password_dss: "Пароль",
     use_cryptopro_dss_test_service: "Использовать тестовый сервис КриптоПРО DSS",
   },

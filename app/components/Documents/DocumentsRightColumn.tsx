@@ -39,6 +39,7 @@ import SignerInfo from "../Signature/SignerInfo";
 import DeleteDocuments from "./DeleteDocuments";
 import DocumentsTable from "./DocumentsTable";
 import FilterDocuments from "./FilterDocuments";
+import ReAuth from "../DSS/ReAuth";
 
 const dialog = window.electron.remote.dialog;
 
@@ -65,6 +66,7 @@ interface IDocumentsWindowState {
   searchValue: string;
   showModalDeleteDocuments: boolean;
   showModalFilterDocments: boolean;
+  showModalReAuth: boolean;
 }
 
 class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocumentsWindowState> {
@@ -80,6 +82,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       searchValue: "",
       showModalDeleteDocuments: false,
       showModalFilterDocments: false,
+      showModalReAuth: false,
     };
   }
 
@@ -306,6 +309,38 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     );
   }
 
+  showModalReAuth = () => {
+    const { localize, locale } = this.context;
+    const { showModalReAuth } = this.state;
+    const { signer } = this.props;
+
+    if (!showModalReAuth) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalReAuth}
+        header={localize("DSS.DSS_connection", locale)}
+        onClose={this.handleCloseModalReAuth}>
+
+        <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID}/>
+      </Modal>
+    );
+  }
+
+  handleShowModalReAuth = () => {
+    this.setState({
+      showModalReAuth: true,
+    });
+  }
+
+  handleCloseModalReAuth = () => {
+    this.setState({
+      showModalReAuth: false,
+    });
+  }
+
   toggleDocumentsReviewed = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { documentsReviewed, isDocumentsReviewed } = this.props;
@@ -335,9 +370,26 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         },
         userName: USER_NAME,
       });
-
-
       return;
+    }
+
+    if (signer && signer.dssUserID) {
+      const { tokens } = this.props;
+
+      const token = tokens.get(signer.dssUserID);
+
+      if (token) {
+        const time = new Date().getTime();
+        const expired = token.time + token.expires_in * 1000;
+
+        if (expired < time) {
+          this.handleShowModalReAuth();
+          return;
+        }
+      } else {
+        this.handleShowModalReAuth();
+        return;
+      }
     }
 
     if (activeDocumentsArr.length > 0) {

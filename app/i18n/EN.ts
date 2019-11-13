@@ -304,6 +304,7 @@ export default {
     enter_your_login: "Enter your login for the DSS service",
     enter_your_password: "Enter your password for the DSS service",
     login_dss: "Login",
+    need_reauth: "Authentication token not found or expired. Retype password",
     password_dss: "Password",
     use_cryptopro_dss_test_service: "Use CryptoPro DSS test service",
   },

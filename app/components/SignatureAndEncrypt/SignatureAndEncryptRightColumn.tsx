@@ -28,6 +28,8 @@ import { checkLicense } from "../../trusted/jwt";
 import * as trustedSign from "../../trusted/sign";
 import { bytesToSize, dirExists, fileCoding, mapToArr } from "../../utils";
 import logger from "../../winstonLogger";
+import ReAuth from "../DSS/ReAuth";
+import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
 import SignerInfo from "../Signature/SignerInfo";
 
@@ -43,13 +45,13 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   removeAllFiles: () => void;
   signatures: any;
   signedPackage: any;
+  tokens: any;
 }
 
 interface ISignatureAndEncryptRightColumnSettingsState {
   currentOperation: string;
   searchValue: string;
-  showModalDeleteDocuments: boolean;
-  showModalFilterDocments: boolean;
+  showModalReAuth: boolean;
 }
 
 class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureAndEncryptRightColumnSettingsProps, ISignatureAndEncryptRightColumnSettingsState> {
@@ -64,8 +66,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     this.state = {
       currentOperation: "",
       searchValue: "",
-      showModalDeleteDocuments: false,
-      showModalFilterDocments: false,
+      showModalReAuth: false,
     };
   }
 
@@ -342,8 +343,41 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           }
 
         </div>
+        {this.showModalReAuth()}
       </React.Fragment>
     );
+  }
+
+  showModalReAuth = () => {
+    const { localize, locale } = this.context;
+    const { showModalReAuth } = this.state;
+    const { signer } = this.props;
+
+    if (!showModalReAuth) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalReAuth}
+        header={localize("DSS.DSS_connection", locale)}
+        onClose={this.handleCloseModalReAuth}>
+
+        <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID}/>
+      </Modal>
+    );
+  }
+
+  handleShowModalReAuth = () => {
+    this.setState({
+      showModalReAuth: true,
+    });
+  }
+
+  handleCloseModalReAuth = () => {
+    this.setState({
+      showModalReAuth: false,
+    });
   }
 
   toggleDocumentsReviewed = () => {
@@ -376,6 +410,25 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       });
 
       return;
+    }
+
+    if (signer && signer.dssUserID) {
+      const { tokens } = this.props;
+
+      const token = tokens.get(signer.dssUserID);
+
+      if (token) {
+        const time = new Date().getTime();
+        const expired = token.time + token.expires_in * 1000;
+
+        if (expired < time) {
+          this.handleShowModalReAuth();
+          return;
+        }
+      } else {
+        this.handleShowModalReAuth();
+        return;
+      }
     }
 
     if (activeFilesArr.length > 0) {
@@ -1042,6 +1095,7 @@ export default connect((state) => {
     settings: state.settings.entities,
     signatures,
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
+    tokens: state.tokens.tokensAuth,
   };
 }, {
   activeFile, activeSetting, deleteFile, deleteRecipient, documentsReviewed,
