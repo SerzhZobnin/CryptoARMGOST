@@ -8,6 +8,7 @@ import { arrayToMap } from "../utils";
 export const CertificateModel = Record({
   active: false,
   category: null,
+  dssUserID: null,
   format: null,
   hasPin: null,
   hash: null,
