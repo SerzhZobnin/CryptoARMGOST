@@ -76,10 +76,8 @@ class CertificateListItemBigWidth extends React.Component<ICertificateListItemPr
     curKeyStyle = cert.key.length > 0 ? curKeyStyle = "key " : curKeyStyle = "";
 
     if (curKeyStyle) {
-      if (cert.service) {
-        if (cert.service === CRYPTOPRO_DSS) {
-          curKeyStyle += "dsskey";
-        }
+      if (cert.dssUserID) {
+        curKeyStyle += "dsskey";
       } else {
         curKeyStyle += "localkey";
       }

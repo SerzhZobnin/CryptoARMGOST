@@ -98,10 +98,8 @@ class CertificateChainInfo extends React.Component<any, any> {
           curKeyStyle = certificate.key.length > 0 ? "key " : "";
 
           if (curKeyStyle) {
-            if (certificate.service) {
-              if (certificate.service === CRYPTOPRO_DSS) {
-                curKeyStyle += "dsskey";
-              }
+            if (certificate.dssUserID) {
+              curKeyStyle += "dsskey";
             } else {
               curKeyStyle += "localkey";
             }
@@ -125,7 +123,7 @@ class CertificateChainInfo extends React.Component<any, any> {
               </div>
               <div className="col s1">
                 <div className="row nobottom">
-                  <div className={curStatusStyle + " "} style={{marginLeft: "-15px"}}/>
+                  <div className={curStatusStyle + " "} style={{ marginLeft: "-15px" }} />
                 </div>
               </div>
             </div>

@@ -60,10 +60,8 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
               curKeyStyle = "key ";
 
               if (curKeyStyle) {
-                if (recipient.service) {
-                  if (recipient.service === CRYPTOPRO_DSS) {
-                    curKeyStyle += "dsskey";
-                  }
+                if (recipient.dssUserID) {
+                  curKeyStyle += "dsskey";
                 } else {
                   curKeyStyle += "localkey";
                 }
