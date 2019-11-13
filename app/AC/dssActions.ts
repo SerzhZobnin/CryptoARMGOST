@@ -4,6 +4,12 @@ import {
 } from "../constants";
 import { uuid } from "../utils";
 
+/**
+ * Фукнция генерации стуктуры сертификата DSS
+ * @param {trusted.pki.Certificate} certificate объект trusted.pki.Certificate
+ * @param certificateProps данные о сертификате, полученные в ходе запроса на Сервис Подписи
+ * @param dssUserID идентификатор пользователя
+ */
 export function addServiceCertificate(certificate: trusted.pki.Certificate, certificateProps: any, dssUserID: string) {
   return {
     active: false,
@@ -125,9 +131,7 @@ function postAuthorizationUserFail(type: string, error: string) {
 
 /**
  * Функция формирования и отправки запроса к ЦИ на инициализацию процедуры аутентификации
- * @param url электронный адрес Сервиса Подписи
- * @param login логин пользователя
- * @param password пароль пользователя
+ * @param {IUserDSS} user структура с данными о пользователе
  */
 export function dssAuthIssue(user: IUserDSS) {
   return (dispatch) => {
@@ -158,6 +162,7 @@ export function dssAuthIssue(user: IUserDSS) {
  * @param url электронный адрес Сервиса Подписи
  * @param token маркер доступа
  * @param TransactionTokenId идентификатор транзакции, созданной на Cервисе Подписи
+ * @param dssUserID идентификатор пользователя
  */
 export function dssOperationConfirmation(url: string, token: string, TransactionTokenId: string, dssUserID: string) {
   let headerfield: string[];
@@ -178,6 +183,8 @@ export function dssOperationConfirmation(url: string, token: string, Transaction
  * @param url электронный адрес Сервиса Подписи
  * @param headerfield заголовок запроса, содержащий в себе базовые аутентификационные данные пользователя
  * @param body объект, содержащий идентификатор ресурса и транзакции (при подтверждения операции)
+ * @param dssUserID идентификатор пользователя
+ * @param type action
  */
 export function dssPostMFAUser(url: string, headerfield: string[], body: any, dssUserID: string, type: string) {
   return async (dispatch) => {
