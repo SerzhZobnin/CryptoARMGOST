@@ -12,8 +12,8 @@ export const TokenDSSModel = Record({
 });
 
 export const DefaultReducerState = Record({
-  tokenAuth: OrderedMap({}),
-  tokenDss: OrderedMap({}),
+  tokensAuth: OrderedMap({}),
+  tokensDss: OrderedMap({}),
 });
 
 export default (tokens = new DefaultReducerState(), action) => {
@@ -21,7 +21,7 @@ export default (tokens = new DefaultReducerState(), action) => {
 
   switch (type) {
     case POST_AUTHORIZATION_USER_DSS + SUCCESS:
-      tokens = tokens.setIn(["tokenAuth", payload.id], new TokenDSSModel({
+      tokens = tokens.setIn(["tokensAuth", payload.id], new TokenDSSModel({
         access_token: payload.access_token,
         expires_in: payload.expires_in,
         id: payload.id,
@@ -30,7 +30,7 @@ export default (tokens = new DefaultReducerState(), action) => {
       }));
       break;
     case POST_OPERATION_CONFIRMATION + SUCCESS:
-      tokens = tokens.setIn(["tokenDss", payload.id], new TokenDSSModel({
+      tokens = tokens.setIn(["tokensDss", payload.id], new TokenDSSModel({
         access_token: payload.access_token,
         expires_in: payload.expires_in,
         id: payload.id,

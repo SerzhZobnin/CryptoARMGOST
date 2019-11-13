@@ -2,6 +2,7 @@ import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
 import { CA_CERTREGUESTS_JSON, CA_CERTTEMPLATE_JSON, CA_CSR_JSON, CA_REGREGUESTS_JSON, CERTIFICATES_DSS_JSON,
   DSS_TOKENS_JSON, DSS_USERS_JSON, POLICY_DSS_JSON, SERVICES_JSON, SETTINGS_JSON, TEMPLATES_PATH } from "../constants";
+import { CertificateModel, DefaultReducerState as DefaultCertificatesState } from "../reducer/certificates";
 import { CertificateDSSModel, DefaultReducerState as DefaultCertificatesDSSState } from "../reducer/certificatesDSS";
 import { CertificateRequestCAModel, DefaultReducerState as DefaultRequestsReducerState } from "../reducer/certrequests";
 import { CertTemplateModel, DefaultReducerState as DefaultCertTemplateReducerState } from "../reducer/certtemplate";
@@ -180,16 +181,20 @@ if (fileExists(CERTIFICATES_DSS_JSON)) {
 
   if (certificatesDSS) {
     try {
-      let certificateMap = new DefaultCertificatesDSSState();
+      let certificateDSSMap = new DefaultCertificatesDSSState();
+      let certificateMap = new DefaultCertificatesState();
 
       const data = JSON.parse(certificatesDSS);
 
-      for (const cert of data.certificatesDSS) {
-        const mcert = new CertificateDSSModel({ ...cert });
-        certificateMap = certificateMap.setIn(["entities", cert.id], mcert);
+      for (const key1 of Object.keys(data.certificatesDSS)) {
+        for (const key2 of Object.keys(data.certificatesDSS[key1])) {
+          const cert = data.certificatesDSS[key1][key2];
+          certificateDSSMap = certificateDSSMap.setIn(["entities", key1, key2], new CertificateDSSModel({ ...cert }));
+          certificateMap = certificateMap.setIn(["entities", cert.id], new CertificateModel({ ...cert }));
+        }
       }
-
-      odata.certificatesDSS = certificateMap;
+      odata.certificatesDSS = certificateDSSMap;
+      odata.certificates = certificateMap;
     } catch (e) {
       //
     }

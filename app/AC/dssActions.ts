@@ -4,6 +4,34 @@ import {
 } from "../constants";
 import { uuid } from "../utils";
 
+export function addServiceCertificate(certificate: trusted.pki.Certificate, certificateProps: any, dssUserID: string) {
+  return {
+    active: false,
+    category: "MY",
+    dssUserID,
+    format: "PEM",
+    hasPin: certificateProps.HasPin,
+    hash: certificate.thumbprint,
+    id: certificateProps.ID,
+    issuerFriendlyName: certificate.issuerFriendlyName,
+    issuerName: certificate.issuerName,
+    key: "1",
+    notAfter: certificate.notAfter,
+    notBefore: certificate.notBefore,
+    organizationName: certificate.organizationName,
+    publicKeyAlgorithm: certificate.publicKeyAlgorithm,
+    serial: certificate.serialNumber,
+    signatureAlgorithm: certificate.signatureAlgorithm,
+    signatureDigestAlgorithm: certificate.signatureDigestAlgorithm,
+    status: certificateProps.Status.Value,
+    subjectFriendlyName: certificate.subjectFriendlyName,
+    subjectName: certificate.subjectName,
+    verified: true,
+    version: certificate.version,
+    x509: certificate.export(trusted.DataFormat.PEM).toString(),
+  };
+}
+
 /**
  * Отправка POST запроса
  * @param url адрес электронного ресурса, на который отправляется POST запрос
@@ -75,12 +103,12 @@ export const getApi = async (url: string, headerfields: string[]) => {
   });
 };
 
-function postAuthorizationUserSuccess(type: string, body: any, userId: string) {
+function postAuthorizationUserSuccess(type: string, body: any, dssUserID: string) {
   return {
     payload: {
       access_token: body.AccessToken,
       expires_in: body.ExpiresIn,
-      id: userId,
+      id: dssUserID,
     },
     type: type + SUCCESS,
   };
@@ -131,7 +159,7 @@ export function dssAuthIssue(user: IUserDSS) {
  * @param token маркер доступа
  * @param TransactionTokenId идентификатор транзакции, созданной на Cервисе Подписи
  */
-export function dssOperationConfirmation(url: string, token: string, TransactionTokenId: string, userId: string) {
+export function dssOperationConfirmation(url: string, token: string, TransactionTokenId: string, dssUserID: string) {
   let headerfield: string[];
   let body: any;
   headerfield = [
@@ -142,7 +170,7 @@ export function dssOperationConfirmation(url: string, token: string, Transaction
     Resource: "urn:cryptopro:dss:signserver:signserver",
     TransactionTokenId,
   };
-  dssPostMFAUser(url, headerfield, body, userId, POST_OPERATION_CONFIRMATION);
+  dssPostMFAUser(url, headerfield, body, dssUserID, POST_OPERATION_CONFIRMATION);
 }
 
 /**
@@ -151,7 +179,7 @@ export function dssOperationConfirmation(url: string, token: string, Transaction
  * @param headerfield заголовок запроса, содержащий в себе базовые аутентификационные данные пользователя
  * @param body объект, содержащий идентификатор ресурса и транзакции (при подтверждения операции)
  */
-export function dssPostMFAUser(url: string, headerfield: string[], body: any, userId: string, type: string) {
+export function dssPostMFAUser(url: string, headerfield: string[], body: any, dssUserID: string, type: string) {
   return async (dispatch) => {
     dispatch({
       type: type + START,
@@ -167,7 +195,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, us
         headerfield,
       );
       if (data1.IsFinal === true) {
-        dispatch(postAuthorizationUserSuccess(type, data1, userId));
+        dispatch(postAuthorizationUserSuccess(type, data1, dssUserID));
       } else {
         const challengeResponse = {
           ChallengeResponse:
@@ -198,7 +226,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, us
             headerfield,
           );
           if (data2.IsFinal === true) {
-            dispatch(postAuthorizationUserSuccess(type, data2, userId));
+            dispatch(postAuthorizationUserSuccess(type, data2, dssUserID));
             if (timerHandle instanceof NodeJS.Timeout) {
               clearTimeout(timerHandle);
             }
@@ -265,9 +293,10 @@ export function dssPostAuthUser(url: string, login: string, password: string) {
 /**
  * Функция получения сертификатов пользователя Сервиса Подписи
  * @param url электронный адрес Сервиса Подписи
+ * @param dssUserID идентификатор пользователя
  * @param token маркер доступа
  */
-export function getCertificatesDSS(url: string, token: string) {
+export function getCertificatesDSS(url: string, dssUserID: string,  token: string) {
   return async (dispatch) => {
     dispatch({
       type: GET_CERTIFICATES_DSS + START,
@@ -284,11 +313,14 @@ export function getCertificatesDSS(url: string, token: string) {
       );
       const hcertificates: any[] = [];
       for (const certificate of data) {
-        hcertificates.push({ id: certificate.ID, ...certificate });
+        const cert = new trusted.pki.Certificate();
+        cert.import(Buffer.from(certificate.CertificateBase64), trusted.DataFormat.PEM);
+        hcertificates.push(addServiceCertificate(cert, certificate, dssUserID));
       }
       dispatch({
         payload: {
           certificateMap: hcertificates,
+          dssUserID,
         },
         type: GET_CERTIFICATES_DSS + SUCCESS,
       });

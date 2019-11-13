@@ -1,41 +1,64 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { CERTIFICATES_DSS_JSON, GET_CERTIFICATES_DSS, START, SUCCESS } from "../constants";
+import { CERTIFICATES_DSS_JSON, GET_CERTIFICATES_DSS, START, SUCCESS, POST_AUTHORIZATION_USER_DSS, FAIL } from "../constants";
 import { arrayToMap, mapToArr } from "../utils";
 
 export const CertificateDSSModel = Record({
+  active: null,
+  category: null,
+  dssUserID: null,
+  format: null,
+  hasPin: null,
+  hash: null,
   id: null,
-  DName: null,
-  CertificateBase64: null,
-  Status: null,
-  IsDefault: null,
-  CertificateAuthorityID: null,
-  CspID: null,
-  HashAlgorithms: null,
-  ProviderName: null,
-  ProviderType: null,
-  PrivateKeyNotBefore: null,
-  PrivateKeyNotAfter: null,
-  HasPin: null,
-  FriendlyName: null,
+  issuerFriendlyName: null,
+  issuerName: null,
+  key: null,
+  notAfter: null,
+  notBefore: null,
+  organizationName: null,
+  publicKeyAlgorithm: null,
+  serial: null,
+  signatureAlgorithm: null,
+  signatureDigestAlgorithm: null,
+  status: null,
+  subjectFriendlyName: null,
+  subjectName: null,
+  verified: null,
+  version: null,
+  x509: null,
 });
 
 export const DefaultReducerState = Record({
   entities: OrderedMap({}),
+  loaded: false,
+  loading: false,
 });
 
 export default (certificatesDSS = new DefaultReducerState(), action) => {
   const { type, payload } = action;
   switch (type) {
+    case POST_AUTHORIZATION_USER_DSS + START:
+    case GET_CERTIFICATES_DSS + START:
+      return certificatesDSS.set("loading", true);
+
     case GET_CERTIFICATES_DSS + SUCCESS:
       certificatesDSS = certificatesDSS
-        .update("entities", (entities) => entities.merge(arrayToMap(payload.certificateMap, CertificateDSSModel)));
+        .setIn(["entities", payload.dssUserID], arrayToMap(payload.certificateMap, CertificateDSSModel))
+        .set("loading", false)
+        .set("loaded", true);
       break;
+
+    case POST_AUTHORIZATION_USER_DSS + FAIL:
+    case GET_CERTIFICATES_DSS + FAIL:
+        return certificatesDSS = certificatesDSS
+          .set("loading", false)
+          .set("loaded", true);
   }
 
   if (type === GET_CERTIFICATES_DSS + SUCCESS && CERTIFICATES_DSS_JSON) {
     const state = {
-      certificatesDSS: mapToArr(certificatesDSS.entities),
+      certificatesDSS: certificatesDSS.entities,
     };
 
     const sstate = JSON.stringify(state, null, 4);
