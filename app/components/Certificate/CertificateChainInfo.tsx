@@ -137,7 +137,7 @@ class CertificateChainInfo extends React.Component<any, any> {
   buildChain = (certItem: any) => {
     let tcert: trusted.pki.Certificate | undefined;
 
-    if (certItem.x509 && certItem.service) {
+    if (certItem.x509 && certItem.dssUserID) {
       try {
         tcert = new trusted.pki.Certificate();
         tcert.import(Buffer.from(certItem.x509), trusted.DataFormat.PEM);
