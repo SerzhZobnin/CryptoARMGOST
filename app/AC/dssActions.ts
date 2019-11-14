@@ -29,7 +29,7 @@ export function addServiceCertificate(certificate: trusted.pki.Certificate, cert
     serial: certificate.serialNumber,
     signatureAlgorithm: certificate.signatureAlgorithm,
     signatureDigestAlgorithm: certificate.signatureDigestAlgorithm,
-    status: certificateProps.Status.Value,
+    status: certificateProps.Status && certificateProps.Status.Value === "ACTIVE",
     subjectFriendlyName: certificate.subjectFriendlyName,
     subjectName: certificate.subjectName,
     verified: true,
