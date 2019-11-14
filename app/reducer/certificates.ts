@@ -78,7 +78,7 @@ export default (certificates = new DefaultReducerState(), action) => {
 
     case GET_CERTIFICATES_DSS + SUCCESS:
       return certificates
-        .update("entities", (entities) => arrayToMap(payload.certificateMap, CertificateModel).merge(entities))
+        .update("entities", (entities) => entities.merge(arrayToMap(payload.certificateMap, CertificateModel)))
         .set("loading", false)
         .set("loaded", true);
   }

@@ -953,6 +953,7 @@ class CertWindow extends React.Component<any, any> {
         style={{ width: "500px" }}>
         <DSSConnection
           onCancel={() => this.handleCloseModalByType(MODAL_CERTIFICATE_IMPORT_DSS)}
+          handleReloadCertificates={this.handleReloadCertificates}
         />
       </Modal>
     );

@@ -18,6 +18,7 @@ interface IDSSConnectionProps {
   getCertificatesDSS: (url: string, dssUserID: string,  token: string) => Promise<void>;
   getPolicyDSS: (url: string, dssUserID: string, token: string) => Promise<void>;
   onCancel?: () => void;
+  handleReloadCertificates?: () => void;
   tokensAuth: any;
   isLoaded: boolean;
   isLoading: boolean;
@@ -61,7 +62,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
     const { dssUserID, field_value } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { getCertificatesDSS } = this.props;
-    const { isLoaded, isLoading } = this.props;
+    const { isLoaded, isLoading, handleReloadCertificates } = this.props;
 
     if (!isLoading && prevProps.isLoading) {
       this.handleCancel();
@@ -70,7 +71,11 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
     const token = this.props.tokensAuth.get(dssUserID);
     const prevToken = prevProps.tokensAuth.get(dssUserID);
     if ((!prevToken && token) || (token && prevToken && token.time !== prevToken.time)) {
-      getCertificatesDSS(field_value.url_sign, token.id, token.access_token);
+      getCertificatesDSS(field_value.url_sign, token.id, token.access_token).then(() => {
+        if (handleReloadCertificates) {
+          handleReloadCertificates();
+        }
+      });
     }
   }
 
