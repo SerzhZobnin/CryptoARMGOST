@@ -1,6 +1,9 @@
 import * as fs from "fs";
 import { OrderedMap, Record } from "immutable";
-import { CERTIFICATES_DSS_JSON, GET_CERTIFICATES_DSS, START, SUCCESS, POST_AUTHORIZATION_USER_DSS, FAIL } from "../constants";
+import {
+  CERTIFICATES_DSS_JSON, DELETE_CERTIFICATE, FAIL,
+  GET_CERTIFICATES_DSS, POST_AUTHORIZATION_USER_DSS, START, SUCCESS,
+} from "../constants";
 import { arrayToMap, mapToArr } from "../utils";
 
 export const CertificateDSSModel = Record({
@@ -51,12 +54,17 @@ export default (certificatesDSS = new DefaultReducerState(), action) => {
 
     case POST_AUTHORIZATION_USER_DSS + FAIL:
     case GET_CERTIFICATES_DSS + FAIL:
-        return certificatesDSS = certificatesDSS
-          .set("loading", false)
-          .set("loaded", true);
+      return certificatesDSS = certificatesDSS
+        .set("loading", false)
+        .set("loaded", true);
+
+    case DELETE_CERTIFICATE:
+      certificatesDSS = certificatesDSS.deleteIn(["entities", payload.dssUserID, payload.id]);
+      break;
   }
 
-  if (type === GET_CERTIFICATES_DSS + SUCCESS && CERTIFICATES_DSS_JSON) {
+  if (type === GET_CERTIFICATES_DSS + SUCCESS && CERTIFICATES_DSS_JSON ||
+    type === DELETE_CERTIFICATE && CERTIFICATES_DSS_JSON) {
     const state = {
       certificatesDSS: certificatesDSS.entities,
     };

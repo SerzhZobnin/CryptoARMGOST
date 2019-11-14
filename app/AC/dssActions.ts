@@ -1,6 +1,6 @@
 import * as os from "os";
 import {
-  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS, POST_OPERATION_CONFIRMATION, CREATE_TEMP_USER_DSS,
+  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS, POST_OPERATION_CONFIRMATION, CREATE_TEMP_USER_DSS, DELETE_CERTIFICATE,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -35,6 +35,16 @@ export function addServiceCertificate(certificate: trusted.pki.Certificate, cert
     verified: true,
     version: certificate.version,
     x509: certificate.export(trusted.DataFormat.PEM).toString(),
+  };
+}
+
+export function deleteDssCertificate(id: string, dssUserID: string) {
+  return {
+    payload: {
+      dssUserID,
+      id,
+    },
+    type: DELETE_CERTIFICATE,
   };
 }
 
