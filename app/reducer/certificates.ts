@@ -60,7 +60,7 @@ export default (certificates = new DefaultReducerState(), action) => {
         .setIn(["entities", payload.certificateId, "verified"], true);
 
     case REMOVE_ALL_CERTIFICATES:
-      const allServicesCerts = certificates.get("entities").filter((certificate: any) => certificate.serviceId !== null);
+      const allServicesCerts = certificates.get("entities").filter((certificate: any) => certificate.dssUserID !== null);
       return certificates = new DefaultReducerState().setIn(["entities"], allServicesCerts);
 
     case ADD_SERVICE_CERTIFICATE:
