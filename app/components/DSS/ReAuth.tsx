@@ -1,7 +1,7 @@
 import PropTypes, { any } from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { dssAuthIssue } from "../../AC/dssActions";
+import { dssAuthIssue, getPolicyDSS } from "../../AC/dssActions";
 
 const login_dss = "login_dss";
 const password_dss = "password_dss";
@@ -9,7 +9,10 @@ const password_dss = "password_dss";
 interface IReAuthProps {
   dssUserID: string;
   dssAuthIssue: (user: IUserDSS) => Promise<void>;
+  getPolicyDSS: (url: string, dssUserID: string, token: string) => Promise<void>;
   onCancel?: () => void;
+  tokensAuth: any;
+  users: any;
 }
 
 interface IReAuthState {
@@ -46,7 +49,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
 
   render() {
     const { localize, locale } = this.context;
-    const { field_value, user } = this.state;
+    const { field_value, user, token } = this.state;
 
     if (!user) {
       this.handleCancel();
@@ -152,8 +155,9 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       user: user.login,
     };
 
-    dssAuthIssue(userDSS);
-    this.handleCancel();
+    dssAuthIssue(userDSS).then(() => {
+      this.props.getPolicyDSS(user.dssUrl, user.id, this.props.tokensAuth.get(user.id).access_token).then(() => this.handleCancel());
+    });
   }
 
   handleCancel = () => {
@@ -166,5 +170,6 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
 }
 
 export default connect((state) => ({
+  tokensAuth: state.tokens.tokensAuth,
   users: state.users.entities,
-}), { dssAuthIssue })(ReAuth);
+}), { dssAuthIssue, getPolicyDSS })(ReAuth);

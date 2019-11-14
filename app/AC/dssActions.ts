@@ -134,7 +134,7 @@ function postAuthorizationUserFail(type: string, error: string) {
  * @param {IUserDSS} user структура с данными о пользователе
  */
 export function dssAuthIssue(user: IUserDSS) {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch({
       payload: {
         authUrl: user.authUrl,
@@ -153,7 +153,9 @@ export function dssAuthIssue(user: IUserDSS) {
     body = {
       Resource: "urn:cryptopro:dss:signserver:signserver",
     };
-    dispatch(dssPostMFAUser(user.authUrl.replace("/oauth", "/confirmation"), headerfield, body, user.id, POST_AUTHORIZATION_USER_DSS));
+    return dispatch(
+      dssPostMFAUser(user.authUrl.replace("/oauth", "/confirmation"), headerfield, body, user.id, POST_AUTHORIZATION_USER_DSS),
+    );
   };
 }
 
@@ -345,9 +347,10 @@ export function getCertificatesDSS(url: string, dssUserID: string,  token: strin
 /**
  * Функция получения политики Сервиса Подписи
  * @param url электронный адрес Сервиса Подписи
+ * @param dssUserID идентификатор пользователя
  * @param token маркер доступа
  */
-export function getPolicyDSS(url: string, token: string) {
+export function getPolicyDSS(url: string, dssUserID: string, token: string) {
   return async (dispatch) => {
     dispatch({
       type: GET_POLICY_DSS + START,
@@ -367,7 +370,7 @@ export function getPolicyDSS(url: string, token: string) {
       });
       dispatch({
         payload: {
-          id: uuid(),
+          id: dssUserID,
           policy,
         },
         type: GET_POLICY_DSS + SUCCESS,

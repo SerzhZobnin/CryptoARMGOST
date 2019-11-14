@@ -21,20 +21,5 @@ export default (policyDSS = new DefaultReducerState(), action) => {
       break;
   }
 
-  if (type === GET_POLICY_DSS + SUCCESS && POLICY_DSS_JSON) {
-    const state = {
-      policyDSS: mapToArr(policyDSS.entities),
-    };
-
-    const sstate = JSON.stringify(state, null, 4);
-
-    fs.writeFile(POLICY_DSS_JSON, sstate, (err: any) => {
-      if (err) {
-        // tslint:disable-next-line:no-console
-        console.log("------- error write to ", POLICY_DSS_JSON);
-      }
-    });
-  }
-
   return policyDSS;
 };

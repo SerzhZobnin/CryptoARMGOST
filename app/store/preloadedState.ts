@@ -201,27 +201,6 @@ if (fileExists(CERTIFICATES_DSS_JSON)) {
   }
 }
 
-if (fileExists(POLICY_DSS_JSON)) {
-  const policyDSS = fs.readFileSync(POLICY_DSS_JSON, "utf8");
-
-  if (policyDSS) {
-    try {
-      let policyMap = new DefaultPolicyDSSState();
-
-      const data = JSON.parse(policyDSS);
-
-      for (const policy of data.policyDSS) {
-        const mpolicy = new PolicyDSSModel({ ...policy });
-        policyMap = policyMap.setIn(["entities", policy.id], mpolicy);
-      }
-
-      odata.policyDSS = policyMap;
-    } catch (e) {
-      //
-    }
-  }
-}
-
 if (fileExists(TEMPLATES_PATH)) {
   const templates = fs.readFileSync(TEMPLATES_PATH, "utf8");
 

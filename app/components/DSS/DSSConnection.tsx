@@ -1,7 +1,7 @@
 import PropTypes, { any } from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { dssAuthIssue, getCertificatesDSS } from "../../AC/dssActions";
+import { dssAuthIssue, getCertificatesDSS, getPolicyDSS } from "../../AC/dssActions";
 import { md5 } from "../../utils";
 import ProgressBars from "../ProgressBars";
 
@@ -16,6 +16,7 @@ const URL_SIGN_SERVER_DSS = "https://dss.cryptopro.ru/SignServer/rest";
 interface IDSSConnectionProps {
   dssAuthIssue: (user: IUserDSS) => Promise<void>;
   getCertificatesDSS: (url: string, dssUserID: string,  token: string) => Promise<void>;
+  getPolicyDSS: (url: string, dssUserID: string, token: string) => Promise<void>;
   onCancel?: () => void;
   tokensAuth: any;
   isLoaded: boolean;
@@ -231,9 +232,8 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
 
   handleReady = () => {
     const { field_value } = this.state;
-    const { tokensAuth } = this.props;
     // tslint:disable-next-line: no-shadowed-variable
-    const { dssAuthIssue } = this.props;
+    const { dssAuthIssue, getPolicyDSS } = this.props;
 
     const dssUserID = md5(field_value.login_dss + field_value.url_oath + field_value.url_sign);
     this.setState({
@@ -248,7 +248,9 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
       user: field_value.login_dss,
     };
 
-    dssAuthIssue(userDSS);
+    dssAuthIssue(userDSS).then(() => {
+      this.props.getPolicyDSS(field_value.url_sign, dssUserID, this.props.tokensAuth.get(dssUserID).access_token);
+    });
   }
 
   handleCancel = () => {
@@ -266,4 +268,4 @@ export default connect((state) => {
     isLoading: state.certificatesDSS.loading,
     tokensAuth: state.tokens.tokensAuth,
   };
-}, { dssAuthIssue, getCertificatesDSS })(DSSConnection);
+}, { dssAuthIssue, getPolicyDSS, getCertificatesDSS })(DSSConnection);

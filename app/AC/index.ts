@@ -68,7 +68,7 @@ export function packageSign(
   policies: string[],
   format: trusted.DataFormat,
   folderOut: string,
-) {
+  ) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     dispatch({
       type: PACKAGE_SIGN + START,
