@@ -6,7 +6,7 @@ import {
   activeFile, filePackageDelete, filePackageSelect, removeAllRemoteFiles,
 } from "../../AC";
 import { deleteAllTemporyLicenses } from "../../AC/licenseActions";
-import { activeFilesSelector, connectedSelector, loadingRemoteFilesSelector } from "../../selectors";
+import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
 import { CANCELLED, ERROR, SIGN, SIGNED, UPLOADED } from "../../server/constants";
 import { mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
@@ -146,7 +146,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
               <div className="col" style={{ width: "40px" }}>
                 <a className={`${classDisabled}`} onClick={this.handleShowModalFilterDocuments}>
                   <i className={`file-setting-item waves-effect material-icons secondary-content`}>
-                    <i className={`material-icons ${classDefaultFilters}`} style={disabledNavigate ? {opacity: 0.38} : {opacity: 1}}/>
+                    <i className={`material-icons ${classDefaultFilters}`} style={disabledNavigate ? { opacity: 0.38 } : { opacity: 1 }} />
                   </i>
                 </a>
               </div>
@@ -226,12 +226,14 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   removeAllFiles = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { connections, connectedList, filePackageDelete, files } = this.props;
+    const { connections, connectedList, filesInTransactionList, filePackageDelete, files } = this.props;
 
     const filePackage: number[] = [];
 
     for (const file of files) {
-      filePackage.push(file.id);
+      if (!filesInTransactionList.includes(file.id)) {
+        filePackage.push(file.id);
+      }
 
       if (file.socket) {
         const connection = connections.getIn(["entities", file.socket]);
@@ -329,6 +331,7 @@ export default connect((state) => {
     connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
     files: mapToArr(state.files.entities),
+    filesInTransactionList: filesInTransactionsSelector(state),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     method: state.remoteFiles.method,

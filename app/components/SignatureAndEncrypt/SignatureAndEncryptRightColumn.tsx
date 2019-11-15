@@ -11,22 +11,24 @@ import {
   verifySignature,
 } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
+import { createTransactionDSS, dssOperationConfirmation, dssPerformOperation } from "../../AC/dssActions";
 import {
   activeSetting,
 } from "../../AC/settingsActions";
 import {
-  DECRYPT, ENCRYPT, HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
-  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_SETTINGS_CONFIG,
-  LOCATION_SETTINGS_SELECT,
-  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
+  DECRYPT, DSS_ACTIONS, ENCRYPT, HOME_DIR,
+  LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
+  LOCATION_SETTINGS_CONFIG,
+  LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
-import { activeFilesSelector, connectedSelector, loadingRemoteFilesSelector } from "../../selectors";
+import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
 import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
 import * as trustedEncrypts from "../../trusted/encrypt";
 import * as jwt from "../../trusted/jwt";
 import { checkLicense } from "../../trusted/jwt";
 import * as trustedSign from "../../trusted/sign";
 import { bytesToSize, dirExists, fileCoding, mapToArr } from "../../utils";
+import { buildDocumentDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
 import ReAuth from "../DSS/ReAuth";
 import Modal from "../Modal";
@@ -43,9 +45,15 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   files: any;
   packageSignResult: any;
   removeAllFiles: () => void;
+  createTransactionDSS: (url: string, token: string, body: ITransaction, fileId: number) => Promise<any>;
+  dssPerformOperation: (url: string, token: string, body: IDocumentDSS | IDocumentPackageDSS) => Promise<any>;
+  dssOperationConfirmation: (url: string, token: string, TransactionTokenId: string, dssUserID: string) => Promise<any>;
   signatures: any;
   signedPackage: any;
-  tokens: any;
+  tokensAuth: any;
+  tokensDss: any;
+  users: any;
+  transactionDSS: any;
 }
 
 interface ISignatureAndEncryptRightColumnSettingsState {
@@ -954,16 +962,22 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   handleCleanRecipientsList = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { deleteRecipient, recipients } = this.props;
+    const { deleteRecipient,  recipients } = this.props;
 
     recipients.forEach((recipient) => deleteRecipient(recipient.id));
   }
 
   checkEnableOperationButton = (operation: string) => {
-    const { activeFilesArr, isDocumentsReviewed, signer, recipients } = this.props;
+    const { activeFilesArr, isDocumentsReviewed, filesInTransactionList, signer, recipients } = this.props;
 
     if (!activeFilesArr.length) {
       return false;
+    }
+
+    for (const document of activeFilesArr) {
+      if (filesInTransactionList.includes(document.id)) {
+        return false;
+      }
     }
 
     switch (operation) {
@@ -1081,6 +1095,7 @@ export default connect((state) => {
     connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
     files: mapToArr(state.files.entities),
+    filesInTransactionList: filesInTransactionsSelector(state),
     isDocumentsReviewed: state.files.documentsReviewed,
     licenseStatus: state.license.status,
     lic_error: state.license.lic_error,
@@ -1095,10 +1110,14 @@ export default connect((state) => {
     settings: state.settings.entities,
     signatures,
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
-    tokens: state.tokens.tokensAuth,
+    tokensAuth: state.tokens.tokensAuth,
+    tokensDss: state.tokens.tokensDss,
+    users: state.users.entities,
+    transactionDSS: mapToArr(state.transactionDSS.entities),
   };
 }, {
-  activeFile, activeSetting, deleteFile, deleteRecipient, documentsReviewed,
+  activeFile, activeSetting, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
+  deleteFile, deleteRecipient, documentsReviewed,
   filePackageSelect, filePackageDelete, packageSign, selectFile,
   verifyCertificate, selectSignerCertificate, verifySignature,
 })(SignatureAndEncryptRightColumnSettings);

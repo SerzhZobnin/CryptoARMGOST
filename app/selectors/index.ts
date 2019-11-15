@@ -1,3 +1,4 @@
+import { List, OrderedMap } from "immutable";
 import { createSelector } from "reselect";
 import {
   ALL, ENCRYPTED, SIGNED,
@@ -12,6 +13,7 @@ export const remoteFilesGetter = (state) => state.remoteFiles.entities;
 export const connectionsGetter = (state) => state.connections.entities;
 export const idGetter = (state, props) => props.id;
 export const operationGetter = (state, props) => props.operation;
+export const transactionsGetter = (state) => state.transactionDSS.entities;
 
 const activeGetter = (state, props) => props.active;
 const loadingGetter = (state, props) => props.loading;
@@ -59,8 +61,9 @@ export const filteredCertificatesSelector = createSelector(certificatesGetter, f
         certificate.organizationName.toLowerCase().match(search) ||
         certificate.signatureAlgorithm.toLowerCase().match(search)
       );
+    } catch (e) {
+      return true;
     }
-    catch (e) { return true }
   });
 });
 
@@ -68,6 +71,15 @@ export const activeFilesSelector = createSelector(filesGetter, activeGetter, (fi
   return files.filter((file) => {
     return file.active === active;
   });
+});
+
+export const filesInTransactionsSelector = createSelector(transactionsGetter, (transactions) => {
+  let files = List();
+
+  transactions.map((value) => {
+    files = files.push(value.fileId);
+  });
+  return files;
 });
 
 export const filteredFilesSelector = createSelector(filesGetter, filtersGetter, (files, filters) => {
