@@ -68,6 +68,7 @@ export function packageSign(
   policies: string[],
   format: trusted.DataFormat,
   folderOut: string,
+  folderOutDSS?: string,
   ) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     dispatch({
@@ -83,7 +84,7 @@ export function packageSign(
       const { connections, remoteFiles } = state;
 
       files.forEach((file) => {
-        const newPath = signs.signFile(file.fullpath, cert, policies, format, folderOut);
+        const newPath = folderOutDSS ? folderOutDSS : signs.signFile(file.fullpath, cert, policies, format, folderOut);
         if (newPath) {
           signedFileIdPackage.push(file.id);
           if (!file.socket) {

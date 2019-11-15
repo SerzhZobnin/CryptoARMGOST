@@ -15,13 +15,14 @@ import {
   arhiveDocuments, loadAllDocuments, removeAllDocuments,
   removeDocuments, selectAllDocuments, selectDocument,
 } from "../../AC/documentsActions";
+import { createTransactionDSS, dssOperationConfirmation, dssPerformOperation } from "../../AC/dssActions";
 import {
   activeSetting,
 } from "../../AC/settingsActions";
 import {
-  DECRYPT, DEFAULT_DOCUMENTS_PATH, ENCRYPT, HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
-  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_MAIN, LOCATION_SETTINGS_CONFIG,
-  LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
+  DECRYPT, DEFAULT_DOCUMENTS_PATH, DSS_ACTIONS, ENCRYPT, HOME_DIR,
+  LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_MAIN,
+  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
 import { activeFilesSelector, connectedSelector } from "../../selectors";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
@@ -30,8 +31,10 @@ import * as trustedEncrypts from "../../trusted/encrypt";
 import { checkLicense } from "../../trusted/jwt";
 import * as jwt from "../../trusted/jwt";
 import * as trustedSign from "../../trusted/sign";
-import { dirExists, extFile, fileCoding, mapToArr, md5 } from "../../utils";
+import { dirExists, fileCoding, fileExists, mapToArr, md5 } from "../../utils";
+import { buildDocumentDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
+import ReAuth from "../DSS/ReAuth";
 import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
@@ -39,7 +42,6 @@ import SignerInfo from "../Signature/SignerInfo";
 import DeleteDocuments from "./DeleteDocuments";
 import DocumentsTable from "./DocumentsTable";
 import FilterDocuments from "./FilterDocuments";
-import ReAuth from "../DSS/ReAuth";
 
 const dialog = window.electron.remote.dialog;
 
@@ -60,6 +62,12 @@ interface IDocumentsWindowProps {
   unselectDocument: (uid: number) => void;
   removeDocuments: (documents: any) => void;
   arhiveDocuments: (documents: any, arhiveName: string) => void;
+  createTransactionDSS: (url: string, token: string, body: ITransaction, fileId: number) => Promise<any>;
+  dssPerformOperation: (url: string, token: string, body: IDocumentDSS | IDocumentPackageDSS) => Promise<any>;
+  dssOperationConfirmation: (url: string, token: string, TransactionTokenId: string, dssUserID: string) => Promise<any>;
+  users: any;
+  tokensAuth: any;
+  tokensDss: any;
 }
 
 interface IDocumentsWindowState {
@@ -374,9 +382,9 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     }
 
     if (signer && signer.dssUserID) {
-      const { tokens } = this.props;
+      const { tokensAuth } = this.props;
 
-      const token = tokens.get(signer.dssUserID);
+      const token = tokensAuth.get(signer.dssUserID);
 
       if (token) {
         const time = new Date().getTime();
@@ -438,16 +446,22 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
   }
 
   sign = (files: any, cert: any) => {
-    const { addDocuments, setting, signer, unselectD } = this.props;
+    const { addDocuments, setting, signer, unselectD, users, tokensAuth, tokensDss } = this.props;
+    // tslint:disable-next-line:no-shadowed-variable
+    const { createTransactionDSS } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { localize, locale } = this.context;
     let res = true;
+    let newPath = "";
 
     if (files.length > 0) {
       const policies = ["noAttributes"];
 
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
+      if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
+        format = trusted.DataFormat.DER;
+      }
 
       if (folderOut.length > 0) {
         if (!dirExists(folderOut)) {
@@ -457,35 +471,106 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         }
       }
 
-      if (setting.sign.detached) {
-        policies.push("detached");
-      }
+      if (signer.dssUserID) {
+        const user = users.get(signer.dssUserID);
+        const tokenAuth = tokensAuth.get(signer.dssUserID);
+        const document = files[0];
 
-      if (setting.sign.timestamp) {
-        policies.splice(0, 1);
-      }
+        createTransactionDSS(user.dssUrl,
+          tokenAuth.access_token,
+          buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument),
+          document.id).then((data) => {
+            this.props.dssOperationConfirmation(
+              user.authUrl.replace("/oauth", "/confirmation"),
+              tokenAuth.access_token,
+              data,
+              user.id)
+              .then(() => {
+                this.props.dssPerformOperation(
+                  user.dssUrl + "/api/documents",
+                  this.props.tokensDss.get(signer.dssUserID).access_token,
+                  buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached, "sign")).then((dataCMS) => {
+                    let outURI: string;
+                    if (folderOut.length > 0) {
+                      outURI = path.join(folderOut, path.basename(document.fullpath) + ".sig");
+                    } else {
+                      outURI = document.fullpath + ".sig";
+                    }
 
-      if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
-        format = trusted.DataFormat.DER;
-      }
+                    let indexFile: number = 1;
+                    let newOutUri: string = outURI;
+                    const fileUri = outURI.substring(0, outURI.lastIndexOf("."));
 
-      files.forEach((file) => {
-        const newPath = trustedSign.signFile(file.fullpath, cert, policies, format, folderOut);
+                    while (fileExists(newOutUri)) {
+                      const parsed = path.parse(fileUri);
+                      newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext + ".sig");
+                      indexFile++;
+                    }
+                    outURI = newOutUri;
+                    const newFileUri = outURI.substring(0, outURI.lastIndexOf("."));
+                    const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                    tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + dataCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                    tcms.save(outURI, format);
+                    newPath = outURI;
 
-        if (newPath) {
-          addDocuments([newPath]);
-          this.props.unselectDocument(file.id);
-        } else {
-          res = false;
-        }
-      });
+                    logger.log({
+                      certificate: cert.subjectName,
+                      level: "info",
+                      message: "",
+                      operation: "Подпись",
+                      operationObject: {
+                        in: path.basename(document.fullpath),
+                        out: path.basename(outURI),
+                      },
+                      userName: USER_NAME,
+                    });
 
-      if (res) {
-        $(".toast-files_signed").remove();
-        Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
+                    files.forEach((file) => {
+                      if (newPath) {
+                        addDocuments([newPath]);
+                        this.props.unselectDocument(file.id);
+                      } else {
+                        res = false;
+                      }
+                    });
+
+                    if (res) {
+                      $(".toast-files_signed").remove();
+                      Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
+                    } else {
+                      $(".toast-files_signed_failed").remove();
+                      Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
+                    }
+                  });
+              });
+          });
       } else {
-        $(".toast-files_signed_failed").remove();
-        Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
+        if (setting.sign.detached) {
+          policies.push("detached");
+        }
+
+        if (setting.sign.timestamp) {
+          policies.splice(0, 1);
+        }
+
+        files.forEach((file) => {
+          newPath = trustedSign.signFile(file.fullpath, cert, policies, format, folderOut);
+
+          if (newPath) {
+            addDocuments([newPath]);
+            this.props.unselectDocument(file.id);
+          } else {
+            res = false;
+          }
+        });
+
+        if (res) {
+          $(".toast-files_signed").remove();
+          Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
+        } else {
+          $(".toast-files_signed_failed").remove();
+          Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
+        }
       }
     }
   }
@@ -908,6 +993,9 @@ export default connect((state) => {
     settings: state.settings.entities,
     signatures,
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
+    users: state.users.entities,
+    tokensAuth: state.tokens.tokensAuth,
+    tokensDss: state.tokens.tokensDss,
   };
 }, {
   addDocuments, arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
@@ -915,4 +1003,5 @@ export default connect((state) => {
   removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
   unselectAllDocuments, unselectDocument,
   selectAllDocuments, selectDocument, selectSignerCertificate,
+  createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
 })(DocumentsRightColumn);

@@ -28,6 +28,7 @@ import * as jwt from "../../trusted/jwt";
 import { checkLicense } from "../../trusted/jwt";
 import * as trustedSign from "../../trusted/sign";
 import { bytesToSize, dirExists, fileCoding, mapToArr } from "../../utils";
+import { fileExists } from "../../utils";
 import { buildDocumentDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
 import ReAuth from "../DSS/ReAuth";
@@ -36,6 +37,18 @@ import RecipientsList from "../RecipientsList";
 import SignerInfo from "../Signature/SignerInfo";
 
 const dialog = window.electron.remote.dialog;
+
+interface IFile {
+  id: number;
+  filename: string;
+  mtime: Date;
+  fullpath: string;
+  extension: string | undefined;
+  active: boolean;
+  extra: any;
+  remoteId?: string;
+  socket?: string;
+}
 
 interface ISignatureAndEncryptRightColumnSettingsProps {
   activeFilesArr: any;
@@ -421,9 +434,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (signer && signer.dssUserID) {
-      const { tokens } = this.props;
+      const { tokensAuth } = this.props;
 
-      const token = tokens.get(signer.dssUserID);
+      const token = tokensAuth.get(signer.dssUserID);
 
       if (token) {
         const time = new Date().getTime();
@@ -464,9 +477,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   sign = (files: IFile[], cert: any) => {
-    const { setting, signer } = this.props;
+    const { setting, signer, tokensAuth, users, transactionDSS } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
-    const { packageSign } = this.props;
+    const { packageSign, createTransactionDSS } = this.props;
     const { localize, locale } = this.context;
 
     if (files.length > 0) {
@@ -474,6 +487,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
+      if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
+        format = trusted.DataFormat.DER;
+      }
 
       if (folderOut.length > 0) {
         if (!dirExists(folderOut)) {
@@ -484,19 +500,76 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         }
       }
 
-      if (setting.sign.detached) {
-        policies.push("detached");
-      }
+      let folderOutDSS = "";
+      if (signer.dssUserID) {
+        const user = users.get(signer.dssUserID);
+        const tokenAuth = tokensAuth.get(signer.dssUserID);
+        const document = files[0];
 
-      if (setting.sign.timestamp) {
-        policies.splice(0, 1);
-      }
+        createTransactionDSS(user.dssUrl,
+          tokenAuth.access_token,
+          buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument),
+          document.id).then((data) => {
+            this.props.dssOperationConfirmation(
+              user.authUrl.replace("/oauth", "/confirmation"),
+              tokenAuth.access_token,
+              data,
+              user.id)
+              .then(() => {
+                this.props.dssPerformOperation(
+                  user.dssUrl + "/api/documents",
+                  this.props.tokensDss.get(signer.dssUserID).access_token,
+                  buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached, "sign")).then((dataCMS) => {
+                    let outURI: string;
+                    if (folderOut.length > 0) {
+                      outURI = path.join(folderOut, path.basename(document.fullpath) + ".sig");
+                    } else {
+                      outURI = document.fullpath + ".sig";
+                    }
 
-      if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
-        format = trusted.DataFormat.DER;
-      }
+                    let indexFile: number = 1;
+                    let newOutUri: string = outURI;
+                    const fileUri = outURI.substring(0, outURI.lastIndexOf("."));
 
-      packageSign(files, cert, policies, format, folderOut);
+                    while (fileExists(newOutUri)) {
+                      const parsed = path.parse(fileUri);
+                      newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext + ".sig");
+                      indexFile++;
+                    }
+                    outURI = newOutUri;
+                    const newFileUri = outURI.substring(0, outURI.lastIndexOf("."));
+                    const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                    tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + dataCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                    tcms.save(outURI, format);
+                    folderOutDSS = outURI;
+
+                    logger.log({
+                      certificate: cert.subjectName,
+                      level: "info",
+                      message: "",
+                      operation: "Подпись",
+                      operationObject: {
+                        in: path.basename(document.fullpath),
+                        out: path.basename(outURI),
+                      },
+                      userName: USER_NAME,
+                    });
+
+                    packageSign(files, cert, policies, format, folderOut, folderOutDSS);
+                  });
+              });
+          });
+      } else {
+        if (setting.sign.detached) {
+          policies.push("detached");
+        }
+
+        if (setting.sign.timestamp) {
+          policies.splice(0, 1);
+        }
+
+        packageSign(files, cert, policies, format, folderOut);
+      }
     }
   }
 

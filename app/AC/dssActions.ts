@@ -1,6 +1,6 @@
 import * as os from "os";
 import {
-  FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS, POST_OPERATION_CONFIRMATION, CREATE_TEMP_USER_DSS, DELETE_CERTIFICATE,
+  CREATE_TEMP_USER_DSS, DELETE_CERTIFICATE, FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_OPERATION_CONFIRMATION, POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -163,7 +163,7 @@ export function dssAuthIssue(user: IUserDSS) {
     body = {
       Resource: "urn:cryptopro:dss:signserver:signserver",
     };
-    return dispatch(
+    await dispatch(
       dssPostMFAUser(user.authUrl.replace("/oauth", "/confirmation"), headerfield, body, user.id, POST_AUTHORIZATION_USER_DSS),
     );
   };
@@ -177,17 +177,19 @@ export function dssAuthIssue(user: IUserDSS) {
  * @param dssUserID идентификатор пользователя
  */
 export function dssOperationConfirmation(url: string, token: string, TransactionTokenId: string, dssUserID: string) {
-  let headerfield: string[];
-  let body: any;
-  headerfield = [
-    "Content-Type: application/json; charset=utf-8",
-    `Authorization: Bearer ${token}`,
-  ];
-  body = {
-    Resource: "urn:cryptopro:dss:signserver:signserver",
-    TransactionTokenId,
+  return async (dispatch) => {
+    let headerfield: string[];
+    let body: any;
+    headerfield = [
+      "Content-Type: application/json; charset=utf-8",
+      `Authorization: Bearer ${token}`,
+    ];
+    body = {
+      Resource: "urn:cryptopro:dss:signserver:signserver",
+      TransactionTokenId,
+    };
+    return dispatch(dssPostMFAUser(url, headerfield, body, dssUserID, POST_OPERATION_CONFIRMATION));
   };
-  dssPostMFAUser(url, headerfield, body, dssUserID, POST_OPERATION_CONFIRMATION);
 }
 
 /**
@@ -227,37 +229,46 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
           },
           Resource: "urn:cryptopro:dss:signserver:signserver",
         };
+
         const deploy: number = 10000;
-        var timeout: number = 0;
-        var timerHandle: NodeJS.Timeout | null;
-        timerHandle = setTimeout(async function req() {
-          timeout += deploy;
-          if (timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
-            dispatch(postAuthorizationUserFail(type, `Время ожидания подтверждения истекло`));
-            if (timerHandle instanceof NodeJS.Timeout) {
-              clearTimeout(timerHandle);
+        let timeout: number = 0;
+        let timerHandle: NodeJS.Timeout | null;
+
+        return await new Promise((resolve) => {
+          timerHandle = setInterval(async () => {
+            timeout += deploy;
+            if (timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
+              dispatch(postAuthorizationUserFail(type, `Время ожидания подтверждения истекло`));
+              if (timerHandle) {
+                clearInterval(timerHandle);
+                timerHandle = null;
+                resolve();
+              }
             }
-            timerHandle = null;
-          }
-          data2 = await postApi(
-            `${url}`,
-            JSON.stringify(challengeResponse),
-            headerfield,
-          );
-          if (data2.IsFinal === true) {
-            dispatch(postAuthorizationUserSuccess(type, data2, dssUserID));
-            if (timerHandle instanceof NodeJS.Timeout) {
-              clearTimeout(timerHandle);
+
+            data2 = await postApi(
+              `${url}`,
+              JSON.stringify(challengeResponse),
+              headerfield,
+            );
+
+            if (data2.IsFinal === true) {
+              dispatch(postAuthorizationUserSuccess(type, data2, dssUserID));
+              if (timerHandle) {
+                clearInterval(timerHandle);
+                timerHandle = null;
+                resolve();
+              }
+            } else if (data2.IsError === true) {
+              dispatch(postAuthorizationUserFail(type, data2.ErrorDescription));
+              if (timerHandle) {
+                clearInterval(timerHandle);
+                timerHandle = null;
+                resolve();
+              }
             }
-            timerHandle = null;
-          } else if (data2.IsError === true) {
-            dispatch(postAuthorizationUserFail(type, data2.ErrorDescription));
-            if (timerHandle instanceof NodeJS.Timeout) {
-              clearTimeout(timerHandle);
-            }
-            timerHandle = null;
-          } else { setTimeout(req, deploy); }
-        }, deploy);
+          }, 10000);
+        });
       }
     } catch (e) {
       dispatch(postAuthorizationUserFail(type, e));
@@ -315,7 +326,7 @@ export function dssPostAuthUser(url: string, login: string, password: string) {
  * @param dssUserID идентификатор пользователя
  * @param token маркер доступа
  */
-export function getCertificatesDSS(url: string, dssUserID: string,  token: string) {
+export function getCertificatesDSS(url: string, dssUserID: string, token: string) {
   return async (dispatch) => {
     dispatch({
       type: GET_CERTIFICATES_DSS + START,
@@ -375,7 +386,7 @@ export function getPolicyDSS(url: string, dssUserID: string, token: string) {
           `Authorization: Bearer ${token}`,
         ],
       );
-      const policy = data.ActionPolicy.filter(function(item: any) {
+      const policy = data.ActionPolicy.filter(function (item: any) {
         return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments";
       });
       dispatch({
@@ -402,7 +413,7 @@ export function getPolicyDSS(url: string, dssUserID: string, token: string) {
  * @param token маркер доступа
  * @param {ITransaction} body объект, содержащий параметры транзакции
  */
-export function createTransactionDSS(url: string, token: string, body: ITransaction) {
+export function createTransactionDSS(url: string, token: string, body: ITransaction, fileId: number) {
   return async (dispatch) => {
     dispatch({
       type: POST_TRANSACTION_DSS + START,
@@ -421,10 +432,12 @@ export function createTransactionDSS(url: string, token: string, body: ITransact
       );
       dispatch({
         payload: {
+          fileId,
           id: data,
         },
         type: POST_TRANSACTION_DSS + SUCCESS,
       });
+      return data;
     } catch (e) {
       dispatch({
         type: POST_TRANSACTION_DSS + FAIL,
@@ -463,6 +476,7 @@ export function dssPerformOperation(url: string, token: string, body: IDocumentD
         },
         type: POST_PERFORM_OPERATION + SUCCESS,
       });
+      return data;
     } catch (e) {
       dispatch({
         type: POST_PERFORM_OPERATION + FAIL,

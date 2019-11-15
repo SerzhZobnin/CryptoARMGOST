@@ -3,6 +3,7 @@ import { OrderedMap, Record } from "immutable";
 import { POST_TRANSACTION_DSS, START, SUCCESS } from "../constants";
 
 export const TransactionDSSModel = Record({
+  fileId: null,
   id: null,
 });
 

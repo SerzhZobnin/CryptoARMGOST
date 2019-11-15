@@ -9,7 +9,7 @@ import { DSS_ACTIONS, SIGNATURE_TYPE } from "../../constants";
  * @param isDetached флаг, определяющий отделённую/присоединённую подпись
  * @param operationCode код операции на Сервисе Подписи
  */
-export function buildTransaction(document: string | IDocumentContent[], certificateId: number,
+export function buildTransaction(document: string | IDocumentContent[], certificateId: string,
                                  isDetached: boolean, operationCode: number) {
 
   let body: ITransaction;

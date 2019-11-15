@@ -65,7 +65,13 @@ export function setDetachedContent(cms: trusted.cms.SignedData, uri: string, sho
   }
 }
 
-export function signFile(uri: string, cert: trusted.pki.Certificate, policies: any, format: trusted.DataFormat, folderOut: string) {
+export function signFile(
+  uri: string,
+  cert: trusted.pki.Certificate,
+  policies: any,
+  format: trusted.DataFormat,
+  folderOut: string,
+  ) {
   let outURI: string;
 
   if (folderOut.length > 0) {
@@ -88,6 +94,7 @@ export function signFile(uri: string, cert: trusted.pki.Certificate, policies: a
   const newFileUri = outURI.substring(0, outURI.lastIndexOf("."));
 
   try {
+
     const sd: trusted.cms.SignedData = new trusted.cms.SignedData();
     sd.policies = policies;
     sd.content = {
