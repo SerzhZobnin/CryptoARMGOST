@@ -519,6 +519,7 @@ export default {
     problem_4: "Could not check the parameters of crypto provider CryptoPro CSP",
     problem_5: "Certificates not linked to a key container",
     problem_6: "Trusted Crypto module is not loaded",
+    problem_7: "trusted-curl module is not loaded",
     resolve_1_1: "The system does not have the cryptoPro CSP crypto provider installed. The further operation of the application is impossible and the application will be closed.",
     resolve_1_2: "To solve this problem, install CryptoPro CSP version 5.0 and run the application again.",
     resolve_1_3: "Distribution of the crypto provider CryptoPro CSP can be downloaded from the official CryptoPro website",
@@ -541,6 +542,9 @@ export default {
     resolve_6_1: "When you run Crypto ARM GOST, the Trusted Crypto module is not loaded.",
     resolve_6_2: "To solve this problem, open the application control panel and forward error messages displayed on the Console tab to the technical support.",
     resolve_6_3: "Detailed instructions on how to open the control panel under the required platform can be found in the product documentation that is available on the link ",
+    resolve_7_1: "When you run Crypto ARM GOST, the trusted-curl module is not loaded.",
+    resolve_7_2: "To solve this problem, open the application control panel and forward error messages displayed on the Console tab to the technical support.",
+    resolve_7_3: "Detailed instructions on how to open the control panel under the required platform can be found in the product documentation that is available on the link ",
   },
   Request: {
     delete_request: "Delete request",

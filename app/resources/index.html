@@ -71,10 +71,18 @@
       var result = LICENSE_MNG.generateTrial();
       console.log("result", result);
     } catch (err) {
+      console.log("Error load trusted-crypto", err);
       window.tcerr = err;
     }
 
-    var { Curl } = require("trusted-curl");
+    var Curl;
+
+    try {
+      Curl  = require("trusted-curl").Curl;
+    } catch (err) {
+      console.log("Error load trusted-curl", err);
+      window.curlerr = err;
+    }
 
     path = require('path');
     fs = require('fs');
