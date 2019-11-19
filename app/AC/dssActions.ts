@@ -3,6 +3,7 @@ import {
   CREATE_TEMP_USER_DSS, DELETE_CERTIFICATE, FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_OPERATION_CONFIRMATION, POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
+import { rejects } from "assert";
 
 /**
  * Фукнция генерации стуктуры сертификата DSS
@@ -234,15 +235,15 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
         let timeout: number = 0;
         let timerHandle: NodeJS.Timeout | null;
 
-        return await new Promise((resolve) => {
+        return await new Promise((resolve, reject) => {
           timerHandle = setInterval(async () => {
             timeout += deploy;
             if (timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
-              dispatch(postAuthorizationUserFail(type, `Время ожидания подтверждения истекло`));
+              dispatch(postAuthorizationUserFail(type, "Время ожидания подтверждения истекло"));
               if (timerHandle) {
                 clearInterval(timerHandle);
                 timerHandle = null;
-                resolve();
+                reject("Время ожидания подтверждения истекло");
               }
             }
 
@@ -264,7 +265,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
               if (timerHandle) {
                 clearInterval(timerHandle);
                 timerHandle = null;
-                resolve();
+                reject(data2.ErrorDescription);
               }
             }
           }, 10000);
@@ -272,6 +273,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
       }
     } catch (e) {
       dispatch(postAuthorizationUserFail(type, e));
+      throw new Error(e);
     }
   };
 }
@@ -312,10 +314,10 @@ export function dssPostAuthUser(url: string, login: string, password: string) {
         type: POST_AUTHORIZATION_USER_DSS + SUCCESS,
       });
     } catch (e) {
-      // Materialize.toast(e, 4000, "toast-ca_error");
       dispatch({
         type: POST_AUTHORIZATION_USER_DSS + FAIL,
       });
+      throw new Error(e);
     }
   };
 }
@@ -361,6 +363,7 @@ export function getCertificatesDSS(url: string, dssUserID: string, token: string
           error: e,
         },
       });
+      throw new Error(e);
     }
   };
 }
@@ -403,6 +406,7 @@ export function getPolicyDSS(url: string, dssUserID: string, token: string) {
           error: e,
         },
       });
+      throw new Error(e);
     }
   };
 }
@@ -445,6 +449,7 @@ export function createTransactionDSS(url: string, token: string, body: ITransact
           error: e,
         },
       });
+      throw new Error(e);
     }
   };
 }
@@ -484,6 +489,7 @@ export function dssPerformOperation(url: string, token: string, body: IDocumentD
           error: e,
         },
       });
+      throw new Error(e);
     }
   };
 }

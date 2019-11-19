@@ -49,7 +49,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
 
   render() {
     const { localize, locale } = this.context;
-    const { field_value, user, token } = this.state;
+    const { field_value, user } = this.state;
 
     if (!user) {
       this.handleCancel();
@@ -143,6 +143,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
   }
 
   handleReady = () => {
+    const { localize, locale } = this.context;
     const { field_value, user } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { dssAuthIssue } = this.props;
@@ -155,9 +156,25 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       user: user.login,
     };
 
-    dssAuthIssue(userDSS).then(() => {
-      this.props.getPolicyDSS(user.dssUrl, user.id, this.props.tokensAuth.get(user.id).access_token).then(() => this.handleCancel());
-    });
+    dssAuthIssue(userDSS).then(
+      (result) => {
+        this.props.getPolicyDSS(user.dssUrl, user.id, this.props.tokensAuth.get(user.id).access_token).then(
+          () => this.handleCancel(),
+          (error) => {
+            $(".toast-getPolicyDSS_failed").remove();
+            Materialize.toast(error, 2000, "toast-getPolicyDSS_failed");
+
+            this.handleCancel();
+          },
+        );
+      },
+      (error) => {
+        $(".toast-dssAuthIssue_failed").remove();
+        Materialize.toast(error.message, 2000, "toast-dssAuthIssue_failed");
+
+        this.handleCancel();
+      },
+    );
   }
 
   handleCancel = () => {
