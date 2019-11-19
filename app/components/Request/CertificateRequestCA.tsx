@@ -1,5 +1,6 @@
 import fs from "fs";
 import { Map } from "immutable";
+import * as os from "os";
 import * as path from "path";
 import PropTypes, { any } from "prop-types";
 import React from "react";
@@ -552,8 +553,20 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       fs.mkdirSync(path.join(HOME_DIR, ".Trusted", "CryptoARM GOST", "CSR"), { mode: 0o700 });
     }
 
-    const url = path.join(DEFAULT_CSR_PATH, `requestCA_${RDNsubject["2.5.4.3"] ? RDNsubject["2.5.4.3"].value : ""}_${algorithm}_${formatDate(new Date())}.req`);
-    const urlSig = path.join(DEFAULT_CSR_PATH, `requestCAsign_${RDNsubject["2.5.4.3"] ? RDNsubject["2.5.4.3"].value : ""}_${algorithm}_${formatDate(new Date())}.req`);
+    let urlName = `requestCA_${RDNsubject["2.5.4.3"] ? RDNsubject["2.5.4.3"].value : ""}_${algorithm}_${formatDate(new Date())}.req`;
+    let urlSigName = `requestCAsign_${RDNsubject["2.5.4.3"] ? RDNsubject["2.5.4.3"].value : ""}_${algorithm}_${formatDate(new Date())}.req`;
+
+    if (os.type() === "Windows_NT") {
+      urlName = urlName.replace(/[/\\?%*:|"<>]/g, "-");
+      urlSigName = urlSigName.replace(/[/\\?%*:|"<>]/g, "-");
+    } else {
+      urlName = urlName.replace(/[/\\:]/g, "-");
+      urlSigName = urlSigName.replace(/[/\\:]/g, "-");
+    }
+
+    const url = path.join(DEFAULT_CSR_PATH, urlName);
+    const urlSig = path.join(DEFAULT_CSR_PATH, urlSigName);
+
     try {
       certReq.save(url, trusted.DataFormat.PEM);
 
