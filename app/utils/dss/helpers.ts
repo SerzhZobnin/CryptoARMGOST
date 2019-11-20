@@ -10,7 +10,7 @@ import { DSS_ACTIONS, SIGNATURE_TYPE } from "../../constants";
  * @param operationCode код операции на Сервисе Подписи
  */
 export function buildTransaction(document: string | IDocumentContent[], certificateId: string,
-  isDetached: boolean, operationCode: number, CmsSignatureType: "sign" | "cosign", OriginalDocument?: string) {
+                                 isDetached: boolean, operationCode: number, CmsSignatureType: "sign" | "cosign", OriginalDocument?: string) {
 
   let body: ITransaction;
   if (typeof document === "string") {
@@ -58,7 +58,7 @@ export function buildTransaction(document: string | IDocumentContent[], certific
  * @param originalDocumentContent содержимое исходного файла (необходимо для соподписи)
  */
 export function buildDocumentDSS(pathDocument: string, CertificateId: number,
-  IsDetached: boolean, CmsSignatureType: string, originalDocumentContent?: string) {
+                                 IsDetached: boolean, CmsSignatureType: string, originalDocumentContent?: string) {
 
   const Content = fs.readFileSync(pathDocument, "base64");
   const OriginalDocument = originalDocumentContent ? originalDocumentContent : "";

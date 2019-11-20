@@ -487,7 +487,7 @@ export function createTransactionDSS(url: string, token: string, body: ITransact
  * @param token маркер доступа
  * @param {IDocumentDSS | IDocumentPackageDSS} body объект, содержащий информацию о документе или пакете документов
  */
-export function dssPerformOperation(url: string, token: string, body: IDocumentDSS | IDocumentPackageDSS) {
+export function dssPerformOperation(url: string, token: string, body?: IDocumentDSS | IDocumentPackageDSS) {
   return async (dispatch) => {
     dispatch({
       type: POST_PERFORM_OPERATION + START,
