@@ -385,7 +385,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         header={localize("DSS.DSS_connection", locale)}
         onClose={this.handleCloseModalReAuth}>
 
-        <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID}/>
+        <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID} />
       </Modal>
     );
   }
@@ -509,18 +509,18 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
         createTransactionDSS(user.dssUrl,
           tokenAuth.access_token,
-          buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument),
+          buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument, "sign"),
           document.id).then((data) => {
             this.props.dssOperationConfirmation(
               user.authUrl.replace("/oauth", "/confirmation"),
               tokenAuth.access_token,
               data,
               user.id)
-              .then(() => {
+              .then((data2) => {
                 this.props.dssPerformOperation(
                   user.dssUrl + "/api/documents",
-                  this.props.tokensDss.get(signer.dssUserID).access_token,
-                  buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached)).then((dataCMS) => {
+                  data2.AccessToken,
+                  undefined).then((dataCMS) => {
                     let outURI: string;
                     if (folderOut.length > 0) {
                       outURI = path.join(folderOut, path.basename(document.fullpath) + ".sig");
@@ -559,7 +559,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                     packageSign(files, cert, policies, format, folderOut, folderOutDSS);
                   });
               })
-              .catch((error) => console.log(error) );
+              .catch((error) => console.log(error));
           });
       } else {
         if (setting.sign.detached) {
@@ -602,28 +602,49 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         const user = users.get(signer.dssUserID);
         const tokenAuth = tokensAuth.get(signer.dssUserID);
         const document = files[0];
-        console.log(document);
-        let cmsTemp = signs.loadSign(document.fullpath);
-        if (cmsTemp.isDetached()) {
-          // tslint:disable-next-line: no-conditional-assignment
-          if (!(cmsTemp = trustedSign.setDetachedContent(cmsTemp, document.fullpath))) {
-            throw new Error(("err"));
+
+        const uri = document.fullpath;
+        let tempURI: string = "";
+
+        const sd: trusted.cms.SignedData = signs.loadSign(uri);
+        if (sd.isDetached()) {
+          tempURI = uri.substring(0, uri.lastIndexOf("."));
+          if (!fileExists(tempURI)) {
+            tempURI = dialog.showOpenDialog(null, { title: localize("Sign.sign_content_file", window.locale) + path.basename(uri), properties: ["openFile"] });
+
+            if (tempURI) {
+              tempURI = tempURI[0];
+            }
+
+            if (!tempURI || !fileExists(tempURI)) {
+              $(".toast-verify_get_content_failed").remove();
+              Materialize.toast(localize("Sign.verify_get_content_failed", window.locale), 2000, "toast-verify_get_content_failed");
+
+              return;
+            }
           }
         }
+
+        let contentData = "";
+
+        if (tempURI) {
+          contentData = fs.readFileSync(tempURI, "base64");
+        }
+
         createTransactionDSS(user.dssUrl,
           tokenAuth.access_token,
-          buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument),
+          buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument, "cosign", contentData),
           document.id).then((data) => {
             this.props.dssOperationConfirmation(
               user.authUrl.replace("/oauth", "/confirmation"),
               tokenAuth.access_token,
               data,
               user.id)
-              .then(() => {
+              .then((data2) => {
                 this.props.dssPerformOperation(
                   user.dssUrl + "/api/documents",
-                  this.props.tokensDss.get(signer.dssUserID).access_token,
-                  buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached, "cosign", `${cmsTemp.content.data}`))
+                  data2.AccessToken,
+                  undefined)
                   .then((dataCMS) => {
                     let outURI: string;
                     if (folderOut.length > 0) {
@@ -648,7 +669,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                     packageSign(files, cert, policies, format, folderOut, outURI);
                   });
               })
-              .catch((error) => console.log(error) );
+              .catch((error) => console.log(error));
           });
       } else {
         if (setting.sign.timestamp) {
@@ -1090,7 +1111,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   handleCleanRecipientsList = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { deleteRecipient,  recipients } = this.props;
+    const { deleteRecipient, recipients } = this.props;
 
     recipients.forEach((recipient) => deleteRecipient(recipient.id));
   }

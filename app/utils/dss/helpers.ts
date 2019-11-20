@@ -10,14 +10,13 @@ import { DSS_ACTIONS, SIGNATURE_TYPE } from "../../constants";
  * @param operationCode код операции на Сервисе Подписи
  */
 export function buildTransaction(document: string | IDocumentContent[], certificateId: string,
-                                 isDetached: boolean, operationCode: number) {
+  isDetached: boolean, operationCode: number, CmsSignatureType: "sign" | "cosign", OriginalDocument?: string) {
 
   let body: ITransaction;
   if (typeof document === "string") {
     const content = fs.readFileSync(document, "base64");
     body = {
       Document: content,
-      Documents: [],
       OperationCode: operationCode,
       Parameters:
         [
@@ -26,7 +25,7 @@ export function buildTransaction(document: string | IDocumentContent[], certific
           { Name: "DocumentInfo", Value: path.basename(document) },
           { Name: "DocumentType", Value: path.extname(document).replace(/\./g, "") },
           { Name: "IsDetached", Value: `${isDetached}` },
-          { Name: "CADESType", Value: "BES" },
+          { Name: "CmsSignatureType", Value: CmsSignatureType },
         ],
     };
   } else {
@@ -39,9 +38,12 @@ export function buildTransaction(document: string | IDocumentContent[], certific
           { Name: "SignatureType", Value: "CMS" },
           { Name: "CertificateID", Value: `${certificateId}` },
           { Name: "IsDetached", Value: `${isDetached}` },
-          { Name: "CADESType", Value: "BES" },
         ],
     };
+  }
+
+  if (isDetached && OriginalDocument) {
+    body.Parameters.push({ Name: "OriginalDocument", Value: OriginalDocument });
   }
 
   return body;
@@ -56,25 +58,23 @@ export function buildTransaction(document: string | IDocumentContent[], certific
  * @param originalDocumentContent содержимое исходного файла (необходимо для соподписи)
  */
 export function buildDocumentDSS(pathDocument: string, CertificateId: number,
-                                 IsDetached: boolean, CmsSignatureType?: string, originalDocumentContent?: string) {
+  IsDetached: boolean, CmsSignatureType: string, originalDocumentContent?: string) {
 
   const Content = fs.readFileSync(pathDocument, "base64");
+  const OriginalDocument = originalDocumentContent ? originalDocumentContent : "";
 
-  let OriginalDocument = "";
-  if (originalDocumentContent) { OriginalDocument = `${Buffer.from(originalDocumentContent).toString("base64")}`; }
   const body: IDocumentDSS = {
     Content,
     Name: path.basename(pathDocument),
     Signature: {
       CertificateId,
       Parameters: {
-        CADESType: "BES",
         CmsSignatureType,
         IsDetached,
         OriginalDocument,
       },
       PinCode: "",
-      Type: SIGNATURE_TYPE.CMS,
+      Type: "CMS",
     },
   };
   return body;
@@ -88,7 +88,7 @@ export function buildDocumentDSS(pathDocument: string, CertificateId: number,
  * @param cmsSignatureType тип подписи (Sign, Сosign)
  */
 export function buildDocumentPackageDSS(documents: IDocumentContent[], certificateId: number,
-                                        isDetached: boolean, cmsSignatureType?: string) {
+  isDetached: boolean, cmsSignatureType?: string) {
 
   const body: IDocumentPackageDSS = {
     Documents: documents,

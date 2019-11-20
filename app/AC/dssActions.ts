@@ -3,7 +3,6 @@ import {
   CREATE_TEMP_USER_DSS, DELETE_CERTIFICATE, FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_OPERATION_CONFIRMATION, POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
-import { rejects } from "assert";
 
 /**
  * Фукнция генерации стуктуры сертификата DSS
@@ -61,7 +60,10 @@ export const postApi = async (url: string, postfields: string, headerfields: str
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
+
+    if (postfields) {
+      curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
+    }
     curl.on("end", function (statusCode: number, response: any) {
       let data;
       try {
@@ -189,7 +191,7 @@ export function dssOperationConfirmation(url: string, token: string, Transaction
       Resource: "urn:cryptopro:dss:signserver:signserver",
       TransactionTokenId,
     };
-    await dispatch(dssPostMFAUser(url, headerfield, body, dssUserID, POST_OPERATION_CONFIRMATION));
+    return dispatch(dssPostMFAUser(url, headerfield, body, dssUserID, POST_OPERATION_CONFIRMATION));
   };
 }
 
@@ -218,6 +220,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
       );
       if (data1.IsFinal === true) {
         dispatch(postAuthorizationUserSuccess(type, data1, dssUserID));
+        return data1;
       } else {
         const challengeResponse = {
           ChallengeResponse:
@@ -258,7 +261,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
               if (timerHandle) {
                 clearInterval(timerHandle);
                 timerHandle = null;
-                resolve();
+                resolve(data2);
               }
             } else if (data2.IsError === true) {
               dispatch(postAuthorizationUserFail(type, data2.ErrorDescription));
@@ -469,7 +472,7 @@ export function dssPerformOperation(url: string, token: string, body: IDocumentD
     try {
       data = await postApi(
         `${url}`,
-        JSON.stringify(body),
+        body ? JSON.stringify(body) : "{}",
         [
           `Authorization: Bearer ${token}`,
           "Content-Type: application/json; charset=utf-8",
