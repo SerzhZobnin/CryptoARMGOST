@@ -189,7 +189,7 @@ export function dssOperationConfirmation(url: string, token: string, Transaction
       Resource: "urn:cryptopro:dss:signserver:signserver",
       TransactionTokenId,
     };
-    return dispatch(dssPostMFAUser(url, headerfield, body, dssUserID, POST_OPERATION_CONFIRMATION));
+    await dispatch(dssPostMFAUser(url, headerfield, body, dssUserID, POST_OPERATION_CONFIRMATION));
   };
 }
 

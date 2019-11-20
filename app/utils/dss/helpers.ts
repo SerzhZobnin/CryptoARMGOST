@@ -53,30 +53,30 @@ export function buildTransaction(document: string | IDocumentContent[], certific
  * @param certificateId идентификатор сертификата подписи на Сервисе Подписи
  * @param isDetached флаг, определяющий отделённую/присоединённую подпись
  * @param cmsSignatureType тип подписи (sign, cosign)
- * @param pathOriginalDocument путь до исходного файла (необходимо для соподписи)
+ * @param originalDocumentContent содержимое исходного файла (необходимо для соподписи)
  */
-export function buildDocumentDSS(pathDocument: string, certificateId: number,
-                                 isDetached: boolean, cmsSignatureType?: string, pathOriginalDocument?: string) {
+export function buildDocumentDSS(pathDocument: string, CertificateId: number,
+                                 IsDetached: boolean, CmsSignatureType?: string, originalDocumentContent?: string) {
 
-  const content = fs.readFileSync(pathDocument, "base64");
-  let originalDocument = "";
-  if (pathOriginalDocument) { originalDocument = fs.readFileSync(pathOriginalDocument, "base64"); }
+  const Content = fs.readFileSync(pathDocument, "base64");
+
+  let OriginalDocument = "";
+  if (originalDocumentContent) { OriginalDocument = `${Buffer.from(originalDocumentContent).toString("base64")}`; }
   const body: IDocumentDSS = {
-    Content: content,
+    Content,
     Name: path.basename(pathDocument),
     Signature: {
-      CertificateId: certificateId,
+      CertificateId,
       Parameters: {
         CADESType: "BES",
-        CmsSignatureType: cmsSignatureType ? cmsSignatureType : "sign",
-        IsDetached: `${isDetached}`,
-        OriginalDocument: originalDocument,
+        CmsSignatureType,
+        IsDetached,
+        OriginalDocument,
       },
       PinCode: "",
       Type: SIGNATURE_TYPE.CMS,
     },
   };
-
   return body;
 }
 

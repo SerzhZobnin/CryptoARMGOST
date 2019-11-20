@@ -26,6 +26,7 @@ import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/cons
 import * as trustedEncrypts from "../../trusted/encrypt";
 import * as jwt from "../../trusted/jwt";
 import { checkLicense } from "../../trusted/jwt";
+import * as signs from "../../trusted/sign";
 import * as trustedSign from "../../trusted/sign";
 import { bytesToSize, dirExists, fileCoding, mapToArr } from "../../utils";
 import { fileExists } from "../../utils";
@@ -519,7 +520,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 this.props.dssPerformOperation(
                   user.dssUrl + "/api/documents",
                   this.props.tokensDss.get(signer.dssUserID).access_token,
-                  buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached, "sign")).then((dataCMS) => {
+                  buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached)).then((dataCMS) => {
                     let outURI: string;
                     if (folderOut.length > 0) {
                       outURI = path.join(folderOut, path.basename(document.fullpath) + ".sig");
@@ -557,7 +558,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
                     packageSign(files, cert, policies, format, folderOut, folderOutDSS);
                   });
-              });
+              })
+              .catch((error) => console.log(error) );
           });
       } else {
         if (setting.sign.detached) {
@@ -574,15 +576,18 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   resign = (files: IFile[], cert: any) => {
-    const { connections, connectedList, setting, uploader } = this.props;
+    const { connections, connectedList, setting, signer, tokensAuth, users, uploader } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
-    const { deleteFile, selectFile } = this.props;
+    const { deleteFile, selectFile, createTransactionDSS, packageSign } = this.props;
     const { localize, locale } = this.context;
 
     if (files.length > 0) {
       const policies = ["noAttributes"];
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
+      if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
+        format = trusted.DataFormat.DER;
+      }
       let res = true;
 
       if (folderOut.length > 0) {
@@ -593,124 +598,174 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         }
       }
 
-      if (setting.sign.timestamp) {
-        policies.splice(0, 1);
-      }
+      if (signer.dssUserID) {
+        const user = users.get(signer.dssUserID);
+        const tokenAuth = tokensAuth.get(signer.dssUserID);
+        const document = files[0];
+        console.log(document);
+        let cmsTemp = signs.loadSign(document.fullpath);
+        if (cmsTemp.isDetached()) {
+          // tslint:disable-next-line: no-conditional-assignment
+          if (!(cmsTemp = trustedSign.setDetachedContent(cmsTemp, document.fullpath))) {
+            throw new Error(("err"));
+          }
+        }
+        createTransactionDSS(user.dssUrl,
+          tokenAuth.access_token,
+          buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument),
+          document.id).then((data) => {
+            this.props.dssOperationConfirmation(
+              user.authUrl.replace("/oauth", "/confirmation"),
+              tokenAuth.access_token,
+              data,
+              user.id)
+              .then(() => {
+                this.props.dssPerformOperation(
+                  user.dssUrl + "/api/documents",
+                  this.props.tokensDss.get(signer.dssUserID).access_token,
+                  buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached, "cosign", `${cmsTemp.content.data}`))
+                  .then((dataCMS) => {
+                    let outURI: string;
+                    if (folderOut.length > 0) {
+                      outURI = path.join(folderOut, path.basename(document.fullpath));
+                      if (path.dirname(document.fullpath) !== folderOut) {
+                        let indexFile: number = 1;
+                        let newOutUri: string = outURI;
+                        const fileUri = outURI.substring(0, outURI.lastIndexOf("."));
+                        while (fileExists(newOutUri)) {
+                          const parsed = path.parse(fileUri);
+                          newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext + ".sig");
+                          indexFile++;
+                        }
+                        outURI = newOutUri;
+                      }
+                    } else {
+                      outURI = document.fullpath;
+                    }
+                    const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                    tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + dataCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                    tcms.save(outURI, format);
+                    packageSign(files, cert, policies, format, folderOut, outURI);
+                  });
+              })
+              .catch((error) => console.log(error) );
+          });
+      } else {
+        if (setting.sign.timestamp) {
+          policies.splice(0, 1);
+        }
 
-      if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
-        format = trusted.DataFormat.DER;
-      }
+        files.forEach((file) => {
+          const newPath = trustedSign.resignFile(file.fullpath, cert, policies, format, folderOut);
 
-      files.forEach((file) => {
-        const newPath = trustedSign.resignFile(file.fullpath, cert, policies, format, folderOut);
+          if (newPath) {
+            if (file.socket) {
+              const connection = connections.getIn(["entities", file.socket]);
 
-        if (newPath) {
-          if (file.socket) {
-            const connection = connections.getIn(["entities", file.socket]);
+              if (connection && connection.connected && connection.socket) {
+                connection.socket.emit(SIGNED, { id: file.remoteId });
+              } else if (connectedList.length) {
+                const connectedSocket = connectedList[0].socket;
 
-            if (connection && connection.connected && connection.socket) {
-              connection.socket.emit(SIGNED, { id: file.remoteId });
-            } else if (connectedList.length) {
-              const connectedSocket = connectedList[0].socket;
-
-              connectedSocket.emit(SIGNED, { id: file.remoteId });
-              connectedSocket.broadcast.emit(SIGNED, { id: file.remoteId });
-            }
-
-            if (uploader) {
-              let cms = trustedSign.loadSign(newPath);
-
-              if (cms.isDetached()) {
-                if (!(cms = trustedSign.setDetachedContent(cms, newPath))) {
-                  throw ("err");
-                }
+                connectedSocket.emit(SIGNED, { id: file.remoteId });
+                connectedSocket.broadcast.emit(SIGNED, { id: file.remoteId });
               }
 
-              const signatureInfo = trustedSign.getSignPropertys(cms);
+              if (uploader) {
+                let cms = trustedSign.loadSign(newPath);
 
-              const normalyzeSignatureInfo: any[] = [];
-
-              signatureInfo.forEach((info) => {
-                const subjectCert = info.certs[info.certs.length - 1];
-                let x509;
-
-                if (subjectCert.object) {
-                  try {
-                    let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
-
-                    cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
-                    cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
-                    cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
-
-                    x509 = cmsContext;
-                  } catch (e) {
-                    //
+                if (cms.isDetached()) {
+                  if (!(cms = trustedSign.setDetachedContent(cms, newPath))) {
+                    throw ("err");
                   }
                 }
 
-                normalyzeSignatureInfo.push({
-                  serialNumber: subjectCert.serial,
-                  subjectFriendlyName: info.subject,
-                  issuerFriendlyName: subjectCert.issuerFriendlyName,
-                  notBefore: new Date(subjectCert.notBefore).getTime(),
-                  notAfter: new Date(subjectCert.notAfter).getTime(),
-                  digestAlgorithm: subjectCert.signatureDigestAlgorithm,
-                  organizationName: subjectCert.organizationName,
-                  signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
-                  subjectName: subjectCert.subjectName,
-                  issuerName: subjectCert.issuerName,
-                  x509,
+                const signatureInfo = trustedSign.getSignPropertys(cms);
+
+                const normalyzeSignatureInfo: any[] = [];
+
+                signatureInfo.forEach((info) => {
+                  const subjectCert = info.certs[info.certs.length - 1];
+                  let x509;
+
+                  if (subjectCert.object) {
+                    try {
+                      let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
+
+                      cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
+                      cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
+                      cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
+
+                      x509 = cmsContext;
+                    } catch (e) {
+                      //
+                    }
+                  }
+
+                  normalyzeSignatureInfo.push({
+                    serialNumber: subjectCert.serial,
+                    subjectFriendlyName: info.subject,
+                    issuerFriendlyName: subjectCert.issuerFriendlyName,
+                    notBefore: new Date(subjectCert.notBefore).getTime(),
+                    notAfter: new Date(subjectCert.notAfter).getTime(),
+                    digestAlgorithm: subjectCert.signatureDigestAlgorithm,
+                    organizationName: subjectCert.organizationName,
+                    signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
+                    subjectName: subjectCert.subjectName,
+                    issuerName: subjectCert.issuerName,
+                    x509,
+                  });
                 });
-              });
 
-              window.request.post({
-                formData: {
-                  extra: JSON.stringify(file.extra),
-                  file: fs.createReadStream(newPath),
-                  id: file.remoteId,
-                  signers: JSON.stringify(normalyzeSignatureInfo),
+                window.request.post({
+                  formData: {
+                    extra: JSON.stringify(file.extra),
+                    file: fs.createReadStream(newPath),
+                    id: file.remoteId,
+                    signers: JSON.stringify(normalyzeSignatureInfo),
+                  },
+                  url: uploader,
+                }, (err) => {
+                  if (err) {
+                    if (connection && connection.connected && connection.socket) {
+                      connection.socket.emit(ERROR, { id: file.remoteId, error: err });
+                    } else if (connectedList.length) {
+                      const connectedSocket = connectedList[0].socket;
+
+                      connectedSocket.emit(ERROR, { id: file.remoteId, error: err });
+                      connectedSocket.broadcast.emit(ERROR, { id: file.remoteId, error: err });
+                    }
+                  } else {
+                    if (connection && connection.connected && connection.socket) {
+                      connection.socket.emit(UPLOADED, { id: file.remoteId });
+                    } else if (connectedList.length) {
+                      const connectedSocket = connectedList[0].socket;
+
+                      connectedSocket.emit(UPLOADED, { id: file.remoteId });
+                      connectedSocket.broadcast.emit(UPLOADED, { id: file.remoteId });
+                    }
+                  }
+
+                  deleteFile(file.id);
                 },
-                url: uploader,
-              }, (err) => {
-                if (err) {
-                  if (connection && connection.connected && connection.socket) {
-                    connection.socket.emit(ERROR, { id: file.remoteId, error: err });
-                  } else if (connectedList.length) {
-                    const connectedSocket = connectedList[0].socket;
-
-                    connectedSocket.emit(ERROR, { id: file.remoteId, error: err });
-                    connectedSocket.broadcast.emit(ERROR, { id: file.remoteId, error: err });
-                  }
-                } else {
-                  if (connection && connection.connected && connection.socket) {
-                    connection.socket.emit(UPLOADED, { id: file.remoteId });
-                  } else if (connectedList.length) {
-                    const connectedSocket = connectedList[0].socket;
-
-                    connectedSocket.emit(UPLOADED, { id: file.remoteId });
-                    connectedSocket.broadcast.emit(UPLOADED, { id: file.remoteId });
-                  }
-                }
-
-                deleteFile(file.id);
-              },
-              );
+                );
+              }
+            } else {
+              deleteFile(file.id);
+              selectFile(newPath);
             }
           } else {
-            deleteFile(file.id);
-            selectFile(newPath);
+            res = false;
           }
-        } else {
-          res = false;
-        }
-      });
+        });
 
-      if (res) {
-        $(".toast-files_resigned").remove();
-        Materialize.toast(localize("Sign.files_resigned", locale), 2000, "toast-files_resigned");
-      } else {
-        $(".toast-files_resigned_failed").remove();
-        Materialize.toast(localize("Sign.files_resigned_failed", locale), 2000, "toast-files_resigned_failed");
+        if (res) {
+          $(".toast-files_resigned").remove();
+          Materialize.toast(localize("Sign.files_resigned", locale), 2000, "toast-files_resigned");
+        } else {
+          $(".toast-files_resigned_failed").remove();
+          Materialize.toast(localize("Sign.files_resigned_failed", locale), 2000, "toast-files_resigned_failed");
+        }
       }
     }
   }
