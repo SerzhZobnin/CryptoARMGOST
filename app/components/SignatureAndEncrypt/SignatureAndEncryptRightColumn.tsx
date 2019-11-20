@@ -68,6 +68,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   tokensDss: any;
   users: any;
   transactionDSS: any;
+  policyDSS: any;
 }
 
 interface ISignatureAndEncryptRightColumnSettingsState {
@@ -478,9 +479,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   sign = (files: IFile[], cert: any) => {
-    const { setting, signer, tokensAuth, users, transactionDSS } = this.props;
+    const { setting, signer, tokensAuth, users, policyDSS } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
-    const { packageSign, createTransactionDSS } = this.props;
+    const { packageSign, createTransactionDSS, dssPerformOperation } = this.props;
     const { localize, locale } = this.context;
 
     if (files.length > 0) {
@@ -501,66 +502,49 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         }
       }
 
-      let folderOutDSS = "";
       if (signer.dssUserID) {
         const user = users.get(signer.dssUserID);
         const tokenAuth = tokensAuth.get(signer.dssUserID);
+        const policy = policyDSS.getIn([signer.dssUserID, "policy"]).filter((item: any) => item.Action === "SignDocument");
+        const mfaRequired = policy[0].MfaRequired;
         const document = files[0];
 
-        createTransactionDSS(user.dssUrl,
-          tokenAuth.access_token,
-          buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument),
-          document.id).then((data) => {
-            this.props.dssOperationConfirmation(
-              user.authUrl.replace("/oauth", "/confirmation"),
-              tokenAuth.access_token,
-              data,
-              user.id)
-              .then(() => {
-                this.props.dssPerformOperation(
-                  user.dssUrl + "/api/documents",
-                  this.props.tokensDss.get(signer.dssUserID).access_token,
-                  buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached)).then((dataCMS) => {
-                    let outURI: string;
-                    if (folderOut.length > 0) {
-                      outURI = path.join(folderOut, path.basename(document.fullpath) + ".sig");
-                    } else {
-                      outURI = document.fullpath + ".sig";
-                    }
-
-                    let indexFile: number = 1;
-                    let newOutUri: string = outURI;
-                    const fileUri = outURI.substring(0, outURI.lastIndexOf("."));
-
-                    while (fileExists(newOutUri)) {
-                      const parsed = path.parse(fileUri);
-                      newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext + ".sig");
-                      indexFile++;
-                    }
-                    outURI = newOutUri;
-                    const newFileUri = outURI.substring(0, outURI.lastIndexOf("."));
-                    const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
-                    tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + dataCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
-                    tcms.save(outURI, format);
-                    folderOutDSS = outURI;
-
-                    logger.log({
-                      certificate: cert.subjectName,
-                      level: "info",
-                      message: "",
-                      operation: "Подпись",
-                      operationObject: {
-                        in: path.basename(document.fullpath),
-                        out: path.basename(outURI),
-                      },
-                      userName: USER_NAME,
+        if (mfaRequired) {
+          createTransactionDSS(user.dssUrl,
+            tokenAuth.access_token,
+            buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument),
+            document.id).then((data) => {
+              this.props.dssOperationConfirmation(
+                user.authUrl.replace("/oauth", "/confirmation"),
+                tokenAuth.access_token,
+                data,
+                user.id)
+                .then(() => {
+                  this.props.dssPerformOperation(
+                    user.dssUrl + "/api/documents",
+                    this.props.tokensDss.get(signer.dssUserID).access_token,
+                    buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached)).then((dataCMS) => {
+                      const outURI = this.fileNameForSign(folderOut, document);
+                      const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                      tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + dataCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                      tcms.save(outURI, format);
+                      packageSign(files, cert, policies, format, folderOut, outURI);
                     });
-
-                    packageSign(files, cert, policies, format, folderOut, folderOutDSS);
-                  });
-              })
-              .catch((error) => console.log(error) );
-          });
+                })
+                .catch((error) => console.log(error));
+            });
+        } else {
+          dssPerformOperation(
+            user.dssUrl + "/api/documents",
+            tokenAuth.access_token,
+            buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached)).then((dataCMS) => {
+              const outURI = this.fileNameForSign(folderOut, document);
+              const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+              tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + dataCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+              tcms.save(outURI, format);
+              packageSign(files, cert, policies, format, folderOut, outURI);
+            });
+        }
       } else {
         if (setting.sign.detached) {
           policies.push("detached");
@@ -602,7 +586,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         const user = users.get(signer.dssUserID);
         const tokenAuth = tokensAuth.get(signer.dssUserID);
         const document = files[0];
-        console.log(document);
+
         let cmsTemp = signs.loadSign(document.fullpath);
         if (cmsTemp.isDetached()) {
           // tslint:disable-next-line: no-conditional-assignment
@@ -1208,6 +1192,28 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     return false;
   }
+
+  fileNameForSign = (folderOut: any, document: IFile) => {
+    let outURI: string;
+    if (folderOut.length > 0) {
+      outURI = path.join(folderOut, path.basename(document.fullpath) + ".sig");
+    } else {
+      outURI = document.fullpath + ".sig";
+    }
+
+    let indexFile: number = 1;
+    let newOutUri: string = outURI;
+    const fileUri = outURI.substring(0, outURI.lastIndexOf("."));
+
+    while (fileExists(newOutUri)) {
+      const parsed = path.parse(fileUri);
+      newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext + ".sig");
+      indexFile++;
+    }
+    outURI = newOutUri;
+
+    return outURI;
+  }
 }
 
 export default connect((state) => {
@@ -1242,6 +1248,7 @@ export default connect((state) => {
     tokensDss: state.tokens.tokensDss,
     users: state.users.entities,
     transactionDSS: mapToArr(state.transactionDSS.entities),
+    policyDSS: state.policyDSS.entities,
   };
 }, {
   activeFile, activeSetting, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
