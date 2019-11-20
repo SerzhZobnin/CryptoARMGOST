@@ -392,7 +392,7 @@ export function getPolicyDSS(url: string, dssUserID: string, token: string) {
           `Authorization: Bearer ${token}`,
         ],
       );
-      const policy = data.ActionPolicy.filter(function (item: any) {
+      const policy = data.ActionPolicy.filter(function(item: any) {
         return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments";
       });
       dispatch({
