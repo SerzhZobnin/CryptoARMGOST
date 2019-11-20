@@ -1,6 +1,9 @@
 import * as os from "os";
 import {
-  CREATE_TEMP_USER_DSS, DELETE_CERTIFICATE, FAIL, GET_CERTIFICATES_DSS, GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_OPERATION_CONFIRMATION, POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, START, SUCCESS,
+  CREATE_TEMP_USER_DSS, DELETE_CERTIFICATE, FAIL, GET_CERTIFICATES_DSS,
+  GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_OPERATION_CONFIRMATION,
+  POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, RESPONSE,
+  START, SUCCESS,
 } from "../constants";
 import { uuid } from "../utils";
 
@@ -234,6 +237,15 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
           Resource: "urn:cryptopro:dss:signserver:signserver",
         };
 
+        dispatch({
+          payload: {
+            Image: data1.Challenge.TextChallenge[0].Image.Value,
+            Label: data1.Challenge.TextChallenge[0].Label,
+            Title: data1.Challenge.Title.Value,
+          },
+          type: type + RESPONSE,
+        });
+
         const deploy: number = 10000;
         let timeout: number = 0;
         let timerHandle: NodeJS.Timeout | null;
@@ -243,6 +255,9 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
             timeout += deploy;
             if (timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
               dispatch(postAuthorizationUserFail(type, "Время ожидания подтверждения истекло"));
+              dispatch({
+                type: type + RESPONSE + FAIL,
+              });
               if (timerHandle) {
                 clearInterval(timerHandle);
                 timerHandle = null;
@@ -258,6 +273,9 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
 
             if (data2.IsFinal === true) {
               dispatch(postAuthorizationUserSuccess(type, data2, dssUserID));
+              dispatch({
+                type: type + RESPONSE + SUCCESS,
+              });
               if (timerHandle) {
                 clearInterval(timerHandle);
                 timerHandle = null;
@@ -265,6 +283,9 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
               }
             } else if (data2.IsError === true) {
               dispatch(postAuthorizationUserFail(type, data2.ErrorDescription));
+              dispatch({
+                type: type + RESPONSE + FAIL,
+              });
               if (timerHandle) {
                 clearInterval(timerHandle);
                 timerHandle = null;
@@ -276,6 +297,9 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
       }
     } catch (e) {
       dispatch(postAuthorizationUserFail(type, e));
+      dispatch({
+        type: type + RESPONSE + FAIL,
+      });
       throw new Error(e);
     }
   };
@@ -392,7 +416,7 @@ export function getPolicyDSS(url: string, dssUserID: string, token: string) {
           `Authorization: Bearer ${token}`,
         ],
       );
-      const policy = data.ActionPolicy.filter(function(item: any) {
+      const policy = data.ActionPolicy.filter(function (item: any) {
         return item.Action === "Issue" || item.Action === "SignDocument" || item.Action === "SignDocuments";
       });
       dispatch({

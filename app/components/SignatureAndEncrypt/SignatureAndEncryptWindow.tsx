@@ -22,6 +22,7 @@ interface ISignatureAndEncryptWindowProps {
   activeFilesArr: any;
   isDefaultFilters: boolean;
   deleteAllTemporyLicenses: () => void;
+  dssResponse: any;
   loadingFiles: any;
   files: any;
   method: string;
@@ -35,6 +36,7 @@ interface ISignatureAndEncryptWindowState {
   currentOperation: string;
   searchValue: string;
   showModalDeleteDocuments: boolean;
+  showModalDssResponse: boolean;
   showModalFilterDocments: boolean;
 }
 
@@ -51,11 +53,14 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
       currentOperation: "",
       searchValue: "",
       showModalDeleteDocuments: false,
+      showModalDssResponse: false,
       showModalFilterDocments: false,
     };
   }
 
   componentDidMount() {
+    const { dssResponse } = this.props;
+
     $(".btn-floated, .nav-small-btn").dropdown({
       alignment: "left",
       belowOrigin: false,
@@ -63,6 +68,10 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
       inDuration: 300,
       outDuration: 225,
     });
+
+    if (dssResponse && dssResponse.Title) {
+      this.handleShowModalDssResponse();
+    }
   }
 
   componentDidUpdate(prevProps: ISignatureAndEncryptWindowProps) {
@@ -71,6 +80,15 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
       remote.getCurrentWindow().close();
 
       this.props.deleteAllTemporyLicenses();
+    }
+
+    if (!prevProps.dssResponse.Title && this.props.dssResponse.Title ||
+      (prevProps.dssResponse.Title && this.props.dssResponse.Title && prevProps.dssResponse.Title !== this.props.dssResponse.Title)) {
+      this.handleShowModalDssResponse();
+    }
+
+    if (prevProps.dssResponse.Title && !this.props.dssResponse.Title) {
+      this.handleCloseModalDssResponse();
     }
   }
 
@@ -197,6 +215,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
           </div>
           {this.showModalFilterDocuments()}
+          {this.showModalDssResponse()}
         </div>
       </div>
     );
@@ -288,6 +307,30 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
     );
   }
 
+  showModalDssResponse = () => {
+    const { localize, locale } = this.context;
+    const { showModalDssResponse } = this.state;
+    const { dssResponse } = this.props;
+
+    if (!showModalDssResponse || !dssResponse || !dssResponse.Title) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalDssResponse}
+        header={dssResponse.Title}
+        onClose={this.handleCloseModalDssResponse}>
+
+        <div>
+          <p>{dssResponse.Label}</p>
+          <br />
+          <img src={`data:image/jpeg;base64,${dssResponse.Image}`} />
+        </div>
+      </Modal>
+    );
+  }
+
   handleSearchValueChange = (ev: any) => {
     this.setState({ searchValue: ev.target.value });
   }
@@ -298,6 +341,14 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   handleCloseModalFilterDocuments = () => {
     this.setState({ showModalFilterDocments: false });
+  }
+
+  handleShowModalDssResponse = () => {
+    this.setState({ showModalDssResponse: true });
+  }
+
+  handleCloseModalDssResponse = () => {
+    this.setState({ showModalDssResponse: false });
   }
 
   isFilesFromSocket = () => {
@@ -330,6 +381,7 @@ export default connect((state) => {
     activeFilesArr: mapToArr(activeFilesSelector(state, { active: true })),
     connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
+    dssResponse: state.dssResponse,
     files: mapToArr(state.files.entities),
     filesInTransactionList: filesInTransactionsSelector(state),
     isDefaultFilters: state.filters.documents.isDefaultFilters,

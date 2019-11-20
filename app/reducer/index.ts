@@ -1,6 +1,7 @@
 import {routerReducer as router} from "react-router-redux";
 import {combineReducers} from "redux";
 import certificates from "./certificates";
+import certificatesDSS from "./certificatesDSS";
 import certrequests from "./certrequests";
 import certtemplate from "./certtemplate";
 import cloudCSP from "./cloudCSP";
@@ -8,13 +9,12 @@ import connections from "./connections";
 import containers from "./containers";
 import crls from "./crls";
 import documents from "./documents";
-import certificatesDSS from "./certificatesDSS";
-import policyDSS from "./policyDSS";
-import transactionDSS from "./transactionDSS";
+import dssResponse from "./dssResponse";
 import events from "./events";
 import files from "./files";
 import filters from "./filters";
 import license from "./license";
+import policyDSS from "./policyDSS";
 import regrequests from "./regrequests";
 import remoteFiles from "./remoteFiles";
 import services from "./services";
@@ -22,6 +22,7 @@ import settings from "./settings";
 import signatures from "./signatures";
 import templates from "./templates";
 import tokens from "./tokens";
+import transactionDSS from "./transactionDSS";
 import users from "./users";
 
 export default combineReducers({
@@ -32,6 +33,7 @@ export default combineReducers({
   containers,
   crls,
   documents,
+  dssResponse,
   certificatesDSS,
   policyDSS,
   transactionDSS,
