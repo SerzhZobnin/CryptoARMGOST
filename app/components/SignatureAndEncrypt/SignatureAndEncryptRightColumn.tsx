@@ -30,7 +30,7 @@ import * as signs from "../../trusted/sign";
 import * as trustedSign from "../../trusted/sign";
 import { bytesToSize, dirExists, fileCoding, mapToArr } from "../../utils";
 import { fileExists } from "../../utils";
-import { buildDocumentDSS, buildTransaction } from "../../utils/dss/helpers";
+import { buildDocumentDSS, buildDocumentPackageDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
 import ReAuth from "../DSS/ReAuth";
 import Modal from "../Modal";
@@ -560,14 +560,32 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       if (signer.dssUserID) {
         const user = users.get(signer.dssUserID);
         const tokenAuth = tokensAuth.get(signer.dssUserID);
-        const policy = policyDSS.getIn([signer.dssUserID, "policy"]).filter((item: any) => item.Action === "SignDocument");
+        const isSignPackage = files.length > 1;
+        const policy = policyDSS.getIn([signer.dssUserID, "policy"]).filter(
+          (item: any) => item.Action === (isSignPackage ? "SignDocuments" : "SignDocument"));
         const mfaRequired = policy[0].MfaRequired;
-        const document = files[0];
 
+        let document: IFile = {};
+        const documents: IDocumentContent[] = [];
+
+        if (isSignPackage) {
+          files.forEach((file) => {
+            const Content = fs.readFileSync(file.fullpath, "base64");
+            const documentContent: IDocumentContent = {
+              Content,
+              Name: path.basename(file.fullpath),
+            };
+            documents.push(documentContent);
+          });
+        } else {
+          document = files[0];
+        }
         if (mfaRequired) {
           createTransactionDSS(user.dssUrl,
             tokenAuth.access_token,
-            buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument, "sign"),
+            buildTransaction(
+              isSignPackage ? documents : document.fullpath, signer.id, setting.sign.detached,
+              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign"),
             document.id).then((data) => {
               this.props.dssOperationConfirmation(
                 user.authUrl.replace("/oauth", "/confirmation"),
@@ -576,41 +594,43 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 user.id)
                 .then((data2) => {
                   this.props.dssPerformOperation(
-                    user.dssUrl + "/api/documents",
+                    user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
                     data2.AccessToken).then((dataCMS: any) => {
-                      const outURI = this.fileNameForSign(folderOut, document);
-                      const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
-                      tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + dataCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
-                      tcms.save(outURI, format);
-
-                      logger.log({
-                        certificate: cert.subjectName,
-                        level: "info",
-                        message: "",
-                        operation: "Подпись",
-                        operationObject: {
-                          in: path.basename(document.fullpath),
-                          out: path.basename(outURI),
-                        },
-                        userName: USER_NAME,
+                      let i: number = 0;
+                      let outURIList: string[] = [];
+                      files.forEach((file) => {
+                        const outURI = this.fileNameForSign(folderOut, file);
+                        const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                        const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                        tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                        tcms.save(outURI, format);
+                        outURIList.push(outURI);
+                        i++;
                       });
-
-                      packageSign(files, cert, policies, format, folderOut, outURI);
+                      packageSign(files, cert, policies, format, folderOut, outURIList);
                     });
                 })
                 .catch((error) => console.log(error));
             });
         } else {
           dssPerformOperation(
-            user.dssUrl + "/api/documents",
+            user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
-            buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached, "Sign")).then((dataCMS) => {
-              const outURI = this.fileNameForSign(folderOut, document);
-              const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
-              tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + dataCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
-              tcms.save(outURI, format);
-              packageSign(files, cert, policies, format, folderOut, outURI);
-            });
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "sign") :
+              buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached, "sign")).then((dataCMS) => {
+                let i: number = 0;
+                let outURIList: string[] = [];
+                files.forEach((file) => {
+                  const outURI = this.fileNameForSign(folderOut, file);
+                  const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                  const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                  tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                  tcms.save(outURI, format);
+                  outURIList.push(outURI);
+                  i++;
+                });
+                packageSign(files, cert, policies, format, folderOut, outURIList);
+              });
         }
       } else {
         if (setting.sign.detached) {
@@ -746,7 +766,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
                 if (cms.isDetached()) {
                   if (!(cms = trustedSign.setDetachedContent(cms, newPath))) {
-                    throw ("err");
+                    throw new Error(("err"));
                   }
                 }
 

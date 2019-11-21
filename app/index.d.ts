@@ -17,7 +17,7 @@ interface ITransaction {
 }
 
 interface IDocumentSignature {
-  Type: string;
+  Type: number;
   Parameters: Object;
   CertificateId: number;
   PinCode: string;
