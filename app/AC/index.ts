@@ -31,7 +31,7 @@ export function changeLocation(location: string) {
   };
 }
 
-interface IFile {
+export interface IFile {
   id: number;
   filename: string;
   mtime: Date;
