@@ -55,6 +55,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   activeFilesArr: any;
   isDefaultFilters: boolean;
   isDocumentsReviewed: boolean;
+  dssResponse: any;
   loadingFiles: any;
   files: any;
   packageSignResult: any;
@@ -74,6 +75,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
 interface ISignatureAndEncryptRightColumnSettingsState {
   currentOperation: string;
   searchValue: string;
+  showModalDssResponse: boolean;
   showModalReAuth: boolean;
 }
 
@@ -89,11 +91,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     this.state = {
       currentOperation: "",
       searchValue: "",
+      showModalDssResponse: false,
       showModalReAuth: false,
     };
   }
 
   componentDidMount() {
+    const { dssResponse } = this.props;
+
     $(".btn-floated").dropdown({
       alignment: "left",
       belowOrigin: false,
@@ -101,6 +106,23 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       inDuration: 300,
       outDuration: 225,
     });
+
+    if (dssResponse && dssResponse.Title) {
+      this.handleCloseModalReAuth();
+      this.handleShowModalDssResponse();
+    }
+  }
+
+  componentDidUpdate(prevProps: ISignatureAndEncryptRightColumnSettingsProps) {
+    if (!prevProps.dssResponse.Title && this.props.dssResponse.Title ||
+      (prevProps.dssResponse.Title && this.props.dssResponse.Title && prevProps.dssResponse.Title !== this.props.dssResponse.Title)) {
+      this.handleCloseModalReAuth();
+      this.handleShowModalDssResponse();
+    }
+
+    if (prevProps.dssResponse.Title && !this.props.dssResponse.Title) {
+      this.handleCloseModalDssResponse();
+    }
   }
 
   render() {
@@ -367,6 +389,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
         </div>
         {this.showModalReAuth()}
+        {this.showModalDssResponse()}
       </React.Fragment>
     );
   }
@@ -386,7 +409,31 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         header={localize("DSS.DSS_connection", locale)}
         onClose={this.handleCloseModalReAuth}>
 
-        <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID} />
+        <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID} onGetTokenAndPolicy={() => this.handleClickSign()}/>
+      </Modal>
+    );
+  }
+
+  showModalDssResponse = () => {
+    const { localize, locale } = this.context;
+    const { showModalDssResponse } = this.state;
+    const { dssResponse } = this.props;
+
+    if (!showModalDssResponse || !dssResponse || !dssResponse.Title) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalDssResponse}
+        header={dssResponse.Title}
+        onClose={this.handleCloseModalDssResponse}>
+
+        <div>
+          <p>{dssResponse.Label}</p>
+          <br />
+          <img src={`data:image/jpeg;base64,${dssResponse.Image}`} />
+        </div>
       </Modal>
     );
   }
@@ -401,6 +448,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     this.setState({
       showModalReAuth: false,
     });
+  }
+
+  handleShowModalDssResponse = () => {
+    this.setState({ showModalDssResponse: true });
+  }
+
+  handleCloseModalDssResponse = () => {
+    this.setState({ showModalDssResponse: false });
   }
 
   toggleDocumentsReviewed = () => {
@@ -1281,6 +1336,7 @@ export default connect((state) => {
     activeFilesArr: mapToArr(activeFilesSelector(state, { active: true })),
     connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
+    dssResponse: state.dssResponse,
     files: mapToArr(state.files.entities),
     filesInTransactionList: filesInTransactionsSelector(state),
     isDocumentsReviewed: state.files.documentsReviewed,
