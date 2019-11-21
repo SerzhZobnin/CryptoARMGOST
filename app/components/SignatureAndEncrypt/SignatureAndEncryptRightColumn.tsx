@@ -10,6 +10,7 @@ import {
   selectFile, selectSignerCertificate, verifyCertificate,
   verifySignature,
 } from "../../AC";
+import { IFile } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import { createTransactionDSS, dssOperationConfirmation, dssPerformOperation } from "../../AC/dssActions";
 import {
@@ -39,18 +40,6 @@ import SignerInfo from "../Signature/SignerInfo";
 
 const dialog = window.electron.remote.dialog;
 
-interface IFile {
-  id: number;
-  filename: string;
-  mtime: Date;
-  fullpath: string;
-  extension: string | undefined;
-  active: boolean;
-  extra: any;
-  remoteId?: string;
-  socket?: string;
-}
-
 interface ISignatureAndEncryptRightColumnSettingsProps {
   activeFilesArr: any;
   isDefaultFilters: boolean;
@@ -59,7 +48,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   files: any;
   packageSignResult: any;
   removeAllFiles: () => void;
-  createTransactionDSS: (url: string, token: string, body: ITransaction, fileId: number) => Promise<any>;
+  createTransactionDSS: (url: string, token: string, body: ITransaction, fileId: number[]) => Promise<any>;
   dssPerformOperation: (url: string, token: string, body?: IDocumentDSS | IDocumentPackageDSS) => Promise<any>;
   dssOperationConfirmation: (url: string, token: string, TransactionTokenId: string, dssUserID: string) => Promise<any>;
   signatures: any;
@@ -512,6 +501,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
         let document: IFile = {};
         const documents: IDocumentContent[] = [];
+        const documentsId: number[] = [];
 
         if (isSignPackage) {
           files.forEach((file) => {
@@ -521,6 +511,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               Name: path.basename(file.fullpath),
             };
             documents.push(documentContent);
+            documentsId.push(file.id);
           });
         } else {
           document = files[0];
@@ -531,7 +522,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             buildTransaction(
               isSignPackage ? documents : document.fullpath, signer.id, setting.sign.detached,
               isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign"),
-            document.id).then((data) => {
+            isSignPackage ? documentsId : [document.id]).then((data: any) => {
               this.props.dssOperationConfirmation(
                 user.authUrl.replace("/oauth", "/confirmation"),
                 tokenAuth.access_token,
