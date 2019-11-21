@@ -181,8 +181,9 @@ export function dssAuthIssue(user: IUserDSS) {
  * @param token маркер доступа
  * @param TransactionTokenId идентификатор транзакции, созданной на Cервисе Подписи
  * @param dssUserID идентификатор пользователя
+ * @param {string} [offlineCode] код, для подтверждения транзакации оффлайн
  */
-export function dssOperationConfirmation(url: string, token: string, TransactionTokenId: string, dssUserID: string) {
+export function dssOperationConfirmation(url: string, token: string, TransactionTokenId: string, dssUserID: string, offlineCode?: string) {
   return async (dispatch) => {
     let headerfield: string[];
     let body: any;
@@ -239,7 +240,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
 
         dispatch({
           payload: {
-            Image: data1.Challenge.TextChallenge[0].Image.Value,
+            Image: data1.Challenge.TextChallenge[0].Image ? data1.Challenge.TextChallenge[0].Image.Value : "",
             Label: data1.Challenge.TextChallenge[0].Label,
             Title: data1.Challenge.Title.Value,
           },

@@ -72,9 +72,9 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
                 <div className="row">
 
                   <div className="col s12">
-                    <span className="card-infos sub">
+                    <div className="primary-text">
                       {localize("DSS.need_reauth", locale)}
-                    </span>
+                    </div>
                   </div>
 
                   <div className="row" />
