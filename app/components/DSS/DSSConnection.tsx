@@ -253,8 +253,8 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
       user: field_value.login_dss,
     };
 
-    dssAuthIssue(userDSS).then(() => {
-      this.props.getPolicyDSS(field_value.url_sign, dssUserID, this.props.tokensAuth.get(dssUserID).access_token);
+    dssAuthIssue(userDSS).then((result: any) => {
+      getPolicyDSS(field_value.url_sign, dssUserID, result.AccessToken);
     });
   }
 

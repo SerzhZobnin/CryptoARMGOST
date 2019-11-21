@@ -11,6 +11,7 @@ interface IReAuthProps {
   dssAuthIssue: (user: IUserDSS) => Promise<void>;
   getPolicyDSS: (url: string, dssUserID: string, token: string) => Promise<void>;
   onCancel?: () => void;
+  onGetTokenAndPolicy: () => void;
   tokensAuth: any;
   users: any;
 }
@@ -146,7 +147,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
     const { localize, locale } = this.context;
     const { field_value, user } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
-    const { dssAuthIssue } = this.props;
+    const { dssAuthIssue, getPolicyDSS, onGetTokenAndPolicy } = this.props;
 
     const userDSS: IUserDSS = {
       authUrl: user.authUrl,
@@ -157,9 +158,12 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
     };
 
     dssAuthIssue(userDSS).then(
-      (result) => {
-        this.props.getPolicyDSS(user.dssUrl, user.id, this.props.tokensAuth.get(user.id).access_token).then(
-          () => this.handleCancel(),
+      (result: any) => {
+        getPolicyDSS(user.dssUrl, user.id, result.AccessToken).then(
+          () => {
+            onGetTokenAndPolicy();
+            this.handleCancel();
+          },
           (error) => {
             $(".toast-getPolicyDSS_failed").remove();
             Materialize.toast(error, 2000, "toast-getPolicyDSS_failed");

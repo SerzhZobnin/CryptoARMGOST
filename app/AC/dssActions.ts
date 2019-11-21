@@ -169,7 +169,7 @@ export function dssAuthIssue(user: IUserDSS) {
     body = {
       Resource: "urn:cryptopro:dss:signserver:signserver",
     };
-    await dispatch(
+    return dispatch(
       dssPostMFAUser(user.authUrl.replace("/oauth", "/confirmation"), headerfield, body, user.id, POST_AUTHORIZATION_USER_DSS),
     );
   };
@@ -426,6 +426,7 @@ export function getPolicyDSS(url: string, dssUserID: string, token: string) {
         },
         type: GET_POLICY_DSS + SUCCESS,
       });
+      return policy;
     } catch (e) {
       dispatch({
         type: GET_POLICY_DSS + FAIL,
