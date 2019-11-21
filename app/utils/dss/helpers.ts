@@ -4,7 +4,7 @@ import { DSS_ACTIONS, SIGNATURE_TYPE } from "../../constants";
 
 /**
  * Вспомогательная функция создания объекта ITransaction для операции создания транзакции
- * @param {tring | IDocumentContent[]} document путь до файла или массив объектов, содержащих информацию о документах
+ * @param {string | IDocumentContent[]} document путь до файла или массив объектов, содержащих информацию о документах
  * @param certificateId идентификатор сертификата подписи на Сервисе Подписи
  * @param isDetached флаг, определяющий отделённую/присоединённую подпись
  * @param operationCode код операции на Сервисе Подписи
@@ -74,7 +74,7 @@ export function buildDocumentDSS(pathDocument: string, CertificateId: number,
         OriginalDocument,
       },
       PinCode: "",
-      Type: "CMS",
+      Type: SIGNATURE_TYPE.CMS,
     },
   };
   return body;
@@ -88,7 +88,7 @@ export function buildDocumentDSS(pathDocument: string, CertificateId: number,
  * @param cmsSignatureType тип подписи (Sign, Сosign)
  */
 export function buildDocumentPackageDSS(documents: IDocumentContent[], certificateId: number,
-  isDetached: boolean, cmsSignatureType?: string) {
+                                        isDetached: boolean, cmsSignatureType?: string) {
 
   const body: IDocumentPackageDSS = {
     Documents: documents,
