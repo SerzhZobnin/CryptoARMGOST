@@ -40,6 +40,14 @@ class ConfirmTransaction extends React.Component<IConfirmTransactionProps, IConf
     Materialize.updateTextFields();
   }
 
+  componentDidUpdate(prevProps: IConfirmTransactionProps) {
+    if (prevProps.dssResponse && prevProps.dssResponse.RefID
+      && this.props.dssResponse && prevProps.dssResponse.RefID
+      && prevProps.dssResponse.RefID !== this.props.dssResponse.RefID) {
+      this.setState({ field_value: "" });
+    }
+  }
+
   render() {
     const { localize, locale } = this.context;
     const { field_value, user } = this.state;
@@ -165,6 +173,8 @@ class ConfirmTransaction extends React.Component<IConfirmTransactionProps, IConf
       },
       Resource: "urn:cryptopro:dss:signserver:signserver",
     };
+
+    this.setState({ field_value: "" });
 
     dssPostMFAUser(user.authUrl.replace("/oauth", "/confirmation"), dssResponse.Headerfield, body, dssUserID, POST_OPERATION_CONFIRMATION, challengeResponse);
   }
