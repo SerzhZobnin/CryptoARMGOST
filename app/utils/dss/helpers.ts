@@ -9,43 +9,36 @@ import { DSS_ACTIONS, SIGNATURE_TYPE } from "../../constants";
  * @param isDetached флаг, определяющий отделённую/присоединённую подпись
  * @param operationCode код операции на Сервисе Подписи
  */
-export function buildTransaction(document: string | IDocumentContent[], certificateId: string,
-                                 isDetached: boolean, operationCode: number, CmsSignatureType: "sign" | "cosign", OriginalDocument?: string) {
+export function buildTransaction(Documents: IDocumentContent[], certificateId: string, isDetached: boolean,
+                                 OperationCode: number, CmsSignatureType: "sign" | "cosign", OriginalDocument?: string) {
 
   let body: ITransaction;
-  if (typeof document === "string") {
-    const content = fs.readFileSync(document, "base64");
-    body = {
-      Document: content,
-      OperationCode: operationCode,
-      Parameters:
-        [
-          { Name: "SignatureType", Value: "CMS" },
-          { Name: "CertificateID", Value: `${certificateId}` },
-          { Name: "DocumentInfo", Value: path.basename(document) },
-          { Name: "DocumentType", Value: path.extname(document).replace(/\./g, "") },
-          { Name: "IsDetached", Value: `${isDetached}` },
-          { Name: "CmsSignatureType", Value: CmsSignatureType },
-        ],
-    };
-  } else {
-    body = {
-      Document: "",
-      Documents: document,
-      OperationCode: operationCode,
-      Parameters:
-        [
-          { Name: "SignatureType", Value: "CMS" },
-          { Name: "CertificateID", Value: `${certificateId}` },
-          { Name: "IsDetached", Value: `${isDetached}` },
-        ],
-    };
+  const isSignPackage = Documents.length > 1;
+  let Document = "";
+  if (!isSignPackage) {
+    Document = Documents[0].Content;
+  }
+  body = {
+    Document: isSignPackage ? "" : Document,
+    Documents: isSignPackage ? Documents : [],
+    OperationCode,
+    Parameters:
+      [
+        { Name: "SignatureType", Value: "CMS" },
+        { Name: "CertificateID", Value: `${certificateId}` },
+        { Name: "IsDetached", Value: `${isDetached}` },
+        { Name: "CmsSignatureType", Value: CmsSignatureType },
+      ],
+  };
+
+  if (!isSignPackage) {
+    body.Parameters.push({ Name: "DocumentInfo", Value: Documents[0].Name });
+    body.Parameters.push({ Name: "DocumentType", Value: path.extname(Documents[0].Name).replace(/\./g, "") });
   }
 
-  if (isDetached && OriginalDocument) {
+  if (isDetached && OriginalDocument && !isSignPackage) {
     body.Parameters.push({ Name: "OriginalDocument", Value: OriginalDocument });
   }
-
   return body;
 }
 
