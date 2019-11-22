@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import * as path from "path";
 import { OrderedMap } from "immutable";
+import * as path from "path";
 import PropTypes, { any } from "prop-types";
 import React from "react";
 import { connect } from "react-redux";

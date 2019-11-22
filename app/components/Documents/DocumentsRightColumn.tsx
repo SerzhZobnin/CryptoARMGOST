@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { OrderedMap } from "immutable";
 import * as path from "path";
 import PropTypes from "prop-types";
 import React from "react";
@@ -34,6 +35,7 @@ import * as trustedSign from "../../trusted/sign";
 import { dirExists, fileCoding, fileExists, mapToArr, md5 } from "../../utils";
 import { buildDocumentDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
+import ConfirmTransaction from "../DSS/ConfirmTransaction";
 import ReAuth from "../DSS/ReAuth";
 import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
@@ -50,6 +52,7 @@ interface IDocumentsWindowProps {
   documents: any;
   documentsLoaded: boolean;
   documentsLoading: boolean;
+  dssResponses: OrderedMap<any, any>;
   isDefaultFilters: boolean;
   changeLocation: (locaion: string) => void;
   loadAllDocuments: () => void;
@@ -73,6 +76,7 @@ interface IDocumentsWindowProps {
 interface IDocumentsWindowState {
   searchValue: string;
   showModalDeleteDocuments: boolean;
+  showModalDssResponse: boolean;
   showModalFilterDocments: boolean;
   showModalReAuth: boolean;
 }
@@ -89,12 +93,15 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     this.state = {
       searchValue: "",
       showModalDeleteDocuments: false,
+      showModalDssResponse: false,
       showModalFilterDocments: false,
       showModalReAuth: false,
     };
   }
 
   componentDidMount() {
+    const { dssResponses } = this.props;
+
     $(".btn-floated").dropdown({
       alignment: "left",
       belowOrigin: false,
@@ -106,10 +113,30 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     $(document).ready(function () {
       $(".tooltipped").tooltip();
     });
+
+    if (dssResponses && dssResponses.size) {
+      this.handleCloseModalReAuth();
+      this.handleShowModalDssResponse();
+    }
   }
 
   componentWillUnmount() {
     $(".tooltipped").tooltip("remove");
+  }
+
+  componentDidUpdate(prevProps: IDocumentsWindowProps, prevState: IDocumentsWindowState) {
+    if (!prevProps.dssResponses.size && this.props.dssResponses.size) {
+      this.handleCloseModalReAuth();
+      this.handleShowModalDssResponse();
+    }
+
+    if (this.props.dssResponses.size && prevProps.dssResponses.size !== this.props.dssResponses.size) {
+      this.handleShowModalDssResponse();
+    }
+
+    if (prevProps.dssResponses.size && !this.props.dssResponses.size) {
+      this.handleCloseModalDssResponse();
+    }
   }
 
   render() {
@@ -313,6 +340,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
             <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
           </div>
         </div>
+        {this.showModalReAuth()}
+        {this.showModalDssResponse()}
       </React.Fragment>
     );
   }
@@ -332,7 +361,32 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         header={localize("DSS.DSS_connection", locale)}
         onClose={this.handleCloseModalReAuth}>
 
-        <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID}/>
+        <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID} onGetTokenAndPolicy={() => this.handleClickSign()} />
+      </Modal>
+    );
+  }
+
+  showModalDssResponse = () => {
+    const { localize, locale } = this.context;
+    const { showModalDssResponse } = this.state;
+    const { dssResponses, signer } = this.props;
+
+    if (!showModalDssResponse || !dssResponses.size) {
+      return;
+    }
+
+    const dssResponse = dssResponses.first();
+
+    return (
+      <Modal
+        isOpen={showModalDssResponse}
+        header={dssResponse.Title}
+        onClose={this.handleCloseModalDssResponse}>
+
+        <ConfirmTransaction
+          dssResponse={dssResponse}
+          onCancel={this.handleCloseModalDssResponse}
+          dssUserID={signer.dssUserID} />
       </Modal>
     );
   }
@@ -347,6 +401,14 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     this.setState({
       showModalReAuth: false,
     });
+  }
+
+  handleShowModalDssResponse = () => {
+    this.setState({ showModalDssResponse: true });
+  }
+
+  handleCloseModalDssResponse = () => {
+    this.setState({ showModalDssResponse: false });
   }
 
   toggleDocumentsReviewed = () => {
@@ -981,6 +1043,7 @@ export default connect((state) => {
     documents: selectedDocumentsSelector(state),
     documentsLoaded: state.events.loaded,
     documentsLoading: state.events.loading,
+    dssResponses: state.dssResponses.entities,
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     isDocumentsReviewed: state.files.documentsReviewed,
     licenseStatus: state.license.status,
