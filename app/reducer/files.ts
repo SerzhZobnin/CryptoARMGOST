@@ -46,10 +46,7 @@ export default (files = new DefaultReducerState(), action) => {
 
     case SELECT_FILE:
       return files
-        .setIn(["entities", randomId], new FileModel({
-          ...payload.file,
-          id: randomId,
-        }))
+        .setIn(["entities", payload.file.id], new FileModel(payload.file))
         .set("documentsReviewed", false);
 
     case ACTIVE_FILE:

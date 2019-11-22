@@ -23,7 +23,7 @@ import { connectedSelector } from "../selectors";
 import { ERROR, SIGNED, UPLOADED, VERIFIED } from "../server/constants";
 import * as signs from "../trusted/sign";
 import { Store } from "../trusted/store";
-import { extFile, fileCoding, fileExists } from "../utils";
+import { extFile, fileCoding, fileExists, md5 } from "../utils";
 
 export function changeLocation(location: string) {
   return (dispatch: (action: {}) => void) => {
@@ -32,7 +32,7 @@ export function changeLocation(location: string) {
 }
 
 export interface IFile {
-  id: number;
+  id: string;
   filename: string;
   mtime: Date;
   fullpath: string;
@@ -79,7 +79,7 @@ export function packageSign(
 
     setTimeout(() => {
       const signedFilePackage: IFilePath[] = [];
-      const signedFileIdPackage: number[] = [];
+      const signedFileIdPackage: string[] = [];
       const state = getState();
       const { connections, remoteFiles } = state;
       let i: number = 0;
@@ -241,7 +241,7 @@ export function filePackageSelect(files: IFilePath[]) {
           filename: path.basename(fullpath),
           filesize: stat.size,
           fullpath,
-          id: Date.now() + Math.random(),
+          id: md5(fullpath),
           mtime: stat.birthtime,
           remoteId,
           size: stat.size,
@@ -259,7 +259,7 @@ export function filePackageSelect(files: IFilePath[]) {
   };
 }
 
-export function filePackageDelete(filePackage: number[]) {
+export function filePackageDelete(filePackage: string[]) {
   return {
     payload: { filePackage },
     type: PACKAGE_DELETE_FILE,
@@ -471,12 +471,13 @@ export function selectFile(fullpath: string, name?: string, mtime?: Date, size?:
     fullpath,
     mtime: mtime ? mtime : (stat ? stat.birthtime : undefined),
     remoteId,
+    id: md5(fullpath),
     filesize: size ? size : (stat ? stat.size : undefined),
     socket,
   };
 
   return {
-    generateId: true,
+    // generateId: true,
     payload: { file },
     type: SELECT_FILE,
   };

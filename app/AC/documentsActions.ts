@@ -15,7 +15,7 @@ export interface IDocument {
   filename: string;
   filesize: number;
   fullpath: string;
-  id: number;
+  id: string;
   mtime: Date;
 }
 

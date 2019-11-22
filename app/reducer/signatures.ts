@@ -1,5 +1,5 @@
 import { OrderedMap, Record } from "immutable";
-import { PACKAGE_SIGN, START, SUCCESS, VERIFY_SIGNATURE } from "../constants";
+import { DELETE_FILE, PACKAGE_SIGN, START, SUCCESS, VERIFY_SIGNATURE, PACKAGE_DELETE_FILE } from "../constants";
 import { arrayToMap } from "../utils";
 
 const SignatureModel = Record({
@@ -40,6 +40,15 @@ export default (signatures = new DefaultReducerState(), action) => {
 
     case VERIFY_SIGNATURE + SUCCESS:
       return signatures.setIn(["entities", payload.fileId], arrayToMap(payload.signatureInfo, SignatureModel));
+
+    case DELETE_FILE:
+      return signatures.deleteIn(["entities", payload.fileId]);
+
+    case PACKAGE_DELETE_FILE:
+      payload.filePackage.forEach((id: string) => {
+        signatures = signatures.deleteIn(["entities", id]);
+      });
+      return signatures;
   }
 
   return signatures;

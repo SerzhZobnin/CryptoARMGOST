@@ -4,7 +4,7 @@ import { DSS_ACTIONS, SIGNATURE_TYPE } from "../../constants";
 
 /**
  * Вспомогательная функция создания объекта ITransaction для операции создания транзакции
- * @param {string | IDocumentContent[]} document путь до файла или массив объектов, содержащих информацию о документах
+ * @param {IDocumentContent[]} document путь до файла или массив объектов, содержащих информацию о документах
  * @param certificateId идентификатор сертификата подписи на Сервисе Подписи
  * @param isDetached флаг, определяющий отделённую/присоединённую подпись
  * @param operationCode код операции на Сервисе Подписи
