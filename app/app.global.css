@@ -37,6 +37,16 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   background-color: #bf3817 !important;
 }
 
+.primary-text {
+  color: rgba(0,0,0,0.87);
+  font-size: 1rem;
+}
+
+.secondary-text {
+  color: rgba(0,0,0,0.6);
+  font-size: 0.875rem;
+}
+
 .valid {
   color: #4caf50 !important;
 }
@@ -1249,7 +1259,6 @@ span.card-title.sub {
 }
 
 .card-infos{
-  color: gray;
   font-size: 16px;
 }
 

@@ -33,6 +33,7 @@ import { bytesToSize, dirExists, fileCoding, mapToArr } from "../../utils";
 import { fileExists } from "../../utils";
 import { buildDocumentDSS, buildDocumentPackageDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
+import ConfirmTransaction from "../DSS/ConfirmTransaction";
 import ReAuth from "../DSS/ReAuth";
 import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
@@ -406,7 +407,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   showModalDssResponse = () => {
     const { localize, locale } = this.context;
     const { showModalDssResponse } = this.state;
-    const { dssResponse } = this.props;
+    const { dssResponse, signer } = this.props;
 
     if (!showModalDssResponse || !dssResponse || !dssResponse.Title) {
       return;
@@ -418,11 +419,10 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         header={dssResponse.Title}
         onClose={this.handleCloseModalDssResponse}>
 
-        <div>
-          <p>{dssResponse.Label}</p>
-          <br />
-          <img src={`data:image/jpeg;base64,${dssResponse.Image}`} />
-        </div>
+        <ConfirmTransaction
+         dssResponse={dssResponse}
+         onCancel={this.handleCloseModalDssResponse}
+         dssUserID={signer.dssUserID}  />
       </Modal>
     );
   }
