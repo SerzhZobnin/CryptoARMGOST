@@ -119,7 +119,7 @@ export function selectDocument(uid: number) {
   };
 }
 
-export function unselectDocument(uid: number) {
+export function unselectDocument(uid: string) {
   return {
     payload: { uid },
     type: UNSELECT_DOCUMENT,

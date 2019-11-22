@@ -30,7 +30,7 @@ import * as jwt from "../../trusted/jwt";
 import { checkLicense } from "../../trusted/jwt";
 import * as signs from "../../trusted/sign";
 import * as trustedSign from "../../trusted/sign";
-import { bytesToSize, dirExists, fileCoding, mapToArr } from "../../utils";
+import { bytesToSize, dirExists, fileCoding, mapToArr, fileNameForSign, fileNameForResign } from "../../utils";
 import { fileExists } from "../../utils";
 import { buildDocumentDSS, buildDocumentPackageDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
@@ -51,7 +51,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   files: any;
   packageSignResult: any;
   removeAllFiles: () => void;
-  createTransactionDSS: (url: string, token: string, body: ITransaction, fileId: number[]) => Promise<any>;
+  createTransactionDSS: (url: string, token: string, body: ITransaction, fileId: string[]) => Promise<any>;
   dssPerformOperation: (url: string, token: string, body?: IDocumentDSS | IDocumentPackageDSS) => Promise<any>;
   dssOperationConfirmation: (url: string, token: string, TransactionTokenId: string, dssUserID: string) => Promise<any>;
   signatures: any;
@@ -561,7 +561,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         const mfaRequired = policy[0].MfaRequired;
 
         const documents: IDocumentContent[] = [];
-        const documentsId: number[] = [];
+        const documentsId: string[] = [];
 
         files.forEach((file) => {
           const Content = fs.readFileSync(file.fullpath, "base64");
@@ -576,9 +576,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         if (mfaRequired) {
           createTransactionDSS(user.dssUrl,
             tokenAuth.access_token,
-            buildTransaction(
-              documents, signer.id, setting.sign.detached,
-              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign"), documentsId).then((data: any) => {
+            buildTransaction(documents, signer.id, setting.sign.detached,
+              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign"),
+            documentsId).then((data: any) => {
               this.props.dssOperationConfirmation(
                 user.authUrl.replace("/oauth", "/confirmation"),
                 tokenAuth.access_token,
@@ -591,7 +591,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                       let i: number = 0;
                       let outURIList: string[] = [];
                       files.forEach((file) => {
-                        const outURI = this.fileNameForSign(folderOut, file);
+                        const outURI = fileNameForSign(folderOut, file);
                         const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
                         const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
                         tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
@@ -614,7 +614,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               let i: number = 0;
               let outURIList: string[] = [];
               files.forEach((file) => {
-                const outURI = this.fileNameForSign(folderOut, file);
+                const outURI = fileNameForSign(folderOut, file);
                 const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
                 const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
                 tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
@@ -673,7 +673,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         let originalData = "";
         let OriginalContent: string;
         const documents: IDocumentContent[] = [];
-        const documentsId: number[] = [];
+        const documentsId: string[] = [];
 
         files.forEach((file) => {
           const uri = file.fullpath;
@@ -728,7 +728,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                       let i: number = 0;
                       let outURIList: string[] = [];
                       files.forEach((file) => {
-                        const outURI = this.fileNameForResign(folderOut, file);
+                        const outURI = fileNameForResign(folderOut, file);
                         const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
                         const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
                         tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
@@ -751,7 +751,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               let i: number = 0;
               let outURIList: string[] = [];
               files.forEach((file) => {
-                const outURI = this.fileNameForResign(folderOut, file);
+                const outURI = fileNameForResign(folderOut, file);
                 const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
                 const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
                 tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
@@ -1319,50 +1319,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     return false;
-  }
-
-  fileNameForSign = (folderOut: any, document: IFile) => {
-    let outURI: string;
-    if (folderOut.length > 0) {
-      outURI = path.join(folderOut, path.basename(document.fullpath) + ".sig");
-    } else {
-      outURI = document.fullpath + ".sig";
-    }
-
-    let indexFile: number = 1;
-    let newOutUri: string = outURI;
-    const fileUri = outURI.substring(0, outURI.lastIndexOf("."));
-
-    while (fileExists(newOutUri)) {
-      const parsed = path.parse(fileUri);
-      newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext + ".sig");
-      indexFile++;
-    }
-    outURI = newOutUri;
-
-    return outURI;
-  }
-
-  fileNameForResign = (folderOut: any, document: IFile) => {
-    let outURI: string;
-    if (folderOut.length > 0) {
-      outURI = path.join(folderOut, path.basename(document.fullpath));
-      if (path.dirname(document.fullpath) !== folderOut) {
-        let indexFile: number = 1;
-        let newOutUri: string = outURI;
-        const fileUri = outURI.substring(0, outURI.lastIndexOf("."));
-        while (fileExists(newOutUri)) {
-          const parsed = path.parse(fileUri);
-          newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext + ".sig");
-          indexFile++;
-        }
-        outURI = newOutUri;
-      }
-    } else {
-      outURI = document.fullpath;
-    }
-
-    return outURI;
   }
 }
 

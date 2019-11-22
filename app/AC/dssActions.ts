@@ -465,7 +465,7 @@ export function getPolicyDSS(url: string, dssUserID: string, token: string) {
  * @param token маркер доступа
  * @param {ITransaction} body объект, содержащий параметры транзакции
  */
-export function createTransactionDSS(url: string, token: string, body: ITransaction, fileId: number[]) {
+export function createTransactionDSS(url: string, token: string, body: ITransaction, fileId: string[]) {
   return async (dispatch) => {
     dispatch({
       type: POST_TRANSACTION_DSS + START,

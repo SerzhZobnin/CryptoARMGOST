@@ -7,9 +7,9 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   activeFile, changeLocation, deleteFile, deleteRecipient,
-  filePackageDelete, filePackageSelect, packageSign,
-  removeAllFiles, removeAllRemoteFiles, selectFile,
-  selectSignerCertificate, verifySignature,
+  filePackageDelete, filePackageSelect, IFile,
+  packageSign, removeAllFiles, removeAllRemoteFiles,
+  selectFile, selectSignerCertificate, verifySignature,
 } from "../../AC";
 import { addDocuments, documentsReviewed, IDocument, unselectAllDocuments, unselectDocument } from "../../AC/documentsActions";
 import {
@@ -32,8 +32,8 @@ import * as trustedEncrypts from "../../trusted/encrypt";
 import { checkLicense } from "../../trusted/jwt";
 import * as jwt from "../../trusted/jwt";
 import * as trustedSign from "../../trusted/sign";
-import { dirExists, fileCoding, fileExists, mapToArr, md5 } from "../../utils";
-import { buildDocumentDSS, buildTransaction } from "../../utils/dss/helpers";
+import { dirExists, fileCoding, fileExists, mapToArr, md5, fileNameForSign } from "../../utils";
+import { buildDocumentDSS, buildTransaction, buildDocumentPackageDSS } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
 import ConfirmTransaction from "../DSS/ConfirmTransaction";
 import ReAuth from "../DSS/ReAuth";
@@ -62,15 +62,16 @@ interface IDocumentsWindowProps {
   removeAllRemoteFiles: () => void;
   selectAllDocuments: () => void;
   selectDocument: (uid: number) => void;
-  unselectDocument: (uid: number) => void;
+  unselectDocument: (uid: string) => void;
   removeDocuments: (documents: any) => void;
   arhiveDocuments: (documents: any, arhiveName: string) => void;
-  createTransactionDSS: (url: string, token: string, body: ITransaction, fileId: number) => Promise<any>;
-  dssPerformOperation: (url: string, token: string, body: IDocumentDSS | IDocumentPackageDSS) => Promise<any>;
+  createTransactionDSS: (url: string, token: string, body: ITransaction, fileId: string[]) => Promise<any>;
+  dssPerformOperation: (url: string, token: string, body?: IDocumentDSS | IDocumentPackageDSS) => Promise<any>;
   dssOperationConfirmation: (url: string, token: string, TransactionTokenId: string, dssUserID: string) => Promise<any>;
   users: any;
   tokensAuth: any;
   tokensDss: any;
+  policyDSS: any;
 }
 
 interface IDocumentsWindowState {
@@ -507,10 +508,10 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     }
   }
 
-  sign = (files: any, cert: any) => {
-    const { addDocuments, setting, signer, unselectD, users, tokensAuth, tokensDss } = this.props;
+  sign = (files: IFile[], cert: any) => {
+    const { setting, signer, unselectD, users, tokensAuth, policyDSS } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
-    const { createTransactionDSS } = this.props;
+    const { createTransactionDSS, dssPerformOperation, addDocuments } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { localize, locale } = this.context;
     let res = true;
@@ -536,76 +537,87 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       if (signer.dssUserID) {
         const user = users.get(signer.dssUserID);
         const tokenAuth = tokensAuth.get(signer.dssUserID);
-        const document = files[0];
+        const isSignPackage = files.length > 1;
+        const policy = policyDSS.getIn([signer.dssUserID, "policy"]).filter(
+          (item: any) => item.Action === (isSignPackage ? "SignDocuments" : "SignDocument"));
+        const mfaRequired = policy[0].MfaRequired;
 
-        createTransactionDSS(user.dssUrl,
-          tokenAuth.access_token,
-          buildTransaction(document.fullpath, signer.id, setting.sign.detached, DSS_ACTIONS.SignDocument),
-          document.id).then((data) => {
-            this.props.dssOperationConfirmation(
-              user.authUrl.replace("/oauth", "/confirmation"),
-              tokenAuth.access_token,
-              data,
-              user.id)
-              .then(() => {
-                this.props.dssPerformOperation(
-                  user.dssUrl + "/api/documents",
-                  this.props.tokensDss.get(signer.dssUserID).access_token,
-                  buildDocumentDSS(document.fullpath, signer.id, setting.sign.detached, "sign")).then((dataCMS) => {
-                    let outURI: string;
-                    if (folderOut.length > 0) {
-                      outURI = path.join(folderOut, path.basename(document.fullpath) + ".sig");
-                    } else {
-                      outURI = document.fullpath + ".sig";
-                    }
+        const documents: IDocumentContent[] = [];
+        const documentsId: string[] = [];
 
-                    let indexFile: number = 1;
-                    let newOutUri: string = outURI;
-                    const fileUri = outURI.substring(0, outURI.lastIndexOf("."));
+        files.forEach((file) => {
+          const Content = fs.readFileSync(file.fullpath, "base64");
+          const documentContent: IDocumentContent = {
+            Content,
+            Name: path.basename(file.fullpath),
+          };
+          documents.push(documentContent);
+          documentsId.push(file.id);
+        });
 
-                    while (fileExists(newOutUri)) {
-                      const parsed = path.parse(fileUri);
-                      newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext + ".sig");
-                      indexFile++;
-                    }
-                    outURI = newOutUri;
-                    const newFileUri = outURI.substring(0, outURI.lastIndexOf("."));
-                    const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
-                    tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + dataCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
-                    tcms.save(outURI, format);
-                    newPath = outURI;
-
-                    logger.log({
-                      certificate: cert.subjectName,
-                      level: "info",
-                      message: "",
-                      operation: "Подпись",
-                      operationObject: {
-                        in: path.basename(document.fullpath),
-                        out: path.basename(outURI),
-                      },
-                      userName: USER_NAME,
-                    });
-
-                    files.forEach((file) => {
-                      if (newPath) {
-                        addDocuments([newPath]);
+        if (mfaRequired) {
+          createTransactionDSS(user.dssUrl,
+            tokenAuth.access_token,
+            buildTransaction(documents, signer.id, setting.sign.detached,
+              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign"),
+            documentsId).then((data) => {
+              this.props.dssOperationConfirmation(
+                user.authUrl.replace("/oauth", "/confirmation"),
+                tokenAuth.access_token,
+                data,
+                user.id)
+                .then((data2) => {
+                  this.props.dssPerformOperation(
+                    user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
+                    data2.AccessToken).then((dataCMS) => {
+                      let i: number = 0;
+                      files.forEach((file) => {
+                        const outURI = fileNameForSign(folderOut, file);
+                        const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                        const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                        tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                        tcms.save(outURI, format);
+                        addDocuments([outURI]);
                         this.props.unselectDocument(file.id);
+                        i++;
+                      });
+                      if (res) {
+                        $(".toast-files_signed").remove();
+                        Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
                       } else {
-                        res = false;
+                        $(".toast-files_signed_failed").remove();
+                        Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
                       }
                     });
-
-                    if (res) {
-                      $(".toast-files_signed").remove();
-                      Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
-                    } else {
-                      $(".toast-files_signed_failed").remove();
-                      Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
-                    }
-                  });
+                });
+            });
+        } else {
+          dssPerformOperation(
+            user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
+            tokenAuth.access_token,
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "sign") :
+              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "sign"))
+            .then((dataCMS) => {
+              let i: number = 0;
+              files.forEach((file) => {
+                const outURI = fileNameForSign(folderOut, file);
+                const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                tcms.save(outURI, format);
+                addDocuments([outURI]);
+                this.props.unselectDocument(file.id);
+                i++;
               });
-          });
+              if (res) {
+                $(".toast-files_signed").remove();
+                Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
+              } else {
+                $(".toast-files_signed_failed").remove();
+                Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
+              }
+            });
+        }
       } else {
         if (setting.sign.detached) {
           policies.push("detached");
@@ -625,7 +637,6 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
             res = false;
           }
         });
-
         if (res) {
           $(".toast-files_signed").remove();
           Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
@@ -1059,6 +1070,7 @@ export default connect((state) => {
     users: state.users.entities,
     tokensAuth: state.tokens.tokensAuth,
     tokensDss: state.tokens.tokensDss,
+    policyDSS: state.policyDSS.entities,
   };
 }, {
   addDocuments, arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
