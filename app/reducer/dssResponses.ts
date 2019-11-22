@@ -1,37 +1,46 @@
+import { OrderedMap, Record } from "immutable";
 import {
   FAIL, POST_AUTHORIZATION_USER_DSS, POST_OPERATION_CONFIRMATION,
   RESPONSE, START, SUCCESS,
 } from "../constants";
 
-const defaultResponse = {
+const ResponseModel = Record({
+  Headerfield: [],
   Image: "",
   Label: "",
+  RefID: "",
   Title: "",
-};
+  id: null,
+});
 
-export default (response = defaultResponse, action) => {
+const DefaultReducerState = Record({
+  entities: OrderedMap({}),
+});
+
+export default (responses = new DefaultReducerState(), action) => {
   const { type, payload } = action;
 
   switch (type) {
-    case POST_OPERATION_CONFIRMATION + START:
     case POST_AUTHORIZATION_USER_DSS + START:
-      return defaultResponse;
+      return new DefaultReducerState();
 
     case POST_OPERATION_CONFIRMATION + RESPONSE:
     case POST_AUTHORIZATION_USER_DSS + RESPONSE:
-      return {
-        ...response,
+      return responses.setIn(["entities", payload.RefID], new ResponseModel({
+        Headerfield: payload.Headerfield.slice(),
         Image: payload.Image,
         Label: payload.Label,
+        RefID: payload.RefID,
         Title: payload.Title,
-      };
+        id: payload.RefID,
+      }));
 
     case POST_OPERATION_CONFIRMATION + RESPONSE + SUCCESS:
     case POST_OPERATION_CONFIRMATION + RESPONSE + FAIL:
     case POST_AUTHORIZATION_USER_DSS + RESPONSE + SUCCESS:
     case POST_AUTHORIZATION_USER_DSS + RESPONSE + FAIL:
-      return defaultResponse;
+      return responses.deleteIn(["entities", payload.RefID]);
   }
 
-  return response;
+  return responses;
 };

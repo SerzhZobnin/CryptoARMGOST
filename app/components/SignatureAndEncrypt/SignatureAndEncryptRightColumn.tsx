@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { OrderedMap } from "immutable";
 import PropTypes, { any } from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
@@ -45,7 +46,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   activeFilesArr: any;
   isDefaultFilters: boolean;
   isDocumentsReviewed: boolean;
-  dssResponse: any;
+  dssResponses: OrderedMap<any, any>;
   loadingFiles: any;
   files: any;
   packageSignResult: any;
@@ -87,7 +88,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   componentDidMount() {
-    const { dssResponse } = this.props;
+    const { dssResponses } = this.props;
 
     $(".btn-floated").dropdown({
       alignment: "left",
@@ -97,20 +98,23 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       outDuration: 225,
     });
 
-    if (dssResponse && dssResponse.Title) {
+    if (dssResponses && dssResponses.size) {
       this.handleCloseModalReAuth();
       this.handleShowModalDssResponse();
     }
   }
 
-  componentDidUpdate(prevProps: ISignatureAndEncryptRightColumnSettingsProps) {
-    if (!prevProps.dssResponse.Title && this.props.dssResponse.Title ||
-      (prevProps.dssResponse.Title && this.props.dssResponse.Title && prevProps.dssResponse.Title !== this.props.dssResponse.Title)) {
+  componentDidUpdate(prevProps: ISignatureAndEncryptRightColumnSettingsProps, prevState: ISignatureAndEncryptRightColumnSettingsState) {
+    if (!prevProps.dssResponses.size && this.props.dssResponses.size) {
       this.handleCloseModalReAuth();
       this.handleShowModalDssResponse();
     }
 
-    if (prevProps.dssResponse.Title && !this.props.dssResponse.Title) {
+    if (this.props.dssResponses.size && prevProps.dssResponses.size !== this.props.dssResponses.size) {
+      this.handleShowModalDssResponse();
+    }
+
+    if (prevProps.dssResponses.size && !this.props.dssResponses.size) {
       this.handleCloseModalDssResponse();
     }
   }
@@ -407,11 +411,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   showModalDssResponse = () => {
     const { localize, locale } = this.context;
     const { showModalDssResponse } = this.state;
-    const { dssResponse, signer } = this.props;
+    const { dssResponses, signer } = this.props;
 
-    if (!showModalDssResponse || !dssResponse || !dssResponse.Title) {
+    if (!showModalDssResponse || !dssResponses.size) {
       return;
     }
+
+    const dssResponse = dssResponses.first();
 
     return (
       <Modal
@@ -1372,7 +1378,7 @@ export default connect((state) => {
     activeFilesArr: mapToArr(activeFilesSelector(state, { active: true })),
     connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
-    dssResponse: state.dssResponse,
+    dssResponses: state.dssResponses.entities,
     files: mapToArr(state.files.entities),
     filesInTransactionList: filesInTransactionsSelector(state),
     isDocumentsReviewed: state.files.documentsReviewed,

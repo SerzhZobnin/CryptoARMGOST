@@ -1,13 +1,14 @@
 import PropTypes, { any } from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { dssOperationConfirmation } from "../../AC/dssActions";
+import { dssPostMFAUser } from "../../AC/dssActions";
+import { POST_OPERATION_CONFIRMATION } from "../../constants";
 
 const auth_token = "auth_token";
 
 interface IConfirmTransactionProps {
   dssUserID: string;
-  dssOperationConfirmation: (url: string, token: string, TransactionTokenId: string, dssUserID: string, offlineCode?: string) => Promise<any>;
+  dssPostMFAUser: (url: string, headerfield: string[], body: any, dssUserID: string, type: string, challengeResponse?: any) => Promise<any>;
   onCancel?: () => void;
   onGetTokenAndPolicy: () => void;
   tokensAuth: any;
@@ -72,7 +73,7 @@ class ConfirmTransaction extends React.Component<IConfirmTransactionProps, IConf
                   <div className="row" />
 
                   {
-                    dssResponse.Image ?
+                    dssResponse.Image && dssResponse.RefID ?
                       <React.Fragment>
                         <div className="col s12">
                           <div className="secondary-text">
@@ -144,11 +145,28 @@ class ConfirmTransaction extends React.Component<IConfirmTransactionProps, IConf
     const { localize, locale } = this.context;
     const { field_value, user } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
-    const { dssOperationConfirmation, dssUserID, tokensAuth } = this.props;
+    const { dssPostMFAUser, dssUserID, dssResponse, tokensAuth } = this.props;
 
-    const tokenAuth = tokensAuth.get(dssUserID);
+    const body = {
+      Resource: "urn:cryptopro:dss:signserver:signserver",
+      TransactionTokenId: dssResponse.RefID,
+      Value: field_value[auth_token],
+    };
 
-    dssOperationConfirmation(user.authUrl.replace("/oauth", "/confirmation"), tokenAuth.access_token, "", dssUserID, field_value[auth_token]);
+    const challengeResponse = {
+      ChallengeResponse:
+      {
+        TextChallengeResponse:
+          [{
+            RefId: dssResponse.RefID,
+            Value: field_value[auth_token],
+          },
+          ],
+      },
+      Resource: "urn:cryptopro:dss:signserver:signserver",
+    };
+
+    dssPostMFAUser(user.authUrl.replace("/oauth", "/confirmation"), dssResponse.Headerfield, body, dssUserID, POST_OPERATION_CONFIRMATION, challengeResponse);
   }
 
   handleCancel = () => {
@@ -163,4 +181,4 @@ class ConfirmTransaction extends React.Component<IConfirmTransactionProps, IConf
 export default connect((state) => ({
   tokensAuth: state.tokens.tokensAuth,
   users: state.users.entities,
-}), { dssOperationConfirmation })(ConfirmTransaction);
+}), { dssPostMFAUser })(ConfirmTransaction);

@@ -206,8 +206,9 @@ export function dssOperationConfirmation(url: string, token: string, Transaction
  * @param body объект, содержащий идентификатор ресурса и транзакции (при подтверждения операции)
  * @param dssUserID идентификатор пользователя
  * @param type action
+ * @param {any} [cResponse] используется оффлайн подтверждение
  */
-export function dssPostMFAUser(url: string, headerfield: string[], body: any, dssUserID: string, type: string) {
+export function dssPostMFAUser(url: string, headerfield: string[], body: any, dssUserID: string, type: string, cResponse?: any) {
   return async (dispatch) => {
     dispatch({
       type: type + START,
@@ -217,20 +218,36 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
     let data2: any;
 
     try {
-      data1 = await postApi(
-        `${url}`,
-        JSON.stringify(body),
-        headerfield,
-      );
-      if (data1.IsFinal === true) {
+      if (!cResponse) {
+        data1 = await postApi(
+          `${url}`,
+          JSON.stringify(body),
+          headerfield,
+        );
+      }
+      if (data1 && data1.IsFinal === true) {
         dispatch(postAuthorizationUserSuccess(type, data1, dssUserID));
         return data1;
       } else {
-        const challengeResponse = {
+        if (data1) {
+          dispatch({
+            payload: {
+              Headerfield: headerfield.slice(),
+              Image: data1.Challenge.TextChallenge[0].Image ? data1.Challenge.TextChallenge[0].Image.Value : "",
+              Label: data1.Challenge.TextChallenge[0].Label,
+              RefID: data1.Challenge.ContextData.RefID,
+              Title: data1.Challenge.Title.Value,
+            },
+            type: type + RESPONSE,
+          });
+        }
+
+        const challengeResponse = cResponse ? cResponse : {
           ChallengeResponse:
           {
             TextChallengeResponse:
-              [{
+              [
+                {
                 RefId: `${data1.Challenge.ContextData.RefID}`,
               },
               ],
@@ -238,14 +255,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
           Resource: "urn:cryptopro:dss:signserver:signserver",
         };
 
-        dispatch({
-          payload: {
-            Image: data1.Challenge.TextChallenge[0].Image ? data1.Challenge.TextChallenge[0].Image.Value : "",
-            Label: data1.Challenge.TextChallenge[0].Label,
-            Title: data1.Challenge.Title.Value,
-          },
-          type: type + RESPONSE,
-        });
+        const RefID = challengeResponse.ChallengeResponse.TextChallengeResponse[0].RefId;
 
         const deploy: number = 10000;
         let timeout: number = 0;
@@ -254,9 +264,12 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
         return await new Promise((resolve, reject) => {
           timerHandle = setInterval(async () => {
             timeout += deploy;
-            if (timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
+            if (data1 && timeout >= (data1.Challenge.TextChallenge["0"].ExpiresIn * 1000)) {
               dispatch(postAuthorizationUserFail(type, "Время ожидания подтверждения истекло"));
               dispatch({
+                payload: {
+                  RefID,
+                },
                 type: type + RESPONSE + FAIL,
               });
               if (timerHandle) {
@@ -275,6 +288,9 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
             if (data2.IsFinal === true) {
               dispatch(postAuthorizationUserSuccess(type, data2, dssUserID));
               dispatch({
+                payload: {
+                  RefID,
+                },
                 type: type + RESPONSE + SUCCESS,
               });
               if (timerHandle) {
@@ -285,6 +301,9 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
             } else if (data2.IsError === true) {
               dispatch(postAuthorizationUserFail(type, data2.ErrorDescription));
               dispatch({
+                payload: {
+                  RefID,
+                },
                 type: type + RESPONSE + FAIL,
               });
               if (timerHandle) {
