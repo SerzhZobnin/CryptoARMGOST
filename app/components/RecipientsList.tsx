@@ -49,10 +49,10 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
             }
 
             if (recipient.status) {
-              curStatusStyle = "cert_status_ok";
+              curStatusStyle = recipient.dssUserID ? "cloud_cert_status_ok" : "cert_status_ok";
               rectangleStyle = rectangleValidStyle;
             } else {
-              curStatusStyle = "cert_status_error";
+              curStatusStyle = recipient.dssUserID  ? "cloud_cert_status_error" : "cert_status_error";
               rectangleStyle = rectangleUnvalidStyle;
             }
 

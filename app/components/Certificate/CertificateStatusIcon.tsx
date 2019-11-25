@@ -34,9 +34,9 @@ class CertificateStatusIcon extends React.Component<ICertificateStatusIconProps,
     let curStatusStyle;
 
     if (certificate && certificate.status) {
-      curStatusStyle = "cert_status_ok";
+      curStatusStyle = certificate.dssUserID ? "cloud_cert_status_ok" : "cert_status_ok";
     } else {
-      curStatusStyle = "cert_status_error";
+      curStatusStyle = certificate.dssUserID  ? "cloud_cert_status_error" : "cert_status_error";
     }
 
     return (
