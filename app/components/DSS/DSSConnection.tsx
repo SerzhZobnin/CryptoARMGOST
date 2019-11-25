@@ -15,7 +15,7 @@ const URL_SIGN_SERVER_DSS = "https://dss.cryptopro.ru/SignServer/rest";
 
 interface IDSSConnectionProps {
   dssAuthIssue: (user: IUserDSS) => Promise<void>;
-  getCertificatesDSS: (url: string, dssUserID: string,  token: string) => Promise<void>;
+  getCertificatesDSS: (url: string, dssUserID: string, token: string) => Promise<void>;
   getPolicyDSS: (url: string, dssUserID: string, token: string) => Promise<void>;
   onCancel?: () => void;
   handleReloadCertificates?: () => void;
@@ -59,6 +59,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
   }
 
   componentDidUpdate(prevProps: IDSSConnectionProps) {
+    const { localize, locale } = this.context;
     const { dssUserID, field_value } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { getCertificatesDSS } = this.props;
@@ -71,10 +72,16 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
     const token = this.props.tokensAuth.get(dssUserID);
     const prevToken = prevProps.tokensAuth.get(dssUserID);
     if ((!prevToken && token) || (token && prevToken && token.time !== prevToken.time)) {
-      getCertificatesDSS(field_value.url_sign, token.id, token.access_token).then(() => {
+      getCertificatesDSS(field_value.url_sign, token.id, token.access_token).then((result) => {
+        Materialize.toast(localize("DSS.get_certificates_successful", locale), 3000, "toast-get_certificates_successful");
+
         if (handleReloadCertificates) {
           handleReloadCertificates();
         }
+      }, (error) => {
+        Materialize.toast(localize("DSS.get_certificates_failed", locale), 3000, "toast-get_certificates_failed");
+
+        Materialize.toast(error, 3000, "toast-getCertificatesDSS_failed");
       });
     }
   }
@@ -96,116 +103,116 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
     return (
       <React.Fragment>
 
-          <div className="row nobottom">
-            <div className="col s12 ">
-              <div className="row halfbottom" />
-              <div className="content-wrapper z-depth-1 tbody">
-                <div className="content-item-relative">
-                  <div className="row">
-                    <div className="row" />
-                    <div className="row">
-                      <div key={url_oath} className="input-field input-field-csr col s12">
-                        <input
-                          // disabled={field.ProhibitChange}
-                          id={url_oath}
-                          type="text"
-                          // className={this.validateOidValue(field)}
-                          // maxLength={field.Length}
-                          name={url_oath}
-                          value={field_value[url_oath] ? field_value[url_oath] : ""}
-                          onChange={this.handleInputChange}
-                          placeholder={`https://`}
-                        />
-                        <label htmlFor={url_oath}>{localize("DSS.DSS_authorization_server_address", locale)}</label>
-                      </div>
-                    </div>
-
-                    <div className="row halfbottom">
-                      <div key={url_sign} className="input-field input-field-csr col s12">
-                        <input
-                          // disabled={field.ProhibitChange}
-                          id={url_sign}
-                          type="text"
-                          // className={this.validateOidValue(field)}
-                          // maxLength={field.Length}
-                          name={url_sign}
-                          value={field_value[url_sign] ? field_value[url_sign] : ""}
-                          onChange={this.handleInputChange}
-                          placeholder={`https://`}
-                        />
-                        <label htmlFor={url_sign}>{localize("DSS.DSS_server_address", locale)}</label>
-                      </div>
-                    </div>
-
-                    <div className="row">
-                      <div style={{ float: "left" }}>
-                        <div style={{ display: "inline-block", margin: "10px" }}>
-                          <input
-                            name="isTestDSS"
-                            className="filled-in"
-                            type="checkbox"
-                            id="isTestDSS"
-                            checked={isTestDSS}
-                            onChange={this.toggleIsTestDSS}
-                          />
-                          <label htmlFor="isTestDSS">
-                            {localize("DSS.use_cryptopro_dss_test_service", locale)}
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="row">
-                      <div key={login_dss} className="input-field input-field-csr col s12">
-                        <input
-                          // disabled={field.ProhibitChange}
-                          id={login_dss}
-                          type="text"
-                          // className={this.validateOidValue(field)}
-                          // maxLength={field.Length}
-                          name={login_dss}
-                          value={field_value[login_dss] ? field_value[login_dss] : ""}
-                          onChange={this.handleInputChange}
-                          placeholder={localize("DSS.enter_your_login", locale)}
-                        />
-                        <label htmlFor={login_dss}>{localize("DSS.login_dss", locale)}</label>
-                      </div>
-                    </div>
-
-                    <div className="row">
-                      <div key={password_dss} className="input-field input-field-csr col s12">
-                        <input
-                          // disabled={field.ProhibitChange}
-                          id={password_dss}
-                          type="password"
-                          // className={this.validateOidValue(field)}
-                          // maxLength={field.Length}
-                          name={password_dss}
-                          value={field_value[password_dss] ? field_value[password_dss] : ""}
-                          onChange={this.handleInputChange}
-                          placeholder={localize("DSS.enter_your_password", locale)}
-                        />
-                        <label htmlFor={password_dss}>{localize("DSS.password_dss", locale)}</label>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-
+        <div className="row nobottom">
+          <div className="col s12 ">
             <div className="row halfbottom" />
-            <div className="row halfbottom">
-              <div style={{ float: "right" }}>
-                <div style={{ display: "inline-block", margin: "10px" }}>
-                  <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handleCancel}>{localize("Common.cancel", locale)}</a>
-                </div>
-                <div style={{ display: "inline-block", margin: "10px" }}>
-                  <a className={`btn btn-outlined waves-effect waves-light ${disabled}`} onClick={this.handleReady}>{localize("Common.ready", locale)}</a>
+            <div className="content-wrapper z-depth-1 tbody">
+              <div className="content-item-relative">
+                <div className="row">
+                  <div className="row" />
+                  <div className="row">
+                    <div key={url_oath} className="input-field input-field-csr col s12">
+                      <input
+                        // disabled={field.ProhibitChange}
+                        id={url_oath}
+                        type="text"
+                        // className={this.validateOidValue(field)}
+                        // maxLength={field.Length}
+                        name={url_oath}
+                        value={field_value[url_oath] ? field_value[url_oath] : ""}
+                        onChange={this.handleInputChange}
+                        placeholder={`https://`}
+                      />
+                      <label htmlFor={url_oath}>{localize("DSS.DSS_authorization_server_address", locale)}</label>
+                    </div>
+                  </div>
+
+                  <div className="row halfbottom">
+                    <div key={url_sign} className="input-field input-field-csr col s12">
+                      <input
+                        // disabled={field.ProhibitChange}
+                        id={url_sign}
+                        type="text"
+                        // className={this.validateOidValue(field)}
+                        // maxLength={field.Length}
+                        name={url_sign}
+                        value={field_value[url_sign] ? field_value[url_sign] : ""}
+                        onChange={this.handleInputChange}
+                        placeholder={`https://`}
+                      />
+                      <label htmlFor={url_sign}>{localize("DSS.DSS_server_address", locale)}</label>
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div style={{ float: "left" }}>
+                      <div style={{ display: "inline-block", margin: "10px" }}>
+                        <input
+                          name="isTestDSS"
+                          className="filled-in"
+                          type="checkbox"
+                          id="isTestDSS"
+                          checked={isTestDSS}
+                          onChange={this.toggleIsTestDSS}
+                        />
+                        <label htmlFor="isTestDSS">
+                          {localize("DSS.use_cryptopro_dss_test_service", locale)}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div key={login_dss} className="input-field input-field-csr col s12">
+                      <input
+                        // disabled={field.ProhibitChange}
+                        id={login_dss}
+                        type="text"
+                        // className={this.validateOidValue(field)}
+                        // maxLength={field.Length}
+                        name={login_dss}
+                        value={field_value[login_dss] ? field_value[login_dss] : ""}
+                        onChange={this.handleInputChange}
+                        placeholder={localize("DSS.enter_your_login", locale)}
+                      />
+                      <label htmlFor={login_dss}>{localize("DSS.login_dss", locale)}</label>
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div key={password_dss} className="input-field input-field-csr col s12">
+                      <input
+                        // disabled={field.ProhibitChange}
+                        id={password_dss}
+                        type="password"
+                        // className={this.validateOidValue(field)}
+                        // maxLength={field.Length}
+                        name={password_dss}
+                        value={field_value[password_dss] ? field_value[password_dss] : ""}
+                        onChange={this.handleInputChange}
+                        placeholder={localize("DSS.enter_your_password", locale)}
+                      />
+                      <label htmlFor={password_dss}>{localize("DSS.password_dss", locale)}</label>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
           </div>
+
+          <div className="row halfbottom" />
+          <div className="row halfbottom">
+            <div style={{ float: "right" }}>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handleCancel}>{localize("Common.cancel", locale)}</a>
+              </div>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <a className={`btn btn-outlined waves-effect waves-light ${disabled}`} onClick={this.handleReady}>{localize("Common.ready", locale)}</a>
+              </div>
+            </div>
+          </div>
+        </div>
       </React.Fragment>
     );
   }
@@ -228,7 +235,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
   toggleIsTestDSS = () => {
     const { isTestDSS, field_value } = this.state;
     const newSubject = !isTestDSS ?
-      { url_oath: URL_AUTHORIZATION_USER_DSS , url_sign: URL_SIGN_SERVER_DSS} : field_value;
+      { url_oath: URL_AUTHORIZATION_USER_DSS, url_sign: URL_SIGN_SERVER_DSS } : field_value;
     this.setState({
       field_value: { ...newSubject },
       isTestDSS: !isTestDSS,
@@ -236,6 +243,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
   }
 
   handleReady = () => {
+    const { localize, locale } = this.context;
     const { field_value } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { dssAuthIssue, getPolicyDSS } = this.props;
@@ -253,9 +261,23 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
       user: field_value.login_dss,
     };
 
-    dssAuthIssue(userDSS).then((result: any) => {
-      getPolicyDSS(field_value.url_sign, dssUserID, result.AccessToken);
-    });
+    dssAuthIssue(userDSS).then(
+      (result: any) => {
+        $(".toast-authorization_successful").remove();
+        Materialize.toast(localize("DSS.authorization_successful", locale), 3000, "toast-authorization_successful");
+
+        getPolicyDSS(field_value.url_sign, dssUserID, result.AccessToken).then((null), (error: any) => {
+          Materialize.toast(error, 3000, "toast-getPolicyDSS_failed");
+        });
+      },
+      (reject: any) => {
+        $(".toast-authorization_failed").remove();
+        Materialize.toast(localize("DSS.authorization_failed", locale), 3000, "toast-authorization_failed");
+
+        $(".toast-dssAuthIssue_failed").remove();
+        Materialize.toast(reject, 3000, "toast-dssAuthIssue_failed");
+      },
+    );
   }
 
   handleCancel = () => {

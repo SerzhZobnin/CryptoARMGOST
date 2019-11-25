@@ -159,6 +159,9 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
 
     dssAuthIssue(userDSS).then(
       (result: any) => {
+        $(".toast-authorization_successful").remove();
+        Materialize.toast(localize("DSS.authorization_successful", locale), 3000, "toast-authorization_successful");
+
         getPolicyDSS(user.dssUrl, user.id, result.AccessToken).then(
           () => {
             onGetTokenAndPolicy();
@@ -173,6 +176,9 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
         );
       },
       (error) => {
+        $(".toast-authorization_failed").remove();
+        Materialize.toast(localize("DSS.authorization_failed", locale), 3000, "toast-authorization_failed");
+
         $(".toast-dssAuthIssue_failed").remove();
         Materialize.toast(error.message, 2000, "toast-dssAuthIssue_failed");
 

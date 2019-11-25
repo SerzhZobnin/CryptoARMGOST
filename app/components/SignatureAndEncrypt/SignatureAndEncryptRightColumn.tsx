@@ -580,52 +580,87 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             tokenAuth.access_token,
             buildTransaction(documents, signer.id, setting.sign.detached,
               isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign"),
-            documentsId).then((data: any) => {
-              this.props.dssOperationConfirmation(
-                user.authUrl.replace("/oauth", "/confirmation"),
-                tokenAuth.access_token,
-                data,
-                user.id)
-                .then((data2) => {
-                  this.props.dssPerformOperation(
-                    user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
-                    data2.AccessToken).then((dataCMS: any) => {
-                      let i: number = 0;
-                      let outURIList: string[] = [];
-                      files.forEach((file) => {
-                        const outURI = fileNameForSign(folderOut, file);
-                        const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
-                        const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
-                        tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
-                        tcms.save(outURI, format);
-                        outURIList.push(outURI);
-                        i++;
-                      });
-                      packageSign(files, cert, policies, format, folderOut, outURIList);
-                    });
-                })
-                .catch((error) => console.log(error));
-            });
+            documentsId)
+            .then(
+              (data: any) => {
+                $(".toast-transaction_created_successful").remove();
+                Materialize.toast(localize("DSS.transaction_created_successful", locale), 3000, "toast-transaction_created_successful");
+
+                this.props.dssOperationConfirmation(
+                  user.authUrl.replace("/oauth", "/confirmation"),
+                  tokenAuth.access_token,
+                  data,
+                  user.id)
+                  .then(
+                    (data2) => {
+                      this.props.dssPerformOperation(
+                        user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
+                        data2.AccessToken)
+                        .then(
+                          (dataCMS: any) => {
+                            let i: number = 0;
+                            let outURIList: string[] = [];
+                            files.forEach((file) => {
+                              const outURI = fileNameForSign(folderOut, file);
+                              const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                              const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                              tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                              tcms.save(outURI, format);
+                              outURIList.push(outURI);
+                              i++;
+                            });
+                            packageSign(files, cert, policies, format, folderOut, outURIList);
+                          },
+                          (error) => {
+                            $(".toast-dssPerformOperation_failed").remove();
+                            Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
+                          },
+                        );
+                    },
+                    (error) => {
+                      $(".toast-dssOperationConfirmation_failed").remove();
+                      Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
+                    },
+                  )
+                  .catch((error) => {
+                    $(".toast-dssOperationConfirmation_failed").remove();
+                    Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
+                  });
+              },
+              (error) => {
+                $(".toast-transaction_created_failed").remove();
+                Materialize.toast(localize("DSS.transaction_created_failed", locale), 3000, "toast-transaction_created_failed");
+
+                $(".toast-createTransactionDSS_failed").remove();
+                Materialize.toast(error, 3000, "toast-createTransactionDSS_failed");
+              },
+            );
         } else {
           dssPerformOperation(
             user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
             isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "sign") :
               buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "sign"))
-            .then((dataCMS) => {
-              let i: number = 0;
-              let outURIList: string[] = [];
-              files.forEach((file) => {
-                const outURI = fileNameForSign(folderOut, file);
-                const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
-                const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
-                tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
-                tcms.save(outURI, format);
-                outURIList.push(outURI);
-                i++;
-              });
-              packageSign(files, cert, policies, format, folderOut, outURIList);
-            });
+            .then(
+              (dataCMS) => {
+                let i: number = 0;
+                let outURIList: string[] = [];
+                files.forEach((file) => {
+                  const outURI = fileNameForSign(folderOut, file);
+                  const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                  const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                  tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                  tcms.save(outURI, format);
+                  outURIList.push(outURI);
+                  i++;
+                });
+                packageSign(files, cert, policies, format, folderOut, outURIList);
+              },
+              (error) => {
+                $(".toast-dssPerformOperation_failed").remove();
+                Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
+              },
+            );
         }
       } else {
         if (setting.sign.detached) {
@@ -717,39 +752,69 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             buildTransaction(
               documents, signer.id, setting.sign.detached,
               isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "cosign", originalData),
-            documentsId).then((data1: any) => {
-              this.props.dssOperationConfirmation(
-                user.authUrl.replace("/oauth", "/confirmation"),
-                tokenAuth.access_token,
-                data1,
-                user.id)
-                .then((data2) => {
-                  this.props.dssPerformOperation(
-                    user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
-                    data2.AccessToken).then((dataCMS: any) => {
-                      let i: number = 0;
-                      let outURIList: string[] = [];
-                      files.forEach((file) => {
-                        const outURI = fileNameForResign(folderOut, file);
-                        const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
-                        const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
-                        tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
-                        tcms.save(outURI, format);
-                        outURIList.push(outURI);
-                        i++;
-                      });
-                      packageSign(files, cert, policies, format, folderOut, outURIList);
-                    });
-                })
-                .catch((error) => console.log(error));
-            });
+            documentsId)
+            .then(
+              (data1: any) => {
+                $(".toast-transaction_created_successful").remove();
+                Materialize.toast(localize("DSS.transaction_created_successful", locale), 3000, "toast-transaction_created_successful");
+
+                this.props.dssOperationConfirmation(
+                  user.authUrl.replace("/oauth", "/confirmation"),
+                  tokenAuth.access_token,
+                  data1,
+                  user.id)
+                  .then(
+                    (data2) => {
+                      this.props.dssPerformOperation(
+                        user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
+                        data2.AccessToken)
+                        .then(
+                          (dataCMS: any) => {
+                            let i: number = 0;
+                            let outURIList: string[] = [];
+                            files.forEach((file) => {
+                              const outURI = fileNameForResign(folderOut, file);
+                              const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                              const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                              tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                              tcms.save(outURI, format);
+                              outURIList.push(outURI);
+                              i++;
+                            });
+                            packageSign(files, cert, policies, format, folderOut, outURIList);
+                          },
+                          (error) => {
+                            $(".toast-dssPerformOperation_failed").remove();
+                            Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
+                          },
+                        );
+                    },
+                    (error) => {
+                      $(".toast-dssOperationConfirmation_failed").remove();
+                      Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
+                    },
+                  )
+                  .catch((error) => {
+                    $(".toast-dssOperationConfirmation_failed").remove();
+                    Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
+                  });
+              },
+              (error) => {
+                $(".toast-transaction_created_failed").remove();
+                Materialize.toast(localize("DSS.transaction_created_failed", locale), 3000, "toast-transaction_created_failed");
+
+                $(".toast-createTransactionDSS_failed").remove();
+                Materialize.toast(error, 3000, "toast-createTransactionDSS_failed");
+              },
+            );
         } else {
           this.props.dssPerformOperation(
             user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
             isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "cosign") :
               buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "cosign", originalData))
-            .then((dataCMS: any) => {
+            .then(
+              (dataCMS: any) => {
               let i: number = 0;
               let outURIList: string[] = [];
               files.forEach((file) => {
@@ -762,7 +827,12 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 i++;
               });
               packageSign(files, cert, policies, format, folderOut, outURIList);
-            });
+            },
+            (error) => {
+              $(".toast-dssPerformOperation_failed").remove();
+              Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
+            },
+            );
         }
       } else {
         if (setting.sign.timestamp) {

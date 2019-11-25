@@ -39,7 +39,9 @@ export default (responses = new DefaultReducerState(), action) => {
     case POST_OPERATION_CONFIRMATION + RESPONSE + FAIL:
     case POST_AUTHORIZATION_USER_DSS + RESPONSE + SUCCESS:
     case POST_AUTHORIZATION_USER_DSS + RESPONSE + FAIL:
-      return responses.deleteIn(["entities", payload.RefID]);
+      if (payload && payload.RefID) {
+        return responses.deleteIn(["entities", payload.RefID]);
+      }
   }
 
   return responses;
