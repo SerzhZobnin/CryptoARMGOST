@@ -566,6 +566,9 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
             documentsId)
             .then(
               (data) => {
+                $(".toast-transaction_created_successful").remove();
+                Materialize.toast(localize("DSS.transaction_created_successful", locale), 3000, "toast-transaction_created_successful");
+
                 this.props.dssOperationConfirmation(
                   user.authUrl.replace("/oauth", "/confirmation"),
                   tokenAuth.access_token,
@@ -573,9 +576,6 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
                   user.id)
                   .then(
                     (data2) => {
-                      $(".toast-transaction_created_successful").remove();
-                      Materialize.toast(localize("DSS.transaction_created_successful", locale), 3000, "toast-transaction_created_successful");
-
                       this.props.dssPerformOperation(
                         user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
                         data2.AccessToken)
