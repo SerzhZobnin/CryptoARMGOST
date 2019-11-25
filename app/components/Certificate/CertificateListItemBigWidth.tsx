@@ -66,10 +66,10 @@ class CertificateListItemBigWidth extends React.Component<ICertificateListItemPr
     const status = cert.status;
 
     if (status) {
-      curStatusStyle = "cert_status_ok";
+      curStatusStyle = cert.dssUserID ? "cloud_cert_status_ok" : "cert_status_ok";
       rectangleStyle = rectangleValidStyle;
     } else {
-      curStatusStyle = "cert_status_error";
+      curStatusStyle = cert.dssUserID  ? "cloud_cert_status_error" : "cert_status_error";
       rectangleStyle = rectangleUnvalidStyle;
     }
 

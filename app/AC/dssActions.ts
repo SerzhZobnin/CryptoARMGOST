@@ -67,7 +67,7 @@ export const postApi = async (url: string, postfields: string, headerfields: str
     if (postfields) {
       curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
     }
-    curl.on("end", function (statusCode: number, response: any) {
+    curl.on("end", function(statusCode: number, response: any) {
       let data;
       try {
 
@@ -226,8 +226,13 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
         );
       }
       if (data1 && data1.IsFinal === true) {
-        dispatch(postAuthorizationUserSuccess(type, data1, dssUserID));
-        return data1;
+        if (!data1.IsError) {
+          dispatch(postAuthorizationUserSuccess(type, data1, dssUserID));
+          return data1;
+        } else {
+          dispatch(postAuthorizationUserFail(type, data1.ErrorDescription));
+          return data1;
+        }
       } else {
         if (data1) {
           dispatch({
@@ -285,7 +290,7 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
               headerfield,
             );
 
-            if (data2.IsFinal === true) {
+            if (data2.IsFinal === true && !data2.IsError) {
               dispatch(postAuthorizationUserSuccess(type, data2, dssUserID));
               dispatch({
                 payload: {
