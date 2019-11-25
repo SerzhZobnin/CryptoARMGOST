@@ -360,7 +360,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       <Modal
         isOpen={showModalReAuth}
         header={localize("DSS.DSS_connection", locale)}
-        onClose={this.handleCloseModalReAuth}>
+        onClose={this.handleCloseModalReAuth}
+        style={{ width: "500px" }}>
 
         <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID} onGetTokenAndPolicy={() => this.handleClickSign()} />
       </Modal>
@@ -382,7 +383,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
       <Modal
         isOpen={showModalDssResponse}
         header={dssResponse.Title}
-        onClose={this.handleCloseModalDssResponse}>
+        onClose={this.handleCloseModalDssResponse}
+        style={{ width: "600px" }}>
 
         <ConfirmTransaction
           dssResponse={dssResponse}

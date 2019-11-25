@@ -401,9 +401,10 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       <Modal
         isOpen={showModalReAuth}
         header={localize("DSS.DSS_connection", locale)}
-        onClose={this.handleCloseModalReAuth}>
+        onClose={this.handleCloseModalReAuth}
+        style={{ width: "500px" }}>
 
-        <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID} onGetTokenAndPolicy={() => this.handleClickSign()}/>
+        <ReAuth onCancel={this.handleCloseModalReAuth} dssUserID={signer.dssUserID} onGetTokenAndPolicy={() => this.handleClickSign()} />
       </Modal>
     );
   }
@@ -423,12 +424,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       <Modal
         isOpen={showModalDssResponse}
         header={dssResponse.Title}
-        onClose={this.handleCloseModalDssResponse}>
+        onClose={this.handleCloseModalDssResponse}
+        style={{ width: "600px" }}>
 
         <ConfirmTransaction
-         dssResponse={dssResponse}
-         onCancel={this.handleCloseModalDssResponse}
-         dssUserID={signer.dssUserID}  />
+          dssResponse={dssResponse}
+          onCancel={this.handleCloseModalDssResponse}
+          dssUserID={signer.dssUserID} />
       </Modal>
     );
   }
