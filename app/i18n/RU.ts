@@ -161,7 +161,7 @@ export default {
     subject_params: "Сведения о владельце сертификата",
     template_additional_fields: "Шаблон с расширенным списком полей",
     template_default: "Шаблон по умолчанию",
-    template_kep_fiz: "Сертификат КЭП физичексого лица",
+    template_kep_fiz: "Сертификат КЭП физического лица",
     template_kep_ip: "Сертификат КЭП индивидуального предпринимателя",
     template_label: "Шаблон сертификата",
     title: "Должность",
