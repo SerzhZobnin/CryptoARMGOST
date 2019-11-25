@@ -10,7 +10,7 @@ interface IConfirmTransactionProps {
   dssUserID: string;
   dssPostMFAUser: (url: string, headerfield: string[], body: any, dssUserID: string, type: string, challengeResponse?: any) => Promise<any>;
   onCancel?: () => void;
-  onGetTokenAndPolicy: () => void;
+  onConfirm?: () => void;
   tokensAuth: any;
   users: any;
   dssResponse: any;
@@ -80,6 +80,7 @@ class ConfirmTransaction extends React.Component<IConfirmTransactionProps, IConf
 
                   <div className="row" />
 
+                  {/* TODO: add support offline transaction
                   {
                     dssResponse.Image && dssResponse.RefID ?
                       <React.Fragment>
@@ -115,20 +116,20 @@ class ConfirmTransaction extends React.Component<IConfirmTransactionProps, IConf
                         </div>
                       </React.Fragment>
                       : null
-                  }
+                  } */}
                 </div>
               </div>
             </div>
           </div>
 
           <div className="row halfbottom" />
-          <div className="row halfbottom">
+          {/* <div className="row halfbottom">
             <div style={{ float: "right" }}>
               <div style={{ display: "inline-block", margin: "10px" }}>
                 <a className={`btn btn-outlined waves-effect waves-light ${disabled}`} onClick={this.handleReady}>{localize("Common.ready", locale)}</a>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </React.Fragment>
     );
@@ -176,7 +177,14 @@ class ConfirmTransaction extends React.Component<IConfirmTransactionProps, IConf
 
     this.setState({ field_value: "" });
 
-    dssPostMFAUser(user.authUrl.replace("/oauth", "/confirmation"), dssResponse.Headerfield, body, dssUserID, POST_OPERATION_CONFIRMATION, challengeResponse);
+    dssPostMFAUser(
+      user.authUrl.replace("/oauth", "/confirmation"),
+      dssResponse.Headerfield,
+      body,
+      dssUserID,
+      POST_OPERATION_CONFIRMATION,
+      challengeResponse,
+    ).then((data2) => console.log(data2));
   }
 
   handleCancel = () => {
