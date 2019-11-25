@@ -759,44 +759,73 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
             buildTransaction(
               documents, signer.id, setting.sign.detached,
               isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "cosign", originalData),
-            documentsId).then((data1: any) => {
-              this.props.dssOperationConfirmation(
-                user.authUrl.replace("/oauth", "/confirmation"),
-                tokenAuth.access_token,
-                data1,
-                user.id)
-                .then((data2) => {
-                  this.props.dssPerformOperation(
-                    user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
-                    data2.AccessToken).then((dataCMS: any) => {
-                      let i: number = 0;
-                      files.forEach((file) => {
-                        const outURI = fileNameForResign(folderOut, file);
-                        const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
-                        const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
-                        tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
-                        tcms.save(outURI, format);
-                        verifySignature(file.id);
-                        i++;
-                      });
-                      if (res) {
-                        $(".toast-files_signed").remove();
-                        Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
-                      } else {
-                        $(".toast-files_signed_failed").remove();
-                        Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
-                      }
-                    });
-                })
-                .catch((error) => console.log(error));
-            });
-          } else {
-            this.props.dssPerformOperation(
-              user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
-              tokenAuth.access_token,
-              isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "cosign") :
-                buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "cosign", originalData))
-              .then((dataCMS: any) => {
+            documentsId)
+            .then(
+              (data1: any) => {
+                $(".toast-transaction_created_successful").remove();
+                Materialize.toast(localize("DSS.transaction_created_successful", locale), 3000, "toast-transaction_created_successful");
+
+                this.props.dssOperationConfirmation(
+                  user.authUrl.replace("/oauth", "/confirmation"),
+                  tokenAuth.access_token,
+                  data1,
+                  user.id)
+                  .then(
+                    (data2) => {
+                      this.props.dssPerformOperation(
+                        user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
+                        data2.AccessToken)
+                        .then(
+                          (dataCMS: any) => {
+                            let i: number = 0;
+                            files.forEach((file) => {
+                              const outURI = fileNameForResign(folderOut, file);
+                              const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                              const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                              tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                              tcms.save(outURI, format);
+                              verifySignature(file.id);
+                              i++;
+                            });
+                            if (res) {
+                              $(".toast-files_signed").remove();
+                              Materialize.toast(localize("Sign.files_signed", locale), 2000, "toast-files_signed");
+                            } else {
+                              $(".toast-files_signed_failed").remove();
+                              Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
+                            }
+                          },
+                          (error) => {
+                            $(".toast-dssPerformOperation_failed").remove();
+                            Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
+                          },
+                        );
+                    },
+                    (error) => {
+                      $(".toast-dssOperationConfirmation_failed").remove();
+                      Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
+                    },
+                  )
+                  .catch((error) => {
+                    $(".toast-dssOperationConfirmation_failed").remove();
+                    Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
+                  });
+              }, (error) => {
+                $(".toast-transaction_created_failed").remove();
+                Materialize.toast(localize("DSS.transaction_created_failed", locale), 3000, "toast-transaction_created_failed");
+
+                $(".toast-createTransactionDSS_failed").remove();
+                Materialize.toast(error, 3000, "toast-createTransactionDSS_failed");
+              },
+            );
+        } else {
+          this.props.dssPerformOperation(
+            user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
+            tokenAuth.access_token,
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "cosign") :
+              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "cosign", originalData))
+            .then(
+              (dataCMS: any) => {
                 let i: number = 0;
                 files.forEach((file) => {
                   const outURI = fileNameForResign(folderOut, file);
@@ -814,7 +843,12 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
                   $(".toast-files_signed_failed").remove();
                   Materialize.toast(localize("Sign.files_signed_failed", locale), 2000, "toast-files_signed_failed");
                 }
-              });
+              },
+              (error) => {
+                $(".toast-dssPerformOperation_failed").remove();
+                Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
+              },
+            );
         }
       } else {
 
