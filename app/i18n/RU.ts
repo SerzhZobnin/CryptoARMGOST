@@ -437,7 +437,7 @@ export default {
     help: "Справка",
     link_shop: "https://cryptoarm.ru/shop/cryptoarm-gost",
     link_shop_name: " КриптоАРМ.RU",
-    link_user_guide: "https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost-2-0.pdf",
+    link_user_guide: "https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost-2-1.pdf",
     link_user_guide_name: " КриптоАРМ ГОСТ Руководство пользователя.pdf",
     user_guide: "Руководство пользователя на программный продукт можно получить по ссылке: ",
   },
