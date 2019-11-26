@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   activeFile, deleteFile, deleteRecipient,
-  filePackageDelete, filePackageSelect, packageSign,
+  filePackageDelete, filePackageSelect, packageReSign, packageSign,
   selectFile, selectSignerCertificate, verifyCertificate,
   verifySignature,
 } from "../../AC";
@@ -679,7 +679,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   resign = (files: IFile[], cert: any) => {
     const { connections, connectedList, setting, signer, tokensAuth, users, uploader, policyDSS } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
-    const { deleteFile, selectFile, createTransactionDSS, packageSign } = this.props;
+    const { deleteFile, selectFile, createTransactionDSS, packageReSign } = this.props;
     const { localize, locale } = this.context;
 
     if (files.length > 0) {
@@ -781,7 +781,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                               outURIList.push(outURI);
                               i++;
                             });
-                            packageSign(files, cert, policies, format, folderOut, outURIList);
+                            packageReSign(files, cert, policies, format, folderOut, outURIList);
                           },
                           (error) => {
                             $(".toast-dssPerformOperation_failed").remove();
@@ -826,7 +826,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 outURIList.push(outURI);
                 i++;
               });
-              packageSign(files, cert, policies, format, folderOut, outURIList);
+              packageReSign(files, cert, policies, format, folderOut, outURIList);
             },
             (error) => {
               $(".toast-dssPerformOperation_failed").remove();
@@ -1432,6 +1432,6 @@ export default connect((state) => {
 }, {
   activeFile, activeSetting, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
   deleteFile, deleteRecipient, documentsReviewed,
-  filePackageSelect, filePackageDelete, packageSign, selectFile,
+  filePackageSelect, filePackageDelete, packageSign, packageReSign, selectFile,
   verifyCertificate, selectSignerCertificate, verifySignature,
 })(SignatureAndEncryptRightColumnSettings);
