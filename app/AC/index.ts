@@ -18,6 +18,8 @@ import {
   START, SUCCESS, TOGGLE_SAVE_TO_DOCUMENTS,
   VERIFY_CERTIFICATE,
   VERIFY_SIGNATURE,
+  REMEMBER_PASSWORD_DSS,
+  DELETE_PASSWORD_DSS,
 } from "../constants";
 import { connectedSelector } from "../selectors";
 import { ERROR, SIGNED, UPLOADED, VERIFIED } from "../server/constants";
@@ -785,5 +787,24 @@ export function addCertificateRequestCA(certificateRequestCA: ICertificateReques
       certificateRequestCA,
     },
     type: ADD_CERTIFICATE_REQUEST_CA,
+  };
+}
+
+export function rememberPasswordDSS(id: string, password: string) {
+  return {
+    payload: {
+      id,
+      password,
+    },
+    type: REMEMBER_PASSWORD_DSS,
+  };
+}
+
+export function deletePasswordDSS(id: string) {
+  return {
+    payload: {
+      id,
+    },
+    type: DELETE_PASSWORD_DSS,
   };
 }

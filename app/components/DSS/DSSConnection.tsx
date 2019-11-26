@@ -1,6 +1,7 @@
 import PropTypes, { any } from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
+import { deletePasswordDSS, rememberPasswordDSS } from "../../AC";
 import { dssAuthIssue, getCertificatesDSS, getPolicyDSS } from "../../AC/dssActions";
 import { md5 } from "../../utils";
 import ProgressBars from "../ProgressBars";
@@ -20,13 +21,17 @@ interface IDSSConnectionProps {
   onCancel?: () => void;
   handleReloadCertificates?: () => void;
   tokensAuth: any;
+  passwordDSS: any;
   isLoaded: boolean;
   isLoading: boolean;
+  rememberPasswordDSS: (id: string, password: string) => void;
+  deletePasswordDSS: (id: string) => void;
 }
 
 interface IDSSConnectionState {
   field_value: any;
   isTestDSS: boolean;
+  isRememberPassword: boolean;
   dssUserID: string;
 }
 
@@ -42,6 +47,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
     this.state = ({
       field_value: "",
       isTestDSS: false,
+      isRememberPassword: false,
       dssUserID: "",
     });
   }
@@ -88,7 +94,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
 
   render() {
     const { localize, locale } = this.context;
-    const { field_value, isTestDSS } = this.state;
+    const { field_value, isTestDSS, isRememberPassword } = this.state;
     const { isLoaded, isLoading } = this.props;
 
     if (isLoading) {
@@ -179,7 +185,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
                     </div>
                   </div>
 
-                  <div className="row">
+                  <div className="row halfbottom">
                     <div key={password_dss} className="input-field input-field-csr col s12">
                       <input
                         // disabled={field.ProhibitChange}
@@ -193,6 +199,24 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
                         placeholder={localize("DSS.enter_your_password", locale)}
                       />
                       <label htmlFor={password_dss}>{localize("DSS.password_dss", locale)}</label>
+                    </div>
+                  </div>
+
+                  <div className="row halfbottom">
+                    <div style={{ float: "left" }}>
+                      <div style={{ display: "inline-block", margin: "10px" }}>
+                        <input
+                          name="isRememberPassword"
+                          className="filled-in"
+                          type="checkbox"
+                          id="isRememberPassword"
+                          checked={isRememberPassword}
+                          onChange={this.toggleIsRememberPassword}
+                        />
+                        <label htmlFor="isRememberPassword">
+                          {localize("DSS.remember_password", locale)}
+                        </label>
+                      </div>
                     </div>
                   </div>
 
@@ -242,11 +266,18 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
     });
   }
 
+  toggleIsRememberPassword = () => {
+    const { isRememberPassword } = this.state;
+    this.setState({
+      isRememberPassword: !isRememberPassword,
+    });
+  }
+
   handleReady = () => {
     const { localize, locale } = this.context;
-    const { field_value } = this.state;
+    const { field_value, isRememberPassword } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
-    const { dssAuthIssue, getPolicyDSS } = this.props;
+    const { dssAuthIssue, getPolicyDSS, rememberPasswordDSS, deletePasswordDSS, passwordDSS } = this.props;
 
     const dssUserID = md5(field_value.login_dss + field_value.url_oath + field_value.url_sign);
     this.setState({
@@ -265,6 +296,15 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
       (result: any) => {
         $(".toast-authorization_successful").remove();
         Materialize.toast(localize("DSS.authorization_successful", locale), 3000, "toast-authorization_successful");
+
+        if (isRememberPassword) {
+          rememberPasswordDSS(dssUserID, field_value.password_dss);
+        } else {
+          const passwordUserDSS = passwordDSS.get(dssUserID);
+          if (passwordUserDSS && passwordUserDSS.password) {
+            deletePasswordDSS(dssUserID);
+          }
+        }
 
         getPolicyDSS(field_value.url_sign, dssUserID, result.AccessToken).then((null), (error: any) => {
           Materialize.toast(error, 3000, "toast-getPolicyDSS_failed");
@@ -293,6 +333,7 @@ export default connect((state) => {
   return {
     isLoaded: state.certificatesDSS.loaded,
     isLoading: state.certificatesDSS.loading,
+    passwordDSS: state.passwordDSS.entities,
     tokensAuth: state.tokens.tokensAuth,
   };
-}, { dssAuthIssue, getPolicyDSS, getCertificatesDSS })(DSSConnection);
+}, { dssAuthIssue, getPolicyDSS, rememberPasswordDSS, deletePasswordDSS, getCertificatesDSS })(DSSConnection);

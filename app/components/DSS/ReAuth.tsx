@@ -1,6 +1,7 @@
 import PropTypes, { any } from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
+import { deletePasswordDSS, rememberPasswordDSS } from "../../AC";
 import { dssAuthIssue, getPolicyDSS } from "../../AC/dssActions";
 
 const login_dss = "login_dss";
@@ -14,11 +15,16 @@ interface IReAuthProps {
   onGetTokenAndPolicy: () => void;
   tokensAuth: any;
   users: any;
+  passwordDSS: any;
+  rememberPasswordDSS: (id: string, password: string) => void;
+  deletePasswordDSS: (id: string) => void;
 }
 
 interface IReAuthState {
   field_value: any;
   user: any;
+  passwordUserDSS: any;
+  isRememberPassword: boolean;
 }
 
 class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
@@ -32,12 +38,15 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
 
     this.state = ({
       field_value: "",
+      isRememberPassword: false,
+      passwordUserDSS: props.passwordDSS.get(props.dssUserID),
       user: props.users.get(props.dssUserID),
     });
   }
 
   componentDidMount() {
     const self = this;
+    const { passwordUserDSS } = this.state;
 
     $(document).ready(() => {
       $("select").material_select();
@@ -45,12 +54,22 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       $("select").on("change", self.handleInputChange);
     });
 
+    if (passwordUserDSS && passwordUserDSS.password) {
+      const newSubject = {
+        ...this.state.field_value,
+        password_dss: passwordUserDSS.password,
+      };
+      this.setState(({
+        field_value: { ...newSubject },
+      }));
+      this.handleReady();
+    }
     Materialize.updateTextFields();
   }
 
   render() {
     const { localize, locale } = this.context;
-    const { field_value, user } = this.state;
+    const { field_value, user, isRememberPassword } = this.state;
 
     if (!user) {
       this.handleCancel();
@@ -93,7 +112,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
                     </div>
                   </div>
 
-                  <div className="row">
+                  <div className="row halfbottom">
                     <div key={password_dss} className="input-field input-field-csr col s12">
                       <input
                         id={password_dss}
@@ -104,6 +123,24 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
                         placeholder={localize("DSS.enter_your_password", locale)}
                       />
                       <label htmlFor={password_dss}>{localize("DSS.password_dss", locale)}</label>
+                    </div>
+                  </div>
+
+                  <div className="row halfbottom">
+                    <div style={{ float: "left" }}>
+                      <div style={{ display: "inline-block", margin: "10px" }}>
+                        <input
+                          name="isRememberPassword"
+                          className="filled-in"
+                          type="checkbox"
+                          id="isRememberPassword"
+                          checked={isRememberPassword}
+                          onChange={this.toggleIsRememberPassword}
+                        />
+                        <label htmlFor="isRememberPassword">
+                          {localize("DSS.remember_password", locale)}
+                        </label>
+                      </div>
                     </div>
                   </div>
 
@@ -143,11 +180,18 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
     }));
   }
 
+  toggleIsRememberPassword = () => {
+    const { isRememberPassword } = this.state;
+    this.setState({
+      isRememberPassword: !isRememberPassword,
+    });
+  }
+
   handleReady = () => {
     const { localize, locale } = this.context;
-    const { field_value, user } = this.state;
+    const { field_value, user, isRememberPassword, passwordUserDSS } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
-    const { dssAuthIssue, getPolicyDSS, onGetTokenAndPolicy } = this.props;
+    const { dssAuthIssue, getPolicyDSS, onGetTokenAndPolicy, passwordDSS, rememberPasswordDSS, deletePasswordDSS } = this.props;
 
     const userDSS: IUserDSS = {
       authUrl: user.authUrl,
@@ -161,6 +205,14 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       (result: any) => {
         $(".toast-authorization_successful").remove();
         Materialize.toast(localize("DSS.authorization_successful", locale), 3000, "toast-authorization_successful");
+
+        if (isRememberPassword) {
+          rememberPasswordDSS(user.id, field_value.password_dss);
+        } else {
+          if (passwordUserDSS && passwordUserDSS.password) {
+            deletePasswordDSS(user.id);
+          }
+        }
 
         getPolicyDSS(user.dssUrl, user.id, result.AccessToken).then(
           () => {
@@ -197,6 +249,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
 }
 
 export default connect((state) => ({
+  passwordDSS: state.passwordDSS.entities,
   tokensAuth: state.tokens.tokensAuth,
   users: state.users.entities,
-}), { dssAuthIssue, getPolicyDSS })(ReAuth);
+}), { rememberPasswordDSS, deletePasswordDSS, dssAuthIssue, getPolicyDSS })(ReAuth);
