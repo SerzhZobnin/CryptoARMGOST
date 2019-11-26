@@ -314,6 +314,7 @@ export default {
     password_dss: "Пароль",
     pin_code_for_container: "ПИН-код для контейнера",
     pin_dss: "ПИН-код",
+    remember_password: "Запомнить пароль",
     transaction_created_failed: "Ошибка создания транзакции",
     transaction_created_successful: "Транзакция успешно создана. Подтвердите её",
     use_cryptopro_dss_test_service: "Использовать тестовый сервис КриптоПРО DSS",
