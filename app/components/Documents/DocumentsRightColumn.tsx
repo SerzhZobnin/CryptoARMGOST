@@ -37,6 +37,7 @@ import { dirExists, fileCoding, fileExists, fileNameForResign, fileNameForSign, 
 import { buildDocumentDSS, buildDocumentPackageDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
 import ConfirmTransaction from "../DSS/ConfirmTransaction";
+import PinCodeForDssContainer from "../DSS/PinCodeForDssContainer";
 import ReAuth from "../DSS/ReAuth";
 import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
@@ -76,8 +77,10 @@ interface IDocumentsWindowProps {
 }
 
 interface IDocumentsWindowState {
+  pinCode: string;
   searchValue: string;
   showModalDeleteDocuments: boolean;
+  showModalDssPin: boolean;
   showModalDssResponse: boolean;
   showModalFilterDocments: boolean;
   showModalReAuth: boolean;
@@ -93,8 +96,10 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     super(props);
 
     this.state = {
+      pinCode: "",
       searchValue: "",
       showModalDeleteDocuments: false,
+      showModalDssPin: false,
       showModalDssResponse: false,
       showModalFilterDocments: false,
       showModalReAuth: false,
@@ -343,6 +348,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
           </div>
         </div>
         {this.showModalReAuth()}
+        {this.showModalDssPin()}
         {this.showModalDssResponse()}
       </React.Fragment>
     );
@@ -360,6 +366,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     return (
       <Modal
         isOpen={showModalReAuth}
+        key="ReAuth"
         header={localize("DSS.DSS_connection", locale)}
         onClose={this.handleCloseModalReAuth}
         style={{ width: "500px" }}>
@@ -383,6 +390,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     return (
       <Modal
         isOpen={showModalDssResponse}
+        key="DssResponse"
         header={dssResponse.Title}
         onClose={this.handleCloseModalDssResponse}
         style={{ width: "600px" }}>
@@ -391,6 +399,33 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
           dssResponse={dssResponse}
           onCancel={this.handleCloseModalDssResponse}
           dssUserID={signer.dssUserID} />
+      </Modal>
+    );
+  }
+
+  showModalDssPin = () => {
+    const { localize, locale } = this.context;
+    const { showModalDssPin } = this.state;
+
+    if (!showModalDssPin) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalDssPin}
+        key="DssPin"
+        header={localize("DSS.pin_code_for_container", locale)}
+        onClose={this.handleCloseModalDssPin}
+        style={{ width: "500px" }}>
+
+        <PinCodeForDssContainer
+          done={(pinCode) => {
+            this.setState({ pinCode });
+          }}
+          onCancel={this.handleCloseModalDssPin}
+          clickSign={this.handleClickSign}
+        />
       </Modal>
     );
   }
@@ -415,6 +450,14 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     this.setState({ showModalDssResponse: false });
   }
 
+  handleShowModalDssPin = () => {
+    this.setState({ showModalDssPin: true });
+  }
+
+  handleCloseModalDssPin = () => {
+    this.setState({ showModalDssPin: false });
+  }
+
   toggleDocumentsReviewed = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { documentsReviewed, isDocumentsReviewed } = this.props;
@@ -423,10 +466,10 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
   }
 
   handleClickSign = () => {
-
     // tslint:disable-next-line:no-shadowed-variable
     const { activeDocumentsArr, signer, lic_error } = this.props;
     const { localize, locale } = this.context;
+    const { pinCode } = this.state;
 
     const licenseStatus = checkLicense();
 
@@ -464,6 +507,14 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         this.handleShowModalReAuth();
         return;
       }
+    }
+
+    if (signer && signer.dssUserID && signer.hasPin && !pinCode) {
+      setTimeout(() => {
+        this.handleShowModalDssPin();
+      }, 100);
+
+      return;
     }
 
     if (activeDocumentsArr.length > 0) {
@@ -508,6 +559,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         this.resign(filesForResign, cert);
       }
 
+      this.setState({ pinCode: "" });
     }
   }
 
@@ -517,6 +569,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     const { createTransactionDSS, dssPerformOperation, addDocuments } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { localize, locale } = this.context;
+    const { pinCode } = this.state;
+
     let res = true;
     let newPath = "";
 
@@ -562,7 +616,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
           createTransactionDSS(user.dssUrl,
             tokenAuth.access_token,
             buildTransaction(documents, signer.id, setting.sign.detached,
-              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign"),
+              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign", undefined, pinCode),
             documentsId)
             .then(
               (data) => {
@@ -578,7 +632,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
                     (data2) => {
                       this.props.dssPerformOperation(
                         user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
-                        data2.AccessToken)
+                        data2.AccessToken, pinCode ? { "Signature": { "PinCode": pinCode } } : undefined)
                         .then(
                           (dataCMS) => {
                             let i: number = 0;
@@ -624,8 +678,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
           dssPerformOperation(
             user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
-            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "sign") :
-              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "sign"))
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "sign", pinCode) :
+              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "sign", undefined, pinCode))
             .then(
               (dataCMS) => {
                 let i: number = 0;
@@ -688,6 +742,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
     // tslint:disable-next-line:no-shadowed-variable
     const { verifySignature, createTransactionDSS } = this.props;
     const { localize, locale } = this.context;
+    const { pinCode } = this.state;
 
     if (files.length > 0) {
       const policies = ["noAttributes"];
@@ -758,7 +813,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
             tokenAuth.access_token,
             buildTransaction(
               documents, signer.id, setting.sign.detached,
-              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "cosign", originalData),
+              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "cosign", originalData, pinCode),
             documentsId)
             .then(
               (data1: any) => {
@@ -774,7 +829,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
                     (data2) => {
                       this.props.dssPerformOperation(
                         user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
-                        data2.AccessToken)
+                        data2.AccessToken, pinCode ? { "Signature": { "PinCode": pinCode } } : undefined)
                         .then(
                           (dataCMS: any) => {
                             let i: number = 0;
@@ -822,8 +877,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
           this.props.dssPerformOperation(
             user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
-            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "cosign") :
-              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "cosign", originalData))
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "cosign", pinCode) :
+              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "cosign", originalData, pinCode))
             .then(
               (dataCMS: any) => {
                 let i: number = 0;

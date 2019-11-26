@@ -30,11 +30,12 @@ import * as jwt from "../../trusted/jwt";
 import { checkLicense } from "../../trusted/jwt";
 import * as signs from "../../trusted/sign";
 import * as trustedSign from "../../trusted/sign";
-import { bytesToSize, dirExists, fileCoding, mapToArr, fileNameForSign, fileNameForResign } from "../../utils";
+import { bytesToSize, dirExists, fileCoding, fileNameForResign, fileNameForSign, mapToArr } from "../../utils";
 import { fileExists } from "../../utils";
 import { buildDocumentDSS, buildDocumentPackageDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
 import ConfirmTransaction from "../DSS/ConfirmTransaction";
+import PinCodeForDssContainer from "../DSS/PinCodeForDssContainer";
 import ReAuth from "../DSS/ReAuth";
 import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
@@ -65,7 +66,9 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
 
 interface ISignatureAndEncryptRightColumnSettingsState {
   currentOperation: string;
+  pinCode: string;
   searchValue: string;
+  showModalDssPin: boolean;
   showModalDssResponse: boolean;
   showModalReAuth: boolean;
 }
@@ -81,7 +84,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     this.state = {
       currentOperation: "",
+      pinCode: "",
       searchValue: "",
+      showModalDssPin: false,
       showModalDssResponse: false,
       showModalReAuth: false,
     };
@@ -383,6 +388,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
         </div>
         {this.showModalReAuth()}
+        {this.showModalDssPin()}
         {this.showModalDssResponse()}
       </React.Fragment>
     );
@@ -400,6 +406,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     return (
       <Modal
         isOpen={showModalReAuth}
+        key="ReAuth"
         header={localize("DSS.DSS_connection", locale)}
         onClose={this.handleCloseModalReAuth}
         style={{ width: "500px" }}>
@@ -423,6 +430,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     return (
       <Modal
         isOpen={showModalDssResponse}
+        key="DssResponse"
         header={dssResponse.Title}
         onClose={this.handleCloseModalDssResponse}
         style={{ width: "600px" }}>
@@ -431,6 +439,33 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           dssResponse={dssResponse}
           onCancel={this.handleCloseModalDssResponse}
           dssUserID={signer.dssUserID} />
+      </Modal>
+    );
+  }
+
+  showModalDssPin = () => {
+    const { localize, locale } = this.context;
+    const { showModalDssPin } = this.state;
+
+    if (!showModalDssPin) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalDssPin}
+        key="DssPin"
+        header={localize("DSS.pin_code_for_container", locale)}
+        onClose={this.handleCloseModalDssPin}
+        style={{ width: "500px" }}>
+
+        <PinCodeForDssContainer
+          done={(pinCode) => {
+            this.setState({ pinCode });
+          }}
+          onCancel={this.handleCloseModalDssPin}
+          clickSign={this.handleClickSign}
+        />
       </Modal>
     );
   }
@@ -455,6 +490,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     this.setState({ showModalDssResponse: false });
   }
 
+  handleShowModalDssPin = () => {
+    this.setState({ showModalDssPin: true });
+  }
+
+  handleCloseModalDssPin = () => {
+    this.setState({ showModalDssPin: false });
+  }
+
   toggleDocumentsReviewed = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { documentsReviewed, isDocumentsReviewed } = this.props;
@@ -466,6 +509,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     // tslint:disable-next-line:no-shadowed-variable
     const { activeFilesArr, signer, lic_error } = this.props;
     const { localize, locale } = this.context;
+    const { pinCode } = this.state;
 
     const licenseStatus = checkLicense();
 
@@ -506,6 +550,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       }
     }
 
+    if (signer && signer.dssUserID && signer.hasPin && !pinCode) {
+      setTimeout(() => {
+        this.handleShowModalDssPin();
+      }, 100);
+
+      return;
+    }
+
     if (activeFilesArr.length > 0) {
       const cert = window.PKISTORE.getPkiObject(signer);
 
@@ -527,6 +579,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       if (filesForResign && filesForResign.length) {
         this.resign(filesForResign, cert);
       }
+
+      this.setState({ pinCode: "" });
     }
   }
 
@@ -535,6 +589,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     // tslint:disable-next-line:no-shadowed-variable
     const { packageSign, createTransactionDSS, dssPerformOperation } = this.props;
     const { localize, locale } = this.context;
+    const { pinCode } = this.state;
 
     if (files.length > 0) {
       const policies = ["noAttributes"];
@@ -579,7 +634,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           createTransactionDSS(user.dssUrl,
             tokenAuth.access_token,
             buildTransaction(documents, signer.id, setting.sign.detached,
-              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign"),
+              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign", undefined, pinCode),
             documentsId)
             .then(
               (data: any) => {
@@ -595,7 +650,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                     (data2) => {
                       this.props.dssPerformOperation(
                         user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
-                        data2.AccessToken)
+                        data2.AccessToken, pinCode ? { "Signature": { "PinCode": pinCode} } : undefined)
                         .then(
                           (dataCMS: any) => {
                             let i: number = 0;
@@ -639,8 +694,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           dssPerformOperation(
             user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
-            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "sign") :
-              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "sign"))
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "sign", pinCode) :
+              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "sign", undefined, pinCode))
             .then(
               (dataCMS) => {
                 let i: number = 0;
@@ -681,6 +736,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     // tslint:disable-next-line:no-shadowed-variable
     const { deleteFile, selectFile, createTransactionDSS, packageSign } = this.props;
     const { localize, locale } = this.context;
+    const { pinCode } = this.state;
 
     if (files.length > 0) {
       const policies = ["noAttributes"];
@@ -751,7 +807,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             tokenAuth.access_token,
             buildTransaction(
               documents, signer.id, setting.sign.detached,
-              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "cosign", originalData),
+              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "cosign", originalData, pinCode),
             documentsId)
             .then(
               (data1: any) => {
@@ -767,7 +823,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                     (data2) => {
                       this.props.dssPerformOperation(
                         user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
-                        data2.AccessToken)
+                        data2.AccessToken, pinCode ? { "Signature": { "PinCode": pinCode } } : undefined)
                         .then(
                           (dataCMS: any) => {
                             let i: number = 0;
@@ -811,27 +867,27 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           this.props.dssPerformOperation(
             user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
-            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "cosign") :
-              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "cosign", originalData))
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "cosign", pinCode) :
+              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "cosign", originalData, pinCode))
             .then(
               (dataCMS: any) => {
-              let i: number = 0;
-              let outURIList: string[] = [];
-              files.forEach((file) => {
-                const outURI = fileNameForResign(folderOut, file);
-                const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
-                const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
-                tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
-                tcms.save(outURI, format);
-                outURIList.push(outURI);
-                i++;
-              });
-              packageSign(files, cert, policies, format, folderOut, outURIList);
-            },
-            (error) => {
-              $(".toast-dssPerformOperation_failed").remove();
-              Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
-            },
+                let i: number = 0;
+                let outURIList: string[] = [];
+                files.forEach((file) => {
+                  const outURI = fileNameForResign(folderOut, file);
+                  const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                  const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                  tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                  tcms.save(outURI, format);
+                  outURIList.push(outURI);
+                  i++;
+                });
+                packageSign(files, cert, policies, format, folderOut, outURIList);
+              },
+              (error) => {
+                $(".toast-dssPerformOperation_failed").remove();
+                Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
+              },
             );
         }
       } else {

@@ -10,7 +10,7 @@ import { DSS_ACTIONS, SIGNATURE_TYPE } from "../../constants";
  * @param operationCode код операции на Сервисе Подписи
  */
 export function buildTransaction(Documents: IDocumentContent[], certificateId: string, isDetached: boolean,
-                                 OperationCode: number, CmsSignatureType: "sign" | "cosign", OriginalDocument?: string) {
+                                 OperationCode: number, CmsSignatureType: "sign" | "cosign", OriginalDocument?: string, PinCode?: string) {
 
   let body: ITransaction;
   const isSignPackage = Documents.length > 1;
@@ -28,6 +28,7 @@ export function buildTransaction(Documents: IDocumentContent[], certificateId: s
         { Name: "CertificateID", Value: `${certificateId}` },
         { Name: "IsDetached", Value: `${isDetached}` },
         { Name: "CmsSignatureType", Value: CmsSignatureType },
+        { Name: "PinCode", Value: PinCode ? PinCode : "" },
       ],
   };
 
@@ -51,7 +52,7 @@ export function buildTransaction(Documents: IDocumentContent[], certificateId: s
  * @param originalDocumentContent содержимое исходного файла (необходимо для соподписи)
  */
 export function buildDocumentDSS(pathDocument: string, CertificateId: number,
-                                 IsDetached: boolean, CmsSignatureType: string, originalDocumentContent?: string) {
+                                 IsDetached: boolean, CmsSignatureType: string, originalDocumentContent?: string, PinCode?: string) {
 
   const Content = fs.readFileSync(pathDocument, "base64");
   const OriginalDocument = originalDocumentContent ? originalDocumentContent : "";
@@ -66,7 +67,7 @@ export function buildDocumentDSS(pathDocument: string, CertificateId: number,
         IsDetached,
         OriginalDocument,
       },
-      PinCode: "",
+      PinCode: PinCode ? PinCode : "",
       Type: SIGNATURE_TYPE.CMS,
     },
   };
@@ -81,7 +82,7 @@ export function buildDocumentDSS(pathDocument: string, CertificateId: number,
  * @param cmsSignatureType тип подписи (Sign, Сosign)
  */
 export function buildDocumentPackageDSS(documents: IDocumentContent[], certificateId: number,
-                                        isDetached: boolean, cmsSignatureType?: string) {
+                                        isDetached: boolean, cmsSignatureType?: string, PinCode?: string) {
 
   const body: IDocumentPackageDSS = {
     Documents: documents,
@@ -92,7 +93,7 @@ export function buildDocumentPackageDSS(documents: IDocumentContent[], certifica
         CmsSignatureType: cmsSignatureType ? cmsSignatureType : "Sign", // Cosign
         IsDetached: `${isDetached}`,
       },
-      PinCode: "",
+      PinCode: PinCode ? PinCode : "",
       Type: SIGNATURE_TYPE.CMS,
     },
   };
