@@ -88,6 +88,15 @@ export default (files = new DefaultReducerState(), action) => {
       return newFiles;
 
     case REMOVE_ALL_FILES:
+      files.entities.forEach((file: any) => {
+        if (file && file.socket && fileExists(file.fullpath)) {
+          try {
+            fs.unlinkSync(file.fullpath);
+          } catch (e) {
+            //
+          }
+        }
+      });
       return files = new DefaultReducerState();
 
     case DOCUMENTS_REVIEWED:
