@@ -1097,14 +1097,11 @@ class CertWindow extends React.Component<any, any> {
                   </a>
                   <ul id="dropdown-btn-import" className="dropdown-content">
                     <li><a onClick={this.certImport}>{localize("Certificate.cert_import_from_file", locale)}</a></li>
-                    {
-                      (Number(this.getCPCSPVersion().charAt(0)) < 5) ? null :
-                        <li>
-                          <a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_IMPORT_DSS)}>
-                            {localize("DSS.cert_import_from_DSS", locale)}
-                          </a>
-                        </li>
-                    }
+                    <li>
+                      <a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_IMPORT_DSS)}>
+                        {localize("DSS.cert_import_from_DSS", locale)}
+                      </a>
+                    </li>
                     <li><a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)}>{localize("CSR.create_request", locale)}</a></li>
                     <li>
                       <a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST_CA)}>
@@ -1288,7 +1285,7 @@ class CertWindow extends React.Component<any, any> {
       if (status) {
         curStatusStyle = certificate.dssUserID ? "cloud_cert_status_ok" : "cert_status_ok";
       } else {
-        curStatusStyle = certificate.dssUserID  ? "cloud_cert_status_error" : "cert_status_error";
+        curStatusStyle = certificate.dssUserID ? "cloud_cert_status_error" : "cert_status_error";
       }
 
       return (
