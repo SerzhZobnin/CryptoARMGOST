@@ -314,7 +314,7 @@ export default {
     password_dss: "Password",
     pin_code_for_container: "PIN code for container",
     pin_dss: "PIN code",
-    remember_password: "Remember password",
+    remember_password: "Remember password (while the application is running)",
     transaction_created_failed: "Error create transaction",
     transaction_created_successful: "Transaction was successful created",
     use_cryptopro_dss_test_service: "Use CryptoPro DSS test service",
