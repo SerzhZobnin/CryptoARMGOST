@@ -36,17 +36,18 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
   constructor(props: IReAuthProps) {
     super(props);
 
+    const passwordUserDSS = props.passwordDSS.get(props.dssUserID);
     this.state = ({
-      field_value: "",
+      field_value: { login_dss: "", password_dss: passwordUserDSS && passwordUserDSS.password ? passwordUserDSS.password : "" },
       isRememberPassword: false,
-      passwordUserDSS: props.passwordDSS.get(props.dssUserID),
+      passwordUserDSS,
       user: props.users.get(props.dssUserID),
     });
   }
 
   componentDidMount() {
     const self = this;
-    const { passwordUserDSS } = this.state;
+    const { field_value } = this.state;
 
     $(document).ready(() => {
       $("select").material_select();
@@ -54,14 +55,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       $("select").on("change", self.handleInputChange);
     });
 
-    if (passwordUserDSS && passwordUserDSS.password) {
-      const newSubject = {
-        ...this.state.field_value,
-        password_dss: passwordUserDSS.password,
-      };
-      this.setState(({
-        field_value: { ...newSubject },
-      }));
+    if (field_value && field_value.password_dss) {
       this.handleReady();
     }
     Materialize.updateTextFields();
@@ -200,7 +194,6 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       password: field_value.password_dss,
       user: user.login,
     };
-
     dssAuthIssue(userDSS).then(
       (result: any) => {
         $(".toast-authorization_successful").remove();
