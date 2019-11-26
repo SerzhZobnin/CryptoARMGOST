@@ -72,11 +72,11 @@ export const postApi = async (url: string, postfields: string, headerfields: str
       try {
 
         if (statusCode !== 200) {
-          throw new Error(`Unexpected response, status code ${statusCode}`);
+          throw new Error(`Неожиданный ответ, код ${statusCode}`);
         }
         data = JSON.parse(response.toString());
       } catch (error) {
-        reject(`Cannot load data, error: ${error.message}`);
+        reject(`Ошибка загрузки данных: ${error.message}`);
         return;
       } finally {
         curl.close.bind(curl);
@@ -85,7 +85,7 @@ export const postApi = async (url: string, postfields: string, headerfields: str
     });
     curl.on("error", (error: { message: any; }) => {
       curl.close.bind(curl);
-      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
+      reject(new Error(`Ошибка загрузки данных по URL ${url}, ошибка: ${error.message}`));
     });
     curl.perform();
   });
@@ -106,11 +106,11 @@ export const getApi = async (url: string, headerfields: string[]) => {
       let data;
       try {
         if (statusCode !== 200) {
-          throw new Error(`Unexpected response, status code ${statusCode}`);
+          throw new Error(`Неожиданный ответ, код ${statusCode}`);
         }
         data = JSON.parse(response.toString());
       } catch (error) {
-        reject(`Cannot load data, error: ${error.message}`);
+        reject(`Ошибка загрузки данных: ${error.message}`);
         return;
       } finally {
         curl.close.bind(curl);
@@ -119,7 +119,7 @@ export const getApi = async (url: string, headerfields: string[]) => {
     });
     curl.on("error", (error: { message: any; }) => {
       curl.close.bind(curl);
-      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
+      reject(new Error(`Ошибка загрузки данных по URL ${url}, ошибка: ${error.message}`));
     });
     curl.perform();
   });
