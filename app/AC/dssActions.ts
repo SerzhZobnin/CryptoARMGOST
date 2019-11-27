@@ -289,8 +289,21 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
               `${url}`,
               JSON.stringify(challengeResponse),
               headerfield,
-            );
-
+            )
+            .catch((error) => {
+              dispatch(postAuthorizationUserFail(type, error));
+              dispatch({
+                payload: {
+                  RefID,
+                },
+                type: type + RESPONSE + FAIL,
+              });
+              if (timerHandle) {
+                clearInterval(timerHandle);
+                timerHandle = null;
+                reject(error);
+              }
+            });
             if (data2.IsFinal === true && !data2.IsError) {
               dispatch(postAuthorizationUserSuccess(type, data2, dssUserID));
               dispatch({
