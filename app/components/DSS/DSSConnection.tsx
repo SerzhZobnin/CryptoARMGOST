@@ -1,9 +1,11 @@
+import { OrderedMap } from "immutable";
 import PropTypes, { any } from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { deletePasswordDSS, rememberPasswordDSS } from "../../AC";
 import { dssAuthIssue, getCertificatesDSS, getPolicyDSS } from "../../AC/dssActions";
 import { md5 } from "../../utils";
+import ConfirmTransaction from "../DSS/ConfirmTransaction";
 import ProgressBars from "../ProgressBars";
 
 const url_oath = "url_oath";
@@ -16,6 +18,7 @@ const URL_SIGN_SERVER_DSS = "https://dss.cryptopro.ru/SignServer/rest";
 
 interface IDSSConnectionProps {
   dssAuthIssue: (user: IUserDSS) => Promise<void>;
+  dssResponses: OrderedMap<any, any>;
   getCertificatesDSS: (url: string, dssUserID: string, token: string) => Promise<void>;
   getPolicyDSS: (url: string, dssUserID: string, token: string) => Promise<void>;
   onCancel?: () => void;
@@ -33,6 +36,7 @@ interface IDSSConnectionState {
   isTestDSS: boolean;
   isRememberPassword: boolean;
   dssUserID: string;
+  dssResponse: any;
 }
 
 class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionState> {
@@ -49,6 +53,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
       isTestDSS: false,
       isRememberPassword: false,
       dssUserID: "",
+      dssResponse: null,
     });
   }
 
@@ -90,15 +95,19 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
         Materialize.toast(error, 3000, "toast-getCertificatesDSS_failed");
       });
     }
+
+    if (!prevProps.dssResponses.size && this.props.dssResponses.size) {
+      this.setState({dssResponse:  this.props.dssResponses.first()});
+    }
   }
 
   render() {
     const { localize, locale } = this.context;
-    const { field_value, isTestDSS, isRememberPassword } = this.state;
+    const { dssResponse, field_value, isTestDSS, isRememberPassword } = this.state;
     const { isLoaded, isLoading } = this.props;
 
     if (isLoading) {
-      return <ProgressBars />;
+      return dssResponse ? this.getDssResponseLabel(dssResponse) : <ProgressBars />;
     }
 
     let disabled = "disabled";
@@ -241,6 +250,35 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
     );
   }
 
+  getDssResponseLabel = (dssResponse: any) => {
+    return (
+      <React.Fragment>
+
+        <div className="row nobottom">
+          <div className="col s12 ">
+            <div className="row halfbottom" />
+            <div className="content-wrapper z-depth-1 tbody">
+              <div className="content-item-relative">
+                <div className="row">
+
+                  <div className="col s12">
+                    <div className="primary-text">
+                      {dssResponse.Label}
+                    </div>
+                  </div>
+
+                  <div className="row" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="row halfbottom" />
+        </div>
+
+      </React.Fragment>
+    );
+  }
+
   handleInputChange = (ev: any) => {
     const target = ev.target;
     const name = target.name;
@@ -331,6 +369,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
 
 export default connect((state) => {
   return {
+    dssResponses: state.dssResponses.entities,
     isLoaded: state.certificatesDSS.loaded,
     isLoading: state.certificatesDSS.loading,
     passwordDSS: state.passwordDSS.entities,
