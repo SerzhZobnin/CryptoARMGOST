@@ -17,11 +17,12 @@ export function addServiceCertificate(certificate: trusted.pki.Certificate, cert
   return {
     active: false,
     category: "MY",
+    dssCertID: certificateProps.ID,
     dssUserID,
     format: "PEM",
     hasPin: certificateProps.HasPin,
     hash: certificate.thumbprint,
-    id: certificateProps.ID,
+    id: `${certificateProps.ID}_${dssUserID}`,
     issuerFriendlyName: certificate.issuerFriendlyName,
     issuerName: certificate.issuerName,
     key: "1",

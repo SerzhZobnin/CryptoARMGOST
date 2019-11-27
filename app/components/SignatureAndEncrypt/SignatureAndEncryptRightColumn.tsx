@@ -633,7 +633,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         if (mfaRequired) {
           createTransactionDSS(user.dssUrl,
             tokenAuth.access_token,
-            buildTransaction(documents, signer.id, setting.sign.detached,
+            buildTransaction(documents, signer.dssCertID, setting.sign.detached,
               isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "sign", undefined, pinCode),
             documentsId)
             .then(
@@ -694,8 +694,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           dssPerformOperation(
             user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
-            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "sign", pinCode) :
-              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "sign", undefined, pinCode))
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.dssCertID, setting.sign.detached, "sign", pinCode) :
+              buildDocumentDSS(files[0].fullpath, signer.dssCertID, setting.sign.detached, "sign", undefined, pinCode))
             .then(
               (dataCMS) => {
                 let i: number = 0;
@@ -806,7 +806,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           createTransactionDSS(user.dssUrl,
             tokenAuth.access_token,
             buildTransaction(
-              documents, signer.id, setting.sign.detached,
+              documents, signer.dssCertID, setting.sign.detached,
               isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "cosign", originalData, pinCode),
             documentsId)
             .then(
@@ -867,8 +867,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           this.props.dssPerformOperation(
             user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
-            isSignPackage ? buildDocumentPackageDSS(documents, signer.id, setting.sign.detached, "cosign", pinCode) :
-              buildDocumentDSS(files[0].fullpath, signer.id, setting.sign.detached, "cosign", originalData, pinCode))
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.dssCertID, setting.sign.detached, "cosign", pinCode) :
+              buildDocumentDSS(files[0].fullpath, signer.dssCertID, setting.sign.detached, "cosign", originalData, pinCode))
             .then(
               (dataCMS: any) => {
                 let i: number = 0;

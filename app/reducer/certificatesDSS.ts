@@ -9,6 +9,7 @@ import { arrayToMap, mapToArr } from "../utils";
 export const CertificateDSSModel = Record({
   active: null,
   category: null,
+  dssCertID: null,
   dssUserID: null,
   format: null,
   hasPin: null,
