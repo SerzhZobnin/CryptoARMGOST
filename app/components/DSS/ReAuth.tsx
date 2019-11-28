@@ -55,9 +55,6 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       $("select").on("change", self.handleInputChange);
     });
 
-    if (field_value && field_value.password_dss) {
-      this.handleReady();
-    }
     Materialize.updateTextFields();
   }
 
