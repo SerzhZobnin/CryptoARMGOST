@@ -42,7 +42,7 @@ class SignatureStandardSelector extends React.Component<ISignatureStandardSelect
     const classDisabled = this.props.disabled ? "disabled" : "";
 
     return (
-      <div className={"row" + classDisabled}>
+      <div className={classDisabled}>
         <div className="input-field col s12">
           <select className="select" id="encoding" defaultValue={this.props.EncodingValue}>
             <option value={SignatureStandard.CMS}>

@@ -22,6 +22,8 @@ import SelectFolder from "../SelectFolder";
 import SignatureStandardSelector from "../Signature/SignatureStandardSelector";
 import SignatureTypeSelector from "../Signature/SignatureTypeSelector";
 import SignerInfo from "../Signature/SignerInfo";
+import OcspSettings from "./OcspSettings";
+import TspSettings from "./TspSettings";
 
 const dialog = window.electron.remote.dialog;
 
@@ -135,14 +137,14 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                         onClickCheckBox={this.handleDetachedClick}
                         isChecked={settings.sign.detached}
                         elementId="detached-sign"
-                        title={localize("Sign.timestamp_on_sign", locale)} />
+                        title={localize("Cades.timestamp_on_sign", locale)} />
                     </div>
                     <div className="col s12 m12 l6">
                       <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
                         disabled={disabled || (signer && signer.service)}
                         isChecked={settings.sign.timestamp || (signer && signer.service)}
                         elementId="sign-time"
-                        title={localize("Sign.timestamp_on_data", locale)} />
+                        title={localize("Cades.timestamp_on_data", locale)} />
                     </div>
 
                   </div>
@@ -245,6 +247,34 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                       </div>
                   }
                 </div>
+              </div>
+
+              <div className="row">
+                <div className="col s12">
+                  <div className="headline6">
+                    {localize("Cades.service_tsp", locale)}
+                  </div>
+                  <hr />
+                </div>
+
+                <div className="col s12">
+                  <TspSettings />
+                </div>
+
+              </div>
+
+              <div className="row">
+                <div className="col s12">
+                  <div className="headline6">
+                    {localize("Cades.service_ocsp", locale)}
+                  </div>
+                  <hr />
+                </div>
+
+                <div className="col s12">
+                  <OcspSettings />
+                </div>
+
               </div>
             </div>
           </div>
