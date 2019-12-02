@@ -19,6 +19,8 @@ import CheckBoxWithLabel from "../CheckBoxWithLabel";
 import EncodingTypeSelector from "../EncodingTypeSelector";
 import RecipientsList from "../RecipientsList";
 import SelectFolder from "../SelectFolder";
+import SignatureStandardSelector from "../Signature/SignatureStandardSelector";
+import SignatureTypeSelector from "../Signature/SignatureTypeSelector";
 import SignerInfo from "../Signature/SignerInfo";
 
 const dialog = window.electron.remote.dialog;
@@ -112,6 +114,16 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                 <div className="col s12">
                   <div className="row settings-content">
                     <div className="col s12 m12 l6">
+                      <SignatureStandardSelector
+                        EncodingValue={encoding}
+                        handleChange={this.handleEncodingChange}
+                        disabled={signer && signer.service} />
+
+                      <SignatureTypeSelector
+                        EncodingValue={encoding}
+                        handleChange={this.handleEncodingChange}
+                        disabled={signer && signer.service} />
+
                       <EncodingTypeSelector
                         EncodingValue={encoding}
                         handleChange={this.handleEncodingChange}
@@ -123,15 +135,16 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                         onClickCheckBox={this.handleDetachedClick}
                         isChecked={settings.sign.detached}
                         elementId="detached-sign"
-                        title={localize("Sign.sign_detached", locale)} />
+                        title={localize("Sign.timestamp_on_sign", locale)} />
                     </div>
-                    <div className="col s12 m6 m12 l6">
+                    <div className="col s12 m12 l6">
                       <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
                         disabled={disabled || (signer && signer.service)}
                         isChecked={settings.sign.timestamp || (signer && signer.service)}
                         elementId="sign-time"
-                        title={localize("Sign.sign_time", locale)} />
+                        title={localize("Sign.timestamp_on_data", locale)} />
                     </div>
+
                   </div>
 
                   <div className="row nobottom">
@@ -191,7 +204,7 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                       elementId="archive_files"
                       title={localize("Encrypt.archive_files_before", locale)} />
                   </div>
-                  <div className="col s12 m12 l6">
+                  <div className="col s12">
                     <EncodingTypeSelector EncodingValue={settings.encrypt.encoding} handleChange={this.handleEncryptEncodingChange} />
                   </div>
                 </div>

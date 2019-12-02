@@ -2,13 +2,18 @@ import PropTypes from "prop-types";
 import React from "react";
 import ReactDOM from "react-dom";
 
-interface IEncodingTypeSelectorProps {
+interface ISignatureStandardSelectorProps {
   EncodingValue: string;
   disabled?: boolean;
   handleChange: (encoding: string) => void;
 }
 
-class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {}> {
+const SignatureStandard = {
+  CADES: "CAdES-X Long Type 1",
+  CMS: "CMS",
+};
+
+class SignatureStandardSelector extends React.Component<ISignatureStandardSelectorProps, {}> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -40,15 +45,15 @@ class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {
       <div className={"row" + classDisabled}>
         <div className="input-field col s12">
           <select className="select" id="encoding" defaultValue={this.props.EncodingValue}>
-            <option value={localize("Settings.BASE", locale)}>
-              {localize("Settings.BASE", locale)}
+            <option value={SignatureStandard.CMS}>
+              {SignatureStandard.CMS}
             </option>
-            <option value={localize("Settings.DER", locale)}>
-              {localize("Settings.DER", locale)}
+            <option value={SignatureStandard.CADES}>
+              {SignatureStandard.CADES}
             </option>
           </select>
           <label>
-            {localize("Settings.encoding", locale)}
+            {localize("Sign.standard", locale)}
           </label>
         </div>
       </div>
@@ -56,4 +61,4 @@ class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {
   }
 }
 
-export default EncodingTypeSelector;
+export default SignatureStandardSelector;
