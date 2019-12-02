@@ -37,6 +37,10 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   background-color: #bf3817 !important;
 }
 
+.headline6 {
+  font-size: 1.25rem;
+}
+
 .primary-text {
   color: rgba(0,0,0,0.87);
   font-size: 1rem;
@@ -207,10 +211,6 @@ body {
 }
 .settings-content {
     overflow: visible;
-    height: calc(100% - 35px);
-    white-space: nowrap;
-    font-size: 14px;
-    width: 100%;
 }
 
 .sign-info-content {
@@ -228,12 +228,6 @@ body {
 
 .bordered--top{
     border-top:1px solid rgba(0,0,0, 0.5);
-}
-
-.select-wrapper input.select-dropdown{
-    height: 42px;
-    line-height: 30px;
-    font-size: 100%;
 }
 
 .select-wrapper+label {

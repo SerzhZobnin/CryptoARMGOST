@@ -71,26 +71,20 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
       <div className="content-noflex">
         <div className="row">
           <div className="col s8 leftcol">
-            <div className="row halfbottom">
+            <div className="row">
+
               <div className="row halfbottom" />
+
               <div className="row">
                 <div className="col s12">
-                  <div className="h4">{localize("Settings.general", locale)}</div>
-                  <div className="settings-content">
-                    <div className="row" />
-                    <div className="row">
-                      <div className="input-field  col s12">
-                        <input
-                          id="name"
-                          type="text"
-                          name="name"
-                          value={settings.name}
-                          onChange={this.handleInputNameChange}
-                          placeholder={localize("Settings.name", locale)}
-                        />
-                        <label htmlFor="name" style={{ color: "rgba(0,0,0,0.87)", fontSize: "14px" }}>{localize("Settings.name", locale)}</label>
-                      </div>
-                    </div>
+                  <div className="headline6">
+                    {localize("Settings.general", locale)}
+                  </div>
+                  <hr />
+                </div>
+
+                <div className="col s12">
+                  <div>
                     <CheckBoxWithLabel
                       disabled={disabled}
                       onClickCheckBox={this.handleSaveToDocumentsClick}
@@ -107,80 +101,79 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                 </div>
               </div>
 
-              <div className="row halfbottom" >
+              <div className="row">
                 <div className="col s12">
-                  <hr />
-                </div>
-              </div>
-
-              <div className="col s12">
-                <div className="h4">
-                  {localize("Sign.sign_setting", locale)}
-                </div>
-
-                <div className="row settings-content">
-                  <div className="col s12 m12 l6">
-                    <EncodingTypeSelector
-                      EncodingValue={encoding}
-                      handleChange={this.handleEncodingChange}
-                      disabled={signer && signer.service} />
-                  </div>
-                  <div className="col s12 m12 l6">
-                    <CheckBoxWithLabel
-                      disabled={disabled}
-                      onClickCheckBox={this.handleDetachedClick}
-                      isChecked={settings.sign.detached}
-                      elementId="detached-sign"
-                      title={localize("Sign.sign_detached", locale)} />
-                  </div>
-                  <div className="col s12 m6 m12 l6">
-                    <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
-                      disabled={disabled || (signer && signer.service)}
-                      isChecked={settings.sign.timestamp || (signer && signer.service)}
-                      elementId="sign-time"
-                      title={localize("Sign.sign_time", locale)} />
-                  </div>
-                </div>
-
-                <div className="row nobottom">
-                  <div className="col s11">
-                    <div className="desktoplic_text_item">{localize("Sign.signer_cert", locale)}</div>
+                  <div className="headline6">
+                    {localize("Sign.sign_setting", locale)}
                     <hr />
                   </div>
-                  <div className="col s1">
-                    <a className="btn-floated" data-activates="dropdown-btn-signer">
-                      <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
-                    </a>
-                    <ul id="dropdown-btn-signer" className="dropdown-content">
-                      <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
-                        <li><a>Заменить</a></li>
-                      </Link>
-                      <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
-                    </ul>
+                </div>
+
+                <div className="col s12">
+                  <div className="row settings-content">
+                    <div className="col s12 m12 l6">
+                      <EncodingTypeSelector
+                        EncodingValue={encoding}
+                        handleChange={this.handleEncodingChange}
+                        disabled={signer && signer.service} />
+                    </div>
+                    <div className="col s12 m12 l6">
+                      <CheckBoxWithLabel
+                        disabled={disabled}
+                        onClickCheckBox={this.handleDetachedClick}
+                        isChecked={settings.sign.detached}
+                        elementId="detached-sign"
+                        title={localize("Sign.sign_detached", locale)} />
+                    </div>
+                    <div className="col s12 m6 m12 l6">
+                      <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
+                        disabled={disabled || (signer && signer.service)}
+                        isChecked={settings.sign.timestamp || (signer && signer.service)}
+                        elementId="sign-time"
+                        title={localize("Sign.sign_time", locale)} />
+                    </div>
                   </div>
-                  {
-                    (signer) ? <SignerInfo signer={signer} style={{ fontSize: "75%" }} /> :
-                      <div className="col s12 right-align">
+
+                  <div className="row nobottom">
+                    <div className="col s11">
+                      <div className="desktoplic_text_item">{localize("Sign.signer_cert", locale)}</div>
+                      <hr />
+                    </div>
+                    <div className="col s1">
+                      <a className="btn-floated" data-activates="dropdown-btn-signer">
+                        <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                      </a>
+                      <ul id="dropdown-btn-signer" className="dropdown-content">
                         <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
-                          <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%", maxWidth: "505px" }}>
-                            {localize("Settings.Choose", locale)}
-                          </a>
+                          <li><a>Заменить</a></li>
                         </Link>
-                      </div>
-                  }
+                        <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
+                      </ul>
+                    </div>
+                    {
+                      (signer) ? <SignerInfo signer={signer} style={{ fontSize: "75%" }} /> :
+                        <div className="col s12 right-align">
+                          <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
+                            <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%", maxWidth: "505px" }}>
+                              {localize("Settings.Choose", locale)}
+                            </a>
+                          </Link>
+                        </div>
+                    }
+                  </div>
                 </div>
               </div>
 
               <div className="row" />
 
-              <div className="row halfbottom" >
+              <div className={`row ${classDisabled}`}>
                 <div className="col s12">
+                  <div className="headline6">
+                    {localize("Encrypt.encrypt_setting", locale)}
+                  </div>
                   <hr />
                 </div>
-              </div>
 
-              <div className={`col s12 ${classDisabled}`}>
-                <div className="h4">{localize("Encrypt.encrypt_setting", locale)}</div>
                 <div className="settings-content">
                   <div className="col s12 m12 l6">
                     <CheckBoxWithLabel
@@ -210,7 +203,7 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                     <div className="desktoplic_text_item">Сертификаты шифрования:</div>
                     <hr />
                   </div>
-                  <div className="col s2">
+                  <div className="col s2 settings-content">
                     <div className="right import-col">
                       <a className="btn-floated" data-activates="dropdown-btn-encrypt">
                         <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>

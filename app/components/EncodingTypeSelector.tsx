@@ -21,7 +21,7 @@ class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {
     const self = this;
     $(document).ready(() => {
       $("select").material_select();
-      $("select").on("change", function() {
+      $("select").on("change", function () {
         self.changeEncoding($(this)[0].value);
       });
     });
@@ -37,13 +37,19 @@ class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {
     const classDisabled = this.props.disabled ? "disabled" : "";
 
     return (
-      <div className={"row settings-item nobottom " + classDisabled}>
-        <div className="col">{localize("Settings.encoding", locale)}</div>
-        <div className="col input-field">
-          <select id="encoding" defaultValue={this.props.EncodingValue}>
-            <option value={localize("Settings.BASE", locale)}>{localize("Settings.BASE", locale)}</option>
-            <option value={localize("Settings.DER", locale)}>{localize("Settings.DER", locale)}</option>
+      <div className={"row" + classDisabled}>
+        <div className="input-field col s12 m6">
+          <select className="select" id="encoding" defaultValue={this.props.EncodingValue}>
+            <option value={localize("Settings.BASE", locale)}>
+              {localize("Settings.BASE", locale)}
+            </option>
+            <option value={localize("Settings.DER", locale)}>
+              {localize("Settings.DER", locale)}
+            </option>
           </select>
+          <label>
+            {localize("Settings.encoding", locale)}
+          </label>
         </div>
       </div>
     );

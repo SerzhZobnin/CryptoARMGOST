@@ -26,7 +26,7 @@ class CheckBoxWithLabel extends React.Component<ICheckBoxWithLabelProps, any> {
 
         <label htmlFor={elementId}></label>
       </div>
-      <div className={"col s11 settins-check-title " + classDisabled}>{title}</div>
+      <div className={"col s11 primary-text " + classDisabled}>{title}</div>
     </div>;
   }
 }
