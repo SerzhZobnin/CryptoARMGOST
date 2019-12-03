@@ -6,11 +6,28 @@ interface IOcspSettingsProps {
   handleChange: (encoding: string) => void;
 }
 
-class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
+interface IOcspSettingsState {
+  port: number;
+  url_proxy: string;
+  url_ocsp: string;
+  use_proxy: boolean;
+}
+
+class OcspSettings extends React.Component<IOcspSettingsProps, IOcspSettingsState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
+
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      port: 0,
+      url_ocsp: "",
+      url_proxy: "",
+      use_proxy: false,
+    };
+  }
 
   render() {
     const { localize, locale } = this.context;
@@ -24,7 +41,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
               type="text"
               className="validate"
               name="url_ocsp"
-              value={""}
+              value={this.state.url_ocsp}
               onChange={this.handleInputChange}
               placeholder="https://"
             />
@@ -36,7 +53,9 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
           <div className="col s12">
             <CheckBoxWithLabel
               disabled={false}
-              elementId="saveToDocuments"
+              isChecked={this.state.use_proxy}
+              elementId="use_proxy"
+              onClickCheckBox={this.handleUseProxyClick}
               title={localize("Cades.use_proxy", locale)} />
             <div className="row" />
           </div>
@@ -49,7 +68,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
               type="text"
               className="validate"
               name="url_proxy"
-              value={""}
+              value={this.state.url_proxy}
               onChange={this.handleInputChange}
               placeholder="https://"
             />
@@ -63,9 +82,11 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
               id="port"
               type="number"
               className="validate"
+              max={65536}
+              min={0}
               name="port"
-              value={""}
-              onChange={this.handleInputChange}
+              value={this.state.port}
+              onChange={this.handleInputPort}
               placeholder="0 - 65536"
             />
             <label htmlFor="port">
@@ -78,7 +99,30 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
   }
 
   handleInputChange = (ev: any) => {
-    console.log(ev);
+    const target = ev.target;
+    const name = target.name;
+    const value = ev.target.value;
+
+    this.setState(({
+      ...this.state,
+      [name]: value,
+    }));
+  }
+
+  handleInputPort = (ev: any) => {
+    const target = ev.target;
+    const name = target.name;
+    const value = ev.target.value;
+
+    this.setState(({
+      port: parseInt(value, 10),
+    }));
+  }
+
+  handleUseProxyClick = () => {
+    this.setState({
+      use_proxy: !this.state.use_proxy,
+    });
   }
 }
 

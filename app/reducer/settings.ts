@@ -31,6 +31,20 @@ export const EncryptModel = Record({
   recipients: OrderedMap({}),
 });
 
+export const TspModel = Record({
+  proxy_port: "",
+  proxy_url: "",
+  url: "",
+  use_proxy: false,
+});
+
+export const OcspModel = Record({
+  proxy_port: "",
+  proxy_url: "",
+  url: "",
+  use_proxy: false,
+});
+
 const DEFAULT_ID = "DEFAULT_ID";
 
 export const SettingsModel = Record({
@@ -39,9 +53,11 @@ export const SettingsModel = Record({
   locale: RU,
   mtime: null,
   name: "Настройка #1",
+  ocsp: new OcspModel(),
   outfolder: "",
   saveToDocuments: false,
   sign: new SignModel(),
+  tsp: new TspModel(),
 });
 
 export const DefaultReducerState = Record({
