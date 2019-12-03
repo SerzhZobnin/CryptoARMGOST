@@ -39,20 +39,24 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
 
 .headline6 {
   font-size: 1.25rem;
+  letter-spacing: 0.00857142857rem; /* 0.15/(20*0.0625*14) */
 }
 
 .primary-text {
   color: rgba(0,0,0,0.87);
   font-size: 1rem;
+  letter-spacing: 0.03571428571rem; /* 0.5/(16*0.0625*14) */
 }
 
 .secondary-text {
   color: rgba(0,0,0,0.6);
   font-size: 0.875rem;
+  letter-spacing: 0.02040816326rem; /* 0.25/(14*0.0625*14) */
 }
 
 .caption-text {
   font-size: 0.875rem;
+  letter-spacing: 0.03809523809rem;
   color: #334294;
 }
 
@@ -603,6 +607,7 @@ div::-webkit-scrollbar-thumb {
   overflow: hidden;
   font-size: 0.875rem;
   font-weight: bold;
+  letter-spacing: 0.10204081632rem;
 }
 
 .btn-outlined {
@@ -619,7 +624,8 @@ div::-webkit-scrollbar-thumb {
   text-overflow: ellipsis;
   overflow: hidden;
   font-size: 0.875rem;
-  font-weight: 900;
+  font-weight: bold;
+  letter-spacing: 0.10204081632rem; /* 1.25/(14*0.0625*14px) */
 }
 
 .btn-outlined:hover, .btn-text:hover  {
