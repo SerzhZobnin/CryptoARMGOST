@@ -19,7 +19,9 @@ export const SignModel = Record({
   detached: false,
   encoding: BASE64,
   signer: "",
+  standard: "CMS",
   timestamp: true,
+  timestamp_on_sign: false,
 });
 
 export const EncryptModel = Record({
@@ -86,7 +88,7 @@ export default (settings = new DefaultReducerState(), action) => {
       break;
 
     case TOGGLE_SAVE_TO_DOCUMENTS:
-      
+
       settings = settings
         .setIn(["entities", settings.active, "mtime"], new Date().getTime())
         .setIn(["entities", settings.active, "saveToDocuments"], payload.saveToDocuments);

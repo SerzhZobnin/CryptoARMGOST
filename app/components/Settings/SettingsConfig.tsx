@@ -66,6 +66,8 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
     const classDisabled = disabled ? "disabled" : "";
 
     let encoding = settings.sign.encoding;
+    const signatureStandard = settings.sign.standard;
+    const isDetached = settings.sign.detached;
 
     if (signer && signer.service && encoding !== "BASE-64") {
       encoding = "BASE-64";
@@ -121,13 +123,13 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                   <div className="row settings-content">
                     <div className="col s12 m12 l6">
                       <SignatureStandardSelector
-                        EncodingValue={encoding}
-                        handleChange={this.handleEncodingChange}
+                        value={signatureStandard}
+                        handleChange={this.handleSignatureStandardChange}
                         disabled={signer && signer.service} />
 
                       <SignatureTypeSelector
-                        EncodingValue={encoding}
-                        handleChange={this.handleEncodingChange}
+                        detached={isDetached}
+                        handleChange={this.handleDetachedChange}
                         disabled={signer && signer.service} />
 
                       <EncodingTypeSelector
@@ -138,8 +140,8 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                     <div className="col s12 m12 l6">
                       <CheckBoxWithLabel
                         disabled={disabled}
-                        onClickCheckBox={this.handleDetachedClick}
-                        isChecked={settings.sign.detached}
+                        onClickCheckBox={this.handleTimestampOnSignClick}
+                        isChecked={settings.sign.timestamp_on_sign}
                         elementId="detached-sign"
                         title={localize("Cades.timestamp_on_sign", locale)} />
                     </div>
@@ -196,7 +198,10 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                 <div className="col s12">
                   <div className="row settings-content">
                     <div className="col s12 m12 l6">
-                      <EncodingTypeSelector EncodingValue={settings.encrypt.encoding} handleChange={this.handleEncryptEncodingChange} />
+                      <EncodingTypeSelector
+                        EncodingValue={settings.encrypt.encoding}
+                        handleChange={this.handleEncryptEncodingChange}
+                      />
                     </div>
                     <div className="col s12 m12 l6">
                       <CheckBoxWithLabel
@@ -363,12 +368,12 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
     });
   }
 
-  handleDetachedClick = () => {
+  handleDetachedChange = (detached: boolean) => {
     const { settings } = this.state;
 
     this.setState({
       settings: settings
-        .setIn(["sign", "detached"], !settings.sign.detached),
+        .setIn(["sign", "detached"], detached),
     });
   }
 
@@ -378,6 +383,15 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
     this.setState({
       settings: settings
         .setIn(["sign", "timestamp"], !settings.sign.timestamp),
+    });
+  }
+
+  handleTimestampOnSignClick = () => {
+    const { settings } = this.state;
+
+    this.setState({
+      settings: settings
+        .setIn(["sign", "timestamp_on_sign"], !settings.sign.timestamp_on_sign),
     });
   }
 
@@ -396,9 +410,20 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
   handleEncodingChange = (encoding: string) => {
     const { settings } = this.state;
 
+    console.log("encoding", encoding);
+
     this.setState({
       settings: settings
         .setIn(["sign", "encoding"], encoding),
+    });
+  }
+
+  handleSignatureStandardChange = (value: string) => {
+    const { settings } = this.state;
+
+    this.setState({
+      settings: settings
+        .setIn(["sign", "standard"], value),
     });
   }
 

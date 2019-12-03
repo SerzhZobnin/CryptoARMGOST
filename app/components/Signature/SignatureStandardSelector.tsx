@@ -3,7 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 interface ISignatureStandardSelectorProps {
-  EncodingValue: string;
+  value: string;
   disabled?: boolean;
   handleChange: (encoding: string) => void;
 }
@@ -23,18 +23,14 @@ class SignatureStandardSelector extends React.Component<ISignatureStandardSelect
    * https://github.com/facebook/react/issues/3667
    */
   componentDidMount() {
-    const self = this;
     $(document).ready(() => {
       $("select").material_select();
-      $("select").on("change", function () {
-        self.changeEncoding($(this)[0].value);
-      });
     });
-    $(ReactDOM.findDOMNode(this.refs.select)).on("change", this.handleChange);
+    $(ReactDOM.findDOMNode(this.refs.standard)).on("change", this.changeStandard);
   }
 
-  changeEncoding = (encoding: string) => {
-    this.props.handleChange(encoding);
+  changeStandard = (ev: any) => {
+    this.props.handleChange(ev.target.value);
   }
 
   render() {
@@ -44,7 +40,7 @@ class SignatureStandardSelector extends React.Component<ISignatureStandardSelect
     return (
       <div className={classDisabled}>
         <div className="input-field">
-          <select className="select" id="encoding" defaultValue={this.props.EncodingValue}>
+          <select className="select" id="standard" ref="standard" defaultValue={this.props.value}>
             <option value={SignatureStandard.CMS}>
               {SignatureStandard.CMS}
             </option>

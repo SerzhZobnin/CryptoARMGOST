@@ -3,9 +3,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 interface ISignatureTypeSelectorProps {
-  EncodingValue: string;
+  detached: boolean;
   disabled?: boolean;
-  handleChange: (encoding: string) => void;
+  handleChange: (value: boolean) => void;
 }
 
 const SignatureTypes = {
@@ -23,18 +23,14 @@ class SignatureTypeSelector extends React.Component<ISignatureTypeSelectorProps,
    * https://github.com/facebook/react/issues/3667
    */
   componentDidMount() {
-    const self = this;
     $(document).ready(() => {
       $("select").material_select();
-      $("select").on("change", function () {
-        self.changeEncoding($(this)[0].value);
-      });
     });
-    $(ReactDOM.findDOMNode(this.refs.select)).on("change", this.handleChange);
+    $(ReactDOM.findDOMNode(this.refs.type_of_signature)).on("change", this.changeSignatureType);
   }
 
-  changeEncoding = (encoding: string) => {
-    this.props.handleChange(encoding);
+  changeSignatureType = (ev: any) => {
+    this.props.handleChange(ev.target.value === SignatureTypes.DETACHED);
   }
 
   render() {
@@ -44,7 +40,8 @@ class SignatureTypeSelector extends React.Component<ISignatureTypeSelectorProps,
     return (
       <div className={classDisabled}>
         <div className="input-field">
-          <select className="select" id="encoding" defaultValue={this.props.EncodingValue}>
+          <select className="select" id="type_of_signature" ref="type_of_signature"
+            defaultValue={this.props.detached ? SignatureTypes.DETACHED : SignatureTypes.ATTACHED}>
             <option value={SignatureTypes.ATTACHED}>
               {SignatureTypes.ATTACHED}
             </option>

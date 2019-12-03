@@ -18,18 +18,14 @@ class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {
    * https://github.com/facebook/react/issues/3667
    */
   componentDidMount() {
-    const self = this;
     $(document).ready(() => {
       $("select").material_select();
-      $("select").on("change", function () {
-        self.changeEncoding($(this)[0].value);
-      });
     });
-    $(ReactDOM.findDOMNode(this.refs.select)).on("change", this.handleChange);
+    $(ReactDOM.findDOMNode(this.refs.encoding)).on("change", this.changeEncoding);
   }
 
-  changeEncoding = (encoding: string) => {
-    this.props.handleChange(encoding);
+  changeEncoding = (ev: any) => {
+    this.props.handleChange(ev.target.value);
   }
 
   render() {
@@ -39,7 +35,7 @@ class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {
     return (
       <div className={classDisabled}>
         <div className="input-field">
-          <select className="select" id="encoding" defaultValue={this.props.EncodingValue}>
+          <select className="select" id="encoding" ref="encoding" defaultValue={this.props.EncodingValue}>
             <option value={localize("Settings.BASE", locale)}>
               {localize("Settings.BASE", locale)}
             </option>
