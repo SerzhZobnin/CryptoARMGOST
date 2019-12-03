@@ -33,15 +33,16 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
             </label>
           </div>
 
-          <CheckBoxWithLabel
-            disabled={false}
-            elementId="saveToDocuments"
-            title={localize("Documents.save_to_documents", locale)} />
+          <div className="col s12">
+            <CheckBoxWithLabel
+              disabled={false}
+              elementId="use_proxy"
+              title={localize("Cades.use_proxy", locale)} />
+            <div className="row" />
+          </div>
         </div>
 
         <div className="col s12 m12 l6">
-          <div className="row" />
-
           <div className="input-field col s12">
             <input
               id="url_proxy"

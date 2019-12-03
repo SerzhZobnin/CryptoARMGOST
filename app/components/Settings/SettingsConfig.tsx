@@ -88,19 +88,23 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                 </div>
 
                 <div className="col s12">
-                  <div>
-                    <CheckBoxWithLabel
-                      disabled={disabled}
-                      onClickCheckBox={this.handleSaveToDocumentsClick}
-                      isChecked={settings.saveToDocuments}
-                      elementId="saveToDocuments"
-                      title={localize("Documents.save_to_documents", locale)} />
-                    <SelectFolder
-                      disabled={disabled}
-                      directory={settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder}
-                      viewDirect={this.handleOutfolderChange}
-                      openDirect={this.addDirect.bind(this)}
-                    />
+                  <div className="row settings-content">
+                    <div className="col s12 m12 l6">
+                      <CheckBoxWithLabel
+                        disabled={disabled}
+                        onClickCheckBox={this.handleSaveToDocumentsClick}
+                        isChecked={settings.saveToDocuments}
+                        elementId="saveToDocuments"
+                        title={localize("Documents.save_to_documents", locale)} />
+                    </div>
+                    <div className="col s12 m12 l6">
+                      <SelectFolder
+                        disabled={disabled}
+                        directory={settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder}
+                        viewDirect={this.handleOutfolderChange}
+                        openDirect={this.addDirect.bind(this)}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -189,25 +193,27 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                   <hr />
                 </div>
 
-                <div className="settings-content">
-                  <div className="col s12 m12 l6">
-                    <CheckBoxWithLabel
-                      disabled={disabled}
-                      onClickCheckBox={this.handleDeleteClick}
-                      isChecked={settings.encrypt.delete}
-                      elementId="delete_files"
-                      title={localize("Encrypt.delete_files_after", locale)} />
-                  </div>
-                  <div className="col s12 m12 l6">
-                    <CheckBoxWithLabel
-                      disabled={disabled}
-                      onClickCheckBox={this.handleArchiveClick}
-                      isChecked={settings.encrypt.archive}
-                      elementId="archive_files"
-                      title={localize("Encrypt.archive_files_before", locale)} />
-                  </div>
-                  <div className="col s12">
-                    <EncodingTypeSelector EncodingValue={settings.encrypt.encoding} handleChange={this.handleEncryptEncodingChange} />
+                <div className="col s12">
+                  <div className="row settings-content">
+                    <div className="col s12 m12 l6">
+                      <EncodingTypeSelector EncodingValue={settings.encrypt.encoding} handleChange={this.handleEncryptEncodingChange} />
+                    </div>
+                    <div className="col s12 m12 l6">
+                      <CheckBoxWithLabel
+                        disabled={disabled}
+                        onClickCheckBox={this.handleDeleteClick}
+                        isChecked={settings.encrypt.delete}
+                        elementId="delete_files"
+                        title={localize("Encrypt.delete_files_after", locale)} />
+                    </div>
+                    <div className="col s12 m12 l6">
+                      <CheckBoxWithLabel
+                        disabled={disabled}
+                        onClickCheckBox={this.handleArchiveClick}
+                        isChecked={settings.encrypt.archive}
+                        elementId="archive_files"
+                        title={localize("Encrypt.archive_files_before", locale)} />
+                    </div>
                   </div>
                 </div>
 
@@ -257,10 +263,7 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                   <hr />
                 </div>
 
-                <div className="col s12">
-                  <TspSettings />
-                </div>
-
+                <TspSettings />
               </div>
 
               <div className="row">
@@ -271,10 +274,7 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                   <hr />
                 </div>
 
-                <div className="col s12">
-                  <OcspSettings />
-                </div>
-
+                <OcspSettings />
               </div>
             </div>
           </div>

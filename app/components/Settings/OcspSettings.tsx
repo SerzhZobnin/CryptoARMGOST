@@ -33,10 +33,13 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
             </label>
           </div>
 
-          <CheckBoxWithLabel
-            disabled={false}
-            elementId="saveToDocuments"
-            title={localize("Documents.save_to_documents", locale)} />
+          <div className="col s12">
+            <CheckBoxWithLabel
+              disabled={false}
+              elementId="saveToDocuments"
+              title={localize("Cades.use_proxy", locale)} />
+            <div className="row" />
+          </div>
         </div>
 
         <div className="col s12 m12 l6">

@@ -43,7 +43,7 @@ class SignatureTypeSelector extends React.Component<ISignatureTypeSelectorProps,
 
     return (
       <div className={classDisabled}>
-        <div className="input-field col s12">
+        <div className="input-field">
           <select className="select" id="encoding" defaultValue={this.props.EncodingValue}>
             <option value={SignatureTypes.ATTACHED}>
               {SignatureTypes.ATTACHED}

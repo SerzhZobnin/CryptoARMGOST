@@ -175,6 +175,7 @@ export default {
     url_ocsp: "OCSP server adress",
     url_proxy: "Proxy server address",
     url_tsp: "TSP server adress",
+    use_proxy: "Use proxy settings",
   },
   Certificate: {
     Certificate: "CERTIFICATES",
