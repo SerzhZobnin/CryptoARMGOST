@@ -118,7 +118,7 @@ class CertificateChainInfo extends React.Component<any, any> {
               <div className="col s10" onClick={() => onClick(element)}>
                 <div className="r-iconbox-link">
                   <div className="collection-title chain_textblock">{element.subjectFriendlyName}</div>
-                  <div className="collection-info cert-info ">{element.issuerFriendlyName}</div>
+                  <div className="collection-info ">{element.issuerFriendlyName}</div>
                 </div>
               </div>
               <div className="col s1">

@@ -96,7 +96,7 @@ class CertificateListItem extends React.Component<ICertificateListItemProps, {}>
             </div>
             <div className="col s10">
               <div className="collection-title">{cert.subjectFriendlyName}</div>
-              <div className="collection-info cert-info ">{cert.issuerFriendlyName}</div>
+              <div className="collection-info ">{cert.issuerFriendlyName}</div>
             </div>
             <div className="col s1">
               <div className={curKeyStyle} />

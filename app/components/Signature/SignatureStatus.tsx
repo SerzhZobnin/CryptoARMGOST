@@ -23,7 +23,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
   render() {
     const { signature } = this.props;
     const { localize, locale } = this.context;
-    
+
     let status = "";
     let icon = "";
     let isValid = "";
@@ -39,23 +39,21 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
     }
 
     const signerCert = signature.certs[signature.certs.length - 1];
-    
 
-      let dateSigningTime = new Date(signature.signingTime);
-      dateSigningTime.setHours(dateSigningTime.getHours() + 3) 
-
+    let dateSigningTime = new Date(signature.signingTime);
+    dateSigningTime.setHours(dateSigningTime.getHours() + 3)
 
     return (
       <div className="row halfbottom" onClick={this.handleClick}>
         <div className="col s12 collection">
-          <div className="collection-info cert-info-blue">{localize("Certificate.subject", locale)}</div>
+          <div className="caption-text">{localize("Certificate.subject", locale)}</div>
           <div className="collection-title">{signerCert.subjectFriendlyName}</div>
         </div>
 
         <div className="col s12 collection">
-          <div className="collection-info cert-info-blue">{localize("Certificate.issuer", locale)}</div>
+          <div className="caption-text">{localize("Certificate.issuer", locale)}</div>
           <div className="collection-title">{signerCert.issuerFriendlyName}</div>
-          <div className="collection-info cert-info-blue">{localize("Certificate.cert_valid", locale)}</div>
+          <div className="caption-text">{localize("Certificate.cert_valid", locale)}</div>
           <div className="collection-title">{(new Date(signerCert.notAfter)).toLocaleDateString(locale, {
             day: "numeric",
             hour: "numeric",
@@ -63,12 +61,12 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
             month: "long",
             year: "numeric",
           })}</div>
-           <div className="collection-info cert-info-blue">{localize("Sign.alg", locale)}</div>
+          <div className="caption-text">{localize("Sign.alg", locale)}</div>
           <div className="collection-title">{localizeAlgorithm(signature.alg, locale)}</div>
         </div>
 
         <div className="col s12">
-          <a className="collection-info cert-info-blue">{localize("Certificate.cert_chain_info", locale)}</a>
+          <a className="caption-text">{localize("Certificate.cert_chain_info", locale)}</a>
           <CertificateChainInfo certificate={signerCert} style="" onClick={() => { return; }} />
         </div>
 
@@ -77,17 +75,17 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
         <div className="col s2" style={{ width: "11%" }}>
           <div className={icon} />
         </div>
-        <div className="col s10 " style={{ fontSize: "75%" }}>
+        <div className="col s10 ">
           <div className="col s12">
             <div className={isValid}>{status}</div>
-            
-            <div className="collection-info cert-info">{localize("Sign.signingTime", locale)}: { signature.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            month: "long",
-            year: "numeric",
-          }) : "-"}</div>
+
+            <div className="collection-info">{localize("Sign.signingTime", locale)}: {signature.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              month: "long",
+              year: "numeric",
+            }) : "-"}</div>
           </div>
         </div>
 

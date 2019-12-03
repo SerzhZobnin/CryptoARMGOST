@@ -99,10 +99,10 @@ class CertificateListItemBigWidth extends React.Component<ICertificateListItemPr
               <div className="collection-title">{cert.subjectFriendlyName}</div>
             </div>
             <div className="col s3">
-              <div className="collection-info cert-info ">{cert.issuerFriendlyName}</div>
+              <div className="collection-info ">{cert.issuerFriendlyName}</div>
             </div>
             <div className="col s3">
-              <div className="collection-info cert-info ">{new Date(cert.notAfter).toLocaleDateString(locale, {
+              <div className="collection-info ">{new Date(cert.notAfter).toLocaleDateString(locale, {
                 day: "numeric",
                 hour: "numeric",
                 minute: "numeric",

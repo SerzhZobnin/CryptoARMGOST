@@ -172,7 +172,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
               (
                 <React.Fragment>
                   <div className="col s12">
-                    <div className="desktoplic_text_item">{localize("Sign.sign_info", locale)}</div>
+                    <div className="primary-text">{localize("Sign.sign_info", locale)}</div>
                     <hr />
                   </div>
                   <div style={{ height: "calc(100vh - 100px)" }}>

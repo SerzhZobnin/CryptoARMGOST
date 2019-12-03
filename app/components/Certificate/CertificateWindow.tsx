@@ -689,7 +689,7 @@ class CertWindow extends React.Component<any, any> {
             ) :
               <React.Fragment>
                 <div className="col s12">
-                  <div className="desktoplic_text_item">Сведения о сертификате:</div>
+                  <div className="primary-text">Сведения о сертификате:</div>
                   <hr />
                 </div>
                 <div className="col s12" style={{ padding: 0 }}>
@@ -737,7 +737,7 @@ class CertWindow extends React.Component<any, any> {
     if (certificate) {
       title = <div className="cert-title-main">
         <div className="collection-title cert-title">{certificate.subjectFriendlyName}</div>
-        <div className="collection-info cert-info cert-title">{certificate.issuerFriendlyName}</div>
+        <div className="collection-info cert-title">{certificate.issuerFriendlyName}</div>
       </div>;
     } else if (crl) {
       title = (
@@ -1292,7 +1292,7 @@ class CertWindow extends React.Component<any, any> {
         <div className="row">
           <div className="row halfbottom" />
           <div className="col s10">
-            <div className="desktoplic_text_item">Сертификат:</div>
+            <div className="primary-text">Сертификат:</div>
             <hr />
           </div>
           <div className="col s2">

@@ -37,10 +37,10 @@ class SignatureInfoBlock extends React.Component<any, any> {
           <div className="col s2" style={{ width: "11%" }}>
             <div className={status ? "status_ok_icon" : "status_error_icon"} />
           </div>
-          <div className="col s10 " style={{ fontSize: "75%" }}>
+          <div className="col s10 ">
             <div className="col s12">
               <div className={status ? "valid" : "unvalid"}>{status ? localize("Sign.sign_ok", locale) : localize("Sign.sign_error", locale)}</div>
-              <div className="collection-info cert-info ">{"Проверена:"} {(new Date(signatures[0].verifyingTime)).toLocaleDateString(locale, {
+              <div className="collection-info ">{"Проверена:"} {(new Date(signatures[0].verifyingTime)).toLocaleDateString(locale, {
                 day: "numeric",
                 hour: "numeric",
                 minute: "numeric",
@@ -56,12 +56,12 @@ class SignatureInfoBlock extends React.Component<any, any> {
             <FileIcon file={file} style={{ left: "0px", position: "relative" }} />
           </div>
 
-          <div className="col s10" style={{ fontSize: "75%" }}>
+          <div className="col s10">
             <div className="col s12">
               <div className="truncate">{file.filename}</div>
             </div>
             <div className="col s7">
-              <div className="collection-info cert-info truncate">{(new Date(file.mtime)).toLocaleDateString(locale, {
+              <div className="collection-info truncate">{(new Date(file.mtime)).toLocaleDateString(locale, {
                 day: "numeric",
                 hour: "numeric",
                 minute: "numeric",
@@ -71,7 +71,7 @@ class SignatureInfoBlock extends React.Component<any, any> {
               </div>
             </div>
             <div className="col s4">
-              <div className="collection-info cert-info truncate">{bytesToSize(file.filesize)}</div>
+              <div className="collection-info truncate">{bytesToSize(file.filesize)}</div>
             </div>
           </div>
         </div>

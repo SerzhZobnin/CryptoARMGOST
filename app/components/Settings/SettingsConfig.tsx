@@ -155,7 +155,7 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
 
                   <div className="row nobottom">
                     <div className="col s11">
-                      <div className="desktoplic_text_item">{localize("Sign.signer_cert", locale)}</div>
+                      <div className="primary-text">{localize("Sign.signer_cert", locale)}</div>
                       <hr />
                     </div>
                     <div className="col s1">
@@ -170,7 +170,7 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                       </ul>
                     </div>
                     {
-                      (signer) ? <SignerInfo signer={signer} style={{ fontSize: "75%" }} /> :
+                      (signer) ? <SignerInfo signer={signer} /> :
                         <div className="col s12 right-align">
                           <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
                             <a className="btn btn-outlined waves-effect waves-light" style={{ width: "100%", maxWidth: "505px" }}>
@@ -221,7 +221,7 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
 
                 <div className="col s12">
                   <div className="col s10">
-                    <div className="desktoplic_text_item">Сертификаты шифрования:</div>
+                    <div className="primary-text">Сертификаты шифрования:</div>
                     <hr />
                   </div>
                   <div className="col s2 settings-content">

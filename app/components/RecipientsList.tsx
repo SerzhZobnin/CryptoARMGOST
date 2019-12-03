@@ -83,7 +83,7 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
                       this.state.hoveredRowIndex === recipient.id ?
                         <div className="col s8">
                           <div className="collection-title">{recipient.subjectFriendlyName}</div>
-                          <div className="collection-info cert-info">{recipient.issuerFriendlyName}</div>
+                          <div className="collection-info">{recipient.issuerFriendlyName}</div>
 
                           <div className="col" style={{ width: "40px" }} onClick={(event) => {
                             event.stopPropagation();
@@ -94,7 +94,7 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
                         </div> :
                         <div className="col s10">
                           <div className="collection-title">{recipient.subjectFriendlyName}</div>
-                          <div className="collection-info cert-info">{recipient.issuerFriendlyName}</div>
+                          <div className="collection-info">{recipient.issuerFriendlyName}</div>
                         </div>
                     }
                   </div>

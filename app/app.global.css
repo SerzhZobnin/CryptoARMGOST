@@ -51,6 +51,11 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   font-size: 0.875rem;
 }
 
+.caption-text {
+  font-size: 0.875rem;
+  color: #334294;
+}
+
 .valid {
   color: #4caf50 !important;
 }
@@ -195,7 +200,6 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-size: 18px;
     min-height: 700px;
     min-width: 900px;
     width: 100% !important;
@@ -249,12 +253,24 @@ body {
     width: 56px;
     line-height: 56px;
 }
-.collection-title, .collection-info {
+
+.collection-title {
+    font-size: 1rem;
     padding-left: 0;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     padding-top: 0px;
+}
+
+.collection-info {
+  font-size: 0.875rem;
+  color: rgba(0,0,0,0.6);
+  padding-left: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding-top: 0px;
 }
 
 .material-icons.secondary-content.file-setting-item {
@@ -318,15 +334,12 @@ body {
 }
 /*--- file list---*/
 .collection {
-    font-size: 75%;
     overflow: initial;
     margin: 0;
     border: none;
 }
 
-.collection-info {
-    font-size: 90%;
-}
+
 
 .collection-info-files {
     font-size: 90%;
@@ -533,7 +546,6 @@ div::-webkit-scrollbar-thumb {
     width: 100%;
 }
 .app-bar-item, .app-bar-text {
-    font-size: 100%;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -589,7 +601,7 @@ div::-webkit-scrollbar-thumb {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: bold;
 }
 
@@ -606,8 +618,8 @@ div::-webkit-scrollbar-thumb {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 0.875rem;
+  font-weight: 900;
 }
 
 .btn-outlined:hover, .btn-text:hover  {
@@ -860,7 +872,6 @@ input[type=search] {
 .cert-bar-text {
     width: calc(100% - 45px);
     color: black;
-    font-size: 75%;
     padding-left: 0.75rem;
 }
 nav .cert-seacrh label i {
@@ -900,15 +911,6 @@ nav .cert-seacrh label i {
 }
 .cert-item.not-active {
     display: none;
-}
-.cert-info {
-    color: rgba(0,0,0,0.6);
-}
-
-.cert-info-blue {
-    color: #334294;
-    /*font-size: 95%;*/
-    font-size: 13px;
 }
 
 .chain-info-blue {
@@ -1215,17 +1217,11 @@ i.material-icons.left.ca {
 
 span.card-title {
   color: #bf3817;
-  font-size: 20px;
 }
 
 .card .card-title {
-  font-size: 20px;
   font-weight: 300;
 }
-
-span.card-title.sub {
-    font-size: 16px;
-  }
 
 .mail-block {
     height: 38px;
@@ -1273,10 +1269,6 @@ form.col.s12 {
 
 .gray-text {
   color: #666 !important;
-}
-
-.select, #key-length-value {
-  font-size: 0.9rem;
 }
 
 .contact-icon {
@@ -1767,7 +1759,6 @@ h5.bmark_onlinelic{
 }
 .error-text {
     color: #9c3b23;
-    font-size: 90%;
 }
 .error-info.not-active, .about-error-info.not-active {
     display: none;
@@ -2475,15 +2466,6 @@ a.help_paragraf {
     padding-right: 0px;
 }
 
-.desctoplic_text{
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    text-align: justify;
-    font-size: 13px;
-}
-
 a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
     left: 10px;
 }
@@ -2571,17 +2553,11 @@ a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
 
 .input-field label {
   color: #334294;
-  font-size: 0.9rem;
-}
-
-.input-field label.active {
-  font-size: 0.9rem;
 }
 
 [type="checkbox"]+label {
   height: 1.6rem;
   line-height: 1.2rem;
-  font-size: 0.9rem;
   padding-left: 25px;
   color: black;
   opacity: 0.87;
@@ -2590,14 +2566,6 @@ a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
 .input-field-csr {
   height: 36px;
   line-height: 10px;
-}
-
-.input-field-csr input[type=text] {
-  font-size: 0.9rem;
-}
-
-.input-field-csr input[type=email] {
-  font-size: 0.9rem;
 }
 
 .noUi-handle {
@@ -2948,7 +2916,7 @@ svg:hover {
 
   .svg_icon_text {
     margin-bottom: 2px;
-    font-size: 12px;
+    font-size: 0.875rem;
     color: rgba(0,0,0,0.87);
     text-align: center;
   }

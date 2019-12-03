@@ -736,7 +736,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
     if (certificate) {
       title = <div className="cert-title-main">
         <div className="collection-title cert-title">{certificate.subjectFriendlyName}</div>
-        <div className="collection-info cert-info cert-title">{certificate.issuerFriendlyName}</div>
+        <div className="collection-info cert-title">{certificate.issuerFriendlyName}</div>
       </div>;
     } else {
       title = <span>{localize("Certificate.cert_info", locale)}</span>;
@@ -860,7 +860,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
             <div className="row halfbottom" />
             <div className="row">
               <div className="col s12">
-                <div className="desktoplic_text_item">Сертификат подписи</div>
+                <div className="primary-text">Сертификат подписи</div>
                 <hr />
               </div>
               <div className="col s12">
