@@ -39,9 +39,10 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
     }
 
     const signerCert = signature.certs[signature.certs.length - 1];
+    const isHaveTimeStamps = this.isHaveTimeStamps(signature);
 
     const dateSigningTime = new Date(signature.signingTime);
-    dateSigningTime.setHours(dateSigningTime.getHours() + 3)
+    dateSigningTime.setHours(dateSigningTime.getHours() + 3);
 
     return (
       <div className="row halfbottom" onClick={this.handleClick}>
@@ -49,7 +50,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
           <div className={icon} />
         </div>
         <div className="col s10 ">
-          <div className="col s12">
+          <div className={isHaveTimeStamps ? "col s10" : "col s12"}>
             <div className={isValid}>{status}</div>
 
             <div className="collection-info">{localize("Sign.signingTime", locale)}: {signature.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
@@ -60,6 +61,15 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
               year: "numeric",
             }) : "-"}</div>
           </div>
+          {
+            isHaveTimeStamps ?
+              <div className="col s2">
+                <a className="btn-floating btn-medium waves-effect waves-light grey">
+                  <i className="material-icons">access_time</i>
+                </a>
+              </div>
+              : null
+          }
         </div>
 
         <div className="row halfbottom" />
@@ -96,6 +106,10 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
         </div>
       </div>
     );
+  }
+
+  isHaveTimeStamps = (signature: any) => {
+    return signature && signature.timestamps && signature.timestamps.length;
   }
 }
 

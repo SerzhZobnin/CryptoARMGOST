@@ -67,7 +67,6 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
     });
 
     const status = this.getSignaturesStatus(signatures);
-    const isHaveTimeStamps = this.isHaveTimeStamps(signatures);
 
     return (
       <React.Fragment>
@@ -87,15 +86,6 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
               })}</div>
             </div>
           </div>
-          {
-            isHaveTimeStamps ?
-              <div className="col s2">
-                <a className="btn-floating btn-medium waves-effect waves-light grey">
-                  <i className="material-icons">access_time</i>
-                </a>
-              </div>
-              : null
-          }
         </div>
 
         <div className="row">
@@ -154,23 +144,6 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
       for (const element of signatures) {
         if (!element.status_verify) {
           res = false;
-          break;
-        }
-      }
-
-      return res;
-    } else {
-      return false;
-    }
-  }
-
-  isHaveTimeStamps = (signatures: any) => {
-    let res = false;
-
-    if (signatures) {
-      for (const signer of signatures) {
-        if (signer.timestamps && signer.timestamps.length) {
-          res = true;
           break;
         }
       }
