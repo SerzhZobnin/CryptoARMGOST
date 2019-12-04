@@ -60,7 +60,9 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
 
     const options = signatures.map((signature: any, index: number) => {
       return (
-        <option value={index}>{`${index + 1} ${signature.subject}`}</option>
+        <option value={index}>
+          {signature.subject}
+        </option>
       );
     });
 
@@ -121,10 +123,6 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
           </div>
         </div>
 
-        <div className="col s12">
-          <hr />
-        </div>
-
         <div className="row nobottom">
           <div className="input-field col s12">
             <select
@@ -146,7 +144,7 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
   }
 
   handleSignerChange = (ev: any) => {
-    this.setState({signerIndex: ev.target.value});
+    this.setState({ signerIndex: ev.target.value });
   }
 
   getSignaturesStatus = (signatures) => {
