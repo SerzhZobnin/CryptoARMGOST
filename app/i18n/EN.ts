@@ -690,6 +690,7 @@ export default {
     sign_setting: "Signature settings",
     sign_time: "Add time of signature",
     signature: "Signature",
+    signer: "Signer",
     signer_cert: "Signer certificate",
     signercert_not_found: "Error: signer cert not found",
     signingTime: "Signing time",

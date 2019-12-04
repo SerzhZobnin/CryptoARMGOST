@@ -40,11 +40,30 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
 
     const signerCert = signature.certs[signature.certs.length - 1];
 
-    let dateSigningTime = new Date(signature.signingTime);
+    const dateSigningTime = new Date(signature.signingTime);
     dateSigningTime.setHours(dateSigningTime.getHours() + 3)
 
     return (
       <div className="row halfbottom" onClick={this.handleClick}>
+        <div className="col s2" style={{ width: "11%" }}>
+          <div className={icon} />
+        </div>
+        <div className="col s10 ">
+          <div className="col s12">
+            <div className={isValid}>{status}</div>
+
+            <div className="collection-info">{localize("Sign.signingTime", locale)}: {signature.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              month: "long",
+              year: "numeric",
+            }) : "-"}</div>
+          </div>
+        </div>
+
+        <div className="row halfbottom" />
+
         <div className="col s12 collection">
           <div className="caption-text">{localize("Certificate.subject", locale)}</div>
           <div className="collection-title">{signerCert.subjectFriendlyName}</div>
@@ -68,29 +87,6 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
         <div className="col s12">
           <a className="caption-text">{localize("Certificate.cert_chain_info", locale)}</a>
           <CertificateChainInfo certificate={signerCert} style="" onClick={() => { return; }} />
-        </div>
-
-        <div className="row halfbottom" />
-
-        <div className="col s2" style={{ width: "11%" }}>
-          <div className={icon} />
-        </div>
-        <div className="col s10 ">
-          <div className="col s12">
-            <div className={isValid}>{status}</div>
-
-            <div className="collection-info">{localize("Sign.signingTime", locale)}: {signature.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
-              day: "numeric",
-              hour: "numeric",
-              minute: "numeric",
-              month: "long",
-              year: "numeric",
-            }) : "-"}</div>
-          </div>
-        </div>
-
-        <div className="col s12">
-          <hr />
         </div>
       </div>
     );

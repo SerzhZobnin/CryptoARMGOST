@@ -1,19 +1,46 @@
 import PropTypes from "prop-types";
 import React from "react";
+import ReactDOM from "react-dom";
 import { bytesToSize } from "../../utils";
 import FileIcon from "../Files/FileIcon";
 import SignerCertificateInfo from "../SignerCertificateInfo";
 import SignatureStatus from "./SignatureStatus";
 
-class SignatureInfoBlock extends React.Component<any, any> {
+interface ISignatureInfoBlockState {
+  signerIndex: number;
+}
+
+class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
 
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      signerIndex: 0,
+    };
+  }
+
+  componentDidMount() {
+    /* https://github.com/facebook/react/issues/3667
+    * fix onChange for < select >
+    */
+    $(document).ready(() => {
+      $("select").material_select();
+    });
+
+    $(ReactDOM.findDOMNode(this.refs.signer_select)).on("change", this.handleSignerChange);
+
+    Materialize.updateTextFields();
+  }
+
   render() {
     const { signerCertificate, file, signatures, handleActiveCert, handleNoShowSignatureInfo, handleNoShowSignerCertificateInfo } = this.props;
     const { localize, locale } = this.context;
+    const { signerIndex } = this.state;
 
     if (!signatures) {
       return null;
@@ -26,6 +53,14 @@ class SignatureInfoBlock extends React.Component<any, any> {
     const elements = signatures.map((signature: any) => {
       return (
         <SignatureStatus key={signature.id} signature={signature} handleActiveCert={handleActiveCert} />
+      );
+    });
+
+    const element = elements[signerIndex];
+
+    const options = signatures.map((signature: any, index: number) => {
+      return (
+        <option value={index}>{`${index + 1} ${signature.subject}`}</option>
       );
     });
 
@@ -90,11 +125,28 @@ class SignatureInfoBlock extends React.Component<any, any> {
           <hr />
         </div>
 
+        <div className="row nobottom">
+          <div className="input-field col s12">
+            <select
+              className="select"
+              defaultValue={"0"}
+              ref="signer_select"
+              onChange={this.handleSignerChange} >
+              {options}
+            </select>
+            <label>{localize("Sign.signer", locale)}</label>
+          </div>
+        </div>
+
         <div>
-          {elements}
+          {element}
         </div>
       </React.Fragment>
     );
+  }
+
+  handleSignerChange = (ev: any) => {
+    this.setState({signerIndex: ev.target.value});
   }
 
   getSignaturesStatus = (signatures) => {

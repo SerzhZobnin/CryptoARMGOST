@@ -692,6 +692,7 @@ export default {
     sign_setting: "Настройки подписи",
     sign_time: "Добавить время подписи",
     signature: "Подпись",
+    signer: "Подписчик",
     signer_cert: "Сертификат подписи",
     signercert_not_found: "Не удалось найти сертификат подписчика",
     signingTime: "Подписано",
