@@ -143,16 +143,15 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
                         onClickCheckBox={this.handleTimestampOnSignClick}
                         isChecked={settings.sign.timestamp_on_sign}
                         elementId="detached-sign"
-                        title={localize("Cades.timestamp_on_sign", locale)} />
+                        title={localize("Cades.set_timestamp_on_sign", locale)} />
                     </div>
                     <div className="col s12 m12 l6">
                       <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
                         disabled={disabled || (signer && signer.service)}
                         isChecked={settings.sign.timestamp || (signer && signer.service)}
                         elementId="sign-time"
-                        title={localize("Cades.timestamp_on_data", locale)} />
+                        title={localize("Cades.set_timestamp_on_data", locale)} />
                     </div>
-
                   </div>
 
                   <div className="row nobottom">
