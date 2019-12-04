@@ -71,7 +71,7 @@ export function signFile(
   policies: any,
   format: trusted.DataFormat,
   folderOut: string,
-  ) {
+) {
   let outURI: string;
 
   if (folderOut.length > 0) {
@@ -421,6 +421,8 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
       signer = signers.items(i);
       cert = signer.certificate;
 
+      const timestamps = [];
+
       try {
         ch = trusted.utils.Csp.buildChain(cert);
       } catch (e) {
@@ -433,6 +435,24 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
         digestAlgorithm: undefined,
         status_verify: undefined,
         subject: undefined,
+        timestamps: [],
+      };
+
+      for (const stType in trusted.cms.StampType) {
+        if (Number(stType)) {
+          const timestamp = signer.timestamp(parseInt(stType, 10));
+          if (timestamp) {
+            timestamps.push({
+              Accuracy: timestamp.Accuracy,
+              Certificates: timestamp.Certificates,
+              DataHash: timestamp.DataHash,
+              DataHashAlgOID: timestamp.DataHashAlgOID,
+              PolicyID: timestamp.PolicyID,
+              TSACertificate: timestamp.TSACertificate,
+              Type: stType,
+            });
+          }
+        }
       }
 
       if (!ch || !ch.length || ch.length === 0) {
@@ -491,6 +511,7 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
         signingTime: signer.signingTime,
         status_verify: false,
         subject: cert.subjectFriendlyName,
+        timestamps,
       };
       certSign = [];
 
