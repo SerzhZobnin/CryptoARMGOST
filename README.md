@@ -1,4 +1,5 @@
 # КриптоАРМ ГОСТ
+![GitHub All Releases](https://img.shields.io/github/downloads/TrustedRu/CryptoARMGOST/total)
 
 ## Описание
 
