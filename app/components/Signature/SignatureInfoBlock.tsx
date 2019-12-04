@@ -30,6 +30,7 @@ class SignatureInfoBlock extends React.Component<any, any> {
     });
 
     const status = this.getSignaturesStatus(signatures);
+    const isHaveTimeStamps = this.isHaveTimeStamps(signatures);
 
     return (
       <React.Fragment>
@@ -37,7 +38,7 @@ class SignatureInfoBlock extends React.Component<any, any> {
           <div className="col s2" style={{ width: "11%" }}>
             <div className={status ? "status_ok_icon" : "status_error_icon"} />
           </div>
-          <div className="col s10 ">
+          <div className="col s8 ">
             <div className="col s12">
               <div className={status ? "valid" : "unvalid"}>{status ? localize("Sign.sign_ok", locale) : localize("Sign.sign_error", locale)}</div>
               <div className="collection-info ">{"Проверена:"} {(new Date(signatures[0].verifyingTime)).toLocaleDateString(locale, {
@@ -49,6 +50,15 @@ class SignatureInfoBlock extends React.Component<any, any> {
               })}</div>
             </div>
           </div>
+          {
+            isHaveTimeStamps ?
+              <div className="col s2">
+                <a className="btn-floating btn-medium waves-effect waves-light grey">
+                  <i className="material-icons">access_time</i>
+                </a>
+              </div>
+              : null
+          }
         </div>
 
         <div className="row">
@@ -94,6 +104,23 @@ class SignatureInfoBlock extends React.Component<any, any> {
       for (const element of signatures) {
         if (!element.status_verify) {
           res = false;
+          break;
+        }
+      }
+
+      return res;
+    } else {
+      return false;
+    }
+  }
+
+  isHaveTimeStamps = (signatures: any) => {
+    let res = false;
+
+    if (signatures) {
+      for (const signer of signatures) {
+        if (signer.timestamps && signer.timestamps.length) {
+          res = true;
           break;
         }
       }

@@ -410,8 +410,6 @@ class SettingsWindow extends React.Component<any, ISettingsWindowState> {
   handleEncodingChange = (encoding: string) => {
     const { settings } = this.state;
 
-    console.log("encoding", encoding);
-
     this.setState({
       settings: settings
         .setIn(["sign", "encoding"], encoding),
