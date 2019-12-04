@@ -2,17 +2,30 @@ import PropTypes from "prop-types";
 import React from "react";
 import { localizeAlgorithm } from "../../i18n/localize";
 import CertificateChainInfo from "../Certificate/CertificateChainInfo";
+import TimestampTypeSelector from "./TimestampTypeSelector";
 
 interface ISignatureStatusProps {
   signature: any;
   handleActiveCert: (cert: any) => void;
 }
 
-class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
+interface ISignatureStatusState {
+  isShowTimeStamps: boolean;
+}
+
+class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureStatusState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
+
+  constructor(props: ISignatureStatusProps) {
+    super(props);
+
+    this.state = {
+      isShowTimeStamps: false,
+    };
+  }
 
   handleClick = () => {
     const { signature, handleActiveCert } = this.props;
@@ -64,7 +77,9 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
           {
             isHaveTimeStamps ?
               <div className="col s2">
-                <a className="btn-floating btn-medium waves-effect waves-light grey">
+                <a className={`btn-floating btn-medium waves-effect waves-light ${this.state.isShowTimeStamps ? "blue lighten-1" : "grey lighten-1"}`}
+                  onClick={this.toggleShowTimestamp}
+                >
                   <i className="material-icons">access_time</i>
                 </a>
               </div>
@@ -72,40 +87,51 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, any> {
           }
         </div>
 
-        <div className="row halfbottom" />
+        <div className="row" />
 
-        <div className="row">
-          <div className="col s12 primary-text">Сертификат подписчика:</div>
-          <div className="col s12">
-            <div className="col s12 collection">
-              <div className="collection-title">{signerCert.subjectFriendlyName}</div>
-              <div className="collection-info">{localize("Certificate.subject", locale)}</div>
+        {
+          this.state.isShowTimeStamps ?
+            <TimestampTypeSelector />
+            :
+            <div className="row">
+              <div className="col s12 primary-text">Сертификат подписчика:</div>
+              <div className="col s12">
+                <div className="col s12 collection">
+                  <div className="collection-title">{signerCert.subjectFriendlyName}</div>
+                  <div className="collection-info">{localize("Certificate.subject", locale)}</div>
 
-              <div className="collection-title">{signerCert.issuerFriendlyName}</div>
-              <div className="collection-info">{localize("Certificate.issuer", locale)}</div>
+                  <div className="collection-title">{signerCert.issuerFriendlyName}</div>
+                  <div className="collection-info">{localize("Certificate.issuer", locale)}</div>
 
-              <div className="collection-title">{(new Date(signerCert.notAfter)).toLocaleDateString(locale, {
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                month: "long",
-                year: "numeric",
-              })}</div>
-              <div className="collection-info">{localize("Certificate.cert_valid", locale)}</div>
+                  <div className="collection-title">{(new Date(signerCert.notAfter)).toLocaleDateString(locale, {
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}</div>
+                  <div className="collection-info">{localize("Certificate.cert_valid", locale)}</div>
 
-              <div className="collection-title">{localizeAlgorithm(signature.alg, locale)}</div>
-              <div className="collection-info">{localize("Sign.alg", locale)}</div>
+                  <div className="collection-title">{localizeAlgorithm(signature.alg, locale)}</div>
+                  <div className="collection-info">{localize("Sign.alg", locale)}</div>
 
+                </div>
+              </div>
+
+              <div className="row" />
+
+              <div className="col s12">
+                <a className="primary-text">{localize("Certificate.cert_chain_info", locale)}</a>
+                <CertificateChainInfo certificate={signerCert} style="" onClick={() => { return; }} />
+              </div>
             </div>
-          </div>
-        </div>
-
-        <div className="col s12">
-          <a className="primary-text">{localize("Certificate.cert_chain_info", locale)}</a>
-          <CertificateChainInfo certificate={signerCert} style="" onClick={() => { return; }} />
-        </div>
+        }
       </div>
     );
+  }
+
+  toggleShowTimestamp = () => {
+    this.setState({ isShowTimeStamps: !this.state.isShowTimeStamps });
   }
 
   isHaveTimeStamps = (signature: any) => {
