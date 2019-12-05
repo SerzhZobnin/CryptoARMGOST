@@ -538,6 +538,10 @@ export default {
     "2.5.4.8": "State Or Province Name",
     "2.5.4.9": "Street Address",
   },
+  Ocsp: {
+    next_update: "Next update",
+    this_update: "This update",
+  },
   Problems: {
     problem_1: "There is no crypto provider CryptoPro CSP",
     problem_2: "There is no license for crypto provider CryptoPro CSP",
@@ -712,7 +716,9 @@ export default {
   },
   Tsp: {
     accuracy: "Accuracy",
+    certificate: "Certificate",
     certificates: "Certificates",
+    checked: "Сhecked",
     data_hash: "Data hash",
     data_hash_alg_oid: "Data Hash Alg OID",
     error_verify_certificate: "Error verify certificate",
@@ -724,5 +730,7 @@ export default {
     tsa_certificate: "TSA certificate",
     tsa_name: "TSA name",
     tsp_properties: "Time-stamp properties",
+    tsp_sign_fail: "Time-stamp is not valid",
+    tsp_sign_ok: "Time-stamp is valid",
   },
 };

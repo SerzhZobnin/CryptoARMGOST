@@ -540,6 +540,10 @@ export default {
     "2.5.4.8": "Область",
     "2.5.4.9": "Адрес",
   },
+  Ocsp: {
+    next_update: "Следующее обновление статуса",
+    this_update: "Время проверки статуса сертификата",
+  },
   Problems: {
     problem_1: "Отсутствует СКЗИ КриптоПро CSP",
     problem_2: "Отсутствует лицензия на СКЗИ КриптоПро CSP",
@@ -716,6 +720,7 @@ export default {
     accuracy: "Точность",
     certificate: "Сертификат",
     certificates: "Certificates",
+    checked: "Проверен",
     data_hash: "Хэш",
     data_hash_alg_oid: "Идентификатор алгоритма хэширования",
     error_verify_certificate: "Ошибка проверки сертификата",
@@ -727,5 +732,7 @@ export default {
     tsa_certificate: "Сертификат службы штампов",
     tsa_name: "Имя службы штампов времени",
     tsp_properties: "Свойства штампа времени",
+    tsp_sign_fail: "Штамп времени недействителен",
+    tsp_sign_ok: "Штамп времени действителен",
   },
 };

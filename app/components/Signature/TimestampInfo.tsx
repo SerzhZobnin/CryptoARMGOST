@@ -20,17 +20,55 @@ class TimestampInfo extends React.Component<ITimestampInfoProps, {}> {
     const { timestamp } = this.props;
     const { localize, locale } = this.context;
 
-    const status = this.verifyCertificate(timestamp.TSACertificate);
-    let curStatusStyle;
+    if (!timestamp) {
+      return null;
+    }
 
-    if (status) {
+    const status = this.verify();
+    const tsaStatus = this.verifyCertificate(timestamp.TSACertificate);
+
+    let curStatusStyle;
+    let isValid = "";
+    let icon = "";
+    let statusTsp = "";
+
+    if (tsaStatus) {
       curStatusStyle = "cert_status_ok";
     } else {
       curStatusStyle = "cert_status_error";
     }
 
+    if (status) {
+      statusTsp = localize("Tsp.tsp_sign_ok", locale);
+      icon = "status_ok_icon";
+      isValid = "valid";
+    } else {
+      statusTsp = localize("Tsp.tsp_sign_fail", locale);
+      icon = "status_error_icon";
+      isValid = "unvalid";
+    }
+
     return (
       <div className="row halfbottom" >
+        <div className="row">
+          <div className="col s2" style={{ width: "11%" }}>
+            <div className={icon} />
+          </div>
+          <div className="col s10">
+            <div className="col s12">
+              <div className={isValid}>{statusTsp}</div>
+
+              <div className="collection-info">{localize("Tsp.checked", locale)}: {true ? (new Date()).toLocaleString(locale, {
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                month: "long",
+                year: "numeric",
+              }) : "-"}</div>
+            </div>
+          </div>
+        </div>
+
         <div className="col s12 primary-text">{localize("Tsp.tsp_properties", locale)}:</div>
         <div className="col s12">
           <div className="collection">
@@ -89,6 +127,29 @@ class TimestampInfo extends React.Component<ITimestampInfoProps, {}> {
         </div>
       </div>
     );
+  }
+
+  verify = () => {
+    const { localize, locale } = this.context;
+    const { timestamp } = this.props;
+
+    try {
+      const res = timestamp.TSP.Verify();
+
+      if (res === 0) {
+        return true;
+      } else {
+        $(".toast-error_verify_certificate").remove();
+        Materialize.toast(`${localize("Tsp.error_verify_certificate", locale)}: ${res}`, 3000, "toast-error_verify_certificate");
+
+        return false;
+      }
+    } catch (e) {
+      $(".toast-error_verify_certificate").remove();
+      Materialize.toast(`${localize("Tsp.error_verify_certificate", locale)} ${e}`, 3000, "toast-error_verify_certificate");
+    }
+
+    return false;
   }
 
   verifyCertificate = (certificate: trusted.pki.Certificate) => {
