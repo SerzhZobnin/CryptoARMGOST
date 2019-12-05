@@ -2,6 +2,22 @@ import { OrderedMap, Record } from "immutable";
 import { DELETE_FILE, PACKAGE_SIGN, START, SUCCESS, VERIFY_SIGNATURE, PACKAGE_DELETE_FILE } from "../constants";
 import { arrayToMap } from "../utils";
 
+export interface ITimestamp {
+  Accuracy: number;
+  Certificates: trusted.pki.CertificateCollection;
+  DataHash: Buffer;
+  DataHashAlgOID: string;
+  HasNonce: boolean;
+  Ordering: boolean;
+  PolicyID: string;
+  SerialNumber: Buffer;
+  TSACertificate: trusted.pki.Certificate;
+  TSP: trusted.pki.TSP;
+  Time: string;
+  TsaName: string;
+  Type: trusted.cms.StampType;
+}
+
 const SignatureModel = Record({
   alg: null,
   certs: [],

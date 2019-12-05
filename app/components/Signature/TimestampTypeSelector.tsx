@@ -37,7 +37,7 @@ class TimestampTypeSelector extends React.Component<ITimestampTypeSelectorProps,
     const { localize, locale } = this.context;
 
     return (
-      <div className="row col s12">
+      <div className="row nobottom col s12">
         <div className="input-field">
           <select
             className="select"

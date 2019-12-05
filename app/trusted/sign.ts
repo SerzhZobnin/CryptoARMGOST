@@ -447,8 +447,14 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
               Certificates: timestamp.Certificates,
               DataHash: timestamp.DataHash,
               DataHashAlgOID: timestamp.DataHashAlgOID,
+              HasNonce: timestamp.HasNonce,
+              Ordering: timestamp.Ordering,
               PolicyID: timestamp.PolicyID,
+              SerialNumber: timestamp.SerialNumber,
               TSACertificate: timestamp.TSACertificate,
+              TSP: timestamp,
+              Time: timestamp.Time,
+              TsaName: timestamp.TsaName,
               Type: stType,
             });
           }

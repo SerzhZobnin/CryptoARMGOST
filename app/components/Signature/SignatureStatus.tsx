@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { localizeAlgorithm } from "../../i18n/localize";
 import CertificateChainInfo from "../Certificate/CertificateChainInfo";
+import TimestampInfo from "./TimestampInfo";
 import TimestampTypeSelector from "./TimestampTypeSelector";
 
 interface ISignatureStatusProps {
@@ -91,29 +92,40 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
 
         {
           this.state.isShowTimeStamps ?
-            <TimestampTypeSelector />
+            <div>
+              <TimestampTypeSelector />
+              <TimestampInfo timestamp={signature.timestamps[0]} />
+            </div>
             :
             <div className="row">
               <div className="col s12 primary-text">Сертификат подписчика:</div>
               <div className="col s12">
-                <div className="col s12 collection">
-                  <div className="collection-title">{signerCert.subjectFriendlyName}</div>
-                  <div className="collection-info">{localize("Certificate.subject", locale)}</div>
+                <div className="collection">
+                  <div className="collection-item certs-collection certificate-info">
+                    <div className="collection-title">{signerCert.subjectFriendlyName}</div>
+                    <div className="collection-info">{localize("Certificate.subject", locale)}</div>
+                  </div>
 
-                  <div className="collection-title">{signerCert.issuerFriendlyName}</div>
-                  <div className="collection-info">{localize("Certificate.issuer", locale)}</div>
+                  <div className="collection-item certs-collection certificate-info">
+                    <div className="collection-title">{signerCert.issuerFriendlyName}</div>
+                    <div className="collection-info">{localize("Certificate.issuer", locale)}</div>
+                  </div>
 
-                  <div className="collection-title">{(new Date(signerCert.notAfter)).toLocaleDateString(locale, {
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}</div>
-                  <div className="collection-info">{localize("Certificate.cert_valid", locale)}</div>
+                  <div className="collection-item certs-collection certificate-info">
+                    <div className="collection-title">{(new Date(signerCert.notAfter)).toLocaleDateString(locale, {
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}</div>
+                    <div className="collection-info">{localize("Certificate.cert_valid", locale)}</div>
+                  </div>
 
-                  <div className="collection-title">{localizeAlgorithm(signature.alg, locale)}</div>
-                  <div className="collection-info">{localize("Sign.alg", locale)}</div>
+                  <div className="collection-item certs-collection certificate-info">
+                    <div className="collection-title">{localizeAlgorithm(signature.alg, locale)}</div>
+                    <div className="collection-info">{localize("Sign.alg", locale)}</div>
+                  </div>
 
                 </div>
               </div>
