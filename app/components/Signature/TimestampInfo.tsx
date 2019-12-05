@@ -139,14 +139,14 @@ class TimestampInfo extends React.Component<ITimestampInfoProps, {}> {
       if (res === 0) {
         return true;
       } else {
-        $(".toast-error_verify_certificate").remove();
-        Materialize.toast(`${localize("Tsp.error_verify_certificate", locale)}: ${res}`, 3000, "toast-error_verify_certificate");
+        $(".toast-error_verify_tsp").remove();
+        Materialize.toast(`${localize("Tsp.error_verify_tsp", locale)}: ${res}`, 3000, "toast-error_verify_tsp");
 
         return false;
       }
     } catch (e) {
-      $(".toast-error_verify_certificate").remove();
-      Materialize.toast(`${localize("Tsp.error_verify_certificate", locale)} ${e}`, 3000, "toast-error_verify_certificate");
+      $(".toast-error_verify_tsp").remove();
+      Materialize.toast(`${localize("Tsp.error_verify_tsp", locale)} ${e}`, 3000, "toast-error_verify_tsp");
     }
 
     return false;

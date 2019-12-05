@@ -724,6 +724,7 @@ export default {
     data_hash: "Хэш",
     data_hash_alg_oid: "Идентификатор алгоритма хэширования",
     error_verify_certificate: "Ошибка проверки сертификата",
+    error_verify_tsp: "Ошибка проверки штампа",
     has_nonce: "HasNonce",
     ordering: "Ordering",
     policy_id: "Идентификатор политики",

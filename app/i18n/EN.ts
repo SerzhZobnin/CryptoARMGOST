@@ -722,6 +722,7 @@ export default {
     data_hash: "Data hash",
     data_hash_alg_oid: "Data Hash Alg OID",
     error_verify_certificate: "Error verify certificate",
+    error_verify_tsp: "Error verify time-stamp",
     has_nonce: "Has nonce",
     ordering: "Ordering",
     policy_id: "Policy ID",
