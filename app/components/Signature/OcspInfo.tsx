@@ -1,49 +1,65 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { ITimestamp } from "../../reducer/signatures";
+import { localizeAlgorithm } from "../../i18n/localize";
+import { IOcsp } from "../../reducer/signatures";
 
-interface ITimestampInfoProps {
-  timestamp: ITimestamp;
+interface IOcspInfoProps {
+  ocsp: IOcsp;
 }
 
-class TimestampInfo extends React.Component<ITimestampInfoProps, {}> {
+class OcspInfo extends React.Component<IOcspInfoProps, {}> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
 
-  constructor(props: ITimestampInfoProps) {
+  constructor(props: IOcspInfoProps) {
     super(props);
   }
 
   render() {
-    const { timestamp } = this.props;
+    const { ocsp } = this.props;
     const { localize, locale } = this.context;
 
-    if (!timestamp || !timestamp.TSP) {
+    if (!ocsp || !ocsp.OCSP) {
       return null;
     }
 
     const status = this.verify();
-    const tsaStatus = this.verifyCertificate(timestamp.TSACertificate);
+    const ocspCertStatus = this.verifyCertificate(ocsp.OcspCert);
+    const signerCertStatus = ocsp.Status === 0;
 
     let curStatusStyle;
     let isValid = "";
     let icon = "";
-    let statusTsp = "";
+    let statusOcsp = "";
 
-    if (tsaStatus) {
+    let signerIsValid = "";
+    let signerIcon = "";
+    let signerStatus = "";
+
+    if (ocspCertStatus) {
       curStatusStyle = "cert_status_ok";
     } else {
       curStatusStyle = "cert_status_error";
     }
 
+    if (signerCertStatus) {
+      signerStatus = localize("Ocsp.signer_cert_ok", locale);
+      signerIcon = "status_ok_icon";
+      signerIsValid = "valid";
+    } else {
+      signerStatus = localize("Ocsp.signer_cert_fail", locale);
+      signerIcon = "status_error_icon";
+      signerIsValid = "unvalid";
+    }
+
     if (status) {
-      statusTsp = localize("Tsp.tsp_sign_ok", locale);
+      statusOcsp = localize("Ocsp.ocsp_sign_ok", locale);
       icon = "status_ok_icon";
       isValid = "valid";
     } else {
-      statusTsp = localize("Tsp.tsp_sign_fail", locale);
+      statusOcsp = localize("Ocsp.ocsp_sign_fail", locale);
       icon = "status_error_icon";
       isValid = "unvalid";
     }
@@ -56,7 +72,7 @@ class TimestampInfo extends React.Component<ITimestampInfoProps, {}> {
           </div>
           <div className="col s10">
             <div className="col s12">
-              <div className={isValid}>{statusTsp}</div>
+              <div className={isValid}>{statusOcsp}</div>
 
               <div className="collection-info">{localize("Tsp.checked", locale)}: {true ? (new Date()).toLocaleString(locale, {
                 day: "numeric",
@@ -69,52 +85,54 @@ class TimestampInfo extends React.Component<ITimestampInfoProps, {}> {
           </div>
         </div>
 
-        <div className="col s12 primary-text">{localize("Tsp.tsp_properties", locale)}:</div>
-        <div className="col s12">
-          <div className="collection">
-            <div className="collection-item certs-collection certificate-info">
-              <div className="collection-title selectable-text">{timestamp.SerialNumber.toString("hex")}</div>
-              <div className="collection-info">{localize("Tsp.serial_number", locale)}</div>
-            </div>
+        <div className="row">
+          <div className="col s2" style={{ width: "11%" }}>
+            <div className={signerIcon} />
+          </div>
+          <div className="col s10">
+            <div className="col s12">
+              <div className={signerIsValid}>{signerStatus}</div>
 
-            <div className="collection-item certs-collection certificate-info">
-              <div className="collection-title selectable-text">{(new Date(timestamp.Time)).toLocaleDateString(locale, {
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                month: "long",
-                year: "numeric",
-              })}</div>
-              <div className="collection-info">{localize("Tsp.time", locale)}</div>
-            </div>
-
-            <div className="collection-item certs-collection certificate-info">
-              <div className="collection-title selectable-text">{timestamp.PolicyID}</div>
-              <div className="collection-info">{localize("Tsp.policy_id", locale)}</div>
+              <div className="collection-info">{localize("Tsp.checked", locale)}: {ocsp.ThisUpdate ? ocsp.ThisUpdate : "-"}</div>
             </div>
           </div>
         </div>
 
-        <div className="col s12 primary-text">{localize("Tsp.tsa_certificate", locale)}:</div>
+        <div className="col s12 primary-text">{localize("Ocsp.ocsp_properties", locale)}:</div>
+        <div className="col s12">
+          <div className="collection">
+            <div className="collection-item certs-collection certificate-info">
+              <div className="collection-title selectable-text">{ocsp.ProducedAt}</div>
+              <div className="collection-info">{localize("Ocsp.produced_at", locale)}</div>
+            </div>
+
+            <div className="collection-item certs-collection certificate-info">
+              <div className="collection-title selectable-text">{localizeAlgorithm(ocsp.SignatureAlgorithmOid, locale)}</div>
+              <div className="collection-info">{localize("Ocsp.signature_algorithm_oid", locale)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col s12 primary-text">{localize("Ocsp.ocsp_certificate", locale)}:</div>
         <div className="col s12 valign-wrapper">
           <div className="col s2">
             <div className={curStatusStyle} />
           </div>
           <div className="col s10">
-            <div className="collection-title selectable-text">{timestamp.TSACertificate.subjectFriendlyName}</div>
-            <div className="collection-info">{timestamp.TSACertificate.issuerFriendlyName}</div>
+            <div className="collection-title selectable-text">{ocsp.OcspCert.subjectFriendlyName}</div>
+            <div className="collection-info">{ocsp.OcspCert.issuerFriendlyName}</div>
           </div>
         </div>
 
         <div className="col s12">
           <div className="collection">
             <div className="collection-item certs-collection certificate-info">
-              <div className="collection-title selectable-text">{timestamp.TSACertificate.serialNumber}</div>
+              <div className="collection-title selectable-text">{ocsp.OcspCert.serialNumber}</div>
               <div className="collection-info">{localize("Certificate.serialNumber", locale)}</div>
             </div>
 
             <div className="collection-item certs-collection certificate-info">
-              <div className="collection-title">{(new Date(timestamp.TSACertificate.notAfter)).toLocaleDateString(locale, {
+              <div className="collection-title">{(new Date(ocsp.OcspCert.notAfter)).toLocaleDateString(locale, {
                 day: "numeric",
                 hour: "numeric",
                 minute: "numeric",
@@ -131,10 +149,10 @@ class TimestampInfo extends React.Component<ITimestampInfoProps, {}> {
 
   verify = () => {
     const { localize, locale } = this.context;
-    const { timestamp } = this.props;
+    const { ocsp } = this.props;
 
     try {
-      const res = timestamp.TSP.Verify();
+      const res = ocsp.OCSP.Verify();
 
       if (res === 0) {
         return true;
@@ -154,10 +172,10 @@ class TimestampInfo extends React.Component<ITimestampInfoProps, {}> {
 
   verifyCertificate = (certificate: trusted.pki.Certificate) => {
     const { localize, locale } = this.context;
-    const { timestamp } = this.props;
+    const { ocsp } = this.props;
 
     try {
-      const res = timestamp.TSP.VerifyCertificate(certificate);
+      const res = ocsp.OCSP.VerifyCertificate(certificate);
 
       if (res === 0) {
         return true;
@@ -176,4 +194,4 @@ class TimestampInfo extends React.Component<ITimestampInfoProps, {}> {
   }
 }
 
-export default TimestampInfo;
+export default OcspInfo;

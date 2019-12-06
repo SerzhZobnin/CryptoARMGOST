@@ -542,6 +542,15 @@ export default {
   },
   Ocsp: {
     next_update: "Следующее обновление статуса",
+    ocsp_certificate: "Сертификат службы OCSP",
+    ocsp_properties: "Свойства OCSP ответа",
+    ocsp_response: "Ответ службы online статусов (OCSP)",
+    ocsp_sign_fail: "Подпись OCSP недействительна",
+    ocsp_sign_ok: "Подпись OCSP действительна",
+    produced_at: "Время подписи OCSP-ответа",
+    signature_algorithm_oid: "Алгоритм подписи OCSP-ответа",
+    signer_cert_fail: "Сертификат подписчика недействителен",
+    signer_cert_ok: "Сертификат подписчика действителен",
     this_update: "Время проверки статуса сертификата",
   },
   Problems: {

@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
-import { DEFAULT_DOCUMENTS_PATH, USER_NAME } from "../constants";
+import { DEFAULT_DOCUMENTS_PATH, DEFAULT_PATH, USER_NAME } from "../constants";
 import localize from "../i18n/localize";
+import { IOcsp } from "../reducer/signatures";
 import { fileCoding, fileExists } from "../utils";
 import logger from "../winstonLogger";
 
@@ -422,6 +423,7 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
       cert = signer.certificate;
 
       const timestamps = [];
+      let ocsp: IOcsp = {};
 
       try {
         ch = trusted.utils.Csp.buildChain(cert);
@@ -437,6 +439,31 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
         subject: undefined,
         timestamps: [],
       };
+
+      try {
+        const dataToImport = fs.readFileSync(DEFAULT_PATH + "/test.ocsp");
+        const ocspImported = new trusted.pki.OCSP(dataToImport);
+
+        console.log("ocspImported", ocspImported);
+
+        ocsp.Certificates = ocspImported.Certificates;
+        ocsp.NextUpdate = ocspImported.NextUpdate();
+        ocsp.OCSP = ocspImported;
+        ocsp.OcspCert = ocspImported.OcspCert;
+        ocsp.ProducedAt = ocspImported.ProducedAt;
+        ocsp.RespNumber = ocspImported.RespNumber;
+        ocsp.RespStatus = ocspImported.RespStatus;
+        ocsp.RespStatus = ocspImported.RespStatus;
+        ocsp.RevReason = ocspImported.RevReason();
+        ocsp.RevTime = ocspImported.RevTime();
+        ocsp.SignatureAlgorithmOid = ocspImported.SignatureAlgorithmOid;
+        ocsp.Status = ocspImported.Status();
+        ocsp.ThisUpdate = ocspImported.ThisUpdate();
+      } catch (e) {
+        console.log("------ ERRROR GET OCSP PROPS ------");
+        console.log("For correct work add test.ocsp to app directory");
+        console.log(e);
+      }
 
       for (const stType in trusted.cms.StampType) {
         if (Number(stType)) {
@@ -514,6 +541,7 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
         alg: cert.signatureAlgorithm,
         certs: certSign,
         digestAlgorithm: cert.signatureDigestAlgorithm,
+        ocsp,
         signingTime: signer.signingTime,
         status_verify: false,
         subject: cert.subjectFriendlyName,

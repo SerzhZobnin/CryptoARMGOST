@@ -1,5 +1,8 @@
 import { OrderedMap, Record } from "immutable";
-import { DELETE_FILE, PACKAGE_SIGN, START, SUCCESS, VERIFY_SIGNATURE, PACKAGE_DELETE_FILE } from "../constants";
+import {
+  DELETE_FILE, PACKAGE_DELETE_FILE, PACKAGE_SIGN,
+  START, SUCCESS, VERIFY_SIGNATURE,
+} from "../constants";
 import { arrayToMap } from "../utils";
 
 export interface ITimestamp {
@@ -18,12 +21,28 @@ export interface ITimestamp {
   Type: trusted.cms.StampType;
 }
 
+export interface IOcsp {
+  RespStatus: number;
+  SignatureAlgorithmOid: string;
+  Certificates: trusted.pki.CertificateCollection;
+  ProducedAt: string;
+  RespNumber: number;
+  OCSP: trusted.pki.OCSP;
+  OcspCert: trusted.pki.Certificate;
+  Status: number;
+  RevTime: string;
+  RevReason: number;
+  ThisUpdate: string;
+  NextUpdate: string;
+}
+
 const SignatureModel = Record({
   alg: null,
   certs: [],
   digestAlgorithm: null,
   fileId: null,
   id: null,
+  ocsp: null,
   signingTime: null,
   status_verify: null,
   subject: null,

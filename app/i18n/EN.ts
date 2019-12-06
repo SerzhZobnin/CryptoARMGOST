@@ -540,6 +540,15 @@ export default {
   },
   Ocsp: {
     next_update: "Next update",
+    ocsp_certificate: "Certificate of OCSP",
+    ocsp_properties: "OCSP response properties",
+    ocsp_response: "OCSP response",
+    ocsp_sign_fail: "Signature of OCSP is not valid",
+    ocsp_sign_ok: "Signature of OCSP is valid",
+    produced_at: "Time response was signed",
+    signature_algorithm_oid: "Signature algorithm",
+    signer_cert_fail: "Signer certificate is not valid",
+    signer_cert_ok: "Signer certificate is valid",
     this_update: "This update",
   },
   Problems: {

@@ -145,11 +145,11 @@ declare namespace native {
             RespNumber(): number;
             RespIndexByCert(cert: PKI.Certificate, issuer?: PKI.Certificate): number;
             OcspCert(): PKI.Certificate;
-            Status(respIdx: number): number;
-            RevTime(respIdx: number): string;
-            RevReason(respIdx: number): number;
-            ThisUpdate(respIdx: number): string;
-            NextUpdate(respIdx: number): string;
+            Status(respIdx?: number): number;
+            RevTime(respIdx?: number): string;
+            RevReason(respIdx?: number): number;
+            ThisUpdate(respIdx?: number): string;
+            NextUpdate(respIdx?: number): string;
         }
         class TSPRequest {
             constructor(hashAlgOid: string, dataFileName?: string);
@@ -2532,11 +2532,11 @@ declare namespace trusted.pki {
         readonly RespNumber: number;
         RespIndexByCert(cert: pki.Certificate, issuer?: pki.Certificate): number;
         readonly OcspCert: pki.Certificate;
-        Status(respIdx: number): CPCertStatus;
-        RevTime(respIdx: number): string;
-        RevReason(respIdx: number): CPCrlReason;
-        ThisUpdate(respIdx: number): string;
-        NextUpdate(respIdx: number): string;
+        Status(respIdx?: number): CPCertStatus;
+        RevTime(respIdx?: number): string;
+        RevReason(respIdx?: number): CPCrlReason;
+        ThisUpdate(respIdx?: number): string;
+        NextUpdate(respIdx?: number): string;
     }
 }
 declare namespace trusted.pki {

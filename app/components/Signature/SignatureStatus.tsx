@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { localizeAlgorithm } from "../../i18n/localize";
 import CertificateChainInfo from "../Certificate/CertificateChainInfo";
+import OcspInfo from "./OcspInfo";
 import TimestampInfo from "./TimestampInfo";
 import TimestampTypeSelector from "./TimestampTypeSelector";
 
@@ -136,6 +137,22 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
                 <a className="primary-text">{localize("Certificate.cert_chain_info", locale)}</a>
                 <CertificateChainInfo certificate={signerCert} style="" onClick={() => { return; }} />
               </div>
+
+              <div className="row" />
+
+              {signature.ocsp && signature.ocsp.OCSP ?
+                <React.Fragment>
+                  <div className="col s12">
+                    <div className="primary-text">{localize("Ocsp.ocsp_response", locale)}</div>
+                    <hr />
+                  </div>
+                  <div className="col s12">
+                    <OcspInfo ocsp={signature.ocsp} />
+                  </div>
+                </React.Fragment> :
+                null
+              }
+
             </div>
         }
       </div>
