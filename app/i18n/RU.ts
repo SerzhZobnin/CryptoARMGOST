@@ -704,6 +704,8 @@ export default {
     sign_ok: "Подпись действительна",
     sign_setting: "Настройки подписи",
     sign_time: "Добавить время подписи",
+    sign_type_attached: "Присоединённая",
+    sign_type_detached: "Отсоединённая",
     signature: "Подпись",
     signer: "Подписчик",
     signer_cert: "Сертификат подписи",

@@ -43,10 +43,10 @@ class SignatureTypeSelector extends React.Component<ISignatureTypeSelectorProps,
           <select className="select" id="type_of_signature" ref="type_of_signature"
             defaultValue={this.props.detached ? SignatureTypes.DETACHED : SignatureTypes.ATTACHED}>
             <option value={SignatureTypes.ATTACHED}>
-              {SignatureTypes.ATTACHED}
+              {localize("Sign.sign_type_attached", locale)}
             </option>
             <option value={SignatureTypes.DETACHED}>
-              {SignatureTypes.DETACHED}
+              {localize("Sign.sign_type_detached", locale)}
             </option>
           </select>
           <label>

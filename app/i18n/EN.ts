@@ -702,6 +702,8 @@ export default {
     sign_ok: "The signature is valid",
     sign_setting: "Signature settings",
     sign_time: "Add time of signature",
+    sign_type_attached: "Attached",
+    sign_type_detached: "Detached",
     signature: "Signature",
     signer: "Signer",
     signer_cert: "Signer certificate",
