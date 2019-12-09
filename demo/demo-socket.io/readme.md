@@ -403,6 +403,8 @@ $ node server
 # <a name="used"> Примеры проектов
 [КриптоАРМ.Документы ](https://cryptoarm.ru/cryptoarm-docs/) - Подпись актов, договоров, соглашений и других документов
 в электронном виде на CMS Bitrix
+	
+[![youtube](https://user-images.githubusercontent.com/16474118/70445517-b1542400-1aac-11ea-91ce-b720ab220708.png)](https://www.youtube.com/watch?time_continue=1&v=Adz2UnsLw1I "Модуль подписи для Битрикс")
 
 # <a name="support"> Обратная связь
 Если у вас есть вопросы по технической поддержке, то напишите нам на support@trusted.ru или откройте обращение на странице [GitHub Issues](https://github.com/TrustedRu/CryptoARMGOST/issues)
