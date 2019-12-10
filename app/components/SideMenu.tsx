@@ -18,78 +18,112 @@ class SideMenu extends React.Component<{}, {}> {
     return (this.context.locale !== nextContext.locale) ? true : false;
   }
 
+  componentDidMount() {
+    $("#certs").dropdown();
+  }
+
   render() {
     const { localize, locale } = this.context;
 
     return (
       <React.Fragment>
-        <nav className="menu-logo">
-          <div className="center">
-            <Link to="/" className="menuheaderlink" href="/">
-              <i className="logo-trusted" />
-              <div className="logo-text">
-                {localize("About.product_NAME", locale)}
-              </div>
-            </Link>
-          </div>
-        </nav>
+        <div className="menu-logo center-align" style={{ height: "37px" }}>
+          <Link to="/" href="/" style={{ height: "37px" }}>
+            <i className="material-icons left logo-trusted" style={{ marginTop: "5px" }} />
+          </Link>
+        </div>
+
         <div className="row">
           <Link to={LOCATION_MAIN}>
-            {localize("SignAndEncrypt.SignAndEncrypt", locale)}
             <i className="material-icons left sign">mode_edit</i>
           </Link>
 
           <Link to={LOCATION_DOCUMENTS}>
-            {localize("Documents.Documents", locale)}
             <i className="material-icons left document">library_books</i>
           </Link>
 
-          <Link to={LOCATION_CERTIFICATES}>
-            {localize("Certificate.Certificate", locale)}
+          <Link id="certs" to={LOCATION_CERTIFICATES} data-activates="dropdown-certificate-stores" data-hover="hover">
             <i className="material-icons left cert">library_books</i>
           </Link>
 
           <Link to={LOCATION_CONTAINERS}>
-            {localize("Containers.Containers", locale)}
             <i className="material-icons left keystore">library_books</i>
           </Link>
 
           <Link to={LOCATION_SERVICES}>
-            {localize("Services.Services", locale)}
             <i className="material-icons left dss">library_books</i>
           </Link>
 
           <Link to={LOCATION_SETTINGS}>
-            {localize("Settings.Settings", locale)}
             <i className="material-icons left setting">library_books</i>
           </Link>
 
           <Link to={LOCATION_EVENTS}>
-            {localize("Events.Operations_log", locale)}
             <i className="material-icons left journal">help</i>
           </Link>
         </div>
         <div className="row">
           <div className="menu-elements">
             <div className="row">
-              <hr />
+
               <Link to="/about">
-                {localize("About.About", locale)}
+
                 <i className="material-icons left about">about</i>
               </Link>
               <a onClick={() => window.electron.shell.openExternal(localize("Help.link_user_guide", locale))}>
-                {localize("Help.Help", locale)}
+
                 <i className="material-icons left license">license</i>
               </a>
               <Link to="/" onClick={() => {
                 remote.getGlobal("sharedObject").isQuiting = true;
                 remote.getCurrentWindow().close();
               }}>
-                {localize("Common.exit", locale)}
+
                 <i className="material-icons left exit">exit_to_app</i>
               </Link>
             </div>
           </div>
+        </div>
+        <div>
+          <ul id="dropdown-certificate-stores" className="dropdown-content">
+            <li>
+              <div className="center-align">
+                <a style={{ fontWeight: "bold", color: "#bf3817" }}>Сертификаты</a>
+              </div>
+            </li>
+            <li>
+              <div className="row nobottom">
+                <div className="col s3">
+                  <i className="material-icons left my" />
+                </div>
+                <div className="col s8">
+                  Личные
+                  </div>
+              </div>
+            </li>
+
+            <li>
+              <div className="row nobottom">
+                <div className="col s3">
+                  <i className="material-icons left root" />
+                </div>
+                <div className="col s8">
+                  Корневые
+                </div>
+              </div>
+            </li>
+
+            <li>
+              <div className="row nobottom">
+                <div className="col s3">
+                  <i className="material-icons left intermediate" />
+                </div>
+                <div className="col s8">
+                  Промежуточные
+                  </div>
+              </div>
+            </li>
+          </ul>
         </div>
       </React.Fragment>
     );

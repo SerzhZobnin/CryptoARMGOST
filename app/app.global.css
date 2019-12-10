@@ -5,9 +5,24 @@
 @import "./resources/fonts/material-design-icons/material-icons.css";
 @import "../node_modules/react-phone-number-input/style.css";
 
+main, .content-noflex, .content {
+  padding-left: 60px;
+}
+
+@media only screen and (max-width : 992px) {
+  main, .content-noflex, .content {
+    padding-left: 60px;
+  }
+  .side-nav.fixed {
+    -webkit-transform: translateX(0%);
+            transform: translateX(0%);
+  }
+}
+
 /* Стили заголовка окна  */
 nav.app-bar {
     height: 35px;
+    padding-left: 80px;
 }
 
 nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
@@ -95,7 +110,6 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
     width: 256px;
 }
 .menu-logo {
-    height: 100px;
     -webkit-app-region: no-drag;
 }
 .logo-text {
@@ -112,8 +126,6 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
     bottom: 0;
     width: 240px;
 }
-
-
 
 .closer {
     border-radius: 100%;
@@ -516,25 +528,6 @@ div::-webkit-scrollbar-thumb {
     color: white;
 }
 
-
-/*---------------------------------Стили главного меню-----------------------*/
-/*.logo-trusted img {
-  width: 60px;
-  height: 60px;
-}*/
-.logo-trusted {
-    position:absolute;
-    padding-left: 0px;
-    margin-left: 80px;
-    margin-top: 6px;
-    padding-top: 5px;
-    height: 60px;
-    width: 60px;
-    background: url(./resources/image/cryptoarm-gost.png);
-    background-size: 60px 60px;
-
-}
-
 /*-------------------------------Стили блоков внутри страницы------------------*/
 .app-bar-items {
     display: flex;
@@ -681,16 +674,13 @@ div::-webkit-scrollbar-thumb {
 
 /*-------------------------------Стили главного меню------------------*/
 .side-nav {
-    height: 100%;
-    width: 250px;
-    border: 2px solid #bf3817;
+    height: calc(100% - 2px);
     overflow: hidden;
 }
 
-.side-nav a {
-  height: 40px;
-  line-height: 40px;
-  padding: 0 10px;
+.side-nav .fixed {
+  height: calc(100% - 2px);
+  overflow: hidden;
 }
 
 .col.settings-check {
@@ -706,6 +696,10 @@ i.material-icons.left {
   height: 24px;
   background-size: 24px 24px !important;
   margin-top: 7px;
+}
+
+i.material-icons.left.logo-trusted {
+  background: url(./resources/image/cryptoarm-gost.png);
 }
 
 i.material-icons.left.sign {
@@ -1105,6 +1099,11 @@ nav .cert-seacrh label i {
 
 .dropdown-content {
   min-width: 170px;
+}
+
+#dropdown-certificate-stores {
+  margin-left: 100%;
+  display: block;
 }
 
 .dropdown-content li {

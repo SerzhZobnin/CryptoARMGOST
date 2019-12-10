@@ -136,12 +136,6 @@ class MenuBar extends React.Component<any, IMenuBarState> {
     }
   }
 
-  componentDidMount() {
-    $(".menu-btn").sideNav({
-      closeOnClick: true,
-    });
-  }
-
   render() {
     const disabledNavigate = this.isFilesFromSocket();
     const dataActivates = disabledNavigate ? "" : "slide-out";
@@ -152,11 +146,6 @@ class MenuBar extends React.Component<any, IMenuBarState> {
         <nav className="app-bar">
           <div className="col s6 m6 l6 app-bar-wrapper">
             <ul className="app-bar-items">
-              <li>
-                <a data-activates={dataActivates} className={"menu-btn waves-effect waves-light " + classDisabled}>
-                  <i className="material-icons">menu</i>
-                </a>
-              </li>
               <li className="headline6 app-bar-text">{this.getTitle()}</li>
               <li>
                 <ul>
@@ -183,9 +172,10 @@ class MenuBar extends React.Component<any, IMenuBarState> {
               </li>
             </ul>
           </div>
-          <ul id="slide-out" className="side-nav">
+          <ul id="slide-out" className="side-nav fixed" style={{ width: "60px", left: "2px", overflow: "visible" }}>
             <SideMenu />
           </ul>
+
         </nav>
         {this.props.children}
         <Diagnostic />
