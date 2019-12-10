@@ -38,7 +38,7 @@ class CertificateInfo extends React.Component<ICertificateInfoProps, any> {
           </div>
           <div className="col s10" style={{ padding: 0 }}>
             <div className="collection-title">{certificate.subjectFriendlyName}</div>
-            <div className="collection-info cert-info">{certificate.issuerFriendlyName}</div>
+            <div className="collection-info">{certificate.issuerFriendlyName}</div>
           </div>
         </div>
       </React.Fragment>

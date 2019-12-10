@@ -37,14 +37,27 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   background-color: #bf3817 !important;
 }
 
+.headline6 {
+  font-size: 1.25rem;
+  letter-spacing: 0.00857142857rem; /* 0.15/(20*0.0625*14) */
+}
+
 .primary-text {
   color: rgba(0,0,0,0.87);
   font-size: 1rem;
+  letter-spacing: 0.03571428571rem; /* 0.5/(16*0.0625*14) */
 }
 
 .secondary-text {
   color: rgba(0,0,0,0.6);
   font-size: 0.875rem;
+  letter-spacing: 0.02040816326rem; /* 0.25/(14*0.0625*14) */
+}
+
+.caption-text {
+  font-size: 0.875rem;
+  letter-spacing: 0.03809523809rem;
+  color: #334294;
 }
 
 .valid {
@@ -100,12 +113,7 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
     width: 240px;
 }
 
-.input-field {
-  margin-top: 0;
-  width: 110px;
-  height: 46px;
-  line-height: 15px;
-}
+
 
 .closer {
     border-radius: 100%;
@@ -196,7 +204,6 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-size: 18px;
     min-height: 700px;
     min-width: 900px;
     width: 100% !important;
@@ -207,10 +214,6 @@ body {
 }
 .settings-content {
     overflow: visible;
-    height: calc(100% - 35px);
-    white-space: nowrap;
-    font-size: 14px;
-    width: 100%;
 }
 
 .sign-info-content {
@@ -228,16 +231,6 @@ body {
 
 .bordered--top{
     border-top:1px solid rgba(0,0,0, 0.5);
-}
-
-.select-wrapper input.select-dropdown{
-    height: 42px;
-    line-height: 30px;
-    font-size: 100%;
-}
-
-.select-wrapper+label {
-  top: -3px;
 }
 
 .settins-check-title {
@@ -264,12 +257,24 @@ body {
     width: 56px;
     line-height: 56px;
 }
-.collection-title, .collection-info {
+
+.collection-title {
+    font-size: 1rem;
     padding-left: 0;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     padding-top: 0px;
+}
+
+.collection-info {
+  font-size: 0.875rem;
+  color: rgba(0,0,0,0.6);
+  padding-left: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding-top: 0px;
 }
 
 .material-icons.secondary-content.file-setting-item {
@@ -333,15 +338,12 @@ body {
 }
 /*--- file list---*/
 .collection {
-    font-size: 75%;
     overflow: initial;
     margin: 0;
     border: none;
 }
 
-.collection-info {
-    font-size: 90%;
-}
+
 
 .collection-info-files {
     font-size: 90%;
@@ -548,7 +550,6 @@ div::-webkit-scrollbar-thumb {
     width: 100%;
 }
 .app-bar-item, .app-bar-text {
-    font-size: 100%;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -604,8 +605,9 @@ div::-webkit-scrollbar-thumb {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: bold;
+  letter-spacing: 0.10204081632rem;
 }
 
 .btn-outlined {
@@ -621,8 +623,9 @@ div::-webkit-scrollbar-thumb {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: bold;
+  letter-spacing: 0.10204081632rem; /* 1.25/(14*0.0625*14px) */
 }
 
 .btn-outlined:hover, .btn-text:hover  {
@@ -875,7 +878,6 @@ input[type=search] {
 .cert-bar-text {
     width: calc(100% - 45px);
     color: black;
-    font-size: 75%;
     padding-left: 0.75rem;
 }
 nav .cert-seacrh label i {
@@ -915,15 +917,6 @@ nav .cert-seacrh label i {
 }
 .cert-item.not-active {
     display: none;
-}
-.cert-info {
-    color: rgba(0,0,0,0.6);
-}
-
-.cert-info-blue {
-    color: #334294;
-    /*font-size: 95%;*/
-    font-size: 13px;
 }
 
 .chain-info-blue {
@@ -1230,17 +1223,11 @@ i.material-icons.left.ca {
 
 span.card-title {
   color: #bf3817;
-  font-size: 20px;
 }
 
 .card .card-title {
-  font-size: 20px;
   font-weight: 300;
 }
-
-span.card-title.sub {
-    font-size: 16px;
-  }
 
 .mail-block {
     height: 38px;
@@ -1288,10 +1275,6 @@ form.col.s12 {
 
 .gray-text {
   color: #666 !important;
-}
-
-.select, #key-length-value {
-  font-size: 0.9rem;
 }
 
 .contact-icon {
@@ -1782,7 +1765,6 @@ h5.bmark_onlinelic{
 }
 .error-text {
     color: #9c3b23;
-    font-size: 90%;
 }
 .error-info.not-active, .about-error-info.not-active {
     display: none;
@@ -2490,15 +2472,6 @@ a.help_paragraf {
     padding-right: 0px;
 }
 
-.desctoplic_text{
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    text-align: justify;
-    font-size: 13px;
-}
-
 a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
     left: 10px;
 }
@@ -2586,17 +2559,11 @@ a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
 
 .input-field label {
   color: #334294;
-  font-size: 0.9rem;
-}
-
-.input-field label.active {
-  font-size: 0.9rem;
 }
 
 [type="checkbox"]+label {
   height: 1.6rem;
   line-height: 1.2rem;
-  font-size: 0.9rem;
   padding-left: 25px;
   color: black;
   opacity: 0.87;
@@ -2605,14 +2572,6 @@ a.waves-effect.waves-light.btn.licence-temporary-modal-btn.left {
 .input-field-csr {
   height: 36px;
   line-height: 10px;
-}
-
-.input-field-csr input[type=text] {
-  font-size: 0.9rem;
-}
-
-.input-field-csr input[type=email] {
-  font-size: 0.9rem;
 }
 
 .noUi-handle {
@@ -2963,7 +2922,7 @@ svg:hover {
 
   .svg_icon_text {
     margin-bottom: 2px;
-    font-size: 12px;
+    font-size: 0.875rem;
     color: rgba(0,0,0,0.87);
     text-align: center;
   }

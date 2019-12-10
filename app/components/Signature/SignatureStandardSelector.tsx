@@ -2,13 +2,18 @@ import PropTypes from "prop-types";
 import React from "react";
 import ReactDOM from "react-dom";
 
-interface IEncodingTypeSelectorProps {
-  EncodingValue: string;
+interface ISignatureStandardSelectorProps {
+  value: string;
   disabled?: boolean;
   handleChange: (encoding: string) => void;
 }
 
-class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {}> {
+const SignatureStandard = {
+  CADES: "CAdES-X Long Type 1",
+  CMS: "CMS",
+};
+
+class SignatureStandardSelector extends React.Component<ISignatureStandardSelectorProps, {}> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -21,10 +26,10 @@ class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {
     $(document).ready(() => {
       $("select").material_select();
     });
-    $(ReactDOM.findDOMNode(this.refs.encoding)).on("change", this.changeEncoding);
+    $(ReactDOM.findDOMNode(this.refs.standard)).on("change", this.changeStandard);
   }
 
-  changeEncoding = (ev: any) => {
+  changeStandard = (ev: any) => {
     this.props.handleChange(ev.target.value);
   }
 
@@ -35,16 +40,16 @@ class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {
     return (
       <div className={classDisabled}>
         <div className="input-field">
-          <select className="select" id="encoding" ref="encoding" defaultValue={this.props.EncodingValue}>
-            <option value={localize("Settings.BASE", locale)}>
-              {localize("Settings.BASE", locale)}
+          <select className="select" id="standard" ref="standard" defaultValue={this.props.value}>
+            <option value={SignatureStandard.CMS}>
+              {SignatureStandard.CMS}
             </option>
-            <option value={localize("Settings.DER", locale)}>
-              {localize("Settings.DER", locale)}
+            <option value={SignatureStandard.CADES}>
+              {SignatureStandard.CADES}
             </option>
           </select>
           <label>
-            {localize("Settings.encoding", locale)}
+            {localize("Sign.standard", locale)}
           </label>
         </div>
       </div>
@@ -52,4 +57,4 @@ class EncodingTypeSelector extends React.Component<IEncodingTypeSelectorProps, {
   }
 }
 
-export default EncodingTypeSelector;
+export default SignatureStandardSelector;

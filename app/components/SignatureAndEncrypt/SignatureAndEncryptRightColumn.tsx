@@ -135,7 +135,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     return (
       <React.Fragment>
         <div className="col s10">
-          <div className="desktoplic_text_item">Настройки:</div>
+          <div className="primary-text">Настройки:</div>
           <hr />
         </div>
         <div className="col s2">
@@ -167,7 +167,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           <div className="col s2">
             <div className="setting" />
           </div>
-          <div className="col s10" style={{ fontSize: "75%" }}>
+          <div className="col s10">
             <div className="collection-title">{setting.name}</div>
           </div>
         </div>
@@ -175,7 +175,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         <div className="row" />
 
         <div className="col s10">
-          <div className="desktoplic_text_item">{localize("Sign.signer_cert", locale)}</div>
+          <div className="primary-text">{localize("Sign.signer_cert", locale)}</div>
           <hr />
         </div>
         <div className="col s2">
@@ -194,7 +194,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           </div>
         </div>
         {
-          (signer) ? <SignerInfo signer={signer} style={{ fontSize: "75%" }} /> :
+          (signer) ? <SignerInfo signer={signer} /> :
             <div className="col s12">
               <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
                 <a className="btn btn-outlined waves-effect waves-light"
@@ -210,7 +210,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         <div className="row" />
 
         <div className="col s10">
-          <div className="desktoplic_text_item">Сертификаты шифрования:</div>
+          <div className="primary-text">Сертификаты шифрования:</div>
           <hr />
         </div>
 
@@ -266,7 +266,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                     checked={isDocumentsReviewed}
                     onClick={this.toggleDocumentsReviewed}
                   />
-                  <label htmlFor={"filesview"} className="truncate">
+                  <label htmlFor={"filesview"} className="truncate" style={{fontSize: "0.875rem"}}>
                     {localize("Sign.documents_reviewed", locale)}
                   </label>
                 </div>

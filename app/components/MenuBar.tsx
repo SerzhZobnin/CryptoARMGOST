@@ -157,7 +157,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
                   <i className="material-icons">menu</i>
                 </a>
               </li>
-              <li className="app-bar-text">{this.getTitle()}</li>
+              <li className="headline6 app-bar-text">{this.getTitle()}</li>
               <li>
                 <ul>
                   <li>

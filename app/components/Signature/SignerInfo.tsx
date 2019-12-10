@@ -38,7 +38,7 @@ class SignerInfo extends React.Component<ISignerInfoProps, any> {
           </div>
           <div className="col s10">
             <div className="collection-title">{signer.subjectFriendlyName}</div>
-            <div className="collection-info cert-info">{signer.issuerFriendlyName}</div>
+            <div className="collection-info">{signer.issuerFriendlyName}</div>
           </div>
         </div>
       </React.Fragment>
