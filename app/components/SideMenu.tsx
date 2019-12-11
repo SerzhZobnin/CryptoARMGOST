@@ -8,14 +8,18 @@ import {
 
 const remote = window.electron.remote;
 
-class SideMenu extends React.Component<{}, {}> {
+interface ISideMenu {
+  pathname: string;
+}
+
+class SideMenu extends React.Component<ISideMenu, {}> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
 
-  shouldComponentUpdate(nextContext: { locale: string }) {
-    return (this.context.locale !== nextContext.locale) ? true : false;
+  constructor(props: ISideMenu) {
+    super(props);
   }
 
   componentDidMount() {
@@ -24,6 +28,7 @@ class SideMenu extends React.Component<{}, {}> {
 
   render() {
     const { localize, locale } = this.context;
+    const { pathname } = this.props;
 
     return (
       <React.Fragment>
@@ -34,33 +39,55 @@ class SideMenu extends React.Component<{}, {}> {
         </div>
 
         <div className="row">
-          <Link to={LOCATION_MAIN}>
-            <i className="material-icons left sign">mode_edit</i>
-          </Link>
+          <div className="row nobottom">
+            {LOCATION_MAIN === pathname ? < div className="side-nav-rectangle" /> : null}
+            <Link to={LOCATION_MAIN}>
+              <i className="material-icons left sign">mode_edit</i>
+            </Link>
+          </div>
 
-          <Link to={LOCATION_DOCUMENTS}>
-            <i className="material-icons left document">library_books</i>
-          </Link>
+          <div className="row nobottom">
+            {LOCATION_DOCUMENTS === pathname ? < div className="side-nav-rectangle" /> : null}
+            <Link to={LOCATION_DOCUMENTS}>
+              <i className="material-icons left document">library_books</i>
+            </Link>
+          </div>
 
-          <Link id="certs" to={LOCATION_CERTIFICATES} data-activates="dropdown-certificate-stores" data-hover="hover">
-            <i className="material-icons left cert">library_books</i>
-          </Link>
+          <div className="row nobottom">
+            {LOCATION_CERTIFICATES === pathname ? < div className="side-nav-rectangle" /> : null}
+            <Link id="certs" to={LOCATION_CERTIFICATES} data-activates="dropdown-certificate-stores" data-hover="hover">
+              <i className="material-icons left cert">library_books</i>
+            </Link>
+          </div>
 
-          <Link to={LOCATION_CONTAINERS}>
-            <i className="material-icons left keystore">library_books</i>
-          </Link>
+          <div className="row nobottom">
+            {LOCATION_CONTAINERS === pathname ? < div className="side-nav-rectangle" /> : null}
+            <Link to={LOCATION_CONTAINERS}>
+              <i className="material-icons left keystore">library_books</i>
+            </Link>
+          </div>
 
-          <Link to={LOCATION_SERVICES}>
-            <i className="material-icons left dss">library_books</i>
-          </Link>
+          <div className="row nobottom">
+            {LOCATION_SERVICES === pathname ? < div className="side-nav-rectangle" /> : null}
+            <Link to={LOCATION_SERVICES}>
+              <i className="material-icons left dss">library_books</i>
+            </Link>
+          </div>
 
-          <Link to={LOCATION_SETTINGS}>
-            <i className="material-icons left setting">library_books</i>
-          </Link>
+          <div className="row nobottom">
+            {LOCATION_SETTINGS === pathname ? < div className="side-nav-rectangle" /> : null}
+            <Link to={LOCATION_SETTINGS}>
+              <i className="material-icons left setting">library_books</i>
+            </Link>
+          </div>
 
-          <Link to={LOCATION_EVENTS}>
-            <i className="material-icons left journal">help</i>
-          </Link>
+          <div className="row nobottom">
+            {LOCATION_EVENTS === pathname ? < div className="side-nav-rectangle" /> : null}
+            <Link to={LOCATION_EVENTS}>
+              <i className="material-icons left journal">help</i>
+            </Link>
+          </div>
+
         </div>
         <div className="row">
           <div className="menu-elements">

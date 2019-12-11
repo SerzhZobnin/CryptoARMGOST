@@ -683,6 +683,14 @@ div::-webkit-scrollbar-thumb {
   overflow: hidden;
 }
 
+.side-nav-rectangle {
+	width: 3px;
+	height: 44px;
+  background: #bf3817;
+  float: left;
+  margin-top: 2px;
+}
+
 .col.settings-check {
   padding-top: 8px;
   height: 24px;
