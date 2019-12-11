@@ -3,8 +3,9 @@ import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
-  LOCATION_CERTIFICATES, LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
-  LOCATION_EVENTS, LOCATION_MAIN, LOCATION_SERVICES, LOCATION_SETTINGS, LOCATION_LICENSE,
+  LOCATION_ABOUT, LOCATION_CERTIFICATES, LOCATION_CONTAINERS,
+  LOCATION_DOCUMENTS, LOCATION_EVENTS, LOCATION_MAIN,
+  LOCATION_SERVICES, LOCATION_SETTINGS,
 } from "../constants";
 import { filteredCertificatesSelector } from "../selectors";
 import { filteredCrlsSelector } from "../selectors/crlsSelectors";
@@ -31,6 +32,8 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
   componentDidMount() {
     $("#certs").dropdown();
+    $("#document_stores").dropdown();
+    $("#dropdown-about").dropdown();
   }
 
   render() {
@@ -47,30 +50,16 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
         <div className="row">
           <div className="row nobottom">
-            {LOCATION_MAIN === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_MAIN} style={{ padding: "0 10px" }}>
-              <i className="material-icons sidevan sign">mode_edit</i>
-            </Link>
-          </div>
-
-          <div className="row nobottom">
-            {LOCATION_DOCUMENTS === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_DOCUMENTS} style={{ padding: "0 10px" }}>
+            {LOCATION_MAIN === pathname || LOCATION_DOCUMENTS === pathname ? < div className="side-nav-rectangle" /> : null}
+            <Link id="document_stores" to={LOCATION_MAIN} data-activates="dropdown-documents-stores" data-hover="hover" style={{ padding: "0 10px" }}>
               <i className="material-icons sidevan document"></i>
             </Link>
           </div>
 
           <div className="row nobottom">
-            {LOCATION_CERTIFICATES === pathname ? < div className="side-nav-rectangle" /> : null}
+            {LOCATION_CERTIFICATES === pathname || LOCATION_CONTAINERS === pathname ? < div className="side-nav-rectangle" /> : null}
             <Link id="certs" to={LOCATION_CERTIFICATES} data-activates="dropdown-certificate-stores" data-hover="hover" style={{ padding: "0 10px" }}>
               <i className="material-icons sidevan cert"></i>
-            </Link>
-          </div>
-
-          <div className="row nobottom">
-            {LOCATION_CONTAINERS === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_CONTAINERS} style={{ padding: "0 10px" }}>
-              <i className="material-icons sidevan keystore"></i>
             </Link>
           </div>
 
@@ -87,27 +76,16 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               <i className="material-icons sidevan setting"></i>
             </Link>
           </div>
-
-          <div className="row nobottom">
-            {LOCATION_EVENTS === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_EVENTS} style={{ padding: "0 10px" }}>
-              <i className="material-icons sidevan journal">help</i>
-            </Link>
-          </div>
-
         </div>
         <div className="row">
           <div className="menu-elements">
-            <div className="row">
+            <div className="row nobottom">
               <div className="row nobottom">
-                {"/about" === pathname ? < div className="side-nav-rectangle" /> : null}
-                <Link to="/about" style={{ padding: "0 10px" }}>
-                  <i className="material-icons sidevan about" style={{ padding: "0 10px" }}>about</i>
+                {LOCATION_ABOUT === pathname || LOCATION_EVENTS === pathname ? < div className="side-nav-rectangle" /> : null}
+                <Link id="dropdown-about" to={LOCATION_ABOUT} data-activates="dropdown-about-pages" data-hover="hover" style={{ padding: "0 10px" }}>
+                  <i className="material-icons sidevan license" style={{ padding: "0 10px" }}>about</i>
                 </Link>
               </div>
-              <a onClick={() => window.electron.shell.openExternal(localize("Help.link_user_guide", locale))} style={{ padding: "0 10px" }}>
-                <i className="material-icons sidevan license">license</i>
-              </a>
               <Link to="/" onClick={() => {
                 remote.getGlobal("sharedObject").isQuiting = true;
                 remote.getCurrentWindow().close();
@@ -118,12 +96,14 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
             </div>
           </div>
         </div>
-        {this.getStoresMenu()}
+        {this.getCertStoresMenu()}
+        {this.getDocumentsStoresMenu()}
+        {this.getAboutMenu()}
       </React.Fragment>
     );
   }
 
-  getStoresMenu = () => {
+  getCertStoresMenu = () => {
     const { certificates, crls, certrequests } = this.props;
     const { localize, locale } = this.context;
 
@@ -163,13 +143,13 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               <a style={{ fontWeight: "bold", color: "#bf3817" }}>СЕРТИФИКАТЫ</a>
             </div>
           </li>
-          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_my", locale), localize("Certificate.certs_my", locale), "my", my)}
-          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_other", locale), localize("Certificate.certs_other", locale), "other", other)}
-          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_intermediate", locale), localize("Certificate.certs_intermediate", locale), "intermediate", intermediate)}
-          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_root", locale), localize("Certificate.certs_root", locale), "root", root)}
-          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_token", locale), localize("Certificate.certs_token", locale), "token", token)}
-          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_request", locale), localize("Certificate.certs_request", locale), "request", request)}
-          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_crls", locale), localize("Certificate.crls", locale), "crl", crls)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_my", locale), localize("Certificate.certs_my", locale), "my", my)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_other", locale), localize("Certificate.certs_other", locale), "other", other)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_intermediate", locale), localize("Certificate.certs_intermediate", locale), "intermediate", intermediate)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_root", locale), localize("Certificate.certs_root", locale), "root", root)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_token", locale), localize("Certificate.certs_token", locale), "token", token)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_request", locale), localize("Certificate.certs_request", locale), "request", request)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_crls", locale), localize("Certificate.crls", locale), "crl", crls)}
           <li onClick={() => $("#certs").dropdown("close")}>
             <Link to={LOCATION_CONTAINERS} style={{ height: "33px", padding: "0px" }}>
               <div className="row nobottom valign-wrapper">
@@ -187,7 +167,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     );
   }
 
-  getStoresMenuElement = (head: string, menuBarHead: string, name: string, elements: object[]) => {
+  getCertStoreMenuElement = (head: string, menuBarHead: string, name: string, elements: object[]) => {
     if (elements && elements.length) {
       return (
         <li onClick={() => $("#certs").dropdown("close")}>
@@ -206,6 +186,100 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     } else {
       return null;
     }
+  }
+
+  getDocumentsStoresMenu = () => {
+    const { localize, locale } = this.context;
+
+    return (
+      <div>
+        <ul id="dropdown-documents-stores" className="dropdown-content" style={{ minHeight: "36px", height: "36px" }}>
+          <li>
+            <div className="center-align">
+              <a style={{ fontWeight: "bold", color: "#bf3817" }}>ДОКУМЕНТЫ</a>
+            </div>
+          </li>
+          <li onClick={() => $("#document_stores").dropdown("close")}>
+            <Link to={LOCATION_MAIN} style={{ height: "33px", padding: "0px" }}>
+              <div className="row nobottom valign-wrapper">
+                <div className="col" style={{ width: "36px" }}>
+                  <i className="material-icons left container" />
+                </div>
+                <div className="col">
+                  {localize("SignAndEncrypt.sign_and_encrypt", locale)}
+                </div>
+              </div>
+            </Link>
+          </li>
+          <li onClick={() => $("#document_stores").dropdown("close")}>
+            <Link to={LOCATION_DOCUMENTS} style={{ height: "33px", padding: "0px" }}>
+              <div className="row nobottom valign-wrapper">
+                <div className="col" style={{ width: "36px" }}>
+                  <i className="material-icons left container" />
+                </div>
+                <div className="col">
+                  {localize("Documents.documents", locale)}
+                </div>
+              </div>
+            </Link>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+
+  getAboutMenu = () => {
+    const { localize, locale } = this.context;
+
+    return (
+      <div>
+        <ul id="dropdown-about-pages" className="dropdown-content" style={{ minHeight: "36px", height: "36px" }}>
+          <li>
+            <div className="center-align">
+              <a style={{ fontWeight: "bold", color: "#bf3817" }}>О ПРОГРАММЕ</a>
+            </div>
+          </li>
+
+          <li onClick={() => $("#dropdown-about").dropdown("close")}>
+            <Link to={LOCATION_ABOUT} style={{ height: "33px", padding: "0px" }}>
+              <div className="row nobottom valign-wrapper">
+                <div className="col" style={{ width: "36px" }}>
+                  <i className="material-icons left container" />
+                </div>
+                <div className="col">
+                  {localize("About.about", locale)}
+                </div>
+              </div>
+            </Link>
+          </li>
+
+          <li onClick={() => $("#dropdown-about").dropdown("close")}>
+            <Link to={LOCATION_EVENTS} style={{ height: "33px", padding: "0px" }}>
+              <div className="row nobottom valign-wrapper">
+                <div className="col" style={{ width: "36px" }}>
+                  <i className="material-icons left container" />
+                </div>
+                <div className="col">
+                  {localize("Events.operations_log", locale)}
+                </div>
+              </div>
+            </Link>
+          </li>
+          <li onClick={() => $("#dropdown-about").dropdown("close")}>
+            <a style={{ height: "33px", padding: "0px" }} onClick={() => window.electron.shell.openExternal(localize("Help.link_user_guide", locale))}>
+              <div className="row nobottom valign-wrapper">
+                <div className="col" style={{ width: "36px" }}>
+                  <i className="material-icons left container" />
+                </div>
+                <div className="col">
+                Справка
+                </div>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    );
   }
 }
 

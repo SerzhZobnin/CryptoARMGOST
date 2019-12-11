@@ -1129,6 +1129,20 @@ nav .cert-seacrh label i {
   display: block;
 }
 
+#dropdown-documents-stores {
+  margin-left: 100%;
+  margin-top: 10px;
+  min-width: 220px;
+  display: block;
+}
+
+#dropdown-about-pages {
+  margin-left: 100%;
+  margin-top: 10px;
+  min-width: 220px;
+  display: block;
+}
+
 .dropdown-content li {
     border: 1px solid lightgray;
     min-height: 36px;

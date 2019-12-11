@@ -88,7 +88,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
       case LOCATION_CERTIFICATES:
         const head = storename ? storename : localize("Certificate.certs", locale);
-        return `${localize("About.product_NAME", locale)} - ${storename}`;
+        return `${localize("About.product_NAME", locale)} - ${head}`;
 
       case LOCATION_CONTAINERS:
         return `${localize("About.product_NAME", locale)} - ${localize("Containers.containers", locale)}`;
