@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   LOCATION_CERTIFICATES, LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
-  LOCATION_EVENTS, LOCATION_MAIN, LOCATION_SERVICES, LOCATION_SETTINGS,
+  LOCATION_EVENTS, LOCATION_MAIN, LOCATION_SERVICES, LOCATION_SETTINGS, LOCATION_LICENSE,
 } from "../constants";
 import { filteredCertificatesSelector } from "../selectors";
 import { filteredCrlsSelector } from "../selectors/crlsSelectors";
@@ -163,41 +163,45 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               <a style={{ fontWeight: "bold", color: "#bf3817" }}>СЕРТИФИКАТЫ</a>
             </div>
           </li>
-          {this.getStoresMenuElement(localize("Certificate.certs_my", locale), "my", my)}
-          {this.getStoresMenuElement(localize("Certificate.certs_other", locale), "other", other)}
-          {this.getStoresMenuElement(localize("Certificate.certs_intermediate", locale), "intermediate", intermediate)}
-          {this.getStoresMenuElement(localize("Certificate.certs_root", locale), "root", root)}
-          {this.getStoresMenuElement(localize("Certificate.certs_token", locale), "token", token)}
-          {this.getStoresMenuElement(localize("Certificate.certs_request", locale), "request", request)}
-          {this.getStoresMenuElement(localize("Certificate.crls", locale), "crl", crls)}
-          <li>
-            <div className="row nobottom">
-              <div className="col s1">
-                <i className="material-icons left container" />
+          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_my", locale), localize("Certificate.certs_my", locale), "my", my)}
+          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_other", locale), localize("Certificate.certs_other", locale), "other", other)}
+          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_intermediate", locale), localize("Certificate.certs_intermediate", locale), "intermediate", intermediate)}
+          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_root", locale), localize("Certificate.certs_root", locale), "root", root)}
+          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_token", locale), localize("Certificate.certs_token", locale), "token", token)}
+          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_request", locale), localize("Certificate.certs_request", locale), "request", request)}
+          {this.getStoresMenuElement(localize("Certificate.sidesubmenu_crls", locale), localize("Certificate.crls", locale), "crl", crls)}
+          <li onClick={() => $("#certs").dropdown("close")}>
+            <Link to={LOCATION_CONTAINERS} style={{ height: "33px", padding: "0px" }}>
+              <div className="row nobottom valign-wrapper">
+                <div className="col" style={{ width: "36px" }}>
+                  <i className="material-icons left container" />
+                </div>
+                <div className="col">
+                  {localize("Certificate.sidesubmenu_keys", locale)}
+                </div>
               </div>
-              <div className="col s11">
-                {localize("Containers.containers", locale)}
-              </div>
-            </div>
+            </Link>
           </li>
         </ul>
       </div>
     );
   }
 
-  getStoresMenuElement = (head: string, name: string, elements: object[]) => {
+  getStoresMenuElement = (head: string, menuBarHead: string, name: string, elements: object[]) => {
     if (elements && elements.length) {
       return (
-        <li>
-          <div className="row nobottom">
-            <div className="col s1">
-              <i className={`material-icons left ${name}`} />
+        <li onClick={() => $("#certs").dropdown("close")}>
+          <Link to={{ pathname: LOCATION_CERTIFICATES, search: name, state: { head: menuBarHead } }} style={{ height: "33px", padding: "0px" }}>
+            <div className="row nobottom valign-wrapper">
+              <div className="col" style={{ width: "36px" }}>
+                <i className={`material-icons left ${name}`} />
+              </div>
+              <div className="col ">
+                {head}
+              </div>
             </div>
-            <div className="col s11">
-              {head}
-            </div>
-          </div>
-        </li>
+          </Link>
+        </li >
       );
     } else {
       return null;

@@ -74,40 +74,42 @@ class MenuBar extends React.Component<any, IMenuBarState> {
     const { localize, locale } = this.context;
     const { isArchiveLog, eventsDateFrom, eventsDateTo } = this.props;
     const pathname = this.props.location.pathname;
+    const storename = this.props.location.state ? this.props.location.state.head : "";
 
     switch (pathname) {
       case LOCATION_ABOUT:
-        return `${localize("About.about", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("About.about", locale)}`;
 
       case LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT:
-        return `${localize("Certificate.certificate_selection_for_encrypt", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("Certificate.certificate_selection_for_encrypt", locale)}`;
 
       case LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE:
-        return `${localize("Certificate.certificate_selection_for_signature", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("Certificate.certificate_selection_for_signature", locale)}`;
 
       case LOCATION_CERTIFICATES:
-        return `${localize("Certificate.certs", locale)} - ${localize("About.product_NAME", locale)}`;
+        const head = storename ? storename : localize("Certificate.certs", locale);
+        return `${localize("About.product_NAME", locale)} - ${storename}`;
 
       case LOCATION_CONTAINERS:
-        return `${localize("Containers.containers", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("Containers.containers", locale)}`;
 
       case LOCATION_LICENSE:
-        return `${localize("License.license", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("License.license", locale)}`;
 
       case LOCATION_SETTINGS:
-        return `${localize("Settings.settings", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("Settings.settings", locale)}`;
 
       case LOCATION_SETTINGS_CONFIG:
-        return `${localize("Settings.settings_config", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("Settings.settings_config", locale)}`;
 
       case LOCATION_SETTINGS_SELECT:
-        return `${localize("Settings.settings_select", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("Settings.settings_select", locale)}`;
 
       case LOCATION_DOCUMENTS:
-        return `${localize("Documents.documents", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("Documents.documents", locale)}`;
 
       case LOCATION_EVENTS:
-        let title = `${localize("Events.operations_log", locale)} - ${localize("About.product_NAME", locale)}`;
+        let title = `${localize("About.product_NAME", locale)} - ${localize("Events.operations_log", locale)}`;
 
         if (isArchiveLog && eventsDateFrom && eventsDateTo) {
           title = localize("Events.operations_log", locale) + " [" +
@@ -129,10 +131,10 @@ class MenuBar extends React.Component<any, IMenuBarState> {
         return title;
 
       case LOCATION_SERVICES:
-        return `${localize("Services.services", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("Services.services", locale)}`;
 
       default:
-        return `${localize("SignAndEncrypt.sign_and_encrypt", locale)} - ${localize("About.product_NAME", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("SignAndEncrypt.sign_and_encrypt", locale)}`;
     }
   }
 
