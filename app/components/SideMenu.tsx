@@ -1,24 +1,31 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   LOCATION_CERTIFICATES, LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
   LOCATION_EVENTS, LOCATION_MAIN, LOCATION_SERVICES, LOCATION_SETTINGS,
 } from "../constants";
+import { filteredCertificatesSelector } from "../selectors";
+import { filteredCrlsSelector } from "../selectors/crlsSelectors";
+import { filteredRequestCASelector } from "../selectors/requestCASelector";
 
 const remote = window.electron.remote;
 
-interface ISideMenu {
+interface ISideMenuProps {
+  certificates: any;
+  certrequests: any;
+  crls: any;
   pathname: string;
 }
 
-class SideMenu extends React.Component<ISideMenu, {}> {
+class SideMenu extends React.Component<ISideMenuProps, {}> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
 
-  constructor(props: ISideMenu) {
+  constructor(props: ISideMenuProps) {
     super(props);
   }
 
@@ -111,50 +118,100 @@ class SideMenu extends React.Component<ISideMenu, {}> {
             </div>
           </div>
         </div>
-        <div>
-          <ul id="dropdown-certificate-stores" className="dropdown-content">
-            <li>
-              <div className="center-align">
-                <a style={{ fontWeight: "bold", color: "#bf3817" }}>Сертификаты</a>
-              </div>
-            </li>
-            <li>
-              <div className="row nobottom">
-                <div className="col s3">
-                  <i className="material-icons sidevan my" />
-                </div>
-                <div className="col s8">
-                  Личные
-                  </div>
-              </div>
-            </li>
-
-            <li>
-              <div className="row nobottom">
-                <div className="col s3">
-                  <i className="material-icons sidevan root" />
-                </div>
-                <div className="col s8">
-                  Корневые
-                </div>
-              </div>
-            </li>
-
-            <li>
-              <div className="row nobottom">
-                <div className="col s3">
-                  <i className="material-icons sidevan intermediate" />
-                </div>
-                <div className="col s8">
-                  Промежуточные
-                  </div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        {this.getStoresMenu()}
       </React.Fragment>
     );
   }
+
+  getStoresMenu = () => {
+    const { certificates, crls, certrequests } = this.props;
+    const { localize, locale } = this.context;
+
+    const my: object[] = [];
+    const root: object[] = [];
+    const intermediate: object[] = [];
+    const other: object[] = [];
+    const token: object[] = [];
+    const request: object[] = [];
+
+    certificates.forEach((cert: any) => {
+      switch (cert.category) {
+        case "MY":
+          return my.push(cert);
+        case "ROOT":
+          return root.push(cert);
+        case "CA":
+          return intermediate.push(cert);
+        case "AddressBook":
+          return other.push(cert);
+        case "TOKEN":
+          return token.push(cert);
+        case "Request":
+          return request.push(cert);
+      }
+    });
+
+    certrequests.forEach((csr: any) => {
+      return request.push(csr);
+    });
+
+    return (
+      <div>
+        <ul id="dropdown-certificate-stores" className="dropdown-content" style={{ minHeight: "36px", height: "36px" }}>
+          <li>
+            <div className="center-align">
+              <a style={{ fontWeight: "bold", color: "#bf3817" }}>СЕРТИФИКАТЫ</a>
+            </div>
+          </li>
+          {this.getStoresMenuElement(localize("Certificate.certs_my", locale), "my", my)}
+          {this.getStoresMenuElement(localize("Certificate.certs_other", locale), "other", other)}
+          {this.getStoresMenuElement(localize("Certificate.certs_intermediate", locale), "intermediate", intermediate)}
+          {this.getStoresMenuElement(localize("Certificate.certs_root", locale), "root", root)}
+          {this.getStoresMenuElement(localize("Certificate.certs_token", locale), "token", token)}
+          {this.getStoresMenuElement(localize("Certificate.certs_request", locale), "request", request)}
+          {this.getStoresMenuElement(localize("Certificate.crls", locale), "crl", crls)}
+          <li>
+            <div className="row nobottom">
+              <div className="col s1">
+                <i className="material-icons left container" />
+              </div>
+              <div className="col s11">
+                {localize("Containers.containers", locale)}
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+
+  getStoresMenuElement = (head: string, name: string, elements: object[]) => {
+    if (elements && elements.length) {
+      return (
+        <li>
+          <div className="row nobottom">
+            <div className="col s1">
+              <i className={`material-icons left ${name}`} />
+            </div>
+            <div className="col s11">
+              {head}
+            </div>
+          </div>
+        </li>
+      );
+    } else {
+      return null;
+    }
+  }
 }
 
-export default SideMenu;
+export default connect((state) => {
+  return {
+    certificates: filteredCertificatesSelector(state, { operation: "certificate" }),
+    certrequests: filteredRequestCASelector(state),
+    crls: filteredCrlsSelector(state),
+    isLoaded: state.certificates.loaded,
+    isLoading: state.certificates.loading,
+    services: state.services,
+  };
+})(SideMenu);

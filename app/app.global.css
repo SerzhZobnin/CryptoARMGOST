@@ -682,6 +682,10 @@ div::-webkit-scrollbar-thumb {
   overflow: hidden;
 }
 
+.side-nav li {
+  line-height: 38px;
+}
+
 .side-nav-rectangle {
 	width: 3px;
 	height: 44px;
@@ -1121,6 +1125,7 @@ nav .cert-seacrh label i {
 
 #dropdown-certificate-stores {
   margin-left: 100%;
+  min-width: 310px;
   display: block;
 }
 
@@ -1154,7 +1159,6 @@ i.material-icons.left {
   width: 24px;
   height: 24px;
   background-size: 24px 24px;
-  margin-top: 10px;
 }
 
 i.material-icons.left.my {
@@ -1179,6 +1183,14 @@ i.material-icons.left.token {
 
 i.material-icons.left.request {
   background: url(./resources/image/cert_stores/request.svg);
+}
+
+i.material-icons.left.crl {
+  background: url(./resources/image/cert_stores/crl.svg);
+}
+
+i.material-icons.left.container {
+  background: url(./resources/image/cert_stores/container.svg);
 }
 
 i.material-icons.left.connect {
