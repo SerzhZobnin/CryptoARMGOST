@@ -41,50 +41,50 @@ class SideMenu extends React.Component<ISideMenu, {}> {
         <div className="row">
           <div className="row nobottom">
             {LOCATION_MAIN === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_MAIN}>
-              <i className="material-icons left sign">mode_edit</i>
+            <Link to={LOCATION_MAIN} style={{ padding: "0 10px" }}>
+              <i className="material-icons sidevan sign">mode_edit</i>
             </Link>
           </div>
 
           <div className="row nobottom">
             {LOCATION_DOCUMENTS === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_DOCUMENTS}>
-              <i className="material-icons left document">library_books</i>
+            <Link to={LOCATION_DOCUMENTS} style={{ padding: "0 10px" }}>
+              <i className="material-icons sidevan document"></i>
             </Link>
           </div>
 
           <div className="row nobottom">
             {LOCATION_CERTIFICATES === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link id="certs" to={LOCATION_CERTIFICATES} data-activates="dropdown-certificate-stores" data-hover="hover">
-              <i className="material-icons left cert">library_books</i>
+            <Link id="certs" to={LOCATION_CERTIFICATES} data-activates="dropdown-certificate-stores" data-hover="hover" style={{ padding: "0 10px" }}>
+              <i className="material-icons sidevan cert"></i>
             </Link>
           </div>
 
           <div className="row nobottom">
             {LOCATION_CONTAINERS === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_CONTAINERS}>
-              <i className="material-icons left keystore">library_books</i>
+            <Link to={LOCATION_CONTAINERS} style={{ padding: "0 10px" }}>
+              <i className="material-icons sidevan keystore"></i>
             </Link>
           </div>
 
           <div className="row nobottom">
             {LOCATION_SERVICES === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_SERVICES}>
-              <i className="material-icons left dss">library_books</i>
+            <Link to={LOCATION_SERVICES} style={{ padding: "0 10px" }}>
+              <i className="material-icons sidevan dss"></i>
             </Link>
           </div>
 
           <div className="row nobottom">
             {LOCATION_SETTINGS === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_SETTINGS}>
-              <i className="material-icons left setting">library_books</i>
+            <Link to={LOCATION_SETTINGS} style={{ padding: "0 10px" }}>
+              <i className="material-icons sidevan setting"></i>
             </Link>
           </div>
 
           <div className="row nobottom">
             {LOCATION_EVENTS === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_EVENTS}>
-              <i className="material-icons left journal">help</i>
+            <Link to={LOCATION_EVENTS} style={{ padding: "0 10px" }}>
+              <i className="material-icons sidevan journal">help</i>
             </Link>
           </div>
 
@@ -92,21 +92,21 @@ class SideMenu extends React.Component<ISideMenu, {}> {
         <div className="row">
           <div className="menu-elements">
             <div className="row">
-
-              <Link to="/about">
-
-                <i className="material-icons left about">about</i>
-              </Link>
-              <a onClick={() => window.electron.shell.openExternal(localize("Help.link_user_guide", locale))}>
-
-                <i className="material-icons left license">license</i>
+              <div className="row nobottom">
+                {"/about" === pathname ? < div className="side-nav-rectangle" /> : null}
+                <Link to="/about" style={{ padding: "0 10px" }}>
+                  <i className="material-icons sidevan about" style={{ padding: "0 10px" }}>about</i>
+                </Link>
+              </div>
+              <a onClick={() => window.electron.shell.openExternal(localize("Help.link_user_guide", locale))} style={{ padding: "0 10px" }}>
+                <i className="material-icons sidevan license">license</i>
               </a>
               <Link to="/" onClick={() => {
                 remote.getGlobal("sharedObject").isQuiting = true;
                 remote.getCurrentWindow().close();
-              }}>
+              }} style={{ padding: "0 10px" }}>
 
-                <i className="material-icons left exit">exit_to_app</i>
+                <i className="material-icons sidevan exit">exit_to_app</i>
               </Link>
             </div>
           </div>
@@ -121,7 +121,7 @@ class SideMenu extends React.Component<ISideMenu, {}> {
             <li>
               <div className="row nobottom">
                 <div className="col s3">
-                  <i className="material-icons left my" />
+                  <i className="material-icons sidevan my" />
                 </div>
                 <div className="col s8">
                   Личные
@@ -132,7 +132,7 @@ class SideMenu extends React.Component<ISideMenu, {}> {
             <li>
               <div className="row nobottom">
                 <div className="col s3">
-                  <i className="material-icons left root" />
+                  <i className="material-icons sidevan root" />
                 </div>
                 <div className="col s8">
                   Корневые
@@ -143,7 +143,7 @@ class SideMenu extends React.Component<ISideMenu, {}> {
             <li>
               <div className="row nobottom">
                 <div className="col s3">
-                  <i className="material-icons left intermediate" />
+                  <i className="material-icons sidevan intermediate" />
                 </div>
                 <div className="col s8">
                   Промежуточные

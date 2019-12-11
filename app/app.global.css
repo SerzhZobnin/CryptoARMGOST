@@ -6,12 +6,12 @@
 @import "../node_modules/react-phone-number-input/style.css";
 
 main, .content-noflex, .content {
-  padding-left: 60px;
+  padding-left: 50px;
 }
 
 @media only screen and (max-width : 992px) {
   main, .content-noflex, .content {
-    padding-left: 60px;
+    padding-left: 50px;
   }
   .side-nav.fixed {
     -webkit-transform: translateX(0%);
@@ -124,7 +124,6 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
 .menu-elements {
     position: absolute;
     bottom: 0;
-    width: 240px;
 }
 
 .closer {
@@ -697,12 +696,23 @@ div::-webkit-scrollbar-thumb {
   width: 48px;
 }
 
+i.material-icons.sidevan {
+  display: inline-block;
+  text-indent: -9999px;
+  width: 30px;
+  height: 30px;
+  background-size: 30px 30px!important;
+  margin-top: 2px;
+  margin: 10px auto;
+  vertical-align: middle;
+}
+
 i.material-icons.left {
   display: block;
   text-indent: -9999px;
   width: 24px;
   height: 24px;
-  background-size: 24px 24px !important;
+  background-size: 24px 24px!important;
   margin-top: 7px;
 }
 
@@ -710,43 +720,43 @@ i.material-icons.left.logo-trusted {
   background: url(./resources/image/cryptoarm-gost.png);
 }
 
-i.material-icons.left.sign {
+i.material-icons.sidevan.sign {
   background: url(./resources/image/sidemenu/sign.svg);
 }
 
-i.material-icons.left.cert {
+i.material-icons.sidevan.cert {
   background: url(./resources/image/sidemenu/certificates.svg);
 }
 
-i.material-icons.left.about {
+i.material-icons.sidevan.about {
   background: url(./resources/image/sidemenu/about.svg);
 }
 
-i.material-icons.left.keystore{
+i.material-icons.sidevan.keystore{
   background: url(./resources/image/sidemenu/key_store.svg);
 }
 
-i.material-icons.left.setting{
+i.material-icons.sidevan.setting{
   background: url(./resources/image/sidemenu/settings.svg);
 }
 
-i.material-icons.left.license{
+i.material-icons.sidevan.license{
     background: url(./resources/image/sidemenu/license.svg);
   }
 
-  i.material-icons.left.exit{
+  i.material-icons.sidevan.exit{
     background: url(./resources/image/sidemenu/exit.svg);
   }
 
-  i.material-icons.left.journal {
+  i.material-icons.sidevan.journal {
     background: url(./resources/image/sidemenu/journal.svg);
   }
 
-  i.material-icons.left.document {
+  i.material-icons.sidevan.document {
     background: url(./resources/image/sidemenu/documents.svg);
   }
 
-  i.material-icons.left.dss {
+  i.material-icons.sidevan.dss {
     background: url(./resources/image/sidemenu/dss.svg);
   }
 
@@ -1547,7 +1557,7 @@ a.menuheaderlink:hover {
 .logo-text {
     position: absolute;
     left: 33px;
-    margin-top: 60px;
+    margin-top: 50px;
     color: white;
     font-size: 150%;
     height: 38px;
