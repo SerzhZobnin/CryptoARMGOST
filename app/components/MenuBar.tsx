@@ -171,7 +171,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
               </li>
             </ul>
           </div>
-          <ul id="slide-out" className="side-nav fixed" style={{ width: "50px", left: "2px", overflow: "visible" }}>
+          <ul id="slide-out" className="side-nav fixed" style={{ width: "50px", left: "2px", overflow: "visible", backgroundColor: "rgba(242,245,245,0.8)" }}>
             <SideMenu pathname={pathname}/>
           </ul>
 
