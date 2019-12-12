@@ -1116,7 +1116,7 @@ class CertWindow extends React.Component<any, any> {
               </div>
             </div>
             <div className={"collection " + VIEW}>
-              <div style={{ flex: "1 1 auto", height: "calc(100vh - 120px)" }}>
+              <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
                 {
                   certificates.size < 1 && crls.length < 1 ?
                     <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
