@@ -722,6 +722,8 @@ i.material-icons.left {
 
 i.material-icons.left.logo-trusted {
   background: url(./resources/image/cryptoarm-gost.png);
+  margin: 5px auto;
+  margin-left: -2px;
 }
 
 i.material-icons.sidevan.sign {
@@ -1138,7 +1140,6 @@ nav .cert-seacrh label i {
 
 #dropdown-about-pages {
   margin-left: 100%;
-  margin-top: 10px;
   min-width: 220px;
   display: block;
 }
