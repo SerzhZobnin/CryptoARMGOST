@@ -14,15 +14,22 @@ export const connectionsGetter = (state) => state.connections.entities;
 export const idGetter = (state, props) => props.id;
 export const operationGetter = (state, props) => props.operation;
 export const transactionsGetter = (state) => state.transactionDSS.entities;
-
+export const locationStateGetter = (state) => state.router.location.state;
 const activeGetter = (state, props) => props.active;
 const loadingGetter = (state, props) => props.loading;
 const connectedGetter = (state, props) => props.connected;
 
-export const filteredCertificatesSelector = createSelector(certificatesGetter, filtersGetter, operationGetter, (certificates, filters, operation) => {
+export const filteredCertificatesSelector = createSelector(certificatesGetter, filtersGetter, operationGetter, locationStateGetter, (certificates, filters, operation, locationState) => {
+  const store = locationState ? locationState.store : undefined;
   const { searchValue } = filters;
   const search = searchValue.toLowerCase();
   let сertificatesByOperations = certificates;
+
+  if (store) {
+    сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {
+      return item.category === store;
+    });
+  }
 
   if (operation === "sign") {
     сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {

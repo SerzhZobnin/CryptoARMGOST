@@ -23,6 +23,7 @@ import CRLDelete from "../CRL/CRLDelete";
 import CRLExport from "../CRL/CRLExport";
 import CRLInfo from "../CRL/CRLInfo";
 import Dialog from "../Dialog";
+import DSSConnection from "../DSS/DSSConnection";
 import Modal from "../Modal";
 import PasswordDialog from "../PasswordDialog";
 import ProgressBars from "../ProgressBars";
@@ -37,7 +38,6 @@ import CertificateExport from "./CertificateExport";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
-import DSSConnection from "../DSS/DSSConnection";
 
 const OS_TYPE = os.type();
 
@@ -1115,19 +1115,15 @@ class CertWindow extends React.Component<any, any> {
                 </div>
               </div>
             </div>
-            <div className="add-certs">
-              <div className={"collection " + VIEW}>
-                <div className="row">
-                  <div className="col s12">
-                    <div style={{ display: "flex" }}>
-                      <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
-                        {
-                          certificates.size < 1 && crls.length < 1 ?
-                            <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
-                            <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} activeRequestCA={this.handleActiveRequestCA} operation="certificate" />
-                        }
-                      </div>
-                    </div>
+            <div className={"collection " + VIEW}>
+              <div className="row">
+                <div className="col s12">
+                  <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
+                    {
+                      certificates.size < 1 && crls.length < 1 ?
+                        <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
+                        <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} activeRequestCA={this.handleActiveRequestCA} operation="certificate" />
+                    }
                   </div>
                 </div>
               </div>

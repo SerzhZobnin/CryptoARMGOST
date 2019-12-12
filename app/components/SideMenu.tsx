@@ -149,7 +149,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_other", locale), localize("Certificate.certs_other", locale), "other", ADDRESS_BOOK, other)}
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_intermediate", locale), localize("Certificate.certs_intermediate", locale), "intermediate", CA, intermediate)}
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_root", locale), localize("Certificate.certs_root", locale), "root", ROOT, root)}
-          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_request", locale), localize("Certificate.certs_request", locale), "request", REQUEST, request)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_request", locale), localize("Certificate.certs_request", locale), "request", REQUEST, request, "REQUEST")}
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_crls", locale), localize("Certificate.crls", locale), "crl", CA, crls, "CRL")}
           <li onClick={() => $("#certs").dropdown("close")}>
             <Link to={LOCATION_CONTAINERS} style={{ height: "33px", padding: "0px" }}>
