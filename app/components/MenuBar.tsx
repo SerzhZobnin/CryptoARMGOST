@@ -4,11 +4,12 @@ import React from "react";
 import { connect } from "react-redux";
 import { filePackageDelete } from "../AC";
 import {
-  LOCATION_ABOUT, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
-  LOCATION_CERTIFICATES,
-  LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
-  LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_SERVICES,
-  LOCATION_SETTINGS, LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
+  LOCATION_ABOUT, LOCATION_ADDRESS_BOOK, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
+  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
+  LOCATION_CERTIFICATES, LOCATION_CONTAINERS,
+  LOCATION_DOCUMENTS, LOCATION_EVENTS, LOCATION_LICENSE,
+  LOCATION_SERVICES, LOCATION_SETTINGS, LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT,
+  SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
 } from "../constants";
 import { connectedSelector, loadingRemoteFilesSelector } from "../selectors";
 import { CANCELLED } from "../server/constants";
@@ -79,6 +80,9 @@ class MenuBar extends React.Component<any, IMenuBarState> {
     switch (pathname) {
       case LOCATION_ABOUT:
         return `${localize("About.product_NAME", locale)} - ${localize("About.about", locale)}`;
+
+      case LOCATION_ADDRESS_BOOK:
+        return `${localize("About.product_NAME", locale)} - ${localize("AddressBook.address_book", locale)}`;
 
       case LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT:
         return `${localize("About.product_NAME", locale)} - ${localize("Certificate.certificate_selection_for_encrypt", locale)}`;
@@ -174,7 +178,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
             </ul>
           </div>
           <ul id="slide-out" className="side-nav fixed" style={{ width: "50px", left: "2px", overflow: "visible", backgroundColor: "rgba(242,245,245,0.8)" }}>
-            <SideMenu pathname={pathname}/>
+            <SideMenu pathname={pathname} />
           </ul>
 
         </nav>

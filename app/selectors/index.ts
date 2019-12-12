@@ -39,6 +39,10 @@ export const filteredCertificatesSelector = createSelector(certificatesGetter, f
     сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {
       return (item.category === "MY" || item.category === "AddressBook");
     });
+  } else if (operation === "address_book") {
+    сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {
+      return (item.category === "AddressBook");
+    });
   }
 
   сertificatesByOperations = сertificatesByOperations.sort((a, b) => {

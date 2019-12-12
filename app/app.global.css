@@ -738,6 +738,10 @@ i.material-icons.sidevan.about {
   background: url(./resources/image/sidemenu/about.svg);
 }
 
+i.material-icons.sidevan.address_book {
+  background: url(./resources/image/sidemenu/address_book.svg);
+}
+
 i.material-icons.sidevan.keystore{
   background: url(./resources/image/sidemenu/key_store.svg);
 }

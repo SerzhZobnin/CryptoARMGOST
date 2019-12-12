@@ -45,6 +45,9 @@ export default {
     version_app: "Версия приложения",
     version_full: "Версия продукта: 2.2.0",
   },
+  AddressBook: {
+    address_book: "Контакты",
+  },
   Agreement: {
     Agreement: "СОГЛАШЕНИЕ",
     agreement: "Соглашение",

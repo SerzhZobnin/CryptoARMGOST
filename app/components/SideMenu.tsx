@@ -4,8 +4,9 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   ADDRESS_BOOK, CA, LOCATION_ABOUT,
-  LOCATION_CERTIFICATES, LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
-  LOCATION_EVENTS, LOCATION_MAIN, LOCATION_SERVICES, LOCATION_SETTINGS, MY, REQUEST, ROOT,
+  LOCATION_ADDRESS_BOOK, LOCATION_CERTIFICATES, LOCATION_CONTAINERS,
+  LOCATION_DOCUMENTS, LOCATION_EVENTS, LOCATION_MAIN,
+  LOCATION_SERVICES, LOCATION_SETTINGS, MY, REQUEST, ROOT,
 } from "../constants";
 import { mapToArr } from "../utils";
 
@@ -68,6 +69,13 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
           </div>
 
           <div className="row nobottom">
+            {LOCATION_ADDRESS_BOOK === pathname ? < div className="side-nav-rectangle" /> : null}
+            <Link to={LOCATION_ADDRESS_BOOK} style={{ padding: "0 10px" }}>
+              <i className="material-icons sidevan address_book"></i>
+            </Link>
+          </div>
+
+          <div className="row nobottom">
             {LOCATION_SERVICES === pathname ? < div className="side-nav-rectangle" /> : null}
             <Link to={LOCATION_SERVICES} style={{ padding: "0 10px" }}>
               <i className="material-icons sidevan dss"></i>
@@ -114,7 +122,6 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     const my: object[] = [];
     const root: object[] = [];
     const intermediate: object[] = [];
-    const other: object[] = [];
     const token: object[] = [];
     const request: object[] = [];
 
@@ -126,8 +133,6 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
           return root.push(cert);
         case CA:
           return intermediate.push(cert);
-        case ADDRESS_BOOK:
-          return other.push(cert);
         case REQUEST:
           return request.push(cert);
       }
@@ -146,7 +151,6 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
             </div>
           </li>
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_my", locale), localize("Certificate.certs_my", locale), "my", MY, my)}
-          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_other", locale), localize("Certificate.certs_other", locale), "other", ADDRESS_BOOK, other)}
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_intermediate", locale), localize("Certificate.certs_intermediate", locale), "intermediate", CA, intermediate)}
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_root", locale), localize("Certificate.certs_root", locale), "root", ROOT, root)}
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_request", locale), localize("Certificate.certs_request", locale), "request", REQUEST, request, "REQUEST")}

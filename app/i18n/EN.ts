@@ -45,6 +45,9 @@ export default {
     version_app: "Application version",
     version_full: "Version: 2.2.0",
   },
+  AddressBook: {
+    address_book: "Address book",
+  },
   Agreement: {
     Agreement: "AGREEMENT",
     agreement: "Agreement",
