@@ -1120,7 +1120,7 @@ class CertWindow extends React.Component<any, any> {
                 {
                   certificates.size < 1 && crls.length < 1 ?
                     <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
-                    <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} activeRequestCA={this.handleActiveRequestCA} operation="certificate" />
+                    <CertificateList selectedCert={this.state.certificate} activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} activeRequestCA={this.handleActiveRequestCA} operation="certificate" />
                 }
               </div>
             </div>

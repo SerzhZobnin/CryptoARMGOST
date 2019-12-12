@@ -1,9 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
+import { verifyCertificate } from "../../AC";
 
 interface ICertificateStatusIconProps {
   certificate: any;
-  verifyCertificate: (id: number) => void;
 }
 
 class CertificateStatusIcon extends React.Component<ICertificateStatusIconProps, {}> {
@@ -49,4 +49,4 @@ export default connect((state, ownProps: any) => {
   return {
     certificate: ownProps && ownProps.certificate ? state.certificates.getIn(["entities", ownProps.certificate.id]) : undefined,
   };
-})(CertificateStatusIcon);
+}, { verifyCertificate })(CertificateStatusIcon);
