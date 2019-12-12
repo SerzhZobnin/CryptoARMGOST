@@ -3,9 +3,9 @@ import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
-  LOCATION_ABOUT, LOCATION_CERTIFICATES, LOCATION_CONTAINERS,
-  LOCATION_DOCUMENTS, LOCATION_EVENTS, LOCATION_MAIN,
-  LOCATION_SERVICES, LOCATION_SETTINGS,
+  ADDRESS_BOOK, CA, LOCATION_ABOUT,
+  LOCATION_CERTIFICATES, LOCATION_CONTAINERS, LOCATION_DOCUMENTS,
+  LOCATION_EVENTS, LOCATION_MAIN, LOCATION_SERVICES, LOCATION_SETTINGS, MY, REQUEST, ROOT,
 } from "../constants";
 import { mapToArr } from "../utils";
 
@@ -35,6 +35,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
   }
 
   render() {
+    const { localize, locale } = this.context;
     const { pathname } = this.props;
 
     return (
@@ -55,7 +56,13 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
           <div className="row nobottom">
             {LOCATION_CERTIFICATES === pathname || LOCATION_CONTAINERS === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link id="certs" to={LOCATION_CERTIFICATES} data-activates="dropdown-certificate-stores" data-hover="hover" style={{ padding: "0 10px" }}>
+            <Link
+              id="certs"
+              to={{ pathname: LOCATION_CERTIFICATES, search: "my", state: { head: localize("Certificate.certs_my", locale), MY } }}
+              data-activates="dropdown-certificate-stores"
+              data-hover="hover"
+              style={{ padding: "0 10px" }}
+            >
               <i className="material-icons sidevan cert"></i>
             </Link>
           </div>
@@ -113,17 +120,15 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
     certificates.forEach((cert: any) => {
       switch (cert.category) {
-        case "MY":
+        case MY:
           return my.push(cert);
-        case "ROOT":
+        case ROOT:
           return root.push(cert);
-        case "CA":
+        case CA:
           return intermediate.push(cert);
-        case "AddressBook":
+        case ADDRESS_BOOK:
           return other.push(cert);
-        case "TOKEN":
-          return token.push(cert);
-        case "Request":
+        case REQUEST:
           return request.push(cert);
       }
     });
@@ -140,13 +145,12 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               <a style={{ fontWeight: "bold", color: "#bf3817" }}>СЕРТИФИКАТЫ</a>
             </div>
           </li>
-          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_my", locale), localize("Certificate.certs_my", locale), "my", my)}
-          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_other", locale), localize("Certificate.certs_other", locale), "other", other)}
-          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_intermediate", locale), localize("Certificate.certs_intermediate", locale), "intermediate", intermediate)}
-          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_root", locale), localize("Certificate.certs_root", locale), "root", root)}
-          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_token", locale), localize("Certificate.certs_token", locale), "token", token)}
-          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_request", locale), localize("Certificate.certs_request", locale), "request", request)}
-          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_crls", locale), localize("Certificate.crls", locale), "crl", crls)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_my", locale), localize("Certificate.certs_my", locale), "my", MY, my)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_other", locale), localize("Certificate.certs_other", locale), "other", ADDRESS_BOOK, other)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_intermediate", locale), localize("Certificate.certs_intermediate", locale), "intermediate", CA, intermediate)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_root", locale), localize("Certificate.certs_root", locale), "root", ROOT, root)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_request", locale), localize("Certificate.certs_request", locale), "request", REQUEST, request)}
+          {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_crls", locale), localize("Certificate.crls", locale), "crl", CA, crls, "CRL")}
           <li onClick={() => $("#certs").dropdown("close")}>
             <Link to={LOCATION_CONTAINERS} style={{ height: "33px", padding: "0px" }}>
               <div className="row nobottom valign-wrapper">
@@ -164,11 +168,11 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     );
   }
 
-  getCertStoreMenuElement = (head: string, menuBarHead: string, name: string, elements: object[]) => {
+  getCertStoreMenuElement = (head: string, menuBarHead: string, name: string, store: string, elements: object[], type = "CERTIFICATE") => {
     if (elements && elements.length) {
       return (
         <li onClick={() => $("#certs").dropdown("close")}>
-          <Link to={{ pathname: LOCATION_CERTIFICATES, search: name, state: { head: menuBarHead } }} style={{ height: "33px", padding: "0px" }}>
+          <Link to={{ pathname: LOCATION_CERTIFICATES, search: name, state: { head: menuBarHead, store, type } }} style={{ height: "33px", padding: "0px" }}>
             <div className="row nobottom valign-wrapper">
               <div className="col" style={{ width: "36px" }}>
                 <i className={`material-icons left ${name}`} />
