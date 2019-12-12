@@ -90,8 +90,8 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
         {({ height, width }) => (
           <List
             height={height}
-            overscanRowCount={1}
-            rowCount={certificates.length}
+            overscanRowCount={2}
+            rowCount={certificates.length + 1}
             rowHeight={ROW_HEIGHT}
             rowRenderer={({ index, key, style }) => {
               if (!certificates.length) {
@@ -99,6 +99,10 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
               }
 
               const cert = certificates[index];
+
+              if (!cert) {
+                return null;
+              }
 
               return (
                 <ul
@@ -148,8 +152,8 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
         {({ height, width }) => (
           <List
             height={height}
-            overscanRowCount={1}
-            rowCount={crls.length}
+            overscanRowCount={2}
+            rowCount={crls.length + 1}
             rowHeight={ROW_HEIGHT}
             rowRenderer={({ index, key, style }) => {
               if (!crls.length) {
@@ -157,6 +161,10 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
               }
 
               const crl = crls[index];
+
+              if (!crl) {
+                return null;
+              }
 
               return (
                 <ul
@@ -192,8 +200,8 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
         {({ height, width }) => (
           <List
             height={height}
-            overscanRowCount={1}
-            rowCount={elements.length}
+            overscanRowCount={2}
+            rowCount={elements.length + 1}
             rowHeight={ROW_HEIGHT}
             rowRenderer={({ index, key, style }) => {
               if (!elements.length) {
@@ -201,6 +209,10 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
               }
 
               const request = elements[index];
+
+              if (!request) {
+                return null;
+              }
 
               if (request.category === REQUEST) {
                 return (

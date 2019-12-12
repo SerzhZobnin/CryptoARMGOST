@@ -1116,16 +1116,13 @@ class CertWindow extends React.Component<any, any> {
               </div>
             </div>
             <div className={"collection " + VIEW}>
-              <div className="row">
-                <div className="col s12">
-                  <div style={{ flex: "1 1 auto", height: "calc(100vh - 130px)" }}>
-                    {
-                      certificates.size < 1 && crls.length < 1 ?
-                        <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
-                        <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} activeRequestCA={this.handleActiveRequestCA} operation="certificate" />
-                    }
-                  </div>
-                </div>
+              <div style={{ flex: "1 1 auto", height: "calc(100vh - 120px)" }}>
+                {
+                  certificates.size < 1 && crls.length < 1 ?
+                    <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
+                    <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} activeRequestCA={this.handleActiveRequestCA} operation="certificate" />
+               }
+               <div className="row" />
               </div>
             </div>
           </div>
