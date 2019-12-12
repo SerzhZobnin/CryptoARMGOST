@@ -1068,10 +1068,10 @@ class CertWindow extends React.Component<any, any> {
     const VIEW = certificates.size < 1 && crls.length < 1 ? "not-active" : "";
 
     return (
-      <div className="main">
-        <div className="content">
+      <div className="content-noflex">
+        <div className="row">
           <div className="col s8 leftcol">
-            <div className="row">
+            <div className="row halfbottom">
               <div className="row halfbottom" />
               <div className="col" style={{ width: "calc(100% - 80px)" }}>
                 <div className="input-field input-field-csr col s12 border_element find_box">
@@ -1133,18 +1133,17 @@ class CertWindow extends React.Component<any, any> {
               </div>
             </div>
           </div>
+
           <div className="col s4 rightcol">
             <div className="row halfbottom" />
             <div className="row">
-              <div className="col s12">
-                <div style={{ height: "calc(100vh - 110px)" }}>
-                  {this.getCertificateOrCRLInfo()}
-                </div>
+              <div style={{ height: "calc(100vh - 110px)" }}>
+                {this.getCertificateOrCRLInfo()}
               </div>
             </div>
             {
               certificate || crl ?
-                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "70px" }}>
+                <div className="row fixed-bottom-rightcolumn" style={{ bottom: "20px" }}>
                   <div className="col s12">
                     <hr />
                   </div>
@@ -1184,7 +1183,7 @@ class CertWindow extends React.Component<any, any> {
 
             {
               requestCA ?
-                <div className="row fixed-bottom-rightcolumn" style={{ position: "relative", bottom: "70px" }}>
+                <div className="row fixed-bottom-rightcolumn" style={{ bottom: "20px" }}>
                   <div className="col s12">
                     <hr />
                   </div>
@@ -1209,23 +1208,23 @@ class CertWindow extends React.Component<any, any> {
                 : null
             }
 
-            {this.showModalDeleteCertificate()}
-            {this.showModalExportCertificate()}
-            {this.showModalExportCRL()}
-            {this.showModalDeleteCrl()}
-            {this.showModalExportRequestCA()}
-            {this.showModalDeleteRequestCA()}
-            {this.showModalCertificateImportDSS()}
-            {this.showModalCertificateRequest()}
-            {this.showModalCertificateRequestCA()}
-            {this.showModalCloudCSP()}
           </div>
+          {this.showModalDeleteCertificate()}
+          {this.showModalExportCertificate()}
+          {this.showModalExportCRL()}
+          {this.showModalDeleteCrl()}
+          {this.showModalExportRequestCA()}
+          {this.showModalDeleteRequestCA()}
+          {this.showModalCertificateImportDSS()}
+          {this.showModalCertificateRequest()}
+          {this.showModalCertificateRequestCA()}
+          {this.showModalCloudCSP()}
 
+          <Dialog isOpen={this.state.showDialogInstallRootCertificate}
+            header="Внимание!" body="Для установки корневых сертификатов требуются права администратора. Продолжить?"
+            onYes={this.handleInstallTrustedCertificate} onNo={this.handleCloseDialogInstallRootCertificate} />
+          <PasswordDialog value={this.state.password} onChange={this.handlePasswordChange} />
         </div>
-        <Dialog isOpen={this.state.showDialogInstallRootCertificate}
-          header="Внимание!" body="Для установки корневых сертификатов требуются права администратора. Продолжить?"
-          onYes={this.handleInstallTrustedCertificate} onNo={this.handleCloseDialogInstallRootCertificate} />
-        <PasswordDialog value={this.state.password} onChange={this.handlePasswordChange} />
       </div>
     );
   }
