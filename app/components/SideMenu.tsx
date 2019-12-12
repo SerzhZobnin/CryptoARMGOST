@@ -7,9 +7,7 @@ import {
   LOCATION_DOCUMENTS, LOCATION_EVENTS, LOCATION_MAIN,
   LOCATION_SERVICES, LOCATION_SETTINGS,
 } from "../constants";
-import { filteredCertificatesSelector } from "../selectors";
-import { filteredCrlsSelector } from "../selectors/crlsSelectors";
-import { filteredRequestCASelector } from "../selectors/requestCASelector";
+import { mapToArr } from "../utils";
 
 const remote = window.electron.remote;
 
@@ -37,14 +35,13 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
   }
 
   render() {
-    const { localize, locale } = this.context;
     const { pathname } = this.props;
 
     return (
       <React.Fragment>
         <div className="menu-logo center-align" style={{ height: "37px" }}>
           <Link to="/" href="/" style={{ height: "37px" }}>
-            <i className="material-icons left logo-trusted" style={{ marginTop: "5px" }} />
+            <i className="material-icons left logo-trusted" />
           </Link>
         </div>
 
@@ -272,7 +269,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
                   <i className="material-icons left container" />
                 </div>
                 <div className="col">
-                Справка
+                  Справка
                 </div>
               </div>
             </a>
@@ -285,11 +282,8 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
 export default connect((state) => {
   return {
-    certificates: filteredCertificatesSelector(state, { operation: "certificate" }),
-    certrequests: filteredRequestCASelector(state),
-    crls: filteredCrlsSelector(state),
-    isLoaded: state.certificates.loaded,
-    isLoading: state.certificates.loading,
-    services: state.services,
+    certificates: state.certificates.entities,
+    certrequests: state.certrequests.entities,
+    crls: mapToArr(state.crls.entities),
   };
 })(SideMenu);
