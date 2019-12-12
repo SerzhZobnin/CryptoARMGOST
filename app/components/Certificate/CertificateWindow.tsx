@@ -1121,8 +1121,7 @@ class CertWindow extends React.Component<any, any> {
                   certificates.size < 1 && crls.length < 1 ?
                     <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
                     <CertificateList activeCert={this.handleActiveCert} activeCrl={this.handleActiveCRL} activeRequestCA={this.handleActiveRequestCA} operation="certificate" />
-               }
-               <div className="row" />
+                }
               </div>
             </div>
           </div>
@@ -1217,6 +1216,12 @@ class CertWindow extends React.Component<any, any> {
             header="Внимание!" body="Для установки корневых сертификатов требуются права администратора. Продолжить?"
             onYes={this.handleInstallTrustedCertificate} onNo={this.handleCloseDialogInstallRootCertificate} />
           <PasswordDialog value={this.state.password} onChange={this.handlePasswordChange} />
+        </div>
+
+        <div className="fixed-action-btn" style={{ bottom: "30px", right: "380px" }}>
+          <a className="btn-floating btn-large cryptoarm-red">
+            <i className="large material-icons">add</i>
+          </a>
         </div>
       </div>
     );

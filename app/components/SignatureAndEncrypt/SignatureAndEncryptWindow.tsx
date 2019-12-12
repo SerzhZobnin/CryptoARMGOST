@@ -126,12 +126,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
           <div className="col s8 leftcol">
             <div className="row halfbottom">
               <div className="row halfbottom" />
-              <div className="col" style={{ width: "40px", paddingLeft: "40px" }}>
-                <a className={`${classDisabled}`} onClick={this.addFiles.bind(this)}>
-                  <i className={`file-setting-item waves-effect material-icons secondary-content pulse ${classDisabled}`}>add</i>
-                </a>
-              </div>
-              <div className="col" style={{ width: "calc(100% - 140px)" }}>
+              <div className="col" style={{ width: "calc(100% - 80px)" }}>
                 <div className="input-field input-field-csr col s12 border_element find_box">
                   <i className="material-icons prefix">search</i>
                   <input
@@ -197,6 +192,12 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
           </div>
           {this.showModalFilterDocuments()}
+        </div>
+
+        <div className={`fixed-action-btn ${classDisabled}`} style={{ bottom: "30px", right: "380px" }} onClick={this.addFiles.bind(this)}>
+          <a className="btn-floating btn-large cryptoarm-red">
+            <i className="large material-icons">add</i>
+          </a>
         </div>
       </div>
     );
