@@ -9,8 +9,11 @@ import { deleteRequestCA } from "../../AC/caActions";
 import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
 import {
-  ADDRESS_BOOK, CA, DEFAULT_CSR_PATH, PROVIDER_CRYPTOPRO,
-  REQUEST, ROOT, USER_NAME,
+  ADDRESS_BOOK, CA, DEFAULT_CSR_PATH, MODAL_ADD_CERTIFICATE,
+  MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA,
+  MODAL_CLOUD_CSP, MODAL_DELETE_CERTIFICATE, MODAL_DELETE_CRL, MODAL_DELETE_REQUEST_CA,
+  MODAL_EXPORT_CERTIFICATE, MODAL_EXPORT_CRL, MODAL_EXPORT_REQUEST_CA,
+  PROVIDER_CRYPTOPRO, REQUEST, ROOT, USER_NAME,
 } from "../../constants";
 import { filteredCertificatesSelector } from "../../selectors";
 import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
@@ -18,6 +21,7 @@ import { filteredRequestCASelector } from "../../selectors/requestCASelector";
 import { fileCoding, fileExists } from "../../utils";
 import logger from "../../winstonLogger";
 import BlockNotElements from "../BlockNotElements";
+import AddCertificate from "../Certificate/AddCertificate";
 import CertificateChainInfo from "../Certificate/CertificateChainInfo";
 import CertificateDelete from "../Certificate/CertificateDelete";
 import CertificateExport from "../Certificate/CertificateExport";
@@ -41,17 +45,6 @@ import RequestCAInfo from "../Request/RequestCAInfo";
 
 const OS_TYPE = os.type();
 
-const MODAL_DELETE_CERTIFICATE = "MODAL_DELETE_CERTIFICATE";
-const MODAL_EXPORT_CERTIFICATE = "MODAL_EXPORT_CERTIFICATE";
-const MODAL_EXPORT_CRL = "MODAL_EXPORT_CRL";
-const MODAL_DELETE_CRL = "MODAL_DELETE_CRL";
-const MODAL_EXPORT_REQUEST_CA = "MODAL_EXPORT_REQUEST_CA";
-const MODAL_DELETE_REQUEST_CA = "MODAL_DELETE_REQUEST_CA";
-const MODAL_CERTIFICATE_IMPORT_DSS = "MODAL_CERTIFICATE_IMPORT_DSS";
-const MODAL_CERTIFICATE_REQUEST = "MODAL_CERTIFICATE_REQUEST";
-const MODAL_CERTIFICATE_REQUEST_CA = "MODAL_CERTIFICATE_REQUEST_CA";
-const MODAL_CLOUD_CSP = "MODAL_CLOUD_CSP";
-
 class AddressBookWindow extends React.Component<any, any> {
   static contextTypes = {
     locale: PropTypes.string,
@@ -70,6 +63,7 @@ class AddressBookWindow extends React.Component<any, any> {
       password: "",
       requestCA: null,
       showDialogInstallRootCertificate: false,
+      showModalAddCertificate: false,
       showModalCertificateImportDSS: false,
       showModalCertificateRequest: false,
       showModalCertificateRequestCA: false,
@@ -89,6 +83,9 @@ class AddressBookWindow extends React.Component<any, any> {
 
   handleShowModalByType = (typeOfModal: string) => {
     switch (typeOfModal) {
+      case MODAL_ADD_CERTIFICATE:
+        this.setState({ showModalAddCertificate: true });
+        break;
       case MODAL_DELETE_CERTIFICATE:
         this.setState({ showModalDeleteCertifiacte: true });
         break;
@@ -126,6 +123,9 @@ class AddressBookWindow extends React.Component<any, any> {
 
   handleCloseModalByType = (typeOfModal: string): void => {
     switch (typeOfModal) {
+      case MODAL_ADD_CERTIFICATE:
+        this.setState({ showModalAddCertificate: false });
+        break;
       case MODAL_DELETE_CERTIFICATE:
         this.setState({ showModalDeleteCertifiacte: false });
         break;
@@ -751,6 +751,29 @@ class AddressBookWindow extends React.Component<any, any> {
     return title;
   }
 
+  showModalAddCertificate = () => {
+    const { localize, locale } = this.context;
+    const { showModalAddCertificate } = this.state;
+
+    if (!showModalAddCertificate) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalAddCertificate}
+        header={localize("Certificate.cert_import", locale)}
+        onClose={() => this.handleCloseModalByType(MODAL_ADD_CERTIFICATE)}
+        style={{ width: "350px" }}>
+
+        <AddCertificate
+          certImport={this.certImport}
+          handleShowModalByType={this.handleShowModalByType}
+          onCancel={() => this.handleCloseModalByType(MODAL_ADD_CERTIFICATE)} />
+      </Modal>
+    );
+  }
+
   showModalDeleteCertificate = () => {
     const { localize, locale } = this.context;
     const { certificate, showModalDeleteCertifiacte } = this.state;
@@ -1206,6 +1229,7 @@ class AddressBookWindow extends React.Component<any, any> {
             }
 
           </div>
+          {this.showModalAddCertificate()}
           {this.showModalDeleteCertificate()}
           {this.showModalExportCertificate()}
           {this.showModalExportCRL()}
@@ -1223,7 +1247,7 @@ class AddressBookWindow extends React.Component<any, any> {
           <PasswordDialog value={this.state.password} onChange={this.handlePasswordChange} />
         </div>
 
-        <div className="fixed-action-btn" style={{ bottom: "30px", right: "380px" }}>
+        <div className="fixed-action-btn" style={{ bottom: "30px", right: "380px" }} onClick={() => this.handleShowModalByType(MODAL_ADD_CERTIFICATE)}>
           <a className="btn-floating btn-large cryptoarm-red">
             <i className="large material-icons">add</i>
           </a>
