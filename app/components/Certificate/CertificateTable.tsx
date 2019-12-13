@@ -2,6 +2,7 @@ import { is } from "immutable";
 import * as path from "path";
 import PropTypes from "prop-types";
 import React from "react";
+import Media from "react-media";
 import { connect } from "react-redux";
 import { AutoSizer, Column, Table } from "react-virtualized";
 import { activeFile, deleteFile, selectTempContentOfSignedFiles } from "../../AC";
@@ -36,7 +37,7 @@ export interface IRemoteFile {
   url: string;
 }
 
-interface ICertificateTableSmallProps {
+interface ICertificateTableProps {
   activeFile: (id: number, active?: boolean) => void;
   deleteFile: (fileId: number) => void;
   loadingFiles: IRemoteFile[];
@@ -48,13 +49,13 @@ interface ICertificateTableSmallProps {
   style: any;
 }
 
-interface ICertificateTableSmallDispatch {
+interface ICertificateTableDispatch {
   loadAllCertificates: () => void;
   selectDocument: (uid: number) => void;
   unselectAllDocuments: () => void;
 }
 
-interface ICertificateTableSmallState {
+interface ICertificateTableState {
   disableHeader: boolean;
   hoveredRowIndex: number;
   foundDocuments: number[];
@@ -64,13 +65,13 @@ interface ICertificateTableSmallState {
   sortedList: any;
 }
 
-class CertificateTableSmall extends React.Component<ICertificateTableSmallProps & ICertificateTableSmallDispatch, ICertificateTableSmallState> {
+class CertificateTable extends React.Component<ICertificateTableProps & ICertificateTableDispatch, ICertificateTableState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
 
-  constructor(props: ICertificateTableSmallProps & ICertificateTableSmallDispatch) {
+  constructor(props: ICertificateTableProps & ICertificateTableDispatch) {
     super(props);
 
     const sortBy = "filename";
@@ -88,7 +89,7 @@ class CertificateTableSmall extends React.Component<ICertificateTableSmallProps 
     };
   }
 
-  componentDidUpdate(prevProps: ICertificateTableSmallProps & ICertificateTableSmallDispatch) {
+  componentDidUpdate(prevProps: ICertificateTableProps & ICertificateTableDispatch) {
     if (!prevProps.certificatesMap.size && this.props.certificatesMap && this.props.certificatesMap.size ||
       (prevProps.certificatesMap.size !== this.props.certificatesMap.size)) {
       this.sort(this.state);
@@ -113,8 +114,6 @@ class CertificateTableSmall extends React.Component<ICertificateTableSmallProps 
     const { certificatesMap, searchValue } = this.props;
     const { disableHeader, foundDocuments, scrollToIndex, sortBy, sortDirection, sortedList } = this.state;
 
-    const classDisabledNavigation = foundDocuments.length && foundDocuments.length === 1 ? "disabled" : "";
-
     const rowGetter = ({ index }: { index: number }) => this.getDatum(this.state.sortedList, index);
 
     if (!certificatesMap.size) {
@@ -125,57 +124,160 @@ class CertificateTableSmall extends React.Component<ICertificateTableSmallProps 
       <React.Fragment>
         <div style={{ display: "flex" }}>
           <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
-            <AutoSizer>
-              {({ height, width }) => (
-                <Table
-                  ref="Table"
-                  disableHeader={disableHeader}
-                  height={height}
-                  width={width}
-                  headerHeight={30}
-                  noRowsRenderer={this.noRowsRenderer}
-                  headerClassName={"headerColumn"}
-                  rowHeight={45}
-                  rowClassName={this.rowClassName}
-                  onRowClick={this.handleOnRowClick}
-                  onRowMouseOver={this.handleOnRowMouseOver}
-                  onRowMouseOut={this.handleOnRowMouseOut}
-                  overscanRowCount={3}
-                  rowGetter={rowGetter}
-                  rowCount={sortedList.size}
-                  scrollToIndex={scrollToIndex}
-                  sort={this.sort}
-                  sortBy={sortBy}
-                  sortDirection={sortDirection}
-                >
-                  <Column
-                    cellRenderer={({ cellData, rowData, rowIndex }) => {
-                      return (
-                        <div className="row nobottom">
-                          <div className="col s2">
-                            <CertificateStatusIcon certificate={rowData} />
-                          </div>
-                          <div className="col s10">
-                            <div className="collection-title truncate">{cellData}</div>
-                          </div>
-                        </div>);
-                    }
-                    }
-                    dataKey="subjectFriendlyName"
-                    headerRenderer={this.headerRenderer}
-                    width={width * 0.45}
-                    label={localize("Documents.filename", locale)}
-                  />
-                  <Column
-                    dataKey="issuerFriendlyName"
-                    disableSort={false}
-                    headerRenderer={this.headerRenderer}
-                    width={width * 0.45}
-                    label={localize("EventsTable.user_name", locale)}
-                  />
-                </Table>
-              )}
-            </AutoSizer>
+
+            <Media query="(max-width: 1020px)">
+              {(matches) =>
+                matches ?
+                  <AutoSizer>
+                    {({ height, width }) => (
+                      <Table
+                        ref="Table"
+                        disableHeader={disableHeader}
+                        height={height}
+                        width={width}
+                        headerHeight={30}
+                        noRowsRenderer={this.noRowsRenderer}
+                        headerClassName={"headerColumn"}
+                        rowHeight={45}
+                        rowClassName={this.rowClassName}
+                        onRowClick={this.handleOnRowClick}
+                        onRowMouseOver={this.handleOnRowMouseOver}
+                        onRowMouseOut={this.handleOnRowMouseOut}
+                        overscanRowCount={3}
+                        rowGetter={rowGetter}
+                        rowCount={sortedList.size}
+                        scrollToIndex={scrollToIndex}
+                        sort={this.sort}
+                        sortBy={sortBy}
+                        sortDirection={sortDirection}
+                      >
+                        <Column
+                          cellRenderer={({ cellData, rowData, rowIndex }) => {
+                            let curKeyStyle;
+                            curKeyStyle = rowData.key.length > 0 ? curKeyStyle = "key " : curKeyStyle = "";
+
+                            if (curKeyStyle) {
+                              if (rowData.dssUserID) {
+                                curKeyStyle += "dsskey";
+                              } else {
+                                curKeyStyle += "localkey";
+                              }
+                            }
+
+                            return (
+                              <div className="row nobottom valign-wrapper">
+                                <div className="col" style={{ width: "40px", paddingLeft: "0px" }}>
+                                  <CertificateStatusIcon certificate={rowData} key={rowData.id} />
+                                </div>
+                                <div className="col s10">
+                                  <div className="collection-title truncate">{cellData}</div>
+                                  <div className="collection-info truncate">{rowData.issuerFriendlyName}</div>
+                                </div>
+                                <div className="col s1">
+                                  <div className={curKeyStyle} />
+                                </div>
+                              </div>);
+                          }
+                          }
+                          dataKey="subjectFriendlyName"
+                          headerRenderer={this.headerRenderer}
+                          width={width * 1}
+                          label={localize("Certificate.subject", locale)}
+                        />
+                      </Table>
+                    )}
+                  </AutoSizer>
+                  :
+                  <AutoSizer>
+                    {({ height, width }) => (
+                      <Table
+                        ref="Table"
+                        disableHeader={disableHeader}
+                        height={height}
+                        width={width}
+                        headerHeight={30}
+                        noRowsRenderer={this.noRowsRenderer}
+                        headerClassName={"headerColumn"}
+                        rowHeight={45}
+                        rowClassName={this.rowClassName}
+                        onRowClick={this.handleOnRowClick}
+                        onRowMouseOver={this.handleOnRowMouseOver}
+                        onRowMouseOut={this.handleOnRowMouseOut}
+                        overscanRowCount={3}
+                        rowGetter={rowGetter}
+                        rowCount={sortedList.size}
+                        scrollToIndex={scrollToIndex}
+                        sort={this.sort}
+                        sortBy={sortBy}
+                        sortDirection={sortDirection}
+                      >
+                        <Column
+                          cellRenderer={({ cellData, rowData, rowIndex }) => {
+                            return (
+                              <div className="row nobottom valign-wrapper">
+                                <div className="col" style={{ width: "40px", paddingLeft: "0px" }}>
+                                  <CertificateStatusIcon certificate={rowData} key={rowData.id} />
+                                </div>
+                                <div className="col s10" style={{ marginLeft: "10px" }}>
+                                  <div className="collection-title truncate">{cellData}</div>
+                                </div>
+                              </div>);
+                          }
+                          }
+                          dataKey="subjectFriendlyName"
+                          headerRenderer={this.headerRenderer}
+                          width={width * 0.4}
+                          label={localize("Certificate.subject", locale)}
+                        />
+                        <Column
+                          dataKey="issuerFriendlyName"
+                          disableSort={false}
+                          headerRenderer={this.headerRenderer}
+                          width={width * 0.4}
+                          label={localize("Certificate.issuer", locale)}
+                        />
+                        <Column
+                          cellRenderer={({ cellData }) => {
+                            return (new Date(cellData)).toLocaleDateString(locale, {
+                              day: "numeric",
+                              hour: "numeric",
+                              minute: "numeric",
+                              month: "numeric",
+                              year: "numeric",
+                            });
+                          }}
+                          dataKey="notAfter"
+                          disableSort={false}
+                          headerRenderer={this.headerRenderer}
+                          width={width * 0.15}
+                          label={localize("Certificate.cert_valid", locale)}
+                        />
+                        <Column
+                          cellRenderer={({ cellData, rowData, rowIndex }) => {
+                            let curKeyStyle;
+                            curKeyStyle = rowData.key.length > 0 ? curKeyStyle = "key " : curKeyStyle = "";
+
+                            if (curKeyStyle) {
+                              if (rowData.dssUserID) {
+                                curKeyStyle += "dsskey";
+                              } else {
+                                curKeyStyle += "localkey";
+                              }
+                            }
+
+                            return <div className={curKeyStyle} />;
+                          }
+                          }
+                          headerRenderer={this.headerRenderer}
+                          width={width * 0.05}
+                        />
+                      </Table>
+                    )}
+                  </AutoSizer>
+
+              }
+            </Media>
+
           </div>
         </div>
       </React.Fragment>
@@ -346,4 +448,4 @@ interface IOwnProps {
 export default connect((state, ownProps: IOwnProps) => ({
   certificates: mapToArr(filteredCertificatesSelector(state, { operation: ownProps.operation })),
   certificatesMap: filteredCertificatesSelector(state, { operation: ownProps.operation }),
-}), { activeFile, deleteFile, selectTempContentOfSignedFiles })(CertificateTableSmall);
+}), { activeFile, deleteFile, selectTempContentOfSignedFiles })(CertificateTable);

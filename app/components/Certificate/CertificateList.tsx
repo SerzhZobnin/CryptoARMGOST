@@ -15,6 +15,7 @@ import ProgressBars from "../ProgressBars";
 import RequestCAListItem from "../Request/RequestCAListItem";
 import CertificateListItem from "./CertificateListItem";
 import CertificateListItemBigWidth from "./CertificateListItemBigWidth";
+import CertificateTable from "./CertificateTable";
 
 const HEIGHT_MODAL = 356;
 const HEIGHT_FULL = 432;
@@ -86,57 +87,12 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
     }
 
     return (
-      <AutoSizer>
-        {({ height, width }) => (
-          <List
-            height={height}
-            overscanRowCount={2}
-            rowCount={certificates.length + 1}
-            rowHeight={ROW_HEIGHT}
-            rowRenderer={({ index, key, style }) => {
-              if (!certificates.length) {
-                return null;
-              }
-
-              const cert = certificates[index];
-
-              if (!cert) {
-                return null;
-              }
-
-              return (
-                <ul
-                  key={key}
-                  style={style}
-                >
-                  <Media query="(max-width: 1020px)">
-                    {(matches) =>
-                      matches ? (
-                        <CertificateListItem
-                          key={cert.id}
-                          cert={cert}
-                          chooseCert={() => activeCert(cert)}
-                          operation={operation}
-                          isOpen={isItemOpened(cert.id.toString())}
-                          toggleOpen={toggleOpenItem(cert.id.toString())}
-                          style={style} />
-                      ) : <CertificateListItemBigWidth
-                          key={cert.id}
-                          cert={cert}
-                          chooseCert={() => activeCert(cert)}
-                          operation={operation}
-                          isOpen={isItemOpened(cert.id.toString())}
-                          toggleOpen={toggleOpenItem(cert.id.toString())}
-                          style={style} />
-                    }
-                  </Media>
-                </ul>
-              );
-            }}
-            width={width}
-          />
-        )}
-      </AutoSizer>
+      <CertificateTable
+        isItemOpened={isItemOpened}
+        toggleOpenItem={toggleOpenItem}
+        activeCert={activeCert}
+        selectedCert={this.props.selectedCert}
+      />
     );
   }
 
