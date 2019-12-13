@@ -92,6 +92,7 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
         toggleOpenItem={toggleOpenItem}
         activeCert={activeCert}
         selectedCert={this.props.selectedCert}
+        operation={this.props.operation}
       />
     );
   }
