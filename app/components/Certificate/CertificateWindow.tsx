@@ -979,7 +979,7 @@ class CertWindow extends React.Component<any, any> {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { cloudCSPSettings, cloudCSPState, certificates, isLoading } = this.props;
+    const { cloudCSPSettings, cloudCSPState, certificates, isLoading, location } = this.props;
     const { certificate, crl } = this.state;
     const { localize, locale } = this.context;
 
@@ -989,6 +989,10 @@ class CertWindow extends React.Component<any, any> {
 
     if (prevProps.isLoading && !isLoading) {
       $(".btn-floated").dropdown();
+    }
+
+    if (prevProps.location !== location) {
+      this.setState({ certificate: null, crl: null, requestCA: null });
     }
 
     if (prevProps.cloudCSPState !== this.props.cloudCSPState) {
@@ -1375,6 +1379,7 @@ export default connect((state) => {
     crls: filteredCrlsSelector(state),
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
+    location: state.router.location,
     searchValue: state.filters.searchValue,
     servicesMap: state.services.entities,
   };
