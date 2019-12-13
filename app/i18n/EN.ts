@@ -227,7 +227,7 @@ export default {
     certs_my: "Personal Certificates",
     certs_other: "Other user certificates",
     certs_request: "Certificate Enrollment Request",
-    certs_root: "Trusted Root Certificates",
+    certs_root: "Trusted Root CA",
     certs_token: "External token/card certificates",
     crls: "Certification revocation list",
     delete_certificate: "Delete certificate",
