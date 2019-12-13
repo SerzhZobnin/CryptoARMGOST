@@ -1,18 +1,15 @@
-import { is } from "immutable";
-import * as path from "path";
 import PropTypes from "prop-types";
 import React from "react";
 import Media from "react-media";
 import { connect } from "react-redux";
 import { AutoSizer, Column, Table } from "react-virtualized";
 import { activeFile, deleteFile, selectTempContentOfSignedFiles } from "../../AC";
-import { activeFilesSelector, filteredFilesSelector, loadingRemoteFilesSelector, filteredCertificatesSelector } from "../../selectors";
+import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
 import "../../table.global.css";
-import { bytesToSize, mapToArr } from "../../utils";
-import ProgressBars from "../ProgressBars";
+import { mapToArr } from "../../utils";
 import SortDirection from "../Sort/SortDirection";
 import SortIndicator from "../Sort/SortIndicator";
-import CertificateStatusIcon from "./CertificateStatusIcon";
+import CrlStatusIcon from "./CrlStatusIcon";
 
 type TSortDirection = "ASC" | "DESC" | undefined;
 
@@ -37,25 +34,25 @@ export interface IRemoteFile {
   url: string;
 }
 
-interface ICertificateTableProps {
+interface ICrlTableProps {
   activeFile: (id: number, active?: boolean) => void;
   deleteFile: (fileId: number) => void;
   loadingFiles: IRemoteFile[];
   location: any;
-  certificatesMap: any;
+  crlsMap: any;
   operation: string;
   selectedFilesPackage: boolean;
   selectingFilesPackage: boolean;
   style: any;
 }
 
-interface ICertificateTableDispatch {
+interface ICrlTableDispatch {
   loadAllCertificates: () => void;
   selectDocument: (uid: number) => void;
   unselectAllDocuments: () => void;
 }
 
-interface ICertificateTableState {
+interface ICrlTableState {
   disableHeader: boolean;
   hoveredRowIndex: number;
   foundDocuments: number[];
@@ -65,13 +62,13 @@ interface ICertificateTableState {
   sortedList: any;
 }
 
-class CertificateTable extends React.Component<ICertificateTableProps & ICertificateTableDispatch, ICertificateTableState> {
+class CrlTable extends React.Component<ICrlTableProps & ICrlTableDispatch, ICrlTableState> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
 
-  constructor(props: ICertificateTableProps & ICertificateTableDispatch) {
+  constructor(props: ICrlTableProps & ICrlTableDispatch) {
     super(props);
 
     const sortBy = "filename";
@@ -89,9 +86,9 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
     };
   }
 
-  componentDidUpdate(prevProps: ICertificateTableProps & ICertificateTableDispatch) {
-    if (!prevProps.certificatesMap.size && this.props.certificatesMap && this.props.certificatesMap.size ||
-      (prevProps.certificatesMap.size !== this.props.certificatesMap.size)) {
+  componentDidUpdate(prevProps: ICrlTableProps & ICrlTableDispatch) {
+    if (!prevProps.crlsMap.size && this.props.crlsMap && this.props.crlsMap.size ||
+      (prevProps.crlsMap.size !== this.props.crlsMap.size)) {
       this.sort(this.state);
     }
     if (prevProps.searchValue !== this.props.searchValue && this.props.searchValue) {
@@ -111,12 +108,12 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
 
   render() {
     const { locale, localize } = this.context;
-    const { certificatesMap, searchValue } = this.props;
+    const { crlsMap, searchValue } = this.props;
     const { disableHeader, foundDocuments, scrollToIndex, sortBy, sortDirection, sortedList } = this.state;
 
     const rowGetter = ({ index }: { index: number }) => this.getDatum(this.state.sortedList, index);
 
-    if (!certificatesMap.size) {
+    if (!crlsMap.size) {
       return null;
     }
 
@@ -153,36 +150,22 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
                       >
                         <Column
                           cellRenderer={({ cellData, rowData, rowIndex }) => {
-                            let curKeyStyle;
-                            curKeyStyle = rowData.key.length > 0 ? curKeyStyle = "key " : curKeyStyle = "";
-
-                            if (curKeyStyle) {
-                              if (rowData.dssUserID) {
-                                curKeyStyle += "dsskey";
-                              } else {
-                                curKeyStyle += "localkey";
-                              }
-                            }
-
                             return (
                               <div className="row nobottom valign-wrapper">
                                 <div className="col" style={{ width: "40px", paddingLeft: "0px" }}>
-                                  <CertificateStatusIcon certificate={rowData} key={rowData.id} />
+                                  <CrlStatusIcon crl={rowData} key={rowData.id} />
                                 </div>
-                                <div className="col s10">
+                                <div className="col s11">
                                   <div className="collection-title truncate">{cellData}</div>
-                                  <div className="collection-info truncate">{rowData.issuerFriendlyName}</div>
-                                </div>
-                                <div className="col s1">
-                                  <div className={curKeyStyle} />
+                                  <div className="collection-info truncate">{rowData.lastUpdate}</div>
                                 </div>
                               </div>);
                           }
                           }
-                          dataKey="subjectFriendlyName"
+                          dataKey="issuerFriendlyName"
                           headerRenderer={this.headerRenderer}
                           width={width * 1}
-                          label={localize("Certificate.subject", locale)}
+                          label={localize("Certificate.issuer", locale)}
                         />
                       </Table>
                     )}
@@ -216,7 +199,7 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
                             return (
                               <div className="row nobottom valign-wrapper">
                                 <div className="col" style={{ width: "40px", paddingLeft: "0px" }}>
-                                  <CertificateStatusIcon certificate={rowData} key={rowData.id} />
+                                  <CrlStatusIcon crl={rowData} key={rowData.id} />
                                 </div>
                                 <div className="col s10" style={{ marginLeft: "10px" }}>
                                   <div className="collection-title truncate">{cellData}</div>
@@ -224,14 +207,7 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
                               </div>);
                           }
                           }
-                          dataKey="subjectFriendlyName"
-                          headerRenderer={this.headerRenderer}
-                          width={width * 0.4}
-                          label={localize("Certificate.subject", locale)}
-                        />
-                        <Column
                           dataKey="issuerFriendlyName"
-                          disableSort={false}
                           headerRenderer={this.headerRenderer}
                           width={width * 0.4}
                           label={localize("Certificate.issuer", locale)}
@@ -246,30 +222,27 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
                               year: "numeric",
                             });
                           }}
-                          dataKey="notAfter"
+                          dataKey="lastUpdate"
                           disableSort={false}
                           headerRenderer={this.headerRenderer}
-                          width={width * 0.15}
-                          label={localize("Certificate.cert_valid", locale)}
+                          width={width * 0.3}
+                          label={localize("CRL.lastUpdate", locale)}
                         />
                         <Column
-                          cellRenderer={({ cellData, rowData, rowIndex }) => {
-                            let curKeyStyle;
-                            curKeyStyle = rowData.key.length > 0 ? curKeyStyle = "key " : curKeyStyle = "";
-
-                            if (curKeyStyle) {
-                              if (rowData.dssUserID) {
-                                curKeyStyle += "dsskey";
-                              } else {
-                                curKeyStyle += "localkey";
-                              }
-                            }
-
-                            return <div className={curKeyStyle} />;
-                          }
-                          }
+                          cellRenderer={({ cellData }) => {
+                            return (new Date(cellData)).toLocaleDateString(locale, {
+                              day: "numeric",
+                              hour: "numeric",
+                              minute: "numeric",
+                              month: "numeric",
+                              year: "numeric",
+                            });
+                          }}
+                          dataKey="nextUpdate"
+                          disableSort={false}
                           headerRenderer={this.headerRenderer}
-                          width={width * 0.05}
+                          width={width * 0.3}
+                          label={localize("CRL.nextUpdate", locale)}
                         />
                       </Table>
                     )}
@@ -299,9 +272,9 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
   }
 
   handleOnRowClick = ({ rowData }: { rowData: any }) => {
-    const { activeCert, toggleOpenItem } = this.props;
+    const { activeCrl, toggleOpenItem } = this.props;
 
-    activeCert(rowData);
+    activeCrl(rowData);
     toggleOpenItem(rowData.id.toString());
   }
 
@@ -349,7 +322,7 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
       let rowClassName = index % 2 === 0 ? "evenRow " : "oddRow ";
 
       const founded = foundDocuments.indexOf(index) >= 0;
-      const selected = this.props.selectedCert ? this.props.selectedCert.id === rowData.id : false;
+      const selected = this.props.selectedCrl ? this.props.selectedCrl.id === rowData.id : false;
 
       if (founded && selected) {
         rowClassName += "foundAndSelectedEvent ";
@@ -411,13 +384,13 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
   }
 
   sortList = ({ sortBy, sortDirection }: { sortBy: string, sortDirection: TSortDirection }) => {
-    const { certificatesMap } = this.props;
+    const { crlsMap } = this.props;
 
-    return certificatesMap
+    return crlsMap
       .sortBy((item: any) => item[sortBy])
       .update(
         // tslint:disable-next-line:no-shadowed-variable
-        (certificatesMap: any) => (sortDirection === SortDirection.DESC ? certificatesMap.reverse() : certificatesMap),
+        (crlsMap: any) => (sortDirection === SortDirection.DESC ? crlsMap.reverse() : crlsMap),
       );
   }
 
@@ -446,5 +419,5 @@ interface IOwnProps {
 }
 
 export default connect((state, ownProps: IOwnProps) => ({
-  certificatesMap: filteredCertificatesSelector(state, { operation: ownProps.operation }),
-}), { activeFile, deleteFile, selectTempContentOfSignedFiles })(CertificateTable);
+  crlsMap: filteredCrlsSelector(state),
+}), { activeFile, deleteFile, selectTempContentOfSignedFiles })(CrlTable);

@@ -10,7 +10,7 @@ import { filteredCertificatesSelector } from "../../selectors";
 import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
 import { filteredRequestCASelector } from "../../selectors/requestCASelector";
 import { mapToArr } from "../../utils";
-import CRLListItem from "../CRL/CRLListItem";
+import CrlTable from "../CRL/CrlTable";
 import ProgressBars from "../ProgressBars";
 import RequestCAListItem from "../Request/RequestCAListItem";
 import CertificateListItem from "./CertificateListItem";
@@ -105,43 +105,13 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
     }
 
     return (
-      <AutoSizer>
-        {({ height, width }) => (
-          <List
-            height={height}
-            overscanRowCount={2}
-            rowCount={crls.length + 1}
-            rowHeight={ROW_HEIGHT}
-            rowRenderer={({ index, key, style }) => {
-              if (!crls.length) {
-                return null;
-              }
-
-              const crl = crls[index];
-
-              if (!crl) {
-                return null;
-              }
-
-              return (
-                <ul
-                  key={key}
-                  style={style}
-                >
-                  <CRLListItem
-                    key={crl.id}
-                    crl={crl}
-                    chooseCert={() => activeCrl(crl)}
-                    operation={operation}
-                    isOpen={isItemOpened(crl.id.toString())}
-                    toggleOpen={toggleOpenItem(crl.id.toString())} />
-                </ul>
-              );
-            }}
-            width={width}
-          />
-        )}
-      </AutoSizer>
+      <CrlTable
+        isItemOpened={isItemOpened}
+        toggleOpenItem={toggleOpenItem}
+        activeCrl={activeCrl}
+        selectedCrl={this.props.selectedCrl}
+        operation={this.props.operation}
+      />
     );
   }
 
