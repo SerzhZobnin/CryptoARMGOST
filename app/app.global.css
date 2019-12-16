@@ -57,6 +57,11 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   letter-spacing: 0.00857142857rem; /* 0.15/(20*0.0625*14) */
 }
 
+.subtitle {
+  font-size: 1rem;
+  letter-spacing: 0.01071428571rem; /* 0.15/(16*0.0625*14) */
+}
+
 .primary-text {
   color: rgba(0,0,0,0.87);
   font-size: 1rem;
@@ -850,13 +855,24 @@ i.material-icons.choosefolder {
   line-height: 30px;
 }
 
-.collapsible {
-  margin: 0;
+.collapsible.params {
+  border-left: 0 !important;
+  border-right: 0 !important;
+  box-shadow: none !important;
 }
 
-.collapsible-header.color{
-    background-color: ghostwhite;
+.collapsible-header.params{
+  border-left: 1px solid #ddd !important;
+  border-right: 1px solid #ddd !important;
+  border-bottom: 1px solid #ddd !important;
 }
+
+.collapsible-header.active i {
+  -ms-transform: rotate(180deg); /* IE 9 */
+  -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+  transform: rotate(180deg);
+  transition: transform 200ms;
+  }
 
 .cert-text {
     color: white;
