@@ -6,7 +6,9 @@ import {
   deleteRecipient, selectSignerCertificate,
 } from "../../AC";
 import {
-  applySettings,
+  changeOutfolder, changeSignatureDetached, changeSignatureEncoding,
+  changeSignatureStandard, changeSignatureTimestamp,
+  changeSignatureTimestampOnSign, toggleSaveToDocuments,
 } from "../../AC/settingsActions";
 import {
   DEFAULT_DOCUMENTS_PATH,
@@ -58,7 +60,7 @@ class AllSettings extends React.Component<any, IAllSettingsState> {
   render() {
     const { localize, locale } = this.context;
     const { recipients, signer } = this.props;
-    const { settings } = this.state;
+    const { settings } = this.props;
 
     const disabled = this.getDisabled();
     const classDisabled = disabled ? "disabled" : "";
@@ -133,7 +135,7 @@ class AllSettings extends React.Component<any, IAllSettingsState> {
 
             <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
               disabled={disabled || (signer && signer.service)}
-              isChecked={settings.sign.timestamp || (signer && signer.service)}
+              isChecked={settings.sign.timestamp}
               elementId="sign-time"
               title={localize("Cades.set_timestamp_on_data", locale)} />
           </div>
@@ -185,31 +187,19 @@ class AllSettings extends React.Component<any, IAllSettingsState> {
   }
 
   addDirect() {
-    const { settings } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeOutfolder } = this.props;
 
     if (!window.framework_NW) {
       const directory = dialog.showOpenDialog({ properties: ["openDirectory"] });
       if (directory) {
-        this.setState({
-          settings: settings
-            .setIn(["outfolder"], directory[0]),
-        });
+        changeOutfolder(directory[0]);
       }
     } else {
       const clickEvent = document.createEvent("MouseEvents");
       clickEvent.initEvent("click", true, true);
       document.querySelector("#choose-folder").dispatchEvent(clickEvent);
     }
-  }
-
-  applySettings = () => {
-    const { settings } = this.state;
-    // tslint:disable-next-line:no-shadowed-variable
-    const { applySettings } = this.props;
-
-    applySettings(settings);
-
-    this.props.history.goBack();
   }
 
   getDisabled = () => {
@@ -230,79 +220,53 @@ class AllSettings extends React.Component<any, IAllSettingsState> {
     return false;
   }
 
-  handleInputNameChange = (ev: any) => {
-    const { settings } = this.state;
-
-    this.setState({
-      settings: settings
-        .setIn(["name"], ev.target.value),
-    });
-  }
-
   handleOutfolderChange = (ev: any) => {
-    const { settings } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeOutfolder, settings } = this.props;
 
-    this.setState({
-      settings: settings
-        .setIn(["outfolder"], ev.target.value),
-    });
+    changeOutfolder(ev.target.value);
   }
 
   handleDetachedChange = (detached: boolean) => {
-    const { settings } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeSignatureDetached } = this.props;
 
-    this.setState({
-      settings: settings
-        .setIn(["sign", "detached"], detached),
-    });
+    changeSignatureDetached(detached);
   }
 
   handleTimestampClick = () => {
-    const { settings } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeSignatureTimestamp, settings } = this.props;
 
-    this.setState({
-      settings: settings
-        .setIn(["sign", "timestamp"], !settings.sign.timestamp),
-    });
+    changeSignatureTimestamp(!settings.sign.timestamp);
   }
 
   handleTimestampOnSignClick = () => {
-    const { settings } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeSignatureTimestampOnSign, settings } = this.props;
 
-    this.setState({
-      settings: settings
-        .setIn(["sign", "timestamp_on_sign"], !settings.sign.timestamp_on_sign),
-    });
+    changeSignatureTimestampOnSign(!settings.sign.timestamp_on_sign);
   }
 
   handleSaveToDocumentsClick = () => {
-    const { settings } = this.state;
-    const directory = !settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder
-    this.setState({
-      settings: settings
-        .setIn(["outfolder"], directory)
-        .setIn(["saveToDocuments"], !settings.saveToDocuments),
+    // tslint:disable-next-line: no-shadowed-variable
+    const { toggleSaveToDocuments, settings } = this.props;
 
-    });
-
+    toggleSaveToDocuments(!settings.saveToDocuments);
   }
 
   handleEncodingChange = (encoding: string) => {
-    const { settings } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeSignatureEncoding } = this.props;
 
-    this.setState({
-      settings: settings
-        .setIn(["sign", "encoding"], encoding),
-    });
+    changeSignatureEncoding(encoding);
   }
 
   handleSignatureStandardChange = (value: string) => {
-    const { settings } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeSignatureStandard } = this.props;
 
-    this.setState({
-      settings: settings
-        .setIn(["sign", "standard"], value),
-    });
+    changeSignatureStandard(value);
   }
 
   handleEncryptEncodingChange = (encoding: string) => {
@@ -331,13 +295,6 @@ class AllSettings extends React.Component<any, IAllSettingsState> {
         .setIn(["encrypt", "archive"], !settings.encrypt.archive),
     });
   }
-
-  handleCleanRecipientsList = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { deleteRecipient, recipients } = this.props;
-
-    recipients.forEach((recipient) => deleteRecipient(recipient.id));
-  }
 }
 
 export default connect((state) => {
@@ -350,4 +307,8 @@ export default connect((state) => {
     settings: state.settings.getIn(["entities", state.settings.active]),
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
   };
-}, { applySettings, deleteRecipient, selectSignerCertificate })(AllSettings);
+}, {
+  changeOutfolder, changeSignatureDetached, changeSignatureEncoding, changeSignatureStandard,
+  changeSignatureTimestamp, changeSignatureTimestampOnSign, toggleSaveToDocuments,
+  deleteRecipient, selectSignerCertificate,
+})(AllSettings);
