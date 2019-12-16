@@ -14,7 +14,7 @@ class CheckBoxWithLabel extends React.Component<ICheckBoxWithLabelProps, any> {
 
     const classDisabled = disabled ? "disabled" : "";
 
-    return <div className={`input-field ${classDisabled}`} >
+    return <div className={`${classDisabled}`} >
       <input
         type="checkbox"
         id={elementId}
@@ -23,7 +23,7 @@ class CheckBoxWithLabel extends React.Component<ICheckBoxWithLabelProps, any> {
         disabled={disabled}
         checked={isChecked} />
 
-      <label htmlFor={elementId} className="truncate">{title}</label>
+      <label htmlFor={elementId}>{title}</label>
     </div>;
   }
 }

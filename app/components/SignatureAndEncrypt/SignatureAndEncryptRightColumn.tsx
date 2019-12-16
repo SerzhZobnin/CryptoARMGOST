@@ -223,9 +223,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 <li>
                   <div className="collapsible-header params">
                     <i className="material-icons right">expand_more</i>
-                    ПАРАМЕТРЫ
+                    Параметры
                   </div>
-                  <div className="collapsible-body">
+                  <div className="collapsible-body params">
                    < AllSettings />
                   </div>
                 </li>

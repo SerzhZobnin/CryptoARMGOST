@@ -861,6 +861,10 @@ i.material-icons.choosefolder {
   box-shadow: none !important;
 }
 
+.collapsible-body.params {
+  border-bottom: 0 !important;
+}
+
 .collapsible-header.params{
   border-left: 1px solid #ddd !important;
   border-right: 1px solid #ddd !important;
