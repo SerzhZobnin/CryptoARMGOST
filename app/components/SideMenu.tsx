@@ -137,7 +137,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
     return (
       <div>
-        <ul id="dropdown-certificate-stores" className="dropdown-content" style={{ minHeight: "36px", height: "36px" }}>
+        <ul id="dropdown-certificate-stores" className="dropdown-content" style={{ minHeight: "85px" }}>
           <li>
             <div className="center-align">
               <a style={{ fontWeight: "bold", color: "#bf3817" }}>СЕРТИФИКАТЫ</a>
@@ -191,7 +191,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
     return (
       <div>
-        <ul id="dropdown-documents-stores" className="dropdown-content" style={{ minHeight: "36px", height: "36px" }}>
+        <ul id="dropdown-documents-stores" className="dropdown-content" style={{ minHeight: "120px" }}>
           <li>
             <div className="center-align">
               <a style={{ fontWeight: "bold", color: "#bf3817" }}>ДОКУМЕНТЫ</a>
@@ -231,7 +231,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
     return (
       <div>
-        <ul id="dropdown-about-pages" className="dropdown-content" style={{ minHeight: "36px", height: "36px" }}>
+        <ul id="dropdown-about-pages" className="dropdown-content" style={{ minHeight: "150px", height: "150px" }}>
           <li>
             <div className="center-align">
               <a style={{ fontWeight: "bold", color: "#bf3817" }}>О ПРОГРАММЕ</a>
