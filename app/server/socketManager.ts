@@ -133,13 +133,14 @@ io.on(CONNECTION, (socket) => {
 const addLicenseToStore = (id: string, license: string) => {
   if (license) {
     if (checkLicense(license)) {
-     /* try {
-        if (trusted.utils.Jwt.addLicense(license)) {
-          store.dispatch({ type: ADD_LICENSE, payload: { id, license } });
-        }
+      try {
+        const L_M = new trusted.utils.License_Mng();
+        L_M.addLicense(license);
+
+        store.dispatch({ type: ADD_LICENSE, payload: { id, license } });
       } catch (e) {
         console.log("error", e);
-      }*/
+      }
     }
   }
 };
