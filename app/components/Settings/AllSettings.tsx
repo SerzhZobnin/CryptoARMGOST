@@ -1,29 +1,25 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import {
   deleteRecipient, selectSignerCertificate,
 } from "../../AC";
 import {
+  changeArchiveFilesBeforeEncrypt, changeDeleteFilesAfterEncrypt, changeEncryptEncoding,
   changeOutfolder, changeSignatureDetached, changeSignatureEncoding,
   changeSignatureStandard, changeSignatureTimestamp,
   changeSignatureTimestampOnSign, toggleSaveToDocuments,
 } from "../../AC/settingsActions";
 import {
   DEFAULT_DOCUMENTS_PATH,
-  LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
-  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
 } from "../../constants";
 import { loadingRemoteFilesSelector } from "../../selectors";
 import { mapToArr } from "../../utils";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 import EncodingTypeSelector from "../EncodingTypeSelector";
-import RecipientsList from "../RecipientsList";
 import SelectFolder from "../SelectFolder";
 import SignatureStandardSelector from "../Signature/SignatureStandardSelector";
 import SignatureTypeSelector from "../Signature/SignatureTypeSelector";
-import SignerInfo from "../Signature/SignerInfo";
 import OcspSettings from "./OcspSettings";
 import TspSettings from "./TspSettings";
 
@@ -270,30 +266,24 @@ class AllSettings extends React.Component<any, IAllSettingsState> {
   }
 
   handleEncryptEncodingChange = (encoding: string) => {
-    const { settings } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeEncryptEncoding } = this.props;
 
-    this.setState({
-      settings: settings
-        .setIn(["encrypt", "encoding"], encoding),
-    });
+    changeEncryptEncoding(encoding);
   }
 
   handleDeleteClick = () => {
-    const { settings } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeDeleteFilesAfterEncrypt, settings } = this.props;
 
-    this.setState({
-      settings: settings
-        .setIn(["encrypt", "delete"], !settings.encrypt.delete),
-    });
+    changeDeleteFilesAfterEncrypt(!settings.encrypt.delete);
   }
 
   handleArchiveClick = () => {
-    const { settings } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeArchiveFilesBeforeEncrypt, settings } = this.props;
 
-    this.setState({
-      settings: settings
-        .setIn(["encrypt", "archive"], !settings.encrypt.archive),
-    });
+    changeArchiveFilesBeforeEncrypt(!settings.encrypt.archive);
   }
 }
 
@@ -308,7 +298,8 @@ export default connect((state) => {
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
   };
 }, {
-  changeOutfolder, changeSignatureDetached, changeSignatureEncoding, changeSignatureStandard,
+  changeArchiveFilesBeforeEncrypt, changeDeleteFilesAfterEncrypt, changeEncryptEncoding, changeOutfolder,
+  changeSignatureDetached, changeSignatureEncoding, changeSignatureStandard,
   changeSignatureTimestamp, changeSignatureTimestampOnSign, toggleSaveToDocuments,
   deleteRecipient, selectSignerCertificate,
 })(AllSettings);
