@@ -21,6 +21,7 @@ class CheckBoxWithLabel extends React.Component<ICheckBoxWithLabelProps, any> {
         className="filled-in"
         onChange={onClickCheckBox}
         disabled={disabled}
+        defaultChecked={isChecked}
         checked={isChecked} />
 
       <label htmlFor={elementId}>{title}</label>

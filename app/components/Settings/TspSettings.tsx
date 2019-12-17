@@ -24,9 +24,14 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
     super(props);
   }
 
+  componentDidMount() {
+    Materialize.updateTextFields();
+  }
+
   render() {
     const { localize, locale } = this.context;
     const { tsp } = this.props.settings;
+    const { url, use_proxy, proxy_url, proxy_port } = tsp;
 
     return (
       <div className="row">
@@ -36,7 +41,7 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
             type="text"
             className="validate"
             name="url_tsp"
-            value={tsp.url_tsp}
+            value={url}
             onChange={this.handleUrlChange}
             placeholder="https://"
           />
@@ -48,40 +53,40 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
         <div className="col s12">
           <CheckBoxWithLabel
             disabled={false}
-            isChecked={tsp.use_proxy}
-            elementId="use_proxy"
+            isChecked={use_proxy}
+            elementId="use_proxy_tsp"
             onClickCheckBox={this.handleUseProxyClick}
             title={localize("Cades.use_proxy", locale)} />
         </div>
 
         <div className="input-field col s12">
           <input
-            id="url_proxy"
+            id="url_proxy_tsp"
             type="text"
             className="validate"
-            name="url_proxy"
-            value={tsp.url_proxy}
+            name="url_proxy_tsp"
+            value={proxy_url}
             onChange={this.handleUrlProxyChange}
             placeholder="https://"
           />
-          <label htmlFor="url_proxy">
+          <label htmlFor="url_proxy_tsp">
             {localize("Cades.url_proxy", locale)}
           </label>
         </div>
 
         <div className="input-field col s12">
           <input
-            id="port"
+            id="port_tsp"
             type="number"
             className="validate"
             max={65536}
             min={0}
-            name="port"
-            value={tsp.port}
+            name="port_tsp"
+            value={proxy_port}
             onChange={this.handleInputPort}
             placeholder="0 - 65536"
           />
-          <label htmlFor="port">
+          <label htmlFor="port_tsp">
             {localize("Cades.port", locale)}
           </label>
         </div>
@@ -96,7 +101,7 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
     changeTspUrl(ev.target.value);
   }
 
-  handleUrlProxyChange =  (ev: any) => {
+  handleUrlProxyChange = (ev: any) => {
     // tslint:disable-next-line: no-shadowed-variable
     const { changeTspProxyUrl } = this.props;
 

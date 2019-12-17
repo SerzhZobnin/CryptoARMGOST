@@ -25,11 +25,7 @@ import TspSettings from "./TspSettings";
 
 const dialog = window.electron.remote.dialog;
 
-interface IAllSettingsState {
-  settings: any;
-}
-
-class AllSettings extends React.Component<any, IAllSettingsState> {
+class AllSettings extends React.Component<any, {}> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -37,10 +33,6 @@ class AllSettings extends React.Component<any, IAllSettingsState> {
 
   constructor(props: any) {
     super(props);
-
-    this.state = {
-      settings: props.settings,
-    };
   }
 
   componentDidMount() {
@@ -51,6 +43,8 @@ class AllSettings extends React.Component<any, IAllSettingsState> {
       inDuration: 300,
       outDuration: 225,
     });
+
+    Materialize.updateTextFields();
   }
 
   render() {

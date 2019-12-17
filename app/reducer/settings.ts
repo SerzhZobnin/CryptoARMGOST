@@ -54,7 +54,6 @@ export const SettingsModel = Record({
   encrypt: new EncryptModel(),
   id: DEFAULT_ID,
   locale: RU,
-  mtime: null,
   name: "Настройка #1",
   ocsp: new OcspModel(),
   outfolder: "",
@@ -67,7 +66,7 @@ export const DefaultReducerState = Record({
   active: null,
   default: DEFAULT_ID,
   entities: OrderedMap({
-    DEFAULT_ID: new SettingsModel({ mtime: new Date().getTime() }),
+    DEFAULT_ID: new SettingsModel(),
   }),
 });
 
@@ -79,7 +78,6 @@ export default (settings = new DefaultReducerState(), action) => {
 
       settings = settings.setIn(["entities", id], new SettingsModel({
         id,
-        mtime: new Date().getTime(),
         name: `Настройка #${settings.entities.size + 1}`,
       }));
       settings = settings.set("active", id);
@@ -106,7 +104,6 @@ export default (settings = new DefaultReducerState(), action) => {
       break;
 
     case TOGGLE_SAVE_TO_DOCUMENTS:
-
       settings = settings
         .setIn(["entities", settings.active, "saveToDocuments"], payload.saveToDocuments);
       break;
@@ -238,8 +235,28 @@ export default (settings = new DefaultReducerState(), action) => {
       break;
   }
 
-  if (type === APPLY_SETTINGS || type === SELECT_SIGNER_CERTIFICATE ||
-    type === ADD_RECIPIENT_CERTIFICATE || type === DELETE_RECIPIENT_CERTIFICATE) {
+  if (type === SELECT_SIGNER_CERTIFICATE
+    || type === ADD_RECIPIENT_CERTIFICATE
+    || type === DELETE_RECIPIENT_CERTIFICATE
+    || type === CHANGE_SIGNATURE_STANDARD
+    || type === TOGGLE_SAVE_TO_DOCUMENTS
+    || type === CHANGE_SIGNATURE_DETACHED
+    || type === CHANGE_SIGNATURE_ENCODING
+    || type === CHANGE_OUTFOLDER
+    || type === CHANGE_SIGNATURE_TIMESTAMP
+    || type === CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN
+    || type === CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT
+    || type === CHANGE_DELETE_FILES_AFTER_ENCRYPT
+    || type === CHANGE_ECRYPT_ENCODING
+    || type === CHANGE_TSP_PROXY_PORT
+    || type === CHANGE_TSP_PROXY_URL
+    || type === CHANGE_TSP_URL
+    || type === CHANGE_TSP_USE_PROXY
+    || type === CHANGE_OCSP_PROXY_PORT
+    || type === CHANGE_OCSP_PROXY_URL
+    || type === CHANGE_OCSP_URL
+    || type === CHANGE_OCSP_USE_PROXY) {
+
     const state = ({
       default: settings.default,
       settings: settings.toJS(),

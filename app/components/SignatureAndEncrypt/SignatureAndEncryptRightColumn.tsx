@@ -66,6 +66,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
 }
 
 interface ISignatureAndEncryptRightColumnSettingsState {
+  allSettingsMaunted: boolean;
   currentOperation: string;
   pinCode: string;
   searchValue: string;
@@ -84,6 +85,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     super(props);
 
     this.state = {
+      allSettingsMaunted: false,
       currentOperation: "",
       pinCode: "",
       searchValue: "",
@@ -221,12 +223,20 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             <div className="col s12">
               <ul className="collapsible params" data-collapsible="accordion">
                 <li>
-                  <div className="collapsible-header params">
+                  <div className="collapsible-header params" onClick={() => {
+                    if (!this.state.allSettingsMaunted) {
+                      this.setState({ allSettingsMaunted: true });
+                    }
+                  }
+                  }>
                     <i className="material-icons right">expand_more</i>
                     Параметры
                   </div>
                   <div className="collapsible-body params">
-                   < AllSettings />
+                    {
+                      this.state.allSettingsMaunted ? < AllSettings /> : null
+                    }
+
                   </div>
                 </li>
               </ul>

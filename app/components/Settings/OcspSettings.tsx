@@ -24,9 +24,14 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
     super(props);
   }
 
+  componentDidMount() {
+    Materialize.updateTextFields();
+  }
+
   render() {
     const { localize, locale } = this.context;
     const { ocsp } = this.props.settings;
+    const { url, use_proxy, proxy_url, proxy_port } = ocsp;
 
     return (
       <div className="row">
@@ -36,7 +41,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
             type="text"
             className="validate"
             name="url_ocsp"
-            value={ocsp.url_ocsp}
+            value={url}
             onChange={this.handleUrlChange}
             placeholder="https://"
           />
@@ -48,7 +53,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
         <div className="col s12">
           <CheckBoxWithLabel
             disabled={false}
-            isChecked={ocsp.use_proxy}
+            isChecked={use_proxy}
             elementId="use_proxy_ocsp"
             onClickCheckBox={this.handleUseProxyClick}
             title={localize("Cades.use_proxy", locale)} />
@@ -56,32 +61,32 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
 
         <div className="input-field col s12">
           <input
-            id="url_proxy"
+            id="url_proxy_ocsp"
             type="text"
             className="validate"
-            name="url_proxy"
-            value={ocsp.url_proxy}
+            name="url_proxy_ocsp"
+            value={proxy_url}
             onChange={this.handleUrlProxyChange}
             placeholder="https://"
           />
-          <label htmlFor="url_proxy">
+          <label htmlFor="url_proxy_ocsp">
             {localize("Cades.url_proxy", locale)}
           </label>
         </div>
 
         <div className="input-field col s12">
           <input
-            id="port"
+            id="port_ocsp"
             type="number"
             className="validate"
             max={65536}
             min={0}
-            name="port"
-            value={ocsp.port}
+            name="port_ocsp"
+            value={proxy_port}
             onChange={this.handleInputPort}
             placeholder="0 - 65536"
           />
-          <label htmlFor="port">
+          <label htmlFor="port_ocsp">
             {localize("Cades.port", locale)}
           </label>
         </div>
@@ -96,7 +101,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
     changeOcspUrl(ev.target.value);
   }
 
-  handleUrlProxyChange =  (ev: any) => {
+  handleUrlProxyChange = (ev: any) => {
     // tslint:disable-next-line: no-shadowed-variable
     const { changeOcspProxyUrl } = this.props;
 
