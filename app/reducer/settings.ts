@@ -5,9 +5,11 @@ import {
   CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT, CHANGE_DEFAULT_SETTINGS,
   CHANGE_DELETE_FILES_AFTER_ENCRYPT, CHANGE_DSS_AUTH_URL, CHANGE_DSS_REST_URL, CHANGE_ECRYPT_ENCODING,
   CHANGE_LOCALE, CHANGE_OUTFOLDER, CHANGE_SETTINGS_NAME,
-  CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING, CHANGE_SIGNATURE_TIMESTAMP,
-  CREATE_SETTING, DELETE_RECIPIENT_CERTIFICATE, DELETE_SETTING,
-  REMOVE_ALL_CERTIFICATES, RU, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_SAVE_TO_DOCUMENTS, CHANGE_SIGNATURE_STANDARD, CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN,
+  CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING, CHANGE_SIGNATURE_STANDARD,
+  CHANGE_SIGNATURE_TIMESTAMP, CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN,
+  CHANGE_TSP_PROXY_PORT, CHANGE_TSP_PROXY_URL, CHANGE_TSP_URL, CHANGE_TSP_USE_PROXY,
+  CREATE_SETTING,
+  DELETE_RECIPIENT_CERTIFICATE, DELETE_SETTING, REMOVE_ALL_CERTIFICATES, RU, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_SAVE_TO_DOCUMENTS,
 } from "../constants";
 import { fileExists, mapToArr, uuid } from "../utils";
 
@@ -138,10 +140,10 @@ export default (settings = new DefaultReducerState(), action) => {
         .setIn(["entities", settings.active, "sign", "timestamp"], payload.timestamp);
       break;
 
-      case CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN:
-        settings = settings
-          .setIn(["entities", settings.active, "sign", "timestamp_on_sign"], payload.timestamp);
-        break;
+    case CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN:
+      settings = settings
+        .setIn(["entities", settings.active, "sign", "timestamp_on_sign"], payload.timestamp);
+      break;
 
     case CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT:
       settings = settings
@@ -156,6 +158,26 @@ export default (settings = new DefaultReducerState(), action) => {
     case CHANGE_ECRYPT_ENCODING:
       settings = settings
         .setIn(["entities", settings.active, "encrypt", "encoding"], payload.encoding);
+      break;
+
+    case CHANGE_TSP_PROXY_PORT:
+      settings = settings
+        .setIn(["entities", settings.active, "tsp", "proxy_port"], payload.port);
+      break;
+
+    case CHANGE_TSP_PROXY_URL:
+      settings = settings
+        .setIn(["entities", settings.active, "tsp", "proxy_url"], payload.url);
+      break;
+
+    case CHANGE_TSP_URL:
+      settings = settings
+        .setIn(["entities", settings.active, "tsp", "url"], payload.url);
+      break;
+
+    case CHANGE_TSP_USE_PROXY:
+      settings = settings
+        .setIn(["entities", settings.active, "tsp", "use_proxy"], payload.use_proxy);
       break;
 
     case CHANGE_LOCALE:
