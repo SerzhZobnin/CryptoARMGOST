@@ -28,10 +28,16 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
     Materialize.updateTextFields();
   }
 
+  componentDidUpdate() {
+    Materialize.updateTextFields();
+  }
+
   render() {
     const { localize, locale } = this.context;
     const { tsp } = this.props.settings;
     const { url, use_proxy, proxy_url, proxy_port } = tsp;
+
+    const disbledProxyInputs = use_proxy ? "" : "disabled";
 
     return (
       <div className="row">
@@ -59,7 +65,7 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
             title={localize("Cades.use_proxy", locale)} />
         </div>
 
-        <div className="input-field col s12">
+        <div className={`input-field col s12 ${disbledProxyInputs}`}>
           <input
             id="url_proxy_tsp"
             type="text"
@@ -69,12 +75,12 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
             onChange={this.handleUrlProxyChange}
             placeholder="https://"
           />
-          <label htmlFor="url_proxy_tsp">
+          <label htmlFor="url_proxy_tsp" className={`${disbledProxyInputs}`}>
             {localize("Cades.url_proxy", locale)}
           </label>
         </div>
 
-        <div className="input-field col s12">
+        <div className={`input-field col s12 ${disbledProxyInputs}`}>
           <input
             id="port_tsp"
             type="number"
@@ -86,7 +92,7 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
             onChange={this.handleInputPort}
             placeholder="0 - 65536"
           />
-          <label htmlFor="port_tsp">
+          <label htmlFor="port_tsp" className={`${disbledProxyInputs}`}>
             {localize("Cades.port", locale)}
           </label>
         </div>
