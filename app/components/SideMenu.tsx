@@ -88,7 +88,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               <div className="row nobottom">
                 {LOCATION_ABOUT === pathname || LOCATION_EVENTS === pathname ? < div className="side-nav-rectangle" /> : null}
                 <Link id="dropdown-about" to={LOCATION_ABOUT} data-activates="dropdown-about-pages" data-hover="hover" style={{ padding: "0 10px" }}>
-                  <i className="material-icons sidevan license" style={{ padding: "0 10px" }}>about</i>
+                  <i className="material-icons sidevan about" style={{ padding: "0 10px" }}>about</i>
                 </Link>
               </div>
               <Link to="/" onClick={() => {
@@ -201,7 +201,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
             <Link to={LOCATION_MAIN} style={{ height: "33px", padding: "0px" }}>
               <div className="row nobottom valign-wrapper">
                 <div className="col" style={{ width: "36px" }}>
-                  <i className="material-icons left container" />
+                  <i className="material-icons left sign_operation" />
                 </div>
                 <div className="col">
                   {localize("SignAndEncrypt.sign_and_encrypt", locale)}
@@ -213,7 +213,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
             <Link to={LOCATION_DOCUMENTS} style={{ height: "33px", padding: "0px" }}>
               <div className="row nobottom valign-wrapper">
                 <div className="col" style={{ width: "36px" }}>
-                  <i className="material-icons left container" />
+                  <i className="material-icons left folder" />
                 </div>
                 <div className="col">
                   {localize("Documents.documents", locale)}
@@ -242,7 +242,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
             <Link to={LOCATION_ABOUT} style={{ height: "33px", padding: "0px" }}>
               <div className="row nobottom valign-wrapper">
                 <div className="col" style={{ width: "36px" }}>
-                  <i className="material-icons left container" />
+                  <i className="material-icons left application" />
                 </div>
                 <div className="col">
                   {localize("About.about", locale)}
@@ -255,7 +255,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
             <Link to={LOCATION_EVENTS} style={{ height: "33px", padding: "0px" }}>
               <div className="row nobottom valign-wrapper">
                 <div className="col" style={{ width: "36px" }}>
-                  <i className="material-icons left container" />
+                  <i className="material-icons left journal" />
                 </div>
                 <div className="col">
                   {localize("Events.operations_log", locale)}
@@ -267,7 +267,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
             <a style={{ height: "33px", padding: "0px" }} onClick={() => window.electron.shell.openExternal(localize("Help.link_user_guide", locale))}>
               <div className="row nobottom valign-wrapper">
                 <div className="col" style={{ width: "36px" }}>
-                  <i className="material-icons left container" />
+                  <i className="material-icons left help" />
                 </div>
                 <div className="col">
                   Справка
