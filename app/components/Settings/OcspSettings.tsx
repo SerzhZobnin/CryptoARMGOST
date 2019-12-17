@@ -1,19 +1,20 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { connect } from "react-redux";
+import {
+  changeOcspProxyPort, changeOcspProxyUrl, changeOcspUrl, changeOcspUseProxy,
+} from "../../AC/settingsActions";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 
 interface IOcspSettingsProps {
-  handleChange: (encoding: string) => void;
+  changeOcspUrl: (url: string) => void;
+  changeOcspProxyUrl: (url: string) => void;
+  changeOcspProxyPort: (port: number) => void;
+  changeOcspUseProxy: (use: boolean) => void;
+  settings: any;
 }
 
-interface IOcspSettingsState {
-  port: number;
-  url_proxy: string;
-  url_ocsp: string;
-  use_proxy: boolean;
-}
-
-class OcspSettings extends React.Component<IOcspSettingsProps, IOcspSettingsState> {
+class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
   static contextTypes = {
     locale: PropTypes.string,
     localize: PropTypes.func,
@@ -21,16 +22,11 @@ class OcspSettings extends React.Component<IOcspSettingsProps, IOcspSettingsStat
 
   constructor(props: any) {
     super(props);
-    this.state = {
-      port: 0,
-      url_ocsp: "",
-      url_proxy: "",
-      use_proxy: false,
-    };
   }
 
   render() {
     const { localize, locale } = this.context;
+    const { ocsp } = this.props.settings;
 
     return (
       <div className="row">
@@ -40,8 +36,8 @@ class OcspSettings extends React.Component<IOcspSettingsProps, IOcspSettingsStat
             type="text"
             className="validate"
             name="url_ocsp"
-            value={this.state.url_ocsp}
-            onChange={this.handleInputChange}
+            value={ocsp.url_ocsp}
+            onChange={this.handleUrlChange}
             placeholder="https://"
           />
           <label htmlFor="url_tsp">
@@ -52,8 +48,8 @@ class OcspSettings extends React.Component<IOcspSettingsProps, IOcspSettingsStat
         <div className="col s12">
           <CheckBoxWithLabel
             disabled={false}
-            isChecked={this.state.use_proxy}
-            elementId="use_proxy"
+            isChecked={ocsp.use_proxy}
+            elementId="use_proxy_ocsp"
             onClickCheckBox={this.handleUseProxyClick}
             title={localize("Cades.use_proxy", locale)} />
         </div>
@@ -64,8 +60,8 @@ class OcspSettings extends React.Component<IOcspSettingsProps, IOcspSettingsStat
             type="text"
             className="validate"
             name="url_proxy"
-            value={this.state.url_proxy}
-            onChange={this.handleInputChange}
+            value={ocsp.url_proxy}
+            onChange={this.handleUrlProxyChange}
             placeholder="https://"
           />
           <label htmlFor="url_proxy">
@@ -81,7 +77,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, IOcspSettingsStat
             max={65536}
             min={0}
             name="port"
-            value={this.state.port}
+            value={ocsp.port}
             onChange={this.handleInputPort}
             placeholder="0 - 65536"
           />
@@ -93,32 +89,39 @@ class OcspSettings extends React.Component<IOcspSettingsProps, IOcspSettingsStat
     );
   }
 
-  handleInputChange = (ev: any) => {
-    const target = ev.target;
-    const name = target.name;
-    const value = ev.target.value;
+  handleUrlChange = (ev: any) => {
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeOcspUrl } = this.props;
 
-    this.setState(({
-      ...this.state,
-      [name]: value,
-    }));
+    changeOcspUrl(ev.target.value);
+  }
+
+  handleUrlProxyChange =  (ev: any) => {
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeOcspProxyUrl } = this.props;
+
+    changeOcspProxyUrl(ev.target.value);
   }
 
   handleInputPort = (ev: any) => {
-    const target = ev.target;
-    const name = target.name;
-    const value = ev.target.value;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeOcspProxyPort } = this.props;
 
-    this.setState(({
-      port: parseInt(value, 10),
-    }));
+    changeOcspProxyPort(parseInt(ev.target.value, 10));
   }
 
   handleUseProxyClick = () => {
-    this.setState({
-      use_proxy: !this.state.use_proxy,
-    });
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeOcspUseProxy } = this.props;
+
+    changeOcspUseProxy(!this.props.settings.ocsp.use_proxy);
   }
 }
 
-export default OcspSettings;
+export default connect((state) => {
+  return {
+    settings: state.settings.getIn(["entities", state.settings.active]),
+  };
+}, {
+  changeOcspProxyPort, changeOcspProxyUrl, changeOcspUrl, changeOcspUseProxy,
+})(OcspSettings);

@@ -12,8 +12,8 @@ import { DefaultReducerState as DefaultServicesReducerState, ServiceModel,
   SettingsModel as ServiceSettingsModel } from "../reducer/services";
 import {
   DefaultReducerState as DefaultSettingsState, EncryptModel,
-  RecipientModel, SettingsModel as GlobalSettingsModel, SignModel,
-  TspModel,
+  OcspModel, RecipientModel, SettingsModel as GlobalSettingsModel,
+  SignModel, TspModel,
 } from "../reducer/settings";
 import { DefaultReducerState as DefaultTemplatesReducerState, TemplateModel } from "../reducer/templates";
 import { DefaultReducerState as DefaultTokenReducerState, TokenDSSModel } from "../reducer/tokens";
@@ -39,6 +39,7 @@ if (fileExists(SETTINGS_JSON)) {
           ...setting,
           encrypt,
           id: setting.id,
+          ocsp: new OcspModel(setting.ocsp),
           outfolder: setting.outfolder,
           saveToDocuments: setting.saveToDocuments,
           sign: new SignModel(setting.sign),
