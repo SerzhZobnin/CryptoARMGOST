@@ -1,10 +1,14 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA } from "../../constants";
+import {
+  ADDRESS_BOOK, CA, MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST,
+  MODAL_CERTIFICATE_REQUEST_CA, MY, REQUEST, ROOT,
+} from "../../constants";
 
 interface IAddCertificateProps {
   certImport: () => void;
   handleShowModalByType: (type: string) => void;
+  location: any;
   onCancel: () => void;
 }
 
@@ -35,85 +39,7 @@ class AddCertificate extends React.Component<IAddCertificateProps, any> {
           <div className="col s12">
             <div className="content-wrapper tbody border_group">
               <div className="row certificate-list-item">
-                <div
-                  className="collection-item avatar certs-collection col s12 valign-wrapper"
-                  onMouseOver={() => this.handleOnRowMouseOver("cert_import_from_file")}>
-                  <div className="col" style={{ width: "40px" }}>
-                    <a data-position="bottom">
-                      <i className="material-icons certificate import" />
-                    </a>
-                  </div>
-                  <div className="col s11">
-                    <div className="collection-title" onClick={() => {
-                      this.props.onCancel();
-                      setTimeout(() => {
-                        this.props.certImport();
-                      }, 100);
-                    }}>
-                      {localize("Certificate.cert_import_from_file", locale)}
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  className="collection-item avatar certs-collection col s12 valign-wrapper"
-                  onMouseOver={() => this.handleOnRowMouseOver("cert_import_from_DSS")}>
-                  <div className="col" style={{ width: "40px" }}>
-                    <a data-position="bottom">
-                      <i className="material-icons certificate import_dss_cert" />
-                    </a>
-                  </div>
-                  <div className="col s11">
-                    <div className="collection-title" onClick={() => {
-                      this.props.onCancel();
-                      setTimeout(() => {
-                        this.props.handleShowModalByType(MODAL_CERTIFICATE_IMPORT_DSS);
-                      }, 100);
-                    }}>
-                      {localize("DSS.cert_import_from_DSS", locale)}
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  className="collection-item avatar certs-collection col s12 valign-wrapper"
-                  onMouseOver={() => this.handleOnRowMouseOver("create_request")}>
-                  <div className="col" style={{ width: "40px" }}>
-                    <a data-position="bottom">
-                      <i className="material-icons certificate add_question" />
-                    </a>
-                  </div>
-                  <div className="col s11">
-                    <div className="collection-title" onClick={() => {
-                      this.props.onCancel();
-                      setTimeout(() => {
-                        this.props.handleShowModalByType(MODAL_CERTIFICATE_REQUEST);
-                      }, 100);
-                    }}>
-                      {localize("CSR.create_request", locale)}
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  className="collection-item avatar certs-collection col s12 valign-wrapper"
-                  onMouseOver={() => this.handleOnRowMouseOver("cert_get_through_ca")}>
-                  <div className="col" style={{ width: "40px" }}>
-                    <a data-position="bottom">
-                      <i className="material-icons certificate cloud_question" />
-                    </a>
-                  </div>
-                  <div className="col s11">
-                    <div className="collection-title" onClick={() => {
-                      this.props.onCancel();
-                      setTimeout(() => {
-                        this.props.handleShowModalByType(MODAL_CERTIFICATE_REQUEST_CA);
-                      }, 100);
-                    }}>
-                      {localize("Certificate.cert_get_through_ca", locale)}
-                    </div>
-                  </div>
-                </div>
+                {this.getBody()}
               </div>
             </div>
           </div>
@@ -129,6 +55,154 @@ class AddCertificate extends React.Component<IAddCertificateProps, any> {
           </div>
         </div>
       </React.Fragment>
+    );
+  }
+
+  getBody = () => {
+    const { location } = this.props;
+    const { store, type } = location.state;
+
+    switch (store) {
+      case MY:
+        return (
+          <React.Fragment>
+            {this.getImportFromFile()}
+            {this.getImportFromDss()}
+            {this.getCreateRequest()}
+            {this.getCreateRequestCA()}
+          </React.Fragment>
+        );
+
+      case ADDRESS_BOOK:
+      case CA:
+      case ROOT:
+        return (
+          <React.Fragment>
+            {this.getImportFromFile()}
+          </React.Fragment>
+        );
+
+      case REQUEST:
+        return (
+          <React.Fragment>
+            {this.getImportFromFile()}
+            {this.getCreateRequest()}
+            {this.getCreateRequestCA()}
+          </React.Fragment>
+        );
+      default:
+        return (
+          <React.Fragment>
+            {this.getImportFromFile()}
+            {this.getImportFromDss()}
+            {this.getCreateRequest()}
+            {this.getCreateRequestCA()}
+          </React.Fragment>
+        );
+    }
+  }
+
+  getImportFromFile = () => {
+    const { localize, locale } = this.context;
+
+    return (
+      <div
+        className="collection-item avatar certs-collection col s12 valign-wrapper"
+        onMouseOver={() => this.handleOnRowMouseOver("cert_import_from_file")}>
+        <div className="col" style={{ width: "40px" }}>
+          <a data-position="bottom">
+            <i className="material-icons certificate import" />
+          </a>
+        </div>
+        <div className="col s11">
+          <div className="collection-title" onClick={() => {
+            this.props.onCancel();
+            setTimeout(() => {
+              this.props.certImport();
+            }, 100);
+          }}>
+            {localize("Certificate.cert_import_from_file", locale)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  getImportFromDss = () => {
+    const { localize, locale } = this.context;
+
+    return (
+      <div
+        className="collection-item avatar certs-collection col s12 valign-wrapper"
+        onMouseOver={() => this.handleOnRowMouseOver("cert_import_from_DSS")}>
+        <div className="col" style={{ width: "40px" }}>
+          <a data-position="bottom">
+            <i className="material-icons certificate import_dss_cert" />
+          </a>
+        </div>
+        <div className="col s11">
+          <div className="collection-title" onClick={() => {
+            this.props.onCancel();
+            setTimeout(() => {
+              this.props.handleShowModalByType(MODAL_CERTIFICATE_IMPORT_DSS);
+            }, 100);
+          }}>
+            {localize("DSS.cert_import_from_DSS", locale)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  getCreateRequest = () => {
+    const { localize, locale } = this.context;
+
+    return (
+      <div
+        className="collection-item avatar certs-collection col s12 valign-wrapper"
+        onMouseOver={() => this.handleOnRowMouseOver("create_request")}>
+        <div className="col" style={{ width: "40px" }}>
+          <a data-position="bottom">
+            <i className="material-icons certificate add_question" />
+          </a>
+        </div>
+        <div className="col s11">
+          <div className="collection-title" onClick={() => {
+            this.props.onCancel();
+            setTimeout(() => {
+              this.props.handleShowModalByType(MODAL_CERTIFICATE_REQUEST);
+            }, 100);
+          }}>
+            {localize("CSR.create_request", locale)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  getCreateRequestCA = () => {
+    const { localize, locale } = this.context;
+
+    return (
+      <div
+        className="collection-item avatar certs-collection col s12 valign-wrapper"
+        onMouseOver={() => this.handleOnRowMouseOver("cert_get_through_ca")}>
+        <div className="col" style={{ width: "40px" }}>
+          <a data-position="bottom">
+            <i className="material-icons certificate cloud_question" />
+          </a>
+        </div>
+        <div className="col s11">
+          <div className="collection-title" onClick={() => {
+            this.props.onCancel();
+            setTimeout(() => {
+              this.props.handleShowModalByType(MODAL_CERTIFICATE_REQUEST_CA);
+            }, 100);
+          }}>
+            {localize("Certificate.cert_get_through_ca", locale)}
+          </div>
+        </div>
+      </div>
     );
   }
 

@@ -754,6 +754,7 @@ class CertWindow extends React.Component<any, any> {
   showModalAddCertificate = () => {
     const { localize, locale } = this.context;
     const { showModalAddCertificate } = this.state;
+    const { location } = this.props;
 
     if (!showModalAddCertificate) {
       return;
@@ -769,6 +770,7 @@ class CertWindow extends React.Component<any, any> {
         <AddCertificate
           certImport={this.certImport}
           handleShowModalByType={this.handleShowModalByType}
+          location={location}
           onCancel={() => this.handleCloseModalByType(MODAL_ADD_CERTIFICATE)} />
       </Modal>
     );

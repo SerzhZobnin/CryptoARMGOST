@@ -66,7 +66,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
             {LOCATION_CERTIFICATES === pathname || LOCATION_CONTAINERS === pathname ? < div className="side-nav-rectangle" /> : null}
             <Link
               id="certs"
-              to={{ pathname: LOCATION_CERTIFICATES, search: "my", state: { head: localize("Certificate.certs_my", locale), MY } }}
+              to={{ pathname: LOCATION_CERTIFICATES, search: "my", state: { head: localize("Certificate.certs_my", locale), store: MY } }}
               data-activates="dropdown-certificate-stores"
               data-hover="hover"
               style={{ padding: "0 10px" }}
@@ -77,7 +77,9 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
           <div className="row nobottom">
             {LOCATION_ADDRESS_BOOK === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_ADDRESS_BOOK} style={{ padding: "0 10px" }}>
+            <Link
+             to={{ pathname: LOCATION_ADDRESS_BOOK, search: ADDRESS_BOOK, state: { head: localize("AddressBook.address_book", locale), store: ADDRESS_BOOK } }}
+             style={{ padding: "0 10px" }}>
               <i className="material-icons sidevan address_book"></i>
             </Link>
           </div>
