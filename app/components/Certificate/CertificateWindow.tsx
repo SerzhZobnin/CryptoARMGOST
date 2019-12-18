@@ -1102,7 +1102,7 @@ class CertWindow extends React.Component<any, any> {
           <div className="col s8 leftcol">
             <div className="row halfbottom">
               <div className="row halfbottom" />
-              <div className="col" style={{ width: "calc(100% - 80px)" }}>
+              <div className="col" style={{ width: "calc(100% - 60px)" }}>
                 <div className="input-field input-field-csr col s12 border_element find_box">
                   <i className="material-icons prefix">search</i>
                   <input
@@ -1114,34 +1114,10 @@ class CertWindow extends React.Component<any, any> {
                   <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
                 </div>
               </div>
-              <div className="col" style={{ width: "40px" }}>
+              <div className="col" style={{ width: "40px", marginLeft: "20px" }}>
                 <a onClick={this.handleReloadCertificates}>
                   <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
                 </a>
-              </div>
-              <div className="col" style={{ width: "40px" }}>
-                <div>
-                  <a className="btn-floated" data-activates="dropdown-btn-import">
-                    <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
-                  </a>
-                  <ul id="dropdown-btn-import" className="dropdown-content">
-                    <li><a onClick={this.certImport}>{localize("Certificate.cert_import_from_file", locale)}</a></li>
-                    <li>
-                      <a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_IMPORT_DSS)}>
-                        {localize("DSS.cert_import_from_DSS", locale)}
-                      </a>
-                    </li>
-                    <li><a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST)}>{localize("CSR.create_request", locale)}</a></li>
-                    <li>
-                      <a onClick={() => this.handleShowModalByType(MODAL_CERTIFICATE_REQUEST_CA)}>
-                        {localize("Certificate.cert_get_through_ca", locale)}
-                      </a>
-                    </li>
-                  </ul>
-                  <input type="file" id="choose-cert" value="" onChange={(event: any) => {
-                    this.handleCertificateImport(event.target.files);
-                  }} />
-                </div>
               </div>
             </div>
             <div className={"collection " + VIEW}>
