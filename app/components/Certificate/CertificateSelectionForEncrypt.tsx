@@ -316,13 +316,6 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
     const { changeSearchValue } = this.props;
     changeSearchValue(ev.target.value);
   }
-
-  certImport = () => {
-    const CLICK_EVENT = document.createEvent("MouseEvents");
-
-    CLICK_EVENT.initEvent("click", true, true);
-    document.querySelector("#choose-cert").dispatchEvent(CLICK_EVENT);
-  }
 }
 
 export default connect((state) => {
