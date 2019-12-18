@@ -49,8 +49,15 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
         <div className="row">
           <div className="row nobottom">
-            {LOCATION_MAIN === pathname || LOCATION_DOCUMENTS === pathname ? < div className="side-nav-rectangle" /> : null}
+            {LOCATION_MAIN === pathname ? < div className="side-nav-rectangle" /> : null}
             <Link id="document_stores" to={LOCATION_MAIN} data-activates="dropdown-documents-stores" data-hover="hover" style={{ padding: "0 10px" }}>
+              <i className="material-icons sidevan sign_and_encrypt"></i>
+            </Link>
+          </div>
+
+          <div className="row nobottom">
+            {LOCATION_DOCUMENTS === pathname ? < div className="side-nav-rectangle" /> : null}
+            <Link id="document_stores" to={LOCATION_DOCUMENTS} data-activates="dropdown-documents-stores" data-hover="hover" style={{ padding: "0 10px" }}>
               <i className="material-icons sidevan document"></i>
             </Link>
           </div>
@@ -102,7 +109,6 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
           </div>
         </div>
         {this.getCertStoresMenu()}
-        {this.getDocumentsStoresMenu()}
         {this.getAboutMenu()}
       </React.Fragment>
     );
@@ -184,46 +190,6 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     } else {
       return null;
     }
-  }
-
-  getDocumentsStoresMenu = () => {
-    const { localize, locale } = this.context;
-
-    return (
-      <div>
-        <ul id="dropdown-documents-stores" className="dropdown-content" style={{ minHeight: "120px" }}>
-          <li>
-            <div className="center-align">
-              <a style={{ fontWeight: "bold", color: "#bf3817" }}>ДОКУМЕНТЫ</a>
-            </div>
-          </li>
-          <li onClick={() => $("#document_stores").dropdown("close")}>
-            <Link to={LOCATION_MAIN} style={{ height: "33px", padding: "0px" }}>
-              <div className="row nobottom valign-wrapper">
-                <div className="col" style={{ width: "36px" }}>
-                  <i className="material-icons left sign_operation" />
-                </div>
-                <div className="col">
-                  {localize("SignAndEncrypt.sign_and_encrypt", locale)}
-                </div>
-              </div>
-            </Link>
-          </li>
-          <li onClick={() => $("#document_stores").dropdown("close")}>
-            <Link to={LOCATION_DOCUMENTS} style={{ height: "33px", padding: "0px" }}>
-              <div className="row nobottom valign-wrapper">
-                <div className="col" style={{ width: "36px" }}>
-                  <i className="material-icons left folder" />
-                </div>
-                <div className="col">
-                  {localize("Documents.documents", locale)}
-                </div>
-              </div>
-            </Link>
-          </li>
-        </ul>
-      </div>
-    );
   }
 
   getAboutMenu = () => {

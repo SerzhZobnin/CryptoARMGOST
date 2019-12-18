@@ -747,17 +747,21 @@ i.material-icons.sidevan.address_book {
   background: url(./resources/image/sidemenu/address_book.svg);
 }
 
-  i.material-icons.sidevan.exit{
-    background: url(./resources/image/sidemenu/exit.svg);
-  }
+i.material-icons.sidevan.exit{
+  background: url(./resources/image/sidemenu/exit.svg);
+}
 
-  i.material-icons.sidevan.document {
-    background: url(./resources/image/sidemenu/documents.svg);
-  }
+i.material-icons.sidevan.document {
+  background: url(./resources/image/sidemenu/documents.svg);
+}
 
-  i.material-icons.sidevan.dss {
-    background: url(./resources/image/sidemenu/dss.svg);
-  }
+i.material-icons.sidevan.sign_and_encrypt {
+  background: url(./resources/image/sidemenu/sign_and_encrypt.svg);
+}
+
+i.material-icons.sidevan.dss {
+  background: url(./resources/image/sidemenu/dss.svg);
+}
 
 /*-------------------------------Стили списка файлов------------------*/
 .add-file-item {
@@ -1243,6 +1247,10 @@ i.material-icons.left.license {
 
 i.material-icons.left.sign_operation {
   background: url(./resources/image/sidemenu/sign_operation.svg);
+}
+
+i.material-icons.left.add_folder {
+  background: url(./resources/image/sidemenu/add_folder.svg);
 }
 
 i.material-icons.left.ca {
