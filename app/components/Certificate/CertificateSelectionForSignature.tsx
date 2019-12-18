@@ -847,7 +847,10 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
                         {
                           certificates.size < 1 ?
                             <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
-                            <CertificateList activeCert={this.handleActiveCert} operation="sign" />
+                            <CertificateList
+                              selectedCert={this.state.certificate}
+                              activeCert={this.handleActiveCert}
+                              operation="sign" />
                         }
                       </div>
                     </div>
@@ -959,7 +962,7 @@ export default connect((state) => {
     searchValue: state.filters.searchValue,
   };
 }, {
-    changeSearchValue, loadAllCertificates, loadAllContainers,
-    removeAllCertificates, removeAllContainers, resetCloudCSP,
-    selectSignerCertificate,
-  })(CertificateSelectionForSignature);
+  changeSearchValue, loadAllCertificates, loadAllContainers,
+  removeAllCertificates, removeAllContainers, resetCloudCSP,
+  selectSignerCertificate,
+})(CertificateSelectionForSignature);

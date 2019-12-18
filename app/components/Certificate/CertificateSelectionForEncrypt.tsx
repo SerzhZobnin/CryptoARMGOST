@@ -843,7 +843,9 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
                         {
                           certificates.size < 1 ?
                             <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
-                            <CertificateList activeCert={this.handleAddRecipient} operation="encrypt" />
+                            <CertificateList
+                              activeCert={this.handleAddRecipient}
+                              operation="encrypt" />
                         }
                       </div>
                     </div>
@@ -1021,7 +1023,7 @@ export default connect((state) => {
     searchValue: state.filters.searchValue,
   };
 }, {
-    addRecipientCertificate, changeSearchValue, deleteRecipient,
-    loadAllCertificates, loadAllContainers, removeAllCertificates,
-    removeAllContainers, resetCloudCSP, selectSignerCertificate,
-  })(CertificateSelectionForEncrypt);
+  addRecipientCertificate, changeSearchValue, deleteRecipient,
+  loadAllCertificates, loadAllContainers, removeAllCertificates,
+  removeAllContainers, resetCloudCSP, selectSignerCertificate,
+})(CertificateSelectionForEncrypt);
