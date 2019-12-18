@@ -315,7 +315,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
         }
       } catch (e) {
         //
-       }
+      }
     });
 
     if (!foundDocuments.length) {
