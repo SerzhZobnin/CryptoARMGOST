@@ -1,14 +1,10 @@
-import { execFile } from "child_process";
-import * as os from "os";
 import PropTypes from "prop-types";
 import React from "react";
 import Media from "react-media";
 import { connect } from "react-redux";
 import {
-  loadAllCertificates, loadAllContainers, removeAllCertificates,
-  removeAllContainers, selectSignerCertificate,
+  loadAllCertificates, removeAllCertificates, selectSignerCertificate,
 } from "../../AC";
-import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
 import { filteredCertificatesSelector } from "../../selectors";
 import BlockNotElements from "../BlockNotElements";
@@ -31,16 +27,6 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
       activeCertInfoTab: true,
       certificate: null,
       crl: null,
-      importingCertificate: null,
-      importingCertificatePath: null,
-      password: "",
-      showDialogInstallRootCertificate: false,
-      showModalCertificateRequest: false,
-      showModalCloudCSP: false,
-      showModalDeleteCRL: false,
-      showModalDeleteCertifiacte: false,
-      showModalExportCRL: false,
-      showModalExportCertifiacte: false,
     });
   }
 
@@ -49,9 +35,8 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { cloudCSPSettings, cloudCSPState, isLoading } = this.props;
+    const { isLoading } = this.props;
     const { certificate } = this.state;
-    const { localize, locale } = this.context;
 
     if ((!prevState.certificate && certificate)) {
       $(".nav-small-btn").dropdown();
@@ -253,15 +238,11 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
 export default connect((state) => {
   return {
     certificates: filteredCertificatesSelector(state, { operation: "sign" }),
-    cloudCSPSettings: state.settings.getIn(["entities", state.settings.default]).cloudCSP,
-    cloudCSPState: state.cloudCSP,
-    containersLoading: state.containers.loading,
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
     searchValue: state.filters.searchValue,
   };
 }, {
-  changeSearchValue, loadAllCertificates, loadAllContainers,
-  removeAllCertificates, removeAllContainers, resetCloudCSP,
-  selectSignerCertificate,
+  changeSearchValue, loadAllCertificates,
+  removeAllCertificates, selectSignerCertificate,
 })(CertificateSelectionForSignature);
