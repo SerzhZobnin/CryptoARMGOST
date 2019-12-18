@@ -1115,6 +1115,11 @@ class AddressBookWindow extends React.Component<any, any> {
                   <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
                 </a>
               </div>
+              <div>
+                <input type="file" id="choose-cert" value="" onChange={(event: any) => {
+                  this.handleCertificateImport(event.target.files);
+                }} />
+              </div>
             </div>
             <div className={"collection " + VIEW}>
               <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
