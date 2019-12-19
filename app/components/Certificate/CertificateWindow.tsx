@@ -977,7 +977,8 @@ class CertWindow extends React.Component<any, any> {
       <Modal
         isOpen={showModalDeleteCertifiacte}
         header={localize("Certificate.delete_certificate", locale)}
-        onClose={() => this.handleCloseModalByType(MODAL_DELETE_CERTIFICATE)}>
+        onClose={() => this.handleCloseModalByType(MODAL_DELETE_CERTIFICATE)}
+        style={{width: "600px"}}>
 
         <CertificateDelete
           certificate={certificate}
@@ -1000,7 +1001,8 @@ class CertWindow extends React.Component<any, any> {
       <Modal
         isOpen={showModalExportCertifiacte}
         header={localize("Export.export_certificate", locale)}
-        onClose={() => this.handleCloseModalByType(MODAL_EXPORT_CERTIFICATE)}>
+        onClose={() => this.handleCloseModalByType(MODAL_EXPORT_CERTIFICATE)}
+        style={{width: "600px"}}>
 
         <CertificateExport
           certificate={certificate}
@@ -1023,7 +1025,8 @@ class CertWindow extends React.Component<any, any> {
       <Modal
         isOpen={showModalExportCRL}
         header={localize("CRL.export_crl", locale)}
-        onClose={() => this.handleCloseModalByType(MODAL_EXPORT_CRL)}>
+        onClose={() => this.handleCloseModalByType(MODAL_EXPORT_CRL)}
+        style={{width: "600px"}}>
 
         <CRLExport
           crl={crl}
@@ -1046,7 +1049,8 @@ class CertWindow extends React.Component<any, any> {
       <Modal
         isOpen={showModalDeleteCRL}
         header={localize("CRL.delete_crl", locale)}
-        onClose={() => this.handleCloseModalByType(MODAL_DELETE_CRL)}>
+        onClose={() => this.handleCloseModalByType(MODAL_DELETE_CRL)}
+        style={{width: "600px"}}>
 
         <CRLDelete
           crl={crl}
@@ -1068,7 +1072,8 @@ class CertWindow extends React.Component<any, any> {
       <Modal
         isOpen={showModalExportRequestCA}
         header={localize("Request.export_request", locale)}
-        onClose={() => this.handleCloseModalByType(MODAL_EXPORT_REQUEST_CA)}>
+        onClose={() => this.handleCloseModalByType(MODAL_EXPORT_REQUEST_CA)}
+        style={{width: "600px"}}>
 
         <RequestCAExport
           requestCA={requestCA}
@@ -1091,7 +1096,8 @@ class CertWindow extends React.Component<any, any> {
       <Modal
         isOpen={showModalDeleteRequestCA}
         header={localize("Request.delete_request", locale)}
-        onClose={() => this.handleCloseModalByType(MODAL_DELETE_REQUEST_CA)}>
+        onClose={() => this.handleCloseModalByType(MODAL_DELETE_REQUEST_CA)}
+        style={{width: "600px"}}>
 
         <RequestCADelete
           deleteRequestCA={this.handleDeleteRequestCA}

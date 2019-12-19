@@ -53,16 +53,18 @@ class CertificateDelete extends React.Component<ICertificateDeleteProps, ICertif
 
     const body = container ?
       (
-        <div className="input-field col s12">
-          <input
-            name="groupDelCont"
-            type="checkbox"
-            id="delCont"
-            className="checkbox-red"
-            checked={deleteContainer}
-            onClick={this.toggleDeleteContainer}
-          />
-          <label htmlFor="delCont">{localize("Containers.delete_container", locale)}</label>
+        <div className="row">
+          <div className="input-field col s12">
+            <input
+              name="groupDelCont"
+              type="checkbox"
+              id="delCont"
+              className="checkbox-red"
+              checked={deleteContainer}
+              onClick={this.toggleDeleteContainer}
+            />
+            <label htmlFor="delCont">{localize("Containers.delete_container", locale)}</label>
+          </div>
         </div>
       ) :
       (

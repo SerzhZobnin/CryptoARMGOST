@@ -424,7 +424,8 @@ class AddressBookWindow extends React.Component<any, any> {
       <Modal
         isOpen={showModalDeleteCertifiacte}
         header={localize("Certificate.delete_certificate", locale)}
-        onClose={() => this.handleCloseModalByType(MODAL_DELETE_CERTIFICATE)}>
+        onClose={() => this.handleCloseModalByType(MODAL_DELETE_CERTIFICATE)}
+        style={{width: "600px"}}>
 
         <CertificateDelete
           certificate={certificate}
@@ -447,7 +448,8 @@ class AddressBookWindow extends React.Component<any, any> {
       <Modal
         isOpen={showModalExportCertifiacte}
         header={localize("Export.export_certificate", locale)}
-        onClose={() => this.handleCloseModalByType(MODAL_EXPORT_CERTIFICATE)}>
+        onClose={() => this.handleCloseModalByType(MODAL_EXPORT_CERTIFICATE)}
+        style={{width: "600px"}}>
 
         <CertificateExport
           certificate={certificate}
