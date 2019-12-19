@@ -7,12 +7,11 @@ import { loadAllCertificates, loadAllContainers, removeAllCertificates, removeAl
 import { changeSearchValue } from "../../AC/searchActions";
 import {
   ADDRESS_BOOK, DEFAULT_CSR_PATH, MODAL_ADD_CERTIFICATE,
-  MODAL_DELETE_CERTIFICATE, MODAL_DELETE_CRL, MODAL_DELETE_REQUEST_CA,
-  MODAL_EXPORT_CERTIFICATE, MODAL_EXPORT_CRL, MODAL_EXPORT_REQUEST_CA,
+  MODAL_DELETE_CERTIFICATE,
+  MODAL_EXPORT_CERTIFICATE,
   PROVIDER_CRYPTOPRO, REQUEST, ROOT, USER_NAME,
 } from "../../constants";
 import { filteredCertificatesSelector } from "../../selectors";
-import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
 import { fileCoding } from "../../utils";
 import logger from "../../winstonLogger";
 import BlockNotElements from "../BlockNotElements";
@@ -23,12 +22,8 @@ import CertificateExport from "../Certificate/CertificateExport";
 import CertificateInfo from "../Certificate/CertificateInfo";
 import CertificateInfoTabs from "../Certificate/CertificateInfoTabs";
 import CertificateList from "../Certificate/CertificateList";
-import CRLInfo from "../CRL/CRLInfo";
 import Modal from "../Modal";
 import ProgressBars from "../ProgressBars";
-import RequestCAInfo from "../Request/RequestCAInfo";
-
-const OS_TYPE = os.type();
 
 class AddressBookWindow extends React.Component<any, any> {
   static contextTypes = {
@@ -42,14 +37,9 @@ class AddressBookWindow extends React.Component<any, any> {
     this.state = ({
       activeCertInfoTab: true,
       certificate: null,
-      crl: null,
       importingCertificate: null,
-      importingCertificatePath: null,
-      password: "",
-      requestCA: null,
       showModalAddCertificate: false,
       showModalDeleteCertifiacte: false,
-      showModalExportCRL: false,
       showModalExportCertifiacte: false,
     });
   }
@@ -60,9 +50,9 @@ class AddressBookWindow extends React.Component<any, any> {
 
   componentDidUpdate(prevProps, prevState) {
     const { isLoading } = this.props;
-    const { certificate, crl } = this.state;
+    const { certificate } = this.state;
 
-    if ((!prevState.certificate && certificate) || (!prevState.crl && crl)) {
+    if ((!prevState.certificate && certificate)) {
       $(".nav-small-btn").dropdown();
     }
 
@@ -72,15 +62,15 @@ class AddressBookWindow extends React.Component<any, any> {
   }
 
   render() {
-    const { certificates, crls, isLoading, isLoadingFromDSS, searchValue } = this.props;
-    const { certificate, crl, requestCA } = this.state;
+    const { certificates, isLoading, searchValue } = this.props;
+    const { certificate } = this.state;
     const { localize, locale } = this.context;
 
-    if (isLoading || isLoadingFromDSS) {
+    if (isLoading) {
       return <ProgressBars />;
     }
 
-    const VIEW = certificates.size < 1 && crls.length < 1 ? "not-active" : "";
+    const VIEW = certificates.size < 1 ? "not-active" : "";
 
     return (
       <div className="content-noflex">
@@ -114,13 +104,11 @@ class AddressBookWindow extends React.Component<any, any> {
             <div className={"collection " + VIEW}>
               <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
                 {
-                  certificates.size < 1 && crls.length < 1 ?
+                  certificates.size < 1 ?
                     <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
                     <CertificateList
                       selectedCert={this.state.certificate}
                       activeCert={this.handleActiveCert}
-                      activeCrl={this.handleActiveCRL}
-                      activeRequestCA={this.handleActiveRequestCA}
                       operation="address_book" />
                 }
               </div>
@@ -131,16 +119,16 @@ class AddressBookWindow extends React.Component<any, any> {
             <div className="row halfbottom" />
             <div className="row">
               <div style={{ height: "calc(100vh - 110px)" }}>
-                {this.getCertificateOrCRLInfo()}
+                {this.getCertificateInfo()}
               </div>
             </div>
             {
-              certificate || crl ?
+              certificate ?
                 <div className="row fixed-bottom-rightcolumn" style={{ bottom: "20px" }}>
                   <div className="col s12">
                     <hr />
                   </div>
-                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => certificate ? this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE) : this.handleShowModalByType(MODAL_EXPORT_CRL)}>
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE)}>
                     <div className="col s12 svg_icon">
                       <a data-position="bottom">
                         <i className="material-icons certificate export" />
@@ -149,7 +137,7 @@ class AddressBookWindow extends React.Component<any, any> {
                     <div className="col s12 svg_icon_text">{localize("Certificate.cert_export", locale)}</div>
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => certificate ? this.handleShowModalByType(MODAL_DELETE_CERTIFICATE) : this.handleShowModalByType(MODAL_DELETE_CRL)}>
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() =>this.handleShowModalByType(MODAL_DELETE_CERTIFICATE)}>
                     <div className="col s12 svg_icon">
                       <a data-position="bottom">
                         <i className="material-icons certificate remove" />
@@ -173,34 +161,6 @@ class AddressBookWindow extends React.Component<any, any> {
                 </div>
                 : null
             }
-
-            {
-              requestCA ?
-                <div className="row fixed-bottom-rightcolumn" style={{ bottom: "20px" }}>
-                  <div className="col s12">
-                    <hr />
-                  </div>
-                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.handleShowModalByType(MODAL_EXPORT_REQUEST_CA)}>
-                    <div className="col s12 svg_icon">
-                      <a data-position="bottom">
-                        <i className="material-icons ca export_request" />
-                      </a>
-                    </div>
-                    <div className="col s12 svg_icon_text">{localize("Certificate.cert_export", locale)}</div>
-                  </div>
-
-                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => this.handleShowModalByType(MODAL_DELETE_REQUEST_CA)}>
-                    <div className="col s12 svg_icon">
-                      <a data-position="bottom">
-                        <i className="material-icons certificate remove" />
-                      </a>
-                    </div>
-                    <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
-                  </div>
-                </div>
-                : null
-            }
-
           </div>
           {this.showModalAddCertificate()}
           {this.showModalDeleteCertificate()}
@@ -227,12 +187,6 @@ class AddressBookWindow extends React.Component<any, any> {
       case MODAL_EXPORT_CERTIFICATE:
         this.setState({ showModalExportCertifiacte: true });
         break;
-      case MODAL_EXPORT_CRL:
-        this.setState({ showModalExportCRL: true });
-        break;
-      case MODAL_DELETE_CRL:
-        this.setState({ showModalDeleteCRL: true });
-        break;
       default:
         return;
     }
@@ -249,12 +203,6 @@ class AddressBookWindow extends React.Component<any, any> {
       case MODAL_EXPORT_CERTIFICATE:
         this.setState({ showModalExportCertifiacte: false });
         break;
-      case MODAL_EXPORT_CRL:
-        this.setState({ showModalExportCRL: false });
-        break;
-      case MODAL_DELETE_CRL:
-        this.setState({ showModalDeleteCRL: false });
-        break;
       default:
         return;
     }
@@ -262,15 +210,9 @@ class AddressBookWindow extends React.Component<any, any> {
 
   handleCloseModals = () => {
     this.setState({
-      showModalDeleteCRL: false,
       showModalDeleteCertifiacte: false,
-      showModalExportCRL: false,
       showModalExportCertifiacte: false,
     });
-  }
-
-  handlePasswordChange = (password: string) => {
-    this.setState({ password });
   }
 
   handleChangeActiveTab = (certInfoTab: boolean) => {
@@ -280,22 +222,14 @@ class AddressBookWindow extends React.Component<any, any> {
   }
 
   handleActiveCert = (certificate: any) => {
-    this.setState({ certificate, crl: null, requestCA: null });
-  }
-
-  handleActiveCRL = (crl: any) => {
-    this.setState({ certificate: null, requestCA: null, crl });
-  }
-
-  handleActiveRequestCA = (requestCA: any) => {
-    this.setState({ certificate: null, crl: null, requestCA });
+    this.setState({ certificate });
   }
 
   handleReloadCertificates = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { isLoading, loadAllCertificates, removeAllCertificates } = this.props;
 
-    this.setState({ certificate: null, crl: null, requestCA: null });
+    this.setState({ certificate: null});
 
     removeAllCertificates();
 
@@ -370,16 +304,12 @@ class AddressBookWindow extends React.Component<any, any> {
     }
   }
 
-  getCertificateOrCRLInfo() {
-    const { certificate, crl, requestCA } = this.state;
+  getCertificateInfo() {
+    const { certificate } = this.state;
     const { localize, locale } = this.context;
 
     if (certificate) {
       return this.getCertificateInfoBody();
-    } else if (crl) {
-      return this.getCRLInfoBody();
-    } else if (requestCA) {
-      return this.getRequestCAInfoBody();
     } else {
       return <BlockNotElements name={"active"} title={localize("Certificate.cert_not_select", locale)} />;
     }
@@ -439,28 +369,8 @@ class AddressBookWindow extends React.Component<any, any> {
     );
   }
 
-  getCRLInfoBody() {
-    const { crl } = this.state;
-
-    return (
-      <div className="add-certs">
-        <CRLInfo crl={crl} />
-      </div>
-    );
-  }
-
-  getRequestCAInfoBody() {
-    const { requestCA } = this.state;
-
-    return (
-      <div className="add-certs">
-        <RequestCAInfo requestCA={requestCA} handleReloadCertificates={this.handleReloadCertificates} />
-      </div>
-    );
-  }
-
   getTitle() {
-    const { certificate, crl } = this.state;
+    const { certificate } = this.state;
     const { localize, locale } = this.context;
 
     let title: any = null;
@@ -470,11 +380,6 @@ class AddressBookWindow extends React.Component<any, any> {
         <div className="collection-title cert-title">{certificate.subjectFriendlyName}</div>
         <div className="collection-info cert-title">{certificate.issuerFriendlyName}</div>
       </div>;
-    } else if (crl) {
-      title = (
-        <div className="cert-title-main">
-          <div className="collection-title cert-title">{crl.issuerFriendlyName}</div>
-        </div>);
     } else {
       title = <span>{localize("Certificate.cert_info", locale)}</span>;
     }
@@ -575,12 +480,9 @@ export default connect((state) => {
   return {
     certificates: filteredCertificatesSelector(state, { operation: "address_book" }),
     containersLoading: state.containers.loading,
-    crls: filteredCrlsSelector(state),
     isLoading: state.certificates.loading,
-    isLoadingFromDSS: state.cloudCSP.loading,
     location: state.router.location,
     searchValue: state.filters.searchValue,
-    servicesMap: state.services.entities,
   };
 }, {
   changeSearchValue, loadAllCertificates, loadAllContainers,
