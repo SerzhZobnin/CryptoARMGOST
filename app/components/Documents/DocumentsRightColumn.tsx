@@ -163,7 +163,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         <div style={{ height: "calc(100vh - 150px)" }}>
           <div className="add-certs">
             <div className="col s10">
-              <div className="primary-text">{localize("Sign.signer_cert", locale)}</div>
+              <div className="subtitle">{localize("Sign.signer_cert", locale)}</div>
               <hr />
             </div>
             <div className="col s2">
@@ -195,7 +195,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
             <div className="row" />
 
             <div className="col s10">
-              <div className="primary-text">Сертификаты шифрования:</div>
+              <div className="subtitle">Сертификаты шифрования:</div>
               <hr />
             </div>
             <div className="col s2">
