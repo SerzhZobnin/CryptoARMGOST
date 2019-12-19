@@ -417,6 +417,8 @@ class CertWindow extends React.Component<any, any> {
 
   handleAddCertToStore = (store: string, path: string) => {
     const { localize, locale } = this.context;
+    const { removeAllCertificates, isLoading, loadAllCertificates } = this.props;
+
     const format: trusted.DataFormat = fileCoding(path);
 
     let certificate: trusted.pki.Certificate;
@@ -454,6 +456,12 @@ class CertWindow extends React.Component<any, any> {
             },
             userName: USER_NAME,
           });
+
+          removeAllCertificates();
+
+          if (!isLoading) {
+            loadAllCertificates();
+          }
         } catch (err) {
           Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
 
@@ -491,6 +499,12 @@ class CertWindow extends React.Component<any, any> {
           },
           userName: USER_NAME,
         });
+
+        removeAllCertificates();
+
+        if (!isLoading) {
+          loadAllCertificates();
+        }
       }
     } else if (store === ADDRESS_BOOK) {
       window.PKISTORE.importCertificate(certificate, PROVIDER_CRYPTOPRO, (err: Error) => {
@@ -512,6 +526,12 @@ class CertWindow extends React.Component<any, any> {
         },
         userName: USER_NAME,
       });
+
+      removeAllCertificates();
+
+      if (!isLoading) {
+        loadAllCertificates();
+      }
     } else {
       this.handleShowDialogInstallRootCertificate(path, certificate);
     }
