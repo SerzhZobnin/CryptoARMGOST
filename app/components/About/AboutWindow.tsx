@@ -2,11 +2,15 @@ import PropTypes from "prop-types";
 import React from "react";
 import LicenseCSPSetup from "../License/LicenseCSPSetup";
 import LicenseInfo from "../License/LicenseInfo";
+import LicenseOCSPSetup from "../License/LicenseOCSPSetup";
 import LicenseSetupModal from "../License/LicenseSetupModal";
+import LicenseTSPSetup from "../License/LicenseTSPSetup";
 import Modal from "../Modal";
 
 interface ILicenseInfoCSPState {
   showModalLicenseCSPSetup: boolean;
+  showModalLicenseTSPSetup: boolean;
+  showModalLicenseOCSPSetup: boolean;
   showModalLicenseSetup: boolean;
 }
 
@@ -21,7 +25,9 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
 
     this.state = ({
       showModalLicenseCSPSetup: false,
+      showModalLicenseOCSPSetup: false,
       showModalLicenseSetup: false,
+      showModalLicenseTSPSetup: false,
     });
   }
 
@@ -142,9 +148,57 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
                 </div>
               </div>
             </div>
+
+            <div className="col s12">
+              <div className="primary-text">Управление лицензией КриптоПро TSP</div>
+              <hr />
+              <div className="row" >
+                <div className="col s6 waves-effect waves-cryptoarm hover_outline" onClick={this.showModalLicenseTSPSetup}>
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom">
+                      <i className="material-icons license install" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("License.enter_key", locale)}</div>
+                </div>
+                <div className="col s6 waves-effect waves-cryptoarm hover_outline" onClick={() => this.gotoLink(localize("License.link_buy_license_tsp", locale))}>
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom">
+                      <i className="material-icons license buy" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("License.buy_license", locale)}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col s12">
+              <div className="primary-text">Управление лицензией КриптоПро OCSP</div>
+              <hr />
+              <div className="row" >
+                <div className="col s6 waves-effect waves-cryptoarm hover_outline" onClick={this.showModalLicenseOCSPSetup}>
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom">
+                      <i className="material-icons license install" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("License.enter_key", locale)}</div>
+                </div>
+                <div className="col s6 waves-effect waves-cryptoarm hover_outline" onClick={() => this.gotoLink(localize("License.link_buy_license_ocsp", locale))}>
+                  <div className="col s12 svg_icon">
+                    <a data-position="bottom">
+                      <i className="material-icons license buy" />
+                    </a>
+                  </div>
+                  <div className="col s12 svg_icon_text">{localize("License.buy_license", locale)}</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         {this.getModalLicenseCSPSetup()}
+        {this.getModalLicenseTSPSetup()}
+        {this.getModalLicenseOCSPSetup()}
         {this.getModalLicenseSetup()}
       </div>
     );
@@ -202,10 +256,58 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
           this.closeModalLicenseCSPSetup();
           this.forceUpdate();
         }}
-        style={{ height: "200px", width: "600px" }}
+        style={{ height: "210px", width: "600px" }}
       >
 
         <LicenseCSPSetup onCancel={this.closeModalLicenseCSPSetup} />
+      </Modal>
+    );
+  }
+
+  getModalLicenseTSPSetup = () => {
+    const { localize, locale } = this.context;
+    const { showModalLicenseTSPSetup } = this.state;
+
+    if (!showModalLicenseTSPSetup) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalLicenseTSPSetup}
+        header={localize("License.enter_key_tsp", locale)}
+        onClose={() => {
+          this.closeModalLicenseTSPSetup();
+          this.forceUpdate();
+        }}
+        style={{ height: "210px", width: "600px" }}
+      >
+
+        <LicenseTSPSetup onCancel={this.closeModalLicenseTSPSetup} />
+      </Modal>
+    );
+  }
+
+  getModalLicenseOCSPSetup = () => {
+    const { localize, locale } = this.context;
+    const { showModalLicenseOCSPSetup } = this.state;
+
+    if (!showModalLicenseOCSPSetup) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalLicenseOCSPSetup}
+        header={localize("License.enter_key_ocsp", locale)}
+        onClose={() => {
+          this.closeModalLicenseOCSPSetup();
+          this.forceUpdate();
+        }}
+        style={{ height: "210px", width: "600px" }}
+      >
+
+        <LicenseOCSPSetup onCancel={this.closeModalLicenseOCSPSetup} />
       </Modal>
     );
   }
@@ -240,6 +342,22 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
 
   closeModalLicenseCSPSetup = () => {
     this.setState({ showModalLicenseCSPSetup: false });
+  }
+
+  showModalLicenseTSPSetup = () => {
+    this.setState({ showModalLicenseTSPSetup: true });
+  }
+
+  closeModalLicenseTSPSetup = () => {
+    this.setState({ showModalLicenseTSPSetup: false });
+  }
+
+  showModalLicenseOCSPSetup = () => {
+    this.setState({ showModalLicenseOCSPSetup: true });
+  }
+
+  closeModalLicenseOCSPSetup = () => {
+    this.setState({ showModalLicenseOCSPSetup: false });
   }
 
   showModalLicenseSetup = () => {
