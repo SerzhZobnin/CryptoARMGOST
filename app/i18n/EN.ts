@@ -204,6 +204,8 @@ export default {
     cert_export_ok: "The certificate is successfully exported",
     cert_get_through_ca: "Get a certificate through the CA service",
     cert_import: "Import the certificate",
+    cert_import_auto: "Import certificate in store that auto choosed",
+    cert_import_current: "Import certificate in current store",
     cert_import_failed: "The certificate import failed",
     cert_import_from_file: "Import from file",
     cert_import_ok: "The certificate is successfully imported",
@@ -257,6 +259,14 @@ export default {
     subject: "Certificate owner",
     thumbprint: "Thumbprint",
     version: "Version",
+  },
+  CertificateStore: {
+    AddressBook: "Address Book",
+    CA: "Certificate Authority",
+    MY: "MY",
+    ROOT: "Root",
+    Request: "Request",
+    TRUST: "Trusted",
   },
   CloudCSP: {
     auth: "Authorization server",

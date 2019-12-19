@@ -9,11 +9,12 @@ import { deleteRequestCA } from "../../AC/caActions";
 import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
 import {
-  ADDRESS_BOOK, CA, DEFAULT_CSR_PATH, MODAL_ADD_CERTIFICATE,
-  MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA,
-  MODAL_CLOUD_CSP, MODAL_DELETE_CERTIFICATE, MODAL_DELETE_CRL, MODAL_DELETE_REQUEST_CA,
-  MODAL_EXPORT_CERTIFICATE, MODAL_EXPORT_CRL, MODAL_EXPORT_REQUEST_CA,
-  PROVIDER_CRYPTOPRO, REQUEST, ROOT, USER_NAME,
+  ADDRESS_BOOK, CA, CERTIFICATE, CRL,
+  DEFAULT_CSR_PATH, MODAL_ADD_CERTIFICATE, MODAL_BEST_STORE,
+  MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA, MODAL_CLOUD_CSP,
+  MODAL_DELETE_CERTIFICATE, MODAL_DELETE_CRL, MODAL_DELETE_REQUEST_CA, MODAL_EXPORT_CERTIFICATE,
+  MODAL_EXPORT_CRL, MODAL_EXPORT_REQUEST_CA, MY, PFX, PROVIDER_CRYPTOPRO, REQUEST, ROOT,
+  USER_NAME,
 } from "../../constants";
 import { filteredCertificatesSelector } from "../../selectors";
 import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
@@ -42,6 +43,7 @@ import CertificateExport from "./CertificateExport";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
+import BestStore from "./BestStore";
 
 const OS_TYPE = os.type();
 
@@ -64,6 +66,7 @@ class CertWindow extends React.Component<any, any> {
       requestCA: null,
       showDialogInstallRootCertificate: false,
       showModalAddCertificate: false,
+      showModalBestStore: false,
       showModalCertificateImportDSS: false,
       showModalCertificateRequest: false,
       showModalCertificateRequestCA: false,
@@ -116,6 +119,9 @@ class CertWindow extends React.Component<any, any> {
       case MODAL_CLOUD_CSP:
         this.setState({ showModalCloudCSP: true });
         break;
+      case MODAL_BEST_STORE:
+        this.setState({ showModalBestStore: true });
+        break;
       default:
         return;
     }
@@ -156,6 +162,9 @@ class CertWindow extends React.Component<any, any> {
       case MODAL_CLOUD_CSP:
         this.setState({ showModalCloudCSP: false });
         break;
+      case MODAL_BEST_STORE:
+        this.setState({ showModalBestStore: false });
+        break;
       default:
         return;
     }
@@ -171,6 +180,7 @@ class CertWindow extends React.Component<any, any> {
       showModalDeleteCertifiacte: false,
       showModalExportCRL: false,
       showModalExportCertifiacte: false,
+      showModalBestStore: false,
     });
   }
 
@@ -241,31 +251,72 @@ class CertWindow extends React.Component<any, any> {
     this.handleCloseModals();
   }
 
-  handleCertificateImport = (event: any) => {
+  getFileType = (filePath: string) => {
+    let pkiItem;
+    const format: trusted.DataFormat = fileCoding(filePath);
+
+    try {
+      pkiItem = trusted.pki.Certificate.load(filePath, format);
+      return CERTIFICATE;
+    } catch (e) {
+      try {
+        pkiItem = trusted.pki.CRL.load(filePath, format);
+        return CRL;
+      } catch (e) {
+        try {
+          pkiItem = trusted.pki.PKCS12.load(filePath);
+          return PFX;
+        } catch (e) {
+          //
+        }
+      }
+
+      return;
+    }
+  }
+
+  handleImportPkiItem = (event: any) => {
+    const { localize, locale } = this.context;
+
+    const path = event[0].path;
+
+    this.setState({ pathOfImportedPkiItem: path });
+
+    const itemType = this.getFileType(path);
+
+    switch (itemType) {
+      case CERTIFICATE:
+        this.handleCertificateImport(path);
+        return;
+
+      case CRL:
+        const format: trusted.DataFormat = fileCoding(path);
+        const crl = trusted.pki.CRL.load(path, format);
+        this.crlImport(crl, path);
+        return;
+
+      case PFX:
+        this.p12Import(event);
+        return;
+      default:
+        $(".toast-cert_import_failed").remove();
+        Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_failed");
+    }
+  }
+
+  handleCertificateImport = (path: string, auto: boolean = false) => {
     const { localize, locale } = this.context;
     // tslint:disable-next-line:no-shadowed-variable
-    const { isLoading, loadAllCertificates, removeAllCertificates } = this.props;
-    const path = event[0].path;
+    const { isLoading, loadAllCertificates, location, removeAllCertificates } = this.props;
     const format: trusted.DataFormat = fileCoding(path);
     let container = "";
 
     let certificate: trusted.pki.Certificate;
-    let crl: trusted.pki.CRL;
     let providerType: string;
 
     try {
       certificate = trusted.pki.Certificate.load(path, format);
     } catch (e) {
-      try {
-        crl = trusted.pki.CRL.load(path, format);
-        this.crlImport(crl, path);
-        return;
-      } catch (e) {
-        //
-      }
-
-      this.p12Import(event);
-
       return;
     }
 
@@ -280,10 +331,60 @@ class CertWindow extends React.Component<any, any> {
       //
     }
 
+    let bestStore;
+
     if (container) {
-      try {
-        trusted.utils.Csp.installCertificateToContainer(certificate, container, 75);
-        trusted.utils.Csp.installCertificateFromContainer(container, 75, "Crypto-Pro GOST R 34.10-2001 Cryptographic Service Provider");
+      bestStore = MY;
+    } else if (!bCA) {
+      bestStore = ADDRESS_BOOK;
+    } else {
+      bestStore = selfSigned ? ROOT : CA;
+    }
+
+    this.setState({ bestStore });
+
+    if (bestStore === location.state.store || auto) {
+      if (container) {
+        try {
+          trusted.utils.Csp.installCertificateToContainer(certificate, container, 75);
+          trusted.utils.Csp.installCertificateFromContainer(container, 75, "Crypto-Pro GOST R 34.10-2001 Cryptographic Service Provider");
+
+          Materialize.toast(localize("Certificate.cert_import_ok", locale), 2000, "toast-cert_imported");
+
+          logger.log({
+            certificate: certificate.subjectName,
+            level: "info",
+            message: "",
+            operation: "Импорт сертификата",
+            operationObject: {
+              in: "CN=" + certificate.subjectFriendlyName,
+              out: "Null",
+            },
+            userName: USER_NAME,
+          });
+        } catch (err) {
+          Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
+
+          logger.log({
+            certificate: certificate.subjectName,
+            level: "error",
+            message: err.message ? err.message : err,
+            operation: "Импорт сертификата",
+            operationObject: {
+              in: "CN=" + certificate.subjectFriendlyName,
+              out: "Null",
+            },
+            userName: USER_NAME,
+          });
+
+          return;
+        }
+      } else if (!bCA) {
+        window.PKISTORE.importCertificate(certificate, providerType, (err: Error) => {
+          if (err) {
+            Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
+          }
+        }, ADDRESS_BOOK);
 
         Materialize.toast(localize("Certificate.cert_import_ok", locale), 2000, "toast-cert_imported");
 
@@ -298,13 +399,91 @@ class CertWindow extends React.Component<any, any> {
           },
           userName: USER_NAME,
         });
-      } catch (err) {
-        Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
+      }
+
+      if (selfSigned || bCA) {
+        this.handleShowDialogInstallRootCertificate(path, certificate);
+      } else {
+        removeAllCertificates();
+
+        if (!isLoading) {
+          loadAllCertificates();
+        }
+      }
+    } else {
+      this.handleShowModalByType(MODAL_BEST_STORE);
+    }
+  }
+
+  handleAddCertToStore = (store: string, path: string) => {
+    const { localize, locale } = this.context;
+    const format: trusted.DataFormat = fileCoding(path);
+
+    let certificate: trusted.pki.Certificate;
+
+    try {
+      certificate = trusted.pki.Certificate.load(path, format);
+    } catch (e) {
+      return;
+    }
+
+    if (store === MY) {
+      let container = "";
+
+      try {
+        container = trusted.utils.Csp.getContainerNameByCertificate(certificate);
+      } catch (e) {
+        //
+      }
+
+      if (container) {
+        try {
+          trusted.utils.Csp.installCertificateToContainer(certificate, container, 75);
+          trusted.utils.Csp.installCertificateFromContainer(container, 75, "Crypto-Pro GOST R 34.10-2001 Cryptographic Service Provider");
+
+          Materialize.toast(localize("Certificate.cert_import_ok", locale), 2000, "toast-cert_imported");
+
+          logger.log({
+            certificate: certificate.subjectName,
+            level: "info",
+            message: "",
+            operation: "Импорт сертификата",
+            operationObject: {
+              in: "CN=" + certificate.subjectFriendlyName,
+              out: "Null",
+            },
+            userName: USER_NAME,
+          });
+        } catch (err) {
+          Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
+
+          logger.log({
+            certificate: certificate.subjectName,
+            level: "error",
+            message: err.message ? err.message : err,
+            operation: "Импорт сертификата",
+            operationObject: {
+              in: "CN=" + certificate.subjectFriendlyName,
+              out: "Null",
+            },
+            userName: USER_NAME,
+          });
+
+          return;
+        }
+      } else {
+        window.PKISTORE.importCertificate(certificate, PROVIDER_CRYPTOPRO, (err: Error) => {
+          if (err) {
+            Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
+          }
+        }, store);
+
+        Materialize.toast(localize("Certificate.cert_import_ok", locale), 2000, "toast-cert_imported");
 
         logger.log({
           certificate: certificate.subjectName,
-          level: "error",
-          message: err.message ? err.message : err,
+          level: "info",
+          message: "",
           operation: "Импорт сертификата",
           operationObject: {
             in: "CN=" + certificate.subjectFriendlyName,
@@ -312,15 +491,13 @@ class CertWindow extends React.Component<any, any> {
           },
           userName: USER_NAME,
         });
-
-        return;
       }
-    } else if (!bCA) {
-      window.PKISTORE.importCertificate(certificate, providerType, (err: Error) => {
+    } else if (store === ADDRESS_BOOK) {
+      window.PKISTORE.importCertificate(certificate, PROVIDER_CRYPTOPRO, (err: Error) => {
         if (err) {
           Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
         }
-      }, ADDRESS_BOOK);
+      }, store);
 
       Materialize.toast(localize("Certificate.cert_import_ok", locale), 2000, "toast-cert_imported");
 
@@ -335,16 +512,8 @@ class CertWindow extends React.Component<any, any> {
         },
         userName: USER_NAME,
       });
-    }
-
-    if (selfSigned || bCA) {
-      this.handleShowDialogInstallRootCertificate(path, certificate);
     } else {
-      removeAllCertificates();
-
-      if (!isLoading) {
-        loadAllCertificates();
-      }
+      this.handleShowDialogInstallRootCertificate(path, certificate);
     }
   }
 
@@ -962,6 +1131,35 @@ class CertWindow extends React.Component<any, any> {
     );
   }
 
+  showModalBestStore = () => {
+    const { localize, locale } = this.context;
+    const { bestStore, pathOfImportedPkiItem, showModalBestStore } = this.state;
+    const { location } = this.props;
+
+    if (!showModalBestStore) {
+      return;
+    }
+
+    const currentStore = location.state.store;
+    const header = location.state.head;
+
+    return (
+      <Modal
+        isOpen={showModalBestStore}
+        header={`Импорт в хранилище: ${header}`}
+        onClose={() => this.handleCloseModalByType(MODAL_BEST_STORE)}
+        style={{ width: "500px" }}>
+        <BestStore
+          onCancel={() => this.handleCloseModalByType(MODAL_BEST_STORE)}
+          autoImport={() => this.handleCertificateImport(pathOfImportedPkiItem, true)}
+          importToCurrent={() => this.handleAddCertToStore(currentStore, pathOfImportedPkiItem)}
+          bestStore={bestStore}
+          currentStore={currentStore}
+        />
+      </Modal>
+    );
+  }
+
   showModalCertificateImportDSS = () => {
     const { localize, locale } = this.context;
     const { certificate, showModalCertificateImportDSS } = this.state;
@@ -1121,7 +1319,7 @@ class CertWindow extends React.Component<any, any> {
               </div>
               <div>
                 <input type="file" id="choose-cert" value="" onChange={(event: any) => {
-                  this.handleCertificateImport(event.target.files);
+                  this.handleImportPkiItem(event.target.files);
                 }} />
               </div>
             </div>
@@ -1228,6 +1426,7 @@ class CertWindow extends React.Component<any, any> {
           {this.showModalCertificateRequest()}
           {this.showModalCertificateRequestCA()}
           {this.showModalCloudCSP()}
+          {this.showModalBestStore()}
 
           <Dialog isOpen={this.state.showDialogInstallRootCertificate}
             header="Внимание!" body="Для установки корневых сертификатов требуются права администратора. Продолжить?"
