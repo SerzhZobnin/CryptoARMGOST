@@ -21,6 +21,7 @@ import {
   VERIFY_CERTIFICATE,
   VERIFY_SIGNATURE,
 } from "../constants";
+import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import { connectedSelector } from "../selectors";
 import { ERROR, SIGNED, UPLOADED, VERIFIED } from "../server/constants";
 import * as signs from "../trusted/sign";
@@ -64,10 +65,17 @@ interface INormalizedSignInfo {
   issuerName: string;
 }
 
+interface ISignParams {
+  signModel: ISignModel;
+  tspModel: ITspModel;
+  ocspModel: IOcspModel;
+}
+
 export function packageSign(
   files: IFile[],
   cert: trusted.pki.Certificate,
   policies: string[],
+  params: ISignParams | null = null,
   format: trusted.DataFormat,
   folderOut: string,
   folderOutDSS?: string[],
@@ -87,7 +95,7 @@ export function packageSign(
       let i: number = 0;
 
       files.forEach((file) => {
-        const newPath = folderOutDSS ? folderOutDSS[i] : signs.signFile(file.fullpath, cert, policies, format, folderOut);
+        const newPath = folderOutDSS ? folderOutDSS[i] : signs.signFile(file.fullpath, cert, policies, params, format, folderOut);
         if (newPath) {
           signedFileIdPackage.push(file.id);
           if (!file.socket) {
@@ -245,7 +253,7 @@ export function packageReSign(
       let i: number = 0;
 
       files.forEach((file) => {
-        const newPath = folderOutDSS ? folderOutDSS[i] : signs.signFile(file.fullpath, cert, policies, format, folderOut);
+        const newPath = folderOutDSS ? folderOutDSS[i] : signs.signFile(file.fullpath, cert, policies, null, format, folderOut);
         if (newPath) {
           signedFileIdPackage.push(file.id);
           if (!file.socket) {

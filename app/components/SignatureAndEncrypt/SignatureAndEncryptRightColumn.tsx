@@ -23,6 +23,7 @@ import {
   LOCATION_SETTINGS_CONFIG,
   LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
+import { ISignParams } from "../../reducer/settings";
 import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
 import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
 import * as trustedEncrypts from "../../trusted/encrypt";
@@ -659,7 +660,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                               outURIList.push(outURI);
                               i++;
                             });
-                            packageSign(files, cert, policies, format, folderOut, outURIList);
+                            packageSign(files, cert, policies, null, format, folderOut, outURIList);
                           },
                           (error) => {
                             $(".toast-dssPerformOperation_failed").remove();
@@ -704,7 +705,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   outURIList.push(outURI);
                   i++;
                 });
-                packageSign(files, cert, policies, format, folderOut, outURIList);
+                packageSign(files, cert, policies, null, format, folderOut, outURIList);
               },
               (error) => {
                 $(".toast-dssPerformOperation_failed").remove();
@@ -721,7 +722,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           policies.splice(0, 1);
         }
 
-        packageSign(files, cert, policies, format, folderOut);
+        const signParams: ISignParams = {
+          signModel: setting.sign.toJS(),
+          tspModel: setting.tsp.toJS(),
+          ocspModel: setting.ocsp.toJS(),
+        };
+
+        packageSign(files, cert, policies, signParams, format, folderOut);
       }
     }
   }

@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { DEFAULT_DOCUMENTS_PATH, DEFAULT_PATH, USER_NAME } from "../constants";
 import localize from "../i18n/localize";
+import { ISignParams } from "../reducer/settings";
 import { IOcsp } from "../reducer/signatures";
 import { fileCoding, fileExists } from "../utils";
 import logger from "../winstonLogger";
@@ -70,6 +71,7 @@ export function signFile(
   uri: string,
   cert: trusted.pki.Certificate,
   policies: any,
+  params: ISignParams | null = null,
   format: trusted.DataFormat,
   folderOut: string,
 ) {
@@ -95,8 +97,38 @@ export function signFile(
   const newFileUri = outURI.substring(0, outURI.lastIndexOf("."));
 
   try {
-
     const sd: trusted.cms.SignedData = new trusted.cms.SignedData();
+
+    if (params && params.tspModel && params.signModel && (params.signModel.timestamp || params.signModel.timestamp_on_sign)) {
+      const connSettings = new trusted.utils.ConnectionSettings();
+
+      if (params.tspModel.use_proxy) {
+        connSettings.ProxyAddress = params.tspModel.proxy_url;
+      } else {
+        connSettings.Address = params.tspModel.url;
+      }
+
+      const tspParams = new trusted.cms.TimestampParams();
+      tspParams.connSettings = connSettings;
+      tspParams.tspHashAlg = "1.2.643.7.1.1.2.2";
+
+      let stampType;
+
+      if (params.signModel.timestamp && !params.signModel.timestamp_on_sign) {
+        stampType = trusted.cms.StampType.stContent;
+      } else if (!params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+        stampType = trusted.cms.StampType.stSignature;
+      } else if (params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+        // tslint:disable-next-line: no-bitwise
+        stampType = trusted.cms.StampType.stContent | trusted.cms.StampType.stSignature;
+      }
+
+      if (stampType) {
+        tspParams.stampType = stampType;
+        sd.signParams = tspParams;
+      }
+    }
+
     sd.policies = policies;
     sd.content = {
       type: trusted.cms.SignedDataContentType.url,

@@ -18,6 +18,36 @@ export const RecipientModel = Record({
   certId: null,
 });
 
+export interface ISignModel {
+  detached: boolean;
+  encoding: string;
+  signer: string;
+  standard: string;
+  time: boolean;
+  timestamp: boolean;
+  timestamp_on_sign: boolean;
+}
+
+export interface ITspModel {
+  proxy_port: string;
+  proxy_url: string;
+  url: string;
+  use_proxy: boolean;
+}
+
+export interface IOcspModel {
+  proxy_port: string;
+  proxy_url: string;
+  url: string;
+  use_proxy: boolean;
+}
+
+export interface ISignParams {
+  signModel: ISignModel;
+  tspModel: ITspModel;
+  ocspModel: IOcspModel;
+}
+
 export const SignModel = Record({
   detached: false,
   encoding: BASE64,
