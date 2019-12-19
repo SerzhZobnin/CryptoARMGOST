@@ -8,7 +8,7 @@ interface ISignatureStandardSelectorProps {
   handleChange: (encoding: string) => void;
 }
 
-const SignatureStandard = {
+export const SignatureStandard = {
   CADES: "CAdES-X Long Type 1",
   CMS: "CMS",
 };
