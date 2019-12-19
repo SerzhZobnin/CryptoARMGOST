@@ -67,7 +67,7 @@ export default class SettingsInfo extends React.Component<ISettingsInfoProps, {}
 
             <div className="input-checkbox">
               <input
-                checked={setting.sign.timestamp}
+                checked={setting.sign.time}
                 disabled={true}
                 name="timestamp"
                 type="checkbox"

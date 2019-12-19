@@ -709,7 +709,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
           policies.push("detached");
         }
 
-        if (setting.sign.timestamp) {
+        if (setting.sign.time) {
           policies.splice(0, 1);
         }
 
@@ -904,7 +904,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         }
       } else {
 
-        if (setting.sign.timestamp) {
+        if (setting.sign.time) {
           policies.splice(0, 1);
         }
         files.forEach((file) => {

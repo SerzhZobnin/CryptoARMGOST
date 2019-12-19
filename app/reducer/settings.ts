@@ -23,6 +23,7 @@ export const SignModel = Record({
   encoding: BASE64,
   signer: "",
   standard: "CMS",
+  time: true,
   timestamp: true,
   timestamp_on_sign: false,
 });
