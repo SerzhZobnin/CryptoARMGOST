@@ -31,8 +31,10 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
   componentDidMount() {
     $("#certs").dropdown();
+    $("#sign_encrypt").dropdown();
     $("#document_stores").dropdown();
     $("#dropdown-about").dropdown();
+    $("#address-book").dropdown();
   }
 
   render() {
@@ -50,7 +52,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
         <div className="row">
           <div className="row nobottom">
             {LOCATION_MAIN === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link id="document_stores" to={LOCATION_MAIN} data-activates="dropdown-documents-stores" data-hover="hover" style={{ padding: "0 10px" }}>
+            <Link id="sign_encrypt" to={LOCATION_MAIN} data-activates="dropdown-sign_and_encrypt" data-hover="hover" style={{ padding: "0 10px" }}>
               <i className="material-icons sidevan sign_and_encrypt"></i>
             </Link>
           </div>
@@ -78,8 +80,11 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
           <div className="row nobottom">
             {LOCATION_ADDRESS_BOOK === pathname ? < div className="side-nav-rectangle" /> : null}
             <Link
-             to={{ pathname: LOCATION_ADDRESS_BOOK, search: ADDRESS_BOOK, state: { head: localize("AddressBook.address_book", locale), store: ADDRESS_BOOK } }}
-             style={{ padding: "0 10px" }}>
+              id="address-book"
+              to={{ pathname: LOCATION_ADDRESS_BOOK, search: ADDRESS_BOOK, state: { head: localize("AddressBook.address_book", locale), store: ADDRESS_BOOK } }}
+              data-activates="dropdown-address-book"
+              data-hover="hover"
+              style={{ padding: "0 10px" }}>
               <i className="material-icons sidevan address_book"></i>
             </Link>
           </div>
@@ -110,9 +115,54 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
             </div>
           </div>
         </div>
+        {this.getSignAndEncryptMenu()}
+        {this.getDocumentsMenu()}
         {this.getCertStoresMenu()}
+        {this.getAddressBookMenu()}
         {this.getAboutMenu()}
       </React.Fragment>
+    );
+  }
+
+  getSignAndEncryptMenu = () => {
+    return (
+      <div>
+        <ul id="dropdown-sign_and_encrypt" className="dropdown-content">
+          <li>
+            <div className="center-align">
+              <a style={{ fontWeight: "bold", color: "#bf3817" }}>ПОДПИСЬ И ШИФРОВАНИЕ</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+
+  getDocumentsMenu = () => {
+    return (
+      <div>
+        <ul id="dropdown-documents-stores" className="dropdown-content">
+          <li>
+            <div className="center-align">
+              <a style={{ fontWeight: "bold", color: "#bf3817" }}>ДОКУМЕНТЫ</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+
+  getAddressBookMenu = () => {
+    return (
+      <div>
+        <ul id="dropdown-address-book" className="dropdown-content">
+          <li>
+            <div className="center-align">
+              <a style={{ fontWeight: "bold", color: "#bf3817" }}>КОНТАКТЫ</a>
+            </div>
+          </li>
+        </ul>
+      </div>
     );
   }
 

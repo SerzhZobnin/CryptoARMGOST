@@ -1138,7 +1138,20 @@ nav .cert-seacrh label i {
   min-width: 170px;
 }
 
+#dropdown-sign_and_encrypt {
+  margin-top: 5px;
+  margin-left: 100%;
+  min-width: 240px;
+  display: block;
+}
+
 #dropdown-certificate-stores {
+  margin-left: 100%;
+  min-width: 220px;
+  display: block;
+}
+
+#dropdown-address-book {
   margin-left: 100%;
   min-width: 220px;
   display: block;
@@ -1146,7 +1159,6 @@ nav .cert-seacrh label i {
 
 #dropdown-documents-stores {
   margin-left: 100%;
-  margin-top: 10px;
   min-width: 220px;
   display: block;
 }
