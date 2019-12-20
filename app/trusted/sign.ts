@@ -144,21 +144,35 @@ export function signFile(
         const cadesParams = new trusted.cms.CadesParams();
         cadesParams.cadesType = trusted.cms.CadesType.ctCadesXLT1;
         cadesParams.connSettings = connSettings;
-        // cadesParams.ocspSettings = ocspSettings;
-        cadesParams.tspHashAlg = "1.2.343.7.1.1.2.2";
+
+        if (ocspSettings.ProxyAddress || ocspSettings.Address) {
+          cadesParams.ocspSettings = ocspSettings;
+        }
+
         sd.signParams = cadesParams;
       } else if (params.tspModel && params.signModel && (params.signModel.timestamp || params.signModel.timestamp_on_sign)) {
         const connSettings = new trusted.utils.ConnectionSettings();
 
         if (params.tspModel.use_proxy) {
           connSettings.ProxyAddress = params.tspModel.proxy_url;
+
+          if (params.tspModel.proxy_login) {
+            connSettings.ProxyUserName = params.tspModel.proxy_url;
+          }
+
+          if (params.tspModel.proxy_password) {
+            connSettings.ProxyPassword = params.tspModel.proxy_password;
+          }
+
+          if (params.tspModel.proxy_login && params.tspModel.proxy_password) {
+            connSettings.AuthType = 1;
+          }
         } else {
           connSettings.Address = params.tspModel.url;
         }
 
         const tspParams = new trusted.cms.TimestampParams();
         tspParams.connSettings = connSettings;
-        tspParams.tspHashAlg = "1.2.643.7.1.1.2.2";
 
         let stampType;
 
@@ -323,21 +337,35 @@ export function resignFile(
         const cadesParams = new trusted.cms.CadesParams();
         cadesParams.cadesType = trusted.cms.CadesType.ctCadesXLT1;
         cadesParams.connSettings = connSettings;
-        // cadesParams.ocspSettings = ocspSettings;
-        cadesParams.tspHashAlg = "1.2.343.7.1.1.2.2";
+
+        if (ocspSettings.ProxyAddress || ocspSettings.Address) {
+          cadesParams.ocspSettings = ocspSettings;
+        }
+
         sd.signParams = cadesParams;
       } else if (params.tspModel && params.signModel && (params.signModel.timestamp || params.signModel.timestamp_on_sign)) {
         const connSettings = new trusted.utils.ConnectionSettings();
 
         if (params.tspModel.use_proxy) {
           connSettings.ProxyAddress = params.tspModel.proxy_url;
+
+          if (params.tspModel.proxy_login) {
+            connSettings.ProxyUserName = params.tspModel.proxy_url;
+          }
+
+          if (params.tspModel.proxy_password) {
+            connSettings.ProxyPassword = params.tspModel.proxy_password;
+          }
+
+          if (params.tspModel.proxy_login && params.tspModel.proxy_password) {
+            connSettings.AuthType = 1;
+          }
         } else {
           connSettings.Address = params.tspModel.url;
         }
 
         const tspParams = new trusted.cms.TimestampParams();
         tspParams.connSettings = connSettings;
-        tspParams.tspHashAlg = "1.2.643.7.1.1.2.2";
 
         let stampType;
 
@@ -607,27 +635,9 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
       };
 
       try {
-        const dataToImport = fs.readFileSync(DEFAULT_PATH + "/test.ocsp");
-        const ocspImported = new trusted.pki.OCSP(dataToImport);
-
-        console.log("ocspImported", ocspImported);
-
-        ocsp.Certificates = ocspImported.Certificates;
-        ocsp.NextUpdate = ocspImported.NextUpdate();
-        ocsp.OCSP = ocspImported;
-        ocsp.OcspCert = ocspImported.OcspCert;
-        ocsp.ProducedAt = ocspImported.ProducedAt;
-        ocsp.RespNumber = ocspImported.RespNumber;
-        ocsp.RespStatus = ocspImported.RespStatus;
-        ocsp.RespStatus = ocspImported.RespStatus;
-        ocsp.RevReason = ocspImported.RevReason();
-        ocsp.RevTime = ocspImported.RevTime();
-        ocsp.SignatureAlgorithmOid = ocspImported.SignatureAlgorithmOid;
-        ocsp.Status = ocspImported.Status();
-        ocsp.ThisUpdate = ocspImported.ThisUpdate();
+        //
       } catch (e) {
         console.log("------ ERRROR GET OCSP PROPS ------");
-        console.log("For correct work add test.ocsp to app directory");
         console.log(e);
       }
 
@@ -655,8 +665,7 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
           }
         }
       } catch (e) {
-        console.log("------ ERRROR GET OCSP PROPS ------");
-        console.log("For correct work add test.ocsp to app directory");
+        console.log("------ ERRROR GET TSP PROPS ------");
         console.log(e);
       }
 
