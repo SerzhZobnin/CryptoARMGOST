@@ -265,6 +265,11 @@ export const DSS_ACTIONS = {
   SignDocuments: 4, // Подпись пакета документов
 };
 
+export const SIGNATURE_STANDARD = {
+  CADES: "CAdES-X Long Type 1",
+  CMS: "CMS",
+};
+
 export const SIGNATURE_TYPE = {
   XMLDSig: 0, // Подпись документа в формате XMLDSig
   GOST3410: 1,  // Электронная подпись по ГОСТ Р 34.10 - 2001 или ГОСТ Р 34.10 - 2012

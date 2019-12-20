@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { DEFAULT_DOCUMENTS_PATH, DEFAULT_PATH, USER_NAME } from "../constants";
+import { DEFAULT_DOCUMENTS_PATH, DEFAULT_PATH, SIGNATURE_STANDARD, USER_NAME } from "../constants";
 import localize from "../i18n/localize";
 import { ISignParams } from "../reducer/settings";
 import { IOcsp } from "../reducer/signatures";
@@ -99,33 +99,58 @@ export function signFile(
   try {
     const sd: trusted.cms.SignedData = new trusted.cms.SignedData();
 
-    if (params && params.tspModel && params.signModel && (params.signModel.timestamp || params.signModel.timestamp_on_sign)) {
-      const connSettings = new trusted.utils.ConnectionSettings();
+    if (params) {
+      if (params && params.signModel && params.signModel.standard === SIGNATURE_STANDARD.CADES) {
+        const connSettings = new trusted.utils.ConnectionSettings();
 
-      if (params.tspModel.use_proxy) {
-        connSettings.ProxyAddress = params.tspModel.proxy_url;
-      } else {
-        connSettings.Address = params.tspModel.url;
-      }
+        if (params.tspModel && params.tspModel.use_proxy) {
+          connSettings.ProxyAddress = params.tspModel.proxy_url;
+        } else if (params.tspModel && params.tspModel.url) {
+          connSettings.Address = params.tspModel.url;
+        }
 
-      const tspParams = new trusted.cms.TimestampParams();
-      tspParams.connSettings = connSettings;
-      tspParams.tspHashAlg = "1.2.643.7.1.1.2.2";
+        const ocspSettings = new trusted.utils.ConnectionSettings();
 
-      let stampType;
+        if (params.ocspModel && params.ocspModel.use_proxy) {
+          ocspSettings.ProxyAddress = params.ocspModel.proxy_url;
+        } else if (params.ocspModel && params.ocspModel.url) {
+          ocspSettings.Address = params.ocspModel.url;
+        }
 
-      if (params.signModel.timestamp && !params.signModel.timestamp_on_sign) {
-        stampType = trusted.cms.StampType.stContent;
-      } else if (!params.signModel.timestamp && params.signModel.timestamp_on_sign) {
-        stampType = trusted.cms.StampType.stSignature;
-      } else if (params.signModel.timestamp && params.signModel.timestamp_on_sign) {
-        // tslint:disable-next-line: no-bitwise
-        stampType = trusted.cms.StampType.stContent | trusted.cms.StampType.stSignature;
-      }
+        const cadesParams = new trusted.cms.CadesParams();
+        cadesParams.cadesType = trusted.cms.CadesType.ctCadesXLT1;
+        cadesParams.connSettings = connSettings;
+        // cadesParams.ocspSettings = ocspSettings;
+        cadesParams.tspHashAlg = "1.2.343.7.1.1.2.2";
+        sd.signParams = cadesParams;
+      } else if (params.tspModel && params.signModel && (params.signModel.timestamp || params.signModel.timestamp_on_sign)) {
+        const connSettings = new trusted.utils.ConnectionSettings();
 
-      if (stampType) {
-        tspParams.stampType = stampType;
-        sd.signParams = tspParams;
+        if (params.tspModel.use_proxy) {
+          connSettings.ProxyAddress = params.tspModel.proxy_url;
+        } else {
+          connSettings.Address = params.tspModel.url;
+        }
+
+        const tspParams = new trusted.cms.TimestampParams();
+        tspParams.connSettings = connSettings;
+        tspParams.tspHashAlg = "1.2.643.7.1.1.2.2";
+
+        let stampType;
+
+        if (params.signModel.timestamp && !params.signModel.timestamp_on_sign) {
+          stampType = trusted.cms.StampType.stContent;
+        } else if (!params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+          stampType = trusted.cms.StampType.stSignature;
+        } else if (params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+          // tslint:disable-next-line: no-bitwise
+          stampType = trusted.cms.StampType.stContent | trusted.cms.StampType.stSignature;
+        }
+
+        if (stampType) {
+          tspParams.stampType = stampType;
+          sd.signParams = tspParams;
+        }
       }
     }
 
@@ -229,33 +254,58 @@ export function resignFile(
       }
     }
 
-    if (params && params.tspModel && params.signModel && (params.signModel.timestamp || params.signModel.timestamp_on_sign)) {
-      const connSettings = new trusted.utils.ConnectionSettings();
+    if (params) {
+      if (params && params.signModel && params.signModel.standard === SIGNATURE_STANDARD.CADES) {
+        const connSettings = new trusted.utils.ConnectionSettings();
 
-      if (params.tspModel.use_proxy) {
-        connSettings.ProxyAddress = params.tspModel.proxy_url;
-      } else {
-        connSettings.Address = params.tspModel.url;
-      }
+        if (params.tspModel && params.tspModel.use_proxy) {
+          connSettings.ProxyAddress = params.tspModel.proxy_url;
+        } else if (params.tspModel && params.tspModel.url) {
+          connSettings.Address = params.tspModel.url;
+        }
 
-      const tspParams = new trusted.cms.TimestampParams();
-      tspParams.connSettings = connSettings;
-      tspParams.tspHashAlg = "1.2.643.7.1.1.2.2";
+        const ocspSettings = new trusted.utils.ConnectionSettings();
 
-      let stampType;
+        if (params.ocspModel && params.ocspModel.use_proxy) {
+          ocspSettings.ProxyAddress = params.ocspModel.proxy_url;
+        } else if (params.ocspModel && params.ocspModel.url) {
+          ocspSettings.Address = params.ocspModel.url;
+        }
 
-      if (params.signModel.timestamp && !params.signModel.timestamp_on_sign) {
-        stampType = trusted.cms.StampType.stContent;
-      } else if (!params.signModel.timestamp && params.signModel.timestamp_on_sign) {
-        stampType = trusted.cms.StampType.stSignature;
-      } else if (params.signModel.timestamp && params.signModel.timestamp_on_sign) {
-        // tslint:disable-next-line: no-bitwise
-        stampType = trusted.cms.StampType.stContent | trusted.cms.StampType.stSignature;
-      }
+        const cadesParams = new trusted.cms.CadesParams();
+        cadesParams.cadesType = trusted.cms.CadesType.ctCadesXLT1;
+        cadesParams.connSettings = connSettings;
+        // cadesParams.ocspSettings = ocspSettings;
+        cadesParams.tspHashAlg = "1.2.343.7.1.1.2.2";
+        sd.signParams = cadesParams;
+      } else if (params.tspModel && params.signModel && (params.signModel.timestamp || params.signModel.timestamp_on_sign)) {
+        const connSettings = new trusted.utils.ConnectionSettings();
 
-      if (stampType) {
-        tspParams.stampType = stampType;
-        sd.signParams = tspParams;
+        if (params.tspModel.use_proxy) {
+          connSettings.ProxyAddress = params.tspModel.proxy_url;
+        } else {
+          connSettings.Address = params.tspModel.url;
+        }
+
+        const tspParams = new trusted.cms.TimestampParams();
+        tspParams.connSettings = connSettings;
+        tspParams.tspHashAlg = "1.2.643.7.1.1.2.2";
+
+        let stampType;
+
+        if (params.signModel.timestamp && !params.signModel.timestamp_on_sign) {
+          stampType = trusted.cms.StampType.stContent;
+        } else if (!params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+          stampType = trusted.cms.StampType.stSignature;
+        } else if (params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+          // tslint:disable-next-line: no-bitwise
+          stampType = trusted.cms.StampType.stContent | trusted.cms.StampType.stSignature;
+        }
+
+        if (stampType) {
+          tspParams.stampType = stampType;
+          sd.signParams = tspParams;
+        }
       }
     }
 
