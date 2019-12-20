@@ -13,6 +13,7 @@ interface ISignatureStatusProps {
 
 interface ISignatureStatusState {
   isShowTimeStamps: boolean;
+  currentStampType: string;
 }
 
 class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureStatusState> {
@@ -25,6 +26,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
     super(props);
 
     this.state = {
+      currentStampType: "1",
       isShowTimeStamps: false,
     };
   }
@@ -55,6 +57,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
 
     const signerCert = signature.certs[signature.certs.length - 1];
     const isHaveTimeStamps = this.isHaveTimeStamps(signature);
+    const timeStampTypes = this.getTimeStampTypes(signature);
 
     const dateSigningTime = new Date(signature.signingTime);
     dateSigningTime.setHours(dateSigningTime.getHours() + 3);
@@ -94,8 +97,8 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
         {
           this.state.isShowTimeStamps ?
             <div>
-              <TimestampTypeSelector />
-              <TimestampInfo timestamp={signature.timestamps[0]} />
+              <TimestampTypeSelector timeStampTypes={timeStampTypes} changeType={this.handleChangeTimeStampType}/>
+              <TimestampInfo timestamp={this.getTimeStamp()} />
             </div>
             :
             <div className="row">
@@ -159,12 +162,43 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
     );
   }
 
+  getTimeStamp = () => {
+    const {currentStampType} = this.state;
+    const { signature } = this.props;
+
+    if (signature) {
+      for (const timestamp of signature.timestamps) {
+        if (timestamp.Type === currentStampType) {
+          return timestamp;
+        }
+      }
+    }
+  }
+
+  handleChangeTimeStampType = (currentStampType: string) => {
+    this.setState({currentStampType});
+  }
+
   toggleShowTimestamp = () => {
     this.setState({ isShowTimeStamps: !this.state.isShowTimeStamps });
   }
 
   isHaveTimeStamps = (signature: any) => {
     return signature && signature.timestamps && signature.timestamps.length;
+  }
+
+  getTimeStampTypes = (signature: any) => {
+    const types: string[] = [];
+
+    if (signature) {
+      for (const timestamp of signature.timestamps) {
+        if (!types.includes(timestamp.Type)) {
+          types.push(timestamp.Type);
+        }
+      }
+    }
+
+    return types;
   }
 }
 
