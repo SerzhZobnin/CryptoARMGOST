@@ -63,10 +63,10 @@ class AllSettings extends React.Component<any, {}> {
     const { settings } = this.props;
 
     const disabled = this.getDisabled();
-    const classDisabled = disabled ? "disabled" : "";
 
     let encoding = settings.sign.encoding;
     const signatureStandard = settings.sign.standard;
+    const classDisabledTspAndOcsp = signatureStandard === SignatureStandard.CADES ? "" : "disabled";
     const isDetached = settings.sign.detached;
 
     if (signer && signer.service && encoding !== "BASE-64") {
@@ -127,7 +127,7 @@ class AllSettings extends React.Component<any, {}> {
 
           <div className="col s12">
             <CheckBoxWithLabel
-              disabled={disabled || signatureStandard === SignatureStandard.CADES }
+              disabled={disabled || signatureStandard === SignatureStandard.CADES}
               onClickCheckBox={this.handleTimestampOnSignClick}
               isChecked={signatureStandard === SignatureStandard.CADES ? true : settings.sign.timestamp_on_sign}
               elementId="detached-sign"
@@ -181,7 +181,9 @@ class AllSettings extends React.Component<any, {}> {
         </div>
         <hr />
 
-        <OcspSettings />
+        <div className={classDisabledTspAndOcsp}>
+          <OcspSettings isCades={signatureStandard === SignatureStandard.CADES} />
+        </div>
       </div>
     );
   }

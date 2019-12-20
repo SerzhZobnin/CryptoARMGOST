@@ -11,6 +11,7 @@ interface IOcspSettingsProps {
   changeOcspProxyUrl: (url: string) => void;
   changeOcspProxyPort: (port: number) => void;
   changeOcspUseProxy: (use: boolean) => void;
+  isCades: boolean;
   settings: any;
 }
 
@@ -36,14 +37,14 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
     const { localize, locale } = this.context;
     const { ocsp } = this.props.settings;
     const { url, use_proxy, proxy_url, proxy_port } = ocsp;
-
-    const disbledProxyInputs = use_proxy ? "" : "disabled";
+    const { isCades } = this.props;
 
     return (
       <div className="row">
         <div className="input-field col s12">
           <input
             id="url_ocsp"
+            disabled={!isCades}
             type="text"
             className="validate"
             name="url_ocsp"
@@ -58,16 +59,17 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
 
         <div className="col s12">
           <CheckBoxWithLabel
-            disabled={false}
+            disabled={!isCades}
             isChecked={use_proxy}
             elementId="use_proxy_ocsp"
             onClickCheckBox={this.handleUseProxyClick}
             title={localize("Cades.use_proxy", locale)} />
         </div>
 
-        <div className={`input-field col s12 ${disbledProxyInputs}`}>
+        <div className="input-field col s12">
           <input
             id="url_proxy_ocsp"
+            disabled={!isCades || !use_proxy}
             type="text"
             className="validate"
             name="url_proxy_ocsp"
@@ -75,14 +77,15 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
             onChange={this.handleUrlProxyChange}
             placeholder="https://"
           />
-          <label htmlFor="url_proxy_ocsp" className={`${disbledProxyInputs}`}>
+          <label htmlFor="url_proxy_ocsp">
             {localize("Cades.url_proxy", locale)}
           </label>
         </div>
 
-        <div className={`input-field col s12 ${disbledProxyInputs}`}>
+        <div className="input-field col s12">
           <input
             id="port_ocsp"
+            disabled={!isCades || !use_proxy}
             type="number"
             className="validate"
             max={65536}
@@ -92,7 +95,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
             onChange={this.handleInputPort}
             placeholder="0 - 65536"
           />
-          <label htmlFor="port_ocsp" className={`${disbledProxyInputs}`}>
+          <label htmlFor="port_ocsp">
             {localize("Cades.port", locale)}
           </label>
         </div>
