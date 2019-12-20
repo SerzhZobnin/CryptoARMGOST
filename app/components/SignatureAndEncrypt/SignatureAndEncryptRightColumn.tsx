@@ -897,8 +897,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           policies.splice(0, 1);
         }
 
+        const signParams: ISignParams = {
+          signModel: setting.sign.toJS(),
+          tspModel: setting.tsp.toJS(),
+          ocspModel: setting.ocsp.toJS(),
+        };
+
         files.forEach((file) => {
-          const newPath = trustedSign.resignFile(file.fullpath, cert, policies, format, folderOut);
+          const newPath = trustedSign.resignFile(file.fullpath, cert, policies, signParams, format, folderOut);
 
           if (newPath) {
             if (file.socket) {

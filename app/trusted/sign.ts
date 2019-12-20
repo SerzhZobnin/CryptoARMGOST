@@ -173,7 +173,13 @@ export function signFile(
   return outURI;
 }
 
-export function resignFile(uri: string, cert: trusted.pki.Certificate, policies: any, format: trusted.DataFormat, folderOut: string) {
+export function resignFile(
+  uri: string,
+  cert: trusted.pki.Certificate,
+  policies: any,
+  params: ISignParams | null = null,
+  format: trusted.DataFormat,
+  folderOut: string) {
   let outURI: string;
 
   if (folderOut.length > 0) {
@@ -220,6 +226,36 @@ export function resignFile(uri: string, cert: trusted.pki.Certificate, policies:
 
       if (!(verifySign(sd))) {
         return;
+      }
+    }
+
+    if (params && params.tspModel && params.signModel && (params.signModel.timestamp || params.signModel.timestamp_on_sign)) {
+      const connSettings = new trusted.utils.ConnectionSettings();
+
+      if (params.tspModel.use_proxy) {
+        connSettings.ProxyAddress = params.tspModel.proxy_url;
+      } else {
+        connSettings.Address = params.tspModel.url;
+      }
+
+      const tspParams = new trusted.cms.TimestampParams();
+      tspParams.connSettings = connSettings;
+      tspParams.tspHashAlg = "1.2.643.7.1.1.2.2";
+
+      let stampType;
+
+      if (params.signModel.timestamp && !params.signModel.timestamp_on_sign) {
+        stampType = trusted.cms.StampType.stContent;
+      } else if (!params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+        stampType = trusted.cms.StampType.stSignature;
+      } else if (params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+        // tslint:disable-next-line: no-bitwise
+        stampType = trusted.cms.StampType.stContent | trusted.cms.StampType.stSignature;
+      }
+
+      if (stampType) {
+        tspParams.stampType = stampType;
+        sd.signParams = tspParams;
       }
     }
 

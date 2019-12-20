@@ -25,6 +25,7 @@ import {
   LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_MAIN,
   LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
+import { ISignParams } from "../../reducer/settings";
 import { activeFilesSelector, connectedSelector } from "../../selectors";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
 import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
@@ -713,8 +714,14 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
           policies.splice(0, 1);
         }
 
+        const signParams: ISignParams = {
+          signModel: setting.sign.toJS(),
+          tspModel: setting.tsp.toJS(),
+          ocspModel: setting.ocsp.toJS(),
+        };
+
         files.forEach((file) => {
-          newPath = trustedSign.signFile(file.fullpath, cert, policies, format, folderOut);
+          newPath = trustedSign.signFile(file.fullpath, cert, policies, signParams, format, folderOut);
 
           if (newPath) {
             addDocuments([newPath]);
@@ -907,8 +914,15 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
         if (setting.sign.time) {
           policies.splice(0, 1);
         }
+
+        const signParams: ISignParams = {
+          signModel: setting.sign.toJS(),
+          tspModel: setting.tsp.toJS(),
+          ocspModel: setting.ocsp.toJS(),
+        };
+
         files.forEach((file) => {
-          const newPath = trustedSign.resignFile(file.fullpath, cert, policies, format, folderOut);
+          const newPath = trustedSign.resignFile(file.fullpath, cert, policies, signParams, format, folderOut);
 
           if (newPath) {
             verifySignature(file.id);
