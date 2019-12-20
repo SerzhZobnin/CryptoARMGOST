@@ -7,6 +7,7 @@ interface ILoginFormState {
 }
 
 interface ILoginFormProps {
+  disabled?: boolean;
   login: string;
   password: string;
   loginChange: (value: string) => void;
@@ -39,14 +40,16 @@ class LoginForm extends React.PureComponent<ILoginFormProps, ILoginFormState> {
   render() {
     const { localize, locale } = this.context;
     const { passwordIsMasked, remember } = this.state;
-    const { login, password, loginChange, passwordChange } = this.props;
+    const { disabled, login, password, loginChange, passwordChange } = this.props;
+
+    const isDisabled = !!disabled;
 
     return (
       <div className="row">
-        <div className="row" />
         <div className="row">
           <div className="input-field input-field-csr col s12">
             <input
+              disabled={isDisabled}
               id="login"
               type="text"
               className="validate"
@@ -63,6 +66,7 @@ class LoginForm extends React.PureComponent<ILoginFormProps, ILoginFormState> {
         <div className="row">
           <div className="input-field input-field-csr col s11">
             <input
+              disabled={isDisabled}
               id="password"
               type={passwordIsMasked ? "password" : "text"}
               className="validate"

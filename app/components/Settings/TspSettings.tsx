@@ -2,8 +2,10 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import {
-  changeTspProxyPort, changeTspProxyUrl, changeTspUrl, changeTspUseProxy,
+  changeTspProxyLogin, changeTspProxyPassword, changeTspProxyPort, changeTspProxyUrl,
+  changeTspUrl, changeTspUseProxy,
 } from "../../AC/settingsActions";
+import LoginForm from "../CA/LoginForm";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 
 interface ITspSettingsProps {
@@ -11,6 +13,8 @@ interface ITspSettingsProps {
   changeTspProxyUrl: (url: string) => void;
   changeTspProxyPort: (port: number) => void;
   changeTspUseProxy: (use: boolean) => void;
+  changeTspProxyLogin: (login: string) => void;
+  changeTspProxyPassword: (password: string) => void;
   settings: any;
 }
 
@@ -35,7 +39,7 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
   render() {
     const { localize, locale } = this.context;
     const { tsp } = this.props.settings;
-    const { url, use_proxy, proxy_url, proxy_port } = tsp;
+    const { url, use_proxy, proxy_url, proxy_port, proxy_login, proxy_password } = tsp;
 
     const disbledProxyInputs = use_proxy ? "" : "disabled";
 
@@ -65,22 +69,25 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
             title={localize("Cades.use_proxy", locale)} />
         </div>
 
-        <div className={`input-field col s12 ${disbledProxyInputs}`}>
-          <input
-            id="url_proxy_tsp"
-            type="text"
-            className="validate"
-            name="url_proxy_tsp"
-            value={proxy_url}
-            onChange={this.handleUrlProxyChange}
-            placeholder="https://"
-          />
-          <label htmlFor="url_proxy_tsp" className={`${disbledProxyInputs}`}>
-            {localize("Cades.url_proxy", locale)}
-          </label>
-        </div>
+        {
+          use_proxy ?
+            <React.Fragment>
+              <div className={`input-field col s12 ${disbledProxyInputs}`}>
+                <input
+                  id="url_proxy_tsp"
+                  type="text"
+                  className="validate"
+                  name="url_proxy_tsp"
+                  value={proxy_url}
+                  onChange={this.handleUrlProxyChange}
+                  placeholder="https://"
+                />
+                <label htmlFor="url_proxy_tsp" className={`${disbledProxyInputs}`}>
+                  {localize("Cades.url_proxy", locale)}
+                </label>
+              </div>
 
-        <div className={`input-field col s12 ${disbledProxyInputs}`}>
+              {/* <div className={`input-field col s12 ${disbledProxyInputs}`}>
           <input
             id="port_tsp"
             type="number"
@@ -95,7 +102,16 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
           <label htmlFor="port_tsp" className={`${disbledProxyInputs}`}>
             {localize("Cades.port", locale)}
           </label>
-        </div>
+        </div> */}
+
+              <LoginForm
+                login={proxy_login}
+                loginChange={this.props.changeTspProxyLogin}
+                password={proxy_password}
+                passwordChange={this.props.changeTspProxyPassword} />
+            </React.Fragment>
+            : null
+        }
       </div>
     );
   }
@@ -135,4 +151,5 @@ export default connect((state) => {
   };
 }, {
   changeTspProxyPort, changeTspProxyUrl, changeTspUrl, changeTspUseProxy,
+  changeTspProxyLogin, changeTspProxyPassword,
 })(TspSettings);

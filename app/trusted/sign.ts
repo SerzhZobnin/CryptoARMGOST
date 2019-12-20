@@ -105,6 +105,18 @@ export function signFile(
 
         if (params.tspModel && params.tspModel.use_proxy) {
           connSettings.ProxyAddress = params.tspModel.proxy_url;
+
+          if (params.tspModel.proxy_login) {
+            connSettings.ProxyUserName = params.tspModel.proxy_url;
+          }
+
+          if (params.tspModel.proxy_password) {
+            connSettings.ProxyPassword = params.tspModel.proxy_password;
+          }
+
+          if (params.tspModel.proxy_login && params.tspModel.proxy_password) {
+            connSettings.AuthType = 1;
+          }
         } else if (params.tspModel && params.tspModel.url) {
           connSettings.Address = params.tspModel.url;
         }
@@ -113,6 +125,18 @@ export function signFile(
 
         if (params.ocspModel && params.ocspModel.use_proxy) {
           ocspSettings.ProxyAddress = params.ocspModel.proxy_url;
+
+          if (params.ocspModel.proxy_login) {
+            ocspSettings.ProxyUserName = params.ocspModel.proxy_url;
+          }
+
+          if (params.ocspModel.proxy_password) {
+            ocspSettings.ProxyPassword = params.ocspModel.proxy_password;
+          }
+
+          if (params.ocspModel.proxy_login && params.ocspModel.proxy_password) {
+            ocspSettings.AuthType = 1;
+          }
         } else if (params.ocspModel && params.ocspModel.url) {
           ocspSettings.Address = params.ocspModel.url;
         }
@@ -260,6 +284,18 @@ export function resignFile(
 
         if (params.tspModel && params.tspModel.use_proxy) {
           connSettings.ProxyAddress = params.tspModel.proxy_url;
+
+          if (params.tspModel.proxy_login) {
+            connSettings.ProxyUserName = params.tspModel.proxy_url;
+          }
+
+          if (params.tspModel.proxy_password) {
+            connSettings.ProxyPassword = params.tspModel.proxy_password;
+          }
+
+          if (params.tspModel.proxy_login && params.tspModel.proxy_password) {
+            connSettings.AuthType = 1;
+          }
         } else if (params.tspModel && params.tspModel.url) {
           connSettings.Address = params.tspModel.url;
         }
@@ -268,6 +304,18 @@ export function resignFile(
 
         if (params.ocspModel && params.ocspModel.use_proxy) {
           ocspSettings.ProxyAddress = params.ocspModel.proxy_url;
+
+          if (params.ocspModel.proxy_login) {
+            ocspSettings.ProxyUserName = params.ocspModel.proxy_url;
+          }
+
+          if (params.ocspModel.proxy_password) {
+            ocspSettings.ProxyPassword = params.ocspModel.proxy_password;
+          }
+
+          if (params.ocspModel.proxy_login && params.ocspModel.proxy_password) {
+            ocspSettings.AuthType = 1;
+          }
         } else if (params.ocspModel && params.ocspModel.url) {
           ocspSettings.Address = params.ocspModel.url;
         }

@@ -4,12 +4,12 @@ import {
   ACTIVE_SETTING, ADD_RECIPIENT_CERTIFICATE, APPLY_SETTINGS, BASE64,
   CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT, CHANGE_DEFAULT_SETTINGS,
   CHANGE_DELETE_FILES_AFTER_ENCRYPT, CHANGE_DSS_AUTH_URL, CHANGE_DSS_REST_URL, CHANGE_ECRYPT_ENCODING,
-  CHANGE_LOCALE, CHANGE_OCSP_PROXY_PORT, CHANGE_OCSP_PROXY_URL,
-  CHANGE_OCSP_URL, CHANGE_OCSP_USE_PROXY, CHANGE_OUTFOLDER,
-  CHANGE_SETTINGS_NAME, CHANGE_SIGNATURE_DETACHED,
-  CHANGE_SIGNATURE_ENCODING, CHANGE_SIGNATURE_STANDARD, CHANGE_SIGNATURE_TIMESTAMP, CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN,
-  CHANGE_TSP_PROXY_PORT, CHANGE_TSP_PROXY_URL, CHANGE_TSP_URL, CHANGE_TSP_USE_PROXY,
-  CREATE_SETTING,
+  CHANGE_LOCALE, CHANGE_OCSP_PROXY_LOGIN, CHANGE_OCSP_PROXY_PASSWORD,
+  CHANGE_OCSP_PROXY_PORT, CHANGE_OCSP_PROXY_URL, CHANGE_OCSP_URL,
+  CHANGE_OCSP_USE_PROXY, CHANGE_OUTFOLDER,
+  CHANGE_SETTINGS_NAME, CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING, CHANGE_SIGNATURE_STANDARD,
+  CHANGE_SIGNATURE_TIMESTAMP, CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN, CHANGE_TSP_PROXY_LOGIN, CHANGE_TSP_PROXY_PASSWORD,
+  CHANGE_TSP_PROXY_PORT, CHANGE_TSP_PROXY_URL, CHANGE_TSP_URL, CHANGE_TSP_USE_PROXY, CREATE_SETTING,
   DELETE_RECIPIENT_CERTIFICATE, DELETE_SETTING, REMOVE_ALL_CERTIFICATES, RU, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_SAVE_TO_DOCUMENTS,
 } from "../constants";
 import { fileExists, mapToArr, uuid } from "../utils";
@@ -29,6 +29,8 @@ export interface ISignModel {
 }
 
 export interface ITspModel {
+  proxy_login: string;
+  proxy_password: string;
   proxy_port: string;
   proxy_url: string;
   url: string;
@@ -36,6 +38,8 @@ export interface ITspModel {
 }
 
 export interface IOcspModel {
+  proxy_login: string;
+  proxy_password: string;
   proxy_port: string;
   proxy_url: string;
   url: string;
@@ -66,6 +70,8 @@ export const EncryptModel = Record({
 });
 
 export const TspModel = Record({
+  proxy_login: "",
+  proxy_password: "",
   proxy_port: "",
   proxy_url: "",
   url: "",
@@ -73,6 +79,8 @@ export const TspModel = Record({
 });
 
 export const OcspModel = Record({
+  proxy_login: "",
+  proxy_password: "",
   proxy_port: "",
   proxy_url: "",
   url: "",
@@ -204,6 +212,16 @@ export default (settings = new DefaultReducerState(), action) => {
         .setIn(["entities", settings.active, "tsp", "url"], payload.url);
       break;
 
+    case CHANGE_TSP_PROXY_LOGIN:
+      settings = settings
+        .setIn(["entities", settings.active, "tsp", "proxy_login"], payload.proxy_login);
+      break;
+
+    case CHANGE_TSP_PROXY_PASSWORD:
+      settings = settings
+        .setIn(["entities", settings.active, "tsp", "proxy_password"], payload.proxy_password);
+      break;
+
     case CHANGE_TSP_USE_PROXY:
       settings = settings
         .setIn(["entities", settings.active, "tsp", "use_proxy"], payload.use_proxy);
@@ -227,6 +245,16 @@ export default (settings = new DefaultReducerState(), action) => {
     case CHANGE_OCSP_USE_PROXY:
       settings = settings
         .setIn(["entities", settings.active, "ocsp", "use_proxy"], payload.use_proxy);
+      break;
+
+    case CHANGE_OCSP_PROXY_LOGIN:
+      settings = settings
+        .setIn(["entities", settings.active, "ocsp", "proxy_login"], payload.proxy_login);
+      break;
+
+    case CHANGE_OCSP_PROXY_PASSWORD:
+      settings = settings
+        .setIn(["entities", settings.active, "ocsp", "proxy_password"], payload.proxy_password);
       break;
 
     case CHANGE_LOCALE:
@@ -283,10 +311,15 @@ export default (settings = new DefaultReducerState(), action) => {
     || type === CHANGE_TSP_PROXY_URL
     || type === CHANGE_TSP_URL
     || type === CHANGE_TSP_USE_PROXY
+    || type === CHANGE_TSP_PROXY_LOGIN
+    || type === CHANGE_TSP_PROXY_PASSWORD
     || type === CHANGE_OCSP_PROXY_PORT
     || type === CHANGE_OCSP_PROXY_URL
     || type === CHANGE_OCSP_URL
-    || type === CHANGE_OCSP_USE_PROXY) {
+    || type === CHANGE_OCSP_USE_PROXY
+    || type === CHANGE_OCSP_PROXY_LOGIN
+    || type === CHANGE_OCSP_PROXY_PASSWORD
+    ) {
 
     const state = ({
       default: settings.default,

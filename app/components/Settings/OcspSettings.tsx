@@ -2,8 +2,10 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import {
-  changeOcspProxyPort, changeOcspProxyUrl, changeOcspUrl, changeOcspUseProxy,
+  changeOcspProxyLogin, changeOcspProxyPassword, changeOcspProxyPort, changeOcspProxyUrl,
+  changeOcspUrl, changeOcspUseProxy,
 } from "../../AC/settingsActions";
+import LoginForm from "../CA/LoginForm";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 
 interface IOcspSettingsProps {
@@ -11,6 +13,8 @@ interface IOcspSettingsProps {
   changeOcspProxyUrl: (url: string) => void;
   changeOcspProxyPort: (port: number) => void;
   changeOcspUseProxy: (use: boolean) => void;
+  changeOcspProxyLogin: (login: string) => void;
+  changeOcspProxyPassword: (password: string) => void;
   isCades: boolean;
   settings: any;
 }
@@ -36,7 +40,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
   render() {
     const { localize, locale } = this.context;
     const { ocsp } = this.props.settings;
-    const { url, use_proxy, proxy_url, proxy_port } = ocsp;
+    const { url, use_proxy, proxy_url, proxy_login, proxy_password, proxy_port } = ocsp;
     const { isCades } = this.props;
 
     return (
@@ -66,23 +70,26 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
             title={localize("Cades.use_proxy", locale)} />
         </div>
 
-        <div className="input-field col s12">
-          <input
-            id="url_proxy_ocsp"
-            disabled={!isCades || !use_proxy}
-            type="text"
-            className="validate"
-            name="url_proxy_ocsp"
-            value={proxy_url}
-            onChange={this.handleUrlProxyChange}
-            placeholder="https://"
-          />
-          <label htmlFor="url_proxy_ocsp">
-            {localize("Cades.url_proxy", locale)}
-          </label>
-        </div>
+        {
+          use_proxy ?
+            <React.Fragment>
+              <div className="input-field col s12">
+                <input
+                  id="url_proxy_ocsp"
+                  disabled={!isCades || !use_proxy}
+                  type="text"
+                  className="validate"
+                  name="url_proxy_ocsp"
+                  value={proxy_url}
+                  onChange={this.handleUrlProxyChange}
+                  placeholder="https://"
+                />
+                <label htmlFor="url_proxy_ocsp">
+                  {localize("Cades.url_proxy", locale)}
+                </label>
+              </div>
 
-        <div className="input-field col s12">
+              {/* <div className="input-field col s12">
           <input
             id="port_ocsp"
             disabled={!isCades || !use_proxy}
@@ -98,7 +105,17 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
           <label htmlFor="port_ocsp">
             {localize("Cades.port", locale)}
           </label>
-        </div>
+        </div> */}
+
+              <LoginForm
+                disabled={!isCades || !use_proxy}
+                login={proxy_login}
+                loginChange={this.props.changeOcspProxyLogin}
+                password={proxy_password}
+                passwordChange={this.props.changeOcspProxyPassword} />
+            </ React.Fragment>
+            : null
+        }
       </div>
     );
   }
@@ -138,4 +155,5 @@ export default connect((state) => {
   };
 }, {
   changeOcspProxyPort, changeOcspProxyUrl, changeOcspUrl, changeOcspUseProxy,
+  changeOcspProxyLogin, changeOcspProxyPassword,
 })(OcspSettings);
