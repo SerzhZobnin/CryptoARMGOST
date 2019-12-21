@@ -71,8 +71,8 @@ class CrlTable extends React.Component<ICrlTableProps & ICrlTableDispatch, ICrlT
   constructor(props: ICrlTableProps & ICrlTableDispatch) {
     super(props);
 
-    const sortBy = "filename";
-    const sortDirection = SortDirection.DESC;
+    const sortBy = "issuerFriendlyName";
+    const sortDirection = SortDirection.ASC;
     const sortedList = this.sortList({ sortBy, sortDirection });
 
     this.state = {
@@ -387,7 +387,20 @@ class CrlTable extends React.Component<ICrlTableProps & ICrlTableDispatch, ICrlT
     const { crlsMap } = this.props;
 
     return crlsMap
-      .sortBy((item: any) => item[sortBy])
+      .sort((a, b) => {
+        const aCrlIN = a[sortBy].toLowerCase();
+        const bCrlIN = b[sortBy].toLowerCase();
+
+        if (aCrlIN < bCrlIN) {
+          return -1;
+        }
+
+        if (aCrlIN > bCrlIN) {
+          return 1;
+        }
+
+        return 0;
+      })
       .update(
         // tslint:disable-next-line:no-shadowed-variable
         (crlsMap: any) => (sortDirection === SortDirection.DESC ? crlsMap.reverse() : crlsMap),

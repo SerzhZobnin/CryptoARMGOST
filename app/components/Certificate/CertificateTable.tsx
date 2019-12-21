@@ -74,8 +74,8 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
   constructor(props: ICertificateTableProps & ICertificateTableDispatch) {
     super(props);
 
-    const sortBy = "filename";
-    const sortDirection = SortDirection.DESC;
+    const sortBy = "subjectFriendlyName";
+    const sortDirection = SortDirection.ASC;
     const sortedList = this.sortList({ sortBy, sortDirection });
 
     this.state = {
@@ -414,7 +414,20 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
     const { certificatesMap } = this.props;
 
     return certificatesMap
-      .sortBy((item: any) => item[sortBy])
+      .sort((a, b) => {
+        const aCertificateSN = a[sortBy].toLowerCase();
+        const bCertificateSN = b[sortBy].toLowerCase();
+
+        if (aCertificateSN < bCertificateSN) {
+          return -1;
+        }
+
+        if (aCertificateSN > bCertificateSN) {
+          return 1;
+        }
+
+        return 0;
+      })
       .update(
         // tslint:disable-next-line:no-shadowed-variable
         (certificatesMap: any) => (sortDirection === SortDirection.DESC ? certificatesMap.reverse() : certificatesMap),

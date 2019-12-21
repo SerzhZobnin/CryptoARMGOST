@@ -1,5 +1,4 @@
 import { createSelector } from "reselect";
-import { mapToArr } from "../utils";
 
 export const crlsGetter = (state: any) => state.crls.entities;
 export const filtersGetter = (state: any) => state.filters;
@@ -7,22 +6,7 @@ export const filtersGetter = (state: any) => state.filters;
 export const filteredCrlsSelector = createSelector(crlsGetter, filtersGetter, (crls, filters) => {
   const { searchValue } = filters;
   const search = searchValue.toLowerCase();
-  let arrCrls = crls;
-
-  arrCrls = arrCrls.sort((a, b) => {
-    const aCrlIN = a.issuerFriendlyName.toLowerCase();
-    const bCrlIN = b.issuerFriendlyName.toLowerCase();
-
-    if (aCrlIN < bCrlIN) {
-      return -1;
-    }
-
-    if (aCrlIN > bCrlIN) {
-      return 1;
-    }
-
-    return 0;
-  });
+  const arrCrls = crls;
 
   return arrCrls.filter((crl: any) => {
     try {
