@@ -31,6 +31,10 @@ class CertificateStatusIcon extends React.Component<ICertificateStatusIconProps,
   render() {
     const { certificate } = this.props;
 
+    if (!certificate) {
+      return null;
+    }
+
     let curStatusStyle;
 
     if (certificate && certificate.status) {
