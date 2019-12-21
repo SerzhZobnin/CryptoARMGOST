@@ -37,15 +37,16 @@ import RequestCADelete from "../Request/RequestCADelete";
 import RequestCAExport from "../Request/RequestCAExport";
 import RequestCAInfo from "../Request/RequestCAInfo";
 import AddCertificate from "./AddCertificate";
+import BestStore from "./BestStore";
 import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateDelete from "./CertificateDelete";
 import CertificateExport from "./CertificateExport";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
-import BestStore from "./BestStore";
 
 const OS_TYPE = os.type();
+const dialog = window.electron.remote.dialog;
 
 class CertWindow extends React.Component<any, any> {
   static contextTypes = {
@@ -275,10 +276,8 @@ class CertWindow extends React.Component<any, any> {
     }
   }
 
-  handleImportPkiItem = (event: any) => {
+  handleImportPkiItem = (path: string) => {
     const { localize, locale } = this.context;
-
-    const path = event[0].path;
 
     this.setState({ pathOfImportedPkiItem: path });
 
@@ -958,6 +957,7 @@ class CertWindow extends React.Component<any, any> {
 
         <AddCertificate
           certImport={this.certImport}
+          crlDialog={this.crlDialog}
           handleShowModalByType={this.handleShowModalByType}
           location={location}
           onCancel={() => this.handleCloseModalByType(MODAL_ADD_CERTIFICATE)} />
@@ -978,7 +978,7 @@ class CertWindow extends React.Component<any, any> {
         isOpen={showModalDeleteCertifiacte}
         header={localize("Certificate.delete_certificate", locale)}
         onClose={() => this.handleCloseModalByType(MODAL_DELETE_CERTIFICATE)}
-        style={{width: "600px"}}>
+        style={{ width: "600px" }}>
 
         <CertificateDelete
           certificate={certificate}
@@ -1002,7 +1002,7 @@ class CertWindow extends React.Component<any, any> {
         isOpen={showModalExportCertifiacte}
         header={localize("Export.export_certificate", locale)}
         onClose={() => this.handleCloseModalByType(MODAL_EXPORT_CERTIFICATE)}
-        style={{width: "600px"}}>
+        style={{ width: "600px" }}>
 
         <CertificateExport
           certificate={certificate}
@@ -1026,7 +1026,7 @@ class CertWindow extends React.Component<any, any> {
         isOpen={showModalExportCRL}
         header={localize("CRL.export_crl", locale)}
         onClose={() => this.handleCloseModalByType(MODAL_EXPORT_CRL)}
-        style={{width: "600px"}}>
+        style={{ width: "600px" }}>
 
         <CRLExport
           crl={crl}
@@ -1050,7 +1050,7 @@ class CertWindow extends React.Component<any, any> {
         isOpen={showModalDeleteCRL}
         header={localize("CRL.delete_crl", locale)}
         onClose={() => this.handleCloseModalByType(MODAL_DELETE_CRL)}
-        style={{width: "600px"}}>
+        style={{ width: "600px" }}>
 
         <CRLDelete
           crl={crl}
@@ -1073,7 +1073,7 @@ class CertWindow extends React.Component<any, any> {
         isOpen={showModalExportRequestCA}
         header={localize("Request.export_request", locale)}
         onClose={() => this.handleCloseModalByType(MODAL_EXPORT_REQUEST_CA)}
-        style={{width: "600px"}}>
+        style={{ width: "600px" }}>
 
         <RequestCAExport
           requestCA={requestCA}
@@ -1097,7 +1097,7 @@ class CertWindow extends React.Component<any, any> {
         isOpen={showModalDeleteRequestCA}
         header={localize("Request.delete_request", locale)}
         onClose={() => this.handleCloseModalByType(MODAL_DELETE_REQUEST_CA)}
-        style={{width: "600px"}}>
+        style={{ width: "600px" }}>
 
         <RequestCADelete
           deleteRequestCA={this.handleDeleteRequestCA}
@@ -1343,11 +1343,6 @@ class CertWindow extends React.Component<any, any> {
                   <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
                 </a>
               </div>
-              <div>
-                <input type="file" id="choose-cert" value="" onChange={(event: any) => {
-                  this.handleImportPkiItem(event.target.files);
-                }} />
-              </div>
             </div>
             <div className={"collection " + VIEW}>
               <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
@@ -1481,10 +1476,33 @@ class CertWindow extends React.Component<any, any> {
   }
 
   certImport = () => {
-    const CLICK_EVENT = document.createEvent("MouseEvents");
+    const { localize, locale } = this.context;
 
-    CLICK_EVENT.initEvent("click", true, true);
-    document.querySelector("#choose-cert").dispatchEvent(CLICK_EVENT);
+    const files = dialog.showOpenDialog({
+      properties: ["openFile"],
+      title: localize("Certificate.certs", locale),
+    });
+
+    if (files) {
+      this.handleImportPkiItem(files[0]);
+    }
+  }
+
+  crlDialog = () => {
+    const { localize, locale } = this.context;
+
+    const files = dialog.showOpenDialog({
+      filters: [
+        { name: localize("CRL.crls", locale), extensions: ["crl"] },
+        { name: "All Files", extensions: ["*"] },
+      ],
+      properties: ["openFile"],
+      title: localize("CRL.crls", locale),
+    });
+
+    if (files) {
+      this.handleImportPkiItem(files[0]);
+    }
   }
 
   importFromCloudCSP = () => {

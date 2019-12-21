@@ -1,12 +1,13 @@
 import PropTypes from "prop-types";
 import React from "react";
 import {
-  ADDRESS_BOOK, CA, MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST,
-  MODAL_CERTIFICATE_REQUEST_CA, MY, REQUEST, ROOT,
+  ADDRESS_BOOK, CA, CRL, MODAL_CERTIFICATE_IMPORT_DSS,
+  MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA, MY, REQUEST, ROOT,
 } from "../../constants";
 
 interface IAddCertificateProps {
   certImport: () => void;
+  crlDialog: () => void;
   handleShowModalByType: (type: string) => void;
   location: any;
   onCancel: () => void;
@@ -104,6 +105,9 @@ class AddCertificate extends React.Component<IAddCertificateProps, any> {
 
   getImportFromFile = () => {
     const { localize, locale } = this.context;
+    const { location } = this.props;
+
+    console.log("location", location);
 
     return (
       <div
@@ -118,7 +122,11 @@ class AddCertificate extends React.Component<IAddCertificateProps, any> {
           <div className="collection-title" onClick={() => {
             this.props.onCancel();
             setTimeout(() => {
-              this.props.certImport();
+              if (location && location.state && location.state.type === CRL) {
+                this.props.crlDialog();
+              } else {
+                this.props.certImport();
+              }
             }, 100);
           }}>
             {localize("Certificate.cert_import_from_file", locale)}
