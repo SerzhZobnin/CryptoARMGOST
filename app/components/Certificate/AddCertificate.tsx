@@ -106,8 +106,6 @@ class AddCertificate extends React.Component<IAddCertificateProps, any> {
     const { localize, locale } = this.context;
     const { location } = this.props;
 
-    console.log("location", location);
-
     return (
       <div
         className="collection-item avatar certs-collection col s12 valign-wrapper"
