@@ -86,7 +86,6 @@ class AddCertificate extends React.Component<IAddCertificateProps, any> {
       case REQUEST:
         return (
           <React.Fragment>
-            {this.getImportFromFile()}
             {this.getCreateRequest()}
             {this.getCreateRequestCA()}
           </React.Fragment>
