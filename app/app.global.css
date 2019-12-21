@@ -1169,6 +1169,13 @@ nav .cert-seacrh label i {
   display: block;
 }
 
+#dropdown-menu-exit {
+  margin-left: 100%;
+  min-width: 220px;
+  display: block;
+  top: 34px !important;
+}
+
 .dropdown-content li {
     border: 1px solid lightgray;
     min-height: 36px;

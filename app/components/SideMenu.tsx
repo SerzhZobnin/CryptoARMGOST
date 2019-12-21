@@ -35,6 +35,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     $("#document_stores").dropdown();
     $("#dropdown-about").dropdown();
     $("#address-book").dropdown();
+    $("#dropdown-exit").dropdown();
   }
 
   render() {
@@ -105,10 +106,15 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
                   <i className="material-icons sidevan about" style={{ padding: "0 10px" }}>about</i>
                 </Link>
               </div>
-              <Link to="/" onClick={() => {
-                remote.getGlobal("sharedObject").isQuiting = true;
-                remote.getCurrentWindow().close();
-              }} style={{ padding: "0 10px" }}>
+              <Link
+                id="dropdown-exit"
+                to="/"
+                data-activates="dropdown-menu-exit"
+                data-hover="hover"
+                onClick={() => {
+                  remote.getGlobal("sharedObject").isQuiting = true;
+                  remote.getCurrentWindow().close();
+                }} style={{ padding: "0 10px" }}>
 
                 <i className="material-icons sidevan exit">exit_to_app</i>
               </Link>
@@ -120,6 +126,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
         {this.getCertStoresMenu()}
         {this.getAddressBookMenu()}
         {this.getAboutMenu()}
+        {this.getExitMenu()}
       </React.Fragment>
     );
   }
@@ -127,13 +134,15 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
   getSignAndEncryptMenu = () => {
     return (
       <div>
-        <ul id="dropdown-sign_and_encrypt" className="dropdown-content">
-          <li>
-            <div className="center-align">
-              <a style={{ fontWeight: "bold", color: "#bf3817" }}>ПОДПИСЬ И ШИФРОВАНИЕ</a>
-            </div>
-          </li>
-        </ul>
+        <Link to={LOCATION_MAIN}>
+          <ul id="dropdown-sign_and_encrypt" className="dropdown-content">
+            <li>
+              <div className="center-align">
+                <a style={{ fontWeight: "bold", color: "#bf3817" }}>ПОДПИСЬ И ШИФРОВАНИЕ</a>
+              </div>
+            </li>
+          </ul>
+        </Link>
       </div>
     );
   }
@@ -141,27 +150,34 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
   getDocumentsMenu = () => {
     return (
       <div>
-        <ul id="dropdown-documents-stores" className="dropdown-content">
-          <li>
-            <div className="center-align">
-              <a style={{ fontWeight: "bold", color: "#bf3817" }}>ДОКУМЕНТЫ</a>
-            </div>
-          </li>
-        </ul>
+        <Link to={LOCATION_DOCUMENTS}>
+          <ul id="dropdown-documents-stores" className="dropdown-content">
+            <li>
+              <div className="center-align">
+                <a style={{ fontWeight: "bold", color: "#bf3817" }}>ДОКУМЕНТЫ</a>
+              </div>
+            </li>
+          </ul>
+        </Link>
       </div>
     );
   }
 
   getAddressBookMenu = () => {
+    const { localize, locale } = this.context;
+
     return (
       <div>
-        <ul id="dropdown-address-book" className="dropdown-content">
-          <li>
-            <div className="center-align">
-              <a style={{ fontWeight: "bold", color: "#bf3817" }}>КОНТАКТЫ</a>
-            </div>
-          </li>
-        </ul>
+        <Link
+          to={{ pathname: LOCATION_ADDRESS_BOOK, search: ADDRESS_BOOK, state: { head: localize("AddressBook.address_book", locale), store: ADDRESS_BOOK } }}>
+          <ul id="dropdown-address-book" className="dropdown-content">
+            <li>
+              <div className="center-align">
+                <a style={{ fontWeight: "bold", color: "#bf3817" }}>КОНТАКТЫ</a>
+              </div>
+            </li>
+          </ul>
+        </Link>
       </div>
     );
   }
@@ -196,11 +212,17 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     return (
       <div>
         <ul id="dropdown-certificate-stores" className="dropdown-content" style={{ minHeight: "85px" }}>
-          <li>
-            <div className="center-align">
-              <a style={{ fontWeight: "bold", color: "#bf3817" }}>СЕРТИФИКАТЫ</a>
-            </div>
-          </li>
+          <Link
+            to={{ pathname: LOCATION_CERTIFICATES, search: "my", state: { head: localize("Certificate.certs_my", locale), store: MY } }}
+            style={{ padding: "0px" }}
+          >
+            <li>
+              <div className="center-align">
+                <a style={{ fontWeight: "bold", color: "#bf3817" }}>СЕРТИФИКАТЫ</a>
+              </div>
+            </li>
+          </Link>
+
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_my", locale), localize("Certificate.certs_my", locale), "my", MY, my)}
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_intermediate", locale), localize("Certificate.certs_intermediate", locale), "intermediate", CA, intermediate)}
           {this.getCertStoreMenuElement(localize("Certificate.sidesubmenu_root", locale), localize("Certificate.certs_root", locale), "root", ROOT, root)}
@@ -250,11 +272,16 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     return (
       <div>
         <ul id="dropdown-about-pages" className="dropdown-content" style={{ minHeight: "150px", height: "150px" }}>
-          <li>
-            <div className="center-align">
-              <a style={{ fontWeight: "bold", color: "#bf3817" }}>О ПРОГРАММЕ</a>
-            </div>
-          </li>
+          <Link
+            to={LOCATION_ABOUT}
+            style={{ padding: "0px" }}
+          >
+            <li>
+              <div className="center-align">
+                <a style={{ fontWeight: "bold", color: "#bf3817" }}>О ПРОГРАММЕ</a>
+              </div>
+            </li>
+          </Link>
 
           <li onClick={() => $("#dropdown-about").dropdown("close")}>
             <Link to={LOCATION_ABOUT} style={{ height: "33px", padding: "0px" }}>
@@ -294,6 +321,26 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
             </a>
           </li>
         </ul>
+      </div>
+    );
+  }
+
+  getExitMenu = () => {
+    return (
+      <div>
+        <Link to="/" onClick={() => {
+          remote.getGlobal("sharedObject").isQuiting = true;
+          remote.getCurrentWindow().close();
+        }} style={{ padding: "0 10px" }}>
+
+          <ul id="dropdown-menu-exit" className="dropdown-content" style={{ top: "34px !impotant" }}>
+            <li>
+              <div className="center-align">
+                <a style={{ fontWeight: "bold", color: "#bf3817" }}>ВЫХОД</a>
+              </div>
+            </li>
+          </ul>
+        </Link>
       </div>
     );
   }
