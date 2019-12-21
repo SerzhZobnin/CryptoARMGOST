@@ -25,6 +25,8 @@ import CertificateList from "../Certificate/CertificateList";
 import Modal from "../Modal";
 import ProgressBars from "../ProgressBars";
 
+const dialog = window.electron.remote.dialog;
+
 class AddressBookWindow extends React.Component<any, any> {
   static contextTypes = {
     locale: PropTypes.string,
@@ -94,11 +96,6 @@ class AddressBookWindow extends React.Component<any, any> {
                 <a onClick={this.handleReloadCertificates}>
                   <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
                 </a>
-              </div>
-              <div>
-                <input type="file" id="choose-cert" value="" onChange={(event: any) => {
-                  this.handleCertificateImport(event.target.files);
-                }} />
               </div>
             </div>
             <div className={"collection " + VIEW}>
@@ -258,11 +255,11 @@ class AddressBookWindow extends React.Component<any, any> {
     this.handleCloseModals();
   }
 
-  handleCertificateImport = (event: any) => {
+  handleCertificateImport = (path: string) => {
     const { localize, locale } = this.context;
     // tslint:disable-next-line:no-shadowed-variable
     const { isLoading, loadAllCertificates, removeAllCertificates } = this.props;
-    const path = event[0].path;
+
     const format: trusted.DataFormat = fileCoding(path);
 
     let certificate: trusted.pki.Certificate;
@@ -467,10 +464,20 @@ class AddressBookWindow extends React.Component<any, any> {
   }
 
   certImport = () => {
-    const CLICK_EVENT = document.createEvent("MouseEvents");
+    const { localize, locale } = this.context;
 
-    CLICK_EVENT.initEvent("click", true, true);
-    document.querySelector("#choose-cert").dispatchEvent(CLICK_EVENT);
+    const files = dialog.showOpenDialog({
+      filters: [
+        { name: localize("Certificate.certs", locale), extensions: ["cer", "crt"] },
+        { name: "All Files", extensions: ["*"] },
+      ],
+      properties: ["openFile"],
+      title: localize("Certificate.certs", locale),
+    });
+
+    if (files) {
+      this.handleCertificateImport(files[0]);
+    }
   }
 
   handleOpenCSRFolder = () => {
