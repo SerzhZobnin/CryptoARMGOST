@@ -328,7 +328,7 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
           this.closeModalLicenseSetup();
           this.forceUpdate();
         }}
-        style={{ height: "300px", width: "600px" }}
+        style={{ height: "310px", width: "600px" }}
       >
 
         <LicenseSetupModal text_info={localize("License.entered_the_key", locale)} icon="" onCancel={this.closeModalLicenseSetup} />
