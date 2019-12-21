@@ -635,7 +635,23 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
       };
 
       try {
-        //
+        if (signer.isCades) {
+          const ocspResp = signer.ocspResp;
+
+          ocsp.Certificates = ocspResp.Certificates;
+          ocsp.NextUpdate = ocspResp.NextUpdate();
+          ocsp.OCSP = ocspResp;
+          ocsp.OcspCert = undefined;
+          ocsp.ProducedAt = ocspResp.ProducedAt;
+          ocsp.RespNumber = ocspResp.RespNumber;
+          ocsp.RespStatus = ocspResp.RespStatus;
+          ocsp.RespStatus = ocspResp.RespStatus;
+          ocsp.RevReason = ocspResp.RevReason();
+          ocsp.RevTime = ocspResp.RevTime();
+          ocsp.SignatureAlgorithmOid = ocspResp.SignatureAlgorithmOid;
+          ocsp.Status = ocspResp.Status();
+          ocsp.ThisUpdate = ocspResp.ThisUpdate();
+        }
       } catch (e) {
         console.log("------ ERRROR GET OCSP PROPS ------");
         console.log(e);

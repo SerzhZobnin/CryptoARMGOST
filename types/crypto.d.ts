@@ -327,6 +327,9 @@ declare namespace native {
             getSigningTime(): string;
             timestamp(tspType: number): native.PKI.TSP;
             verifyTimestamp(tspType: number): boolean;
+            isCades(): boolean;
+            revocationValues(): Buffer[];
+            ocspResp(): native.PKI.OCSP;
         }
     }
     namespace PKISTORE {
@@ -628,6 +631,30 @@ declare namespace trusted.cms {
          * @memberOf Signer
          */
         verifyTimestamp(tspType: number): boolean;
+        /**
+         * Identify if signer is CAdES or not
+         *
+         * @readonly
+         * @type {boolean}
+         * @memberOf Signer
+         */
+        readonly isCades: boolean;
+        /**
+         * For CAdES returns array of buffers with encoded revocation values (OCSP response or CRL)
+         *
+         * @readonly
+         * @type {Buffer[]}
+         * @memberOf Signer
+         */
+        readonly revocationValues: Buffer[];
+        /**
+         * For CAdES returns OCSP response
+         *
+         * @readonly
+         * @type {OCSP}
+         * @memberOf Signer
+         */
+        readonly ocspResp: pki.OCSP;
     }
 }
 declare namespace trusted.cms {
@@ -2521,22 +2548,30 @@ declare namespace trusted.pki {
          *
          * @memberOf Certificate
          */
-        constructor(inData: Certificate | Buffer, connSettings?: trusted.utils.ConnectionSettings);
+        constructor(inData: Certificate | Buffer | native.PKI.OCSP, connSettings?: trusted.utils.ConnectionSettings);
         Export(): Buffer;
         Verify(): number;
         VerifyCertificate(cert: Certificate): number;
         readonly RespStatus: CPRespStatus;
         readonly SignatureAlgorithmOid: string;
         readonly Certificates: CertificateCollection;
-        readonly ProducedAt: string;
+        readonly ProducedAt: Date;
         readonly RespNumber: number;
         RespIndexByCert(cert: pki.Certificate, issuer?: pki.Certificate): number;
         readonly OcspCert: pki.Certificate;
         Status(respIdx?: number): CPCertStatus;
-        RevTime(respIdx?: number): string;
+        RevTime(respIdx?: number): Date;
         RevReason(respIdx?: number): CPCrlReason;
-        ThisUpdate(respIdx?: number): string;
-        NextUpdate(respIdx?: number): string;
+        ThisUpdate(respIdx?: number): Date;
+        /**
+         * Return date of Next Update. Field is optional. To verify returned date value call getTime() method on it. If getTime returns 0 than Nextupdate property is empty and should not be used.
+         *
+         * @readonly
+         * @param {number} [respIdx] Response index. Default value is 0.
+         * @type {Date}
+         * @memberOf OCSP
+         */
+        NextUpdate(respIdx?: number): Date;
     }
 }
 declare namespace trusted.pki {
@@ -2589,7 +2624,7 @@ declare namespace trusted.pki {
         readonly DataHash: Buffer;
         readonly PolicyID: string;
         readonly SerialNumber: Buffer;
-        readonly Time: string;
+        readonly Time: Date;
         readonly Accuracy: number;
         readonly Ordering: boolean;
         readonly HasNonce: boolean;

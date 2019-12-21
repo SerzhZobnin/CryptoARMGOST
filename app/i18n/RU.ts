@@ -566,6 +566,8 @@ export default {
     "2.5.4.9": "Адрес",
   },
   Ocsp: {
+    error_verify_certificate: "Ошибка проверки сертификата",
+    error_verify_ocsp: "Ошибка проверки подписи OCSP",
     next_update: "Следующее обновление статуса",
     ocsp_certificate: "Сертификат службы OCSP",
     ocsp_properties: "Свойства OCSP ответа",

@@ -26,22 +26,27 @@ class OcspInfo extends React.Component<IOcspInfoProps, {}> {
     }
 
     const status = this.verify();
-    const ocspCertStatus = this.verifyCertificate(ocsp.OcspCert);
+
     const signerCertStatus = ocsp.Status === 0;
 
     let curStatusStyle;
     let isValid = "";
     let icon = "";
     let statusOcsp = "";
+    let ocspCertStatus;
 
     let signerIsValid = "";
     let signerIcon = "";
     let signerStatus = "";
 
-    if (ocspCertStatus) {
-      curStatusStyle = "cert_status_ok";
-    } else {
-      curStatusStyle = "cert_status_error";
+    if (ocsp.OcspCert) {
+      ocspCertStatus = this.verifyCertificate(ocsp.OcspCert);
+
+      if (ocspCertStatus) {
+        curStatusStyle = "cert_status_ok";
+      } else {
+        curStatusStyle = "cert_status_error";
+      }
     }
 
     if (signerCertStatus) {
@@ -93,7 +98,13 @@ class OcspInfo extends React.Component<IOcspInfoProps, {}> {
             <div className="col s12">
               <div className={signerIsValid}>{signerStatus}</div>
 
-              <div className="collection-info">{localize("Tsp.checked", locale)}: {ocsp.ThisUpdate ? ocsp.ThisUpdate : "-"}</div>
+              <div className="collection-info">{localize("Tsp.checked", locale)}: {ocsp.ThisUpdate ? (new Date(ocsp.ThisUpdate)).toLocaleDateString(locale, {
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                month: "long",
+                year: "numeric",
+              }) : "-"}</div>
             </div>
           </div>
         </div>
@@ -102,7 +113,13 @@ class OcspInfo extends React.Component<IOcspInfoProps, {}> {
         <div className="col s12">
           <div className="collection">
             <div className="collection-item certs-collection certificate-info">
-              <div className="collection-title selectable-text">{ocsp.ProducedAt}</div>
+              <div className="collection-title selectable-text">{(new Date(ocsp.ProducedAt)).toLocaleDateString(locale, {
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                month: "long",
+                year: "numeric",
+              })}</div>
               <div className="collection-info">{localize("Ocsp.produced_at", locale)}</div>
             </div>
 
@@ -113,36 +130,42 @@ class OcspInfo extends React.Component<IOcspInfoProps, {}> {
           </div>
         </div>
 
-        <div className="col s12 primary-text">{localize("Ocsp.ocsp_certificate", locale)}:</div>
-        <div className="col s12 valign-wrapper">
-          <div className="col s2">
-            <div className={curStatusStyle} />
-          </div>
-          <div className="col s10">
-            <div className="collection-title selectable-text">{ocsp.OcspCert.subjectFriendlyName}</div>
-            <div className="collection-info">{ocsp.OcspCert.issuerFriendlyName}</div>
-          </div>
-        </div>
+        {
+          ocsp.OcspCert ?
+            <React.Fragment>
+              <div className="col s12 primary-text">{localize("Ocsp.ocsp_certificate", locale)}:</div>
+              <div className="col s12 valign-wrapper">
+                <div className="col s2">
+                  <div className={curStatusStyle} />
+                </div>
+                <div className="col s10">
+                  <div className="collection-title selectable-text">{ocsp.OcspCert.subjectFriendlyName}</div>
+                  <div className="collection-info">{ocsp.OcspCert.issuerFriendlyName}</div>
+                </div>
+              </div>
 
-        <div className="col s12">
-          <div className="collection">
-            <div className="collection-item certs-collection certificate-info">
-              <div className="collection-title selectable-text">{ocsp.OcspCert.serialNumber}</div>
-              <div className="collection-info">{localize("Certificate.serialNumber", locale)}</div>
-            </div>
+              <div className="col s12">
+                <div className="collection">
+                  <div className="collection-item certs-collection certificate-info">
+                    <div className="collection-title selectable-text">{ocsp.OcspCert.serialNumber}</div>
+                    <div className="collection-info">{localize("Certificate.serialNumber", locale)}</div>
+                  </div>
 
-            <div className="collection-item certs-collection certificate-info">
-              <div className="collection-title">{(new Date(ocsp.OcspCert.notAfter)).toLocaleDateString(locale, {
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                month: "long",
-                year: "numeric",
-              })}</div>
-              <div className="collection-info">{localize("Certificate.cert_valid", locale)}</div>
-            </div>
-          </div>
-        </div>
+                  <div className="collection-item certs-collection certificate-info">
+                    <div className="collection-title">{(new Date(ocsp.OcspCert.notAfter)).toLocaleDateString(locale, {
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}</div>
+                    <div className="collection-info">{localize("Certificate.cert_valid", locale)}</div>
+                  </div>
+                </div>
+              </div>
+            </React.Fragment> :
+            null
+        }
       </div>
     );
   }
@@ -157,14 +180,14 @@ class OcspInfo extends React.Component<IOcspInfoProps, {}> {
       if (res === 0) {
         return true;
       } else {
-        $(".toast-error_verify_tsp").remove();
-        Materialize.toast(`${localize("Tsp.error_verify_tsp", locale)}: ${res}`, 3000, "toast-error_verify_tsp");
+        $(".toast-error_verify_ocsp").remove();
+        Materialize.toast(`${localize("Ocsp.error_verify_ocsp", locale)}: ${res}`, 3000, "toast-error_verify_ocsp");
 
         return false;
       }
     } catch (e) {
-      $(".toast-error_verify_tsp").remove();
-      Materialize.toast(`${localize("Tsp.error_verify_tsp", locale)} ${e}`, 3000, "toast-error_verify_tsp");
+      $(".toast-error_verify_ocsp").remove();
+      Materialize.toast(`${localize("Ocsp.error_verify_ocsp", locale)} ${e}`, 3000, "toast-error_verify_ocsp");
     }
 
     return false;
@@ -181,13 +204,13 @@ class OcspInfo extends React.Component<IOcspInfoProps, {}> {
         return true;
       } else {
         $(".toast-error_verify_certificate").remove();
-        Materialize.toast(`${localize("Tsp.error_verify_certificate", locale)}: ${res}`, 3000, "toast-error_verify_certificate");
+        Materialize.toast(`${localize("Ocsp.error_verify_certificate", locale)}: ${res}`, 3000, "toast-error_verify_certificate");
 
         return false;
       }
     } catch (e) {
       $(".toast-error_verify_certificate").remove();
-      Materialize.toast(`${localize("Tsp.error_verify_certificate", locale)} ${e}`, 3000, "toast-error_verify_certificate");
+      Materialize.toast(`${localize("Ocsp.error_verify_certificate", locale)} ${e}`, 3000, "toast-error_verify_certificate");
     }
 
     return false;

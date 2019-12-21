@@ -25,15 +25,15 @@ export interface IOcsp {
   RespStatus: number;
   SignatureAlgorithmOid: string;
   Certificates: trusted.pki.CertificateCollection;
-  ProducedAt: string;
+  ProducedAt: Date;
   RespNumber: number;
   OCSP: trusted.pki.OCSP;
   OcspCert: trusted.pki.Certificate;
   Status: number;
-  RevTime: string;
+  RevTime: Date;
   RevReason: number;
-  ThisUpdate: string;
-  NextUpdate: string;
+  ThisUpdate: Date;
+  NextUpdate: Date;
 }
 
 const SignatureModel = Record({

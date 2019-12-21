@@ -564,6 +564,8 @@ export default {
     "2.5.4.9": "Street Address",
   },
   Ocsp: {
+    error_verify_certificate: "Error verify certificate",
+    error_verify_ocsp: "Error verify OCSP signature",
     next_update: "Next update",
     ocsp_certificate: "Certificate of OCSP",
     ocsp_properties: "OCSP response properties",
