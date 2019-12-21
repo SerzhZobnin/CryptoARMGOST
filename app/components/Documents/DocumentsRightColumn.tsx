@@ -214,10 +214,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, IDocum
             </div>
             {
               (recipients && recipients.length) ?
-                <div style={{ height: "calc(100vh - 400px)" }}>
-                  <div className="add-certs">
-                    <RecipientsList recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
-                  </div>
+                <div className="col s12">
+                  <RecipientsList recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
                 </div> :
                 <div className="col s12">
                   <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
