@@ -1,6 +1,9 @@
 import PropTypes from "prop-types";
 import React from "react";
 import ReactDOM from "react-dom";
+import {
+  TSP_OCSP_ENABLED,
+} from "../../constants";
 
 interface ISignatureStandardSelectorProps {
   value: string;
@@ -35,12 +38,19 @@ class SignatureStandardSelector extends React.Component<ISignatureStandardSelect
 
   render() {
     const { localize, locale } = this.context;
-    const classDisabled = this.props.disabled ? "disabled" : "";
+
+    const defaultValue = TSP_OCSP_ENABLED ? this.props.value : SignatureStandard.CMS;
 
     return (
-      <div className={classDisabled}>
+      <div>
         <div className="input-field">
-          <select className="select" id="standard" ref="standard" defaultValue={this.props.value}>
+          <select
+            className="select"
+            disabled={!(TSP_OCSP_ENABLED) || this.props.disabled}
+            id="standard"
+            ref="standard"
+            defaultValue={defaultValue}
+          >
             <option value={SignatureStandard.CMS}>
               {SignatureStandard.CMS}
             </option>
@@ -48,7 +58,7 @@ class SignatureStandardSelector extends React.Component<ISignatureStandardSelect
               {SignatureStandard.CADES}
             </option>
           </select>
-          <label>
+          <label htmlFor="standard">
             {localize("Sign.standard", locale)}
           </label>
         </div>

@@ -74,6 +74,7 @@ interface Window {
     SETTINGS_JSON: string;
     SERVICES_JSON: string;
     TRUSTED_CRYPTO_LOG: string;
+    TSP_OCSP_ENABLED: boolean;
     fs: any;
     os: any;
     archiver: any;

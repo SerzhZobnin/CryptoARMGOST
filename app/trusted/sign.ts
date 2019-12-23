@@ -1,6 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
-import { DEFAULT_DOCUMENTS_PATH, DEFAULT_PATH, SIGNATURE_STANDARD, USER_NAME } from "../constants";
+import {
+  DEFAULT_DOCUMENTS_PATH, DEFAULT_PATH, SIGNATURE_STANDARD, TSP_OCSP_ENABLED,
+  USER_NAME,
+} from "../constants";
 import localize from "../i18n/localize";
 import { ISignParams } from "../reducer/settings";
 import { IOcsp } from "../reducer/signatures";
@@ -99,7 +102,7 @@ export function signFile(
   try {
     const sd: trusted.cms.SignedData = new trusted.cms.SignedData();
 
-    if (params) {
+    if (TSP_OCSP_ENABLED && params) {
       if (params && params.signModel && params.signModel.standard === SIGNATURE_STANDARD.CADES) {
         const connSettings = new trusted.utils.ConnectionSettings();
 
@@ -292,7 +295,7 @@ export function resignFile(
       }
     }
 
-    if (params) {
+    if (TSP_OCSP_ENABLED && params) {
       if (params && params.signModel && params.signModel.standard === SIGNATURE_STANDARD.CADES) {
         const connSettings = new trusted.utils.ConnectionSettings();
 
@@ -635,7 +638,7 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
       };
 
       try {
-        if (signer.isCades) {
+        if (TSP_OCSP_ENABLED && signer.isCades) {
           const ocspResp = signer.ocspResp;
 
           ocsp.Certificates = ocspResp.Certificates;
@@ -658,25 +661,27 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
       }
 
       try {
-        for (const stType in trusted.cms.StampType) {
-          if (Number(stType)) {
-            const timestamp = signer.timestamp(parseInt(stType, 10));
-            if (timestamp) {
-              timestamps.push({
-                Accuracy: timestamp.Accuracy,
-                Certificates: timestamp.Certificates,
-                DataHash: timestamp.DataHash,
-                DataHashAlgOID: timestamp.DataHashAlgOID,
-                HasNonce: timestamp.HasNonce,
-                Ordering: timestamp.Ordering,
-                PolicyID: timestamp.PolicyID,
-                SerialNumber: timestamp.SerialNumber,
-                TSACertificate: timestamp.TSACertificate,
-                TSP: timestamp,
-                Time: timestamp.Time,
-                TsaName: timestamp.TsaName,
-                Type: stType,
-              });
+        if (TSP_OCSP_ENABLED) {
+          for (const stType in trusted.cms.StampType) {
+            if (Number(stType)) {
+              const timestamp = signer.timestamp(parseInt(stType, 10));
+              if (timestamp) {
+                timestamps.push({
+                  Accuracy: timestamp.Accuracy,
+                  Certificates: timestamp.Certificates,
+                  DataHash: timestamp.DataHash,
+                  DataHashAlgOID: timestamp.DataHashAlgOID,
+                  HasNonce: timestamp.HasNonce,
+                  Ordering: timestamp.Ordering,
+                  PolicyID: timestamp.PolicyID,
+                  SerialNumber: timestamp.SerialNumber,
+                  TSACertificate: timestamp.TSACertificate,
+                  TSP: timestamp,
+                  Time: timestamp.Time,
+                  TsaName: timestamp.TsaName,
+                  Type: stType,
+                });
+              }
             }
           }
         }

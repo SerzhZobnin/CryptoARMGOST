@@ -5,6 +5,9 @@ import {
   changeTspProxyLogin, changeTspProxyPassword, changeTspProxyPort, changeTspProxyUrl,
   changeTspUrl, changeTspUseProxy,
 } from "../../AC/settingsActions";
+import {
+  TSP_OCSP_ENABLED,
+} from "../../constants";
 import LoginForm from "../CA/LoginForm";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 
@@ -48,6 +51,7 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
         <div className="input-field col s12">
           <input
             id="url_tsp"
+            disabled={!(TSP_OCSP_ENABLED)}
             type="text"
             className="validate"
             name="url_tsp"
@@ -62,7 +66,7 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
 
         <div className="col s12">
           <CheckBoxWithLabel
-            disabled={false}
+            disabled={!(TSP_OCSP_ENABLED)}
             isChecked={use_proxy}
             elementId="use_proxy_tsp"
             onClickCheckBox={this.handleUseProxyClick}
@@ -70,7 +74,7 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
         </div>
 
         {
-          use_proxy ?
+          use_proxy && TSP_OCSP_ENABLED ?
             <React.Fragment>
               <div className={`input-field col s12 ${disbledProxyInputs}`}>
                 <input

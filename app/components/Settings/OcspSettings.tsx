@@ -5,6 +5,9 @@ import {
   changeOcspProxyLogin, changeOcspProxyPassword, changeOcspProxyPort, changeOcspProxyUrl,
   changeOcspUrl, changeOcspUseProxy,
 } from "../../AC/settingsActions";
+import {
+  TSP_OCSP_ENABLED,
+} from "../../constants";
 import LoginForm from "../CA/LoginForm";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 
@@ -71,7 +74,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
         </div>
 
         {
-          use_proxy ?
+          use_proxy && TSP_OCSP_ENABLED ?
             <React.Fragment>
               <div className="input-field col s12">
                 <input

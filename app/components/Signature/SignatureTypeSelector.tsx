@@ -40,8 +40,12 @@ class SignatureTypeSelector extends React.Component<ISignatureTypeSelectorProps,
     return (
       <div className={classDisabled}>
         <div className="input-field">
-          <select className="select" id="type_of_signature" ref="type_of_signature"
-            defaultValue={this.props.detached ? SignatureTypes.DETACHED : SignatureTypes.ATTACHED}>
+          <select
+            className="select"
+            id="type_of_signature"
+            ref="type_of_signature"
+            defaultValue={this.props.detached ? SignatureTypes.DETACHED : SignatureTypes.ATTACHED}
+          >
             <option value={SignatureTypes.ATTACHED}>
               {localize("Sign.sign_type_attached", locale)}
             </option>

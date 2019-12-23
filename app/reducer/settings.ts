@@ -8,7 +8,7 @@ import {
   CHANGE_OCSP_PROXY_PORT, CHANGE_OCSP_PROXY_URL, CHANGE_OCSP_URL,
   CHANGE_OCSP_USE_PROXY, CHANGE_OUTFOLDER,
   CHANGE_SETTINGS_NAME, CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING, CHANGE_SIGNATURE_STANDARD,
-  CHANGE_SIGNATURE_TIMESTAMP, CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN, CHANGE_TSP_PROXY_LOGIN, CHANGE_TSP_PROXY_PASSWORD,
+  CHANGE_SIGNATURE_TIME, CHANGE_SIGNATURE_TIMESTAMP, CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN, CHANGE_TSP_PROXY_LOGIN, CHANGE_TSP_PROXY_PASSWORD,
   CHANGE_TSP_PROXY_PORT, CHANGE_TSP_PROXY_URL, CHANGE_TSP_URL, CHANGE_TSP_USE_PROXY, CREATE_SETTING,
   DELETE_RECIPIENT_CERTIFICATE, DELETE_SETTING, REMOVE_ALL_CERTIFICATES, RU, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_SAVE_TO_DOCUMENTS,
 } from "../constants";
@@ -172,6 +172,11 @@ export default (settings = new DefaultReducerState(), action) => {
         .setIn(["entities", settings.active, "sign", "standard"], payload.standard);
       break;
 
+    case CHANGE_SIGNATURE_TIME:
+      settings = settings
+        .setIn(["entities", settings.active, "sign", "time"], payload.time);
+      break;
+
     case CHANGE_SIGNATURE_TIMESTAMP:
       settings = settings
         .setIn(["entities", settings.active, "sign", "timestamp"], payload.timestamp);
@@ -302,6 +307,7 @@ export default (settings = new DefaultReducerState(), action) => {
     || type === CHANGE_SIGNATURE_DETACHED
     || type === CHANGE_SIGNATURE_ENCODING
     || type === CHANGE_OUTFOLDER
+    || type === CHANGE_SIGNATURE_TIME
     || type === CHANGE_SIGNATURE_TIMESTAMP
     || type === CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN
     || type === CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT
@@ -319,7 +325,7 @@ export default (settings = new DefaultReducerState(), action) => {
     || type === CHANGE_OCSP_USE_PROXY
     || type === CHANGE_OCSP_PROXY_LOGIN
     || type === CHANGE_OCSP_PROXY_PASSWORD
-    ) {
+  ) {
 
     const state = ({
       default: settings.default,
