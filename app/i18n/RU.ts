@@ -642,6 +642,7 @@ export default {
     certificate: "Сертификат",
     comment: "Комментарий",
     connect: "Подключить",
+    connect_ca: "Подключить сервис УЦ",
     delete_service: "Удаление сервиса",
     delete_service_ok: "Сервис успешно удалён",
     description: "Описание",

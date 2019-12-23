@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import {
   ADDRESS_BOOK, CA, CRL, MODAL_CERTIFICATE_IMPORT_DSS,
-  MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA, MY, REQUEST, ROOT,
+  MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA, MY, REQUEST, ROOT, MODAL_ADD_SERVICE_CA,
 } from "../../constants";
 
 interface IAddCertificateProps {
@@ -76,10 +76,17 @@ class AddCertificate extends React.Component<IAddCertificateProps, any> {
 
       case ADDRESS_BOOK:
       case CA:
+        return (
+          <React.Fragment>
+            {this.getImportFromFile()}
+          </React.Fragment>
+        );
+
       case ROOT:
         return (
           <React.Fragment>
             {this.getImportFromFile()}
+            {this.addServiceCA()}
           </React.Fragment>
         );
 
@@ -205,6 +212,32 @@ class AddCertificate extends React.Component<IAddCertificateProps, any> {
             }, 100);
           }}>
             {localize("Certificate.cert_get_through_ca", locale)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  addServiceCA = () => {
+    const { localize, locale } = this.context;
+
+    return (
+      <div
+        className="collection-item avatar certs-collection col s12 valign-wrapper"
+        onMouseOver={() => this.handleOnRowMouseOver("cert_get_through_ca")}>
+        <div className="col" style={{ width: "40px" }}>
+          <a data-position="bottom">
+            <i className="material-icons certificate cloud_question" />
+          </a>
+        </div>
+        <div className="col s11">
+          <div className="collection-title" onClick={() => {
+            this.props.onCancel();
+            setTimeout(() => {
+              this.props.handleShowModalByType(MODAL_ADD_SERVICE_CA);
+            }, 100);
+          }}>
+            {localize("Services.connect_ca", locale)}
           </div>
         </div>
       </div>

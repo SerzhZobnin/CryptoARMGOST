@@ -6,7 +6,7 @@ import {
   ADDRESS_BOOK, CA, LOCATION_ABOUT,
   LOCATION_ADDRESS_BOOK, LOCATION_CERTIFICATES, LOCATION_CONTAINERS,
   LOCATION_DOCUMENTS, LOCATION_EVENTS, LOCATION_MAIN,
-  LOCATION_SERVICES, MY, REQUEST, ROOT,
+  MY, REQUEST, ROOT,
 } from "../constants";
 import { mapToArr } from "../utils";
 
@@ -87,13 +87,6 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               data-hover="hover"
               style={{ padding: "0 10px" }}>
               <i className="material-icons sidevan address_book"></i>
-            </Link>
-          </div>
-
-          <div className="row nobottom">
-            {LOCATION_SERVICES === pathname ? < div className="side-nav-rectangle" /> : null}
-            <Link to={LOCATION_SERVICES} style={{ padding: "0 10px" }}>
-              <i className="material-icons sidevan dss"></i>
             </Link>
           </div>
         </div>

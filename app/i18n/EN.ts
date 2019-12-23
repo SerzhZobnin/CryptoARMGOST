@@ -640,6 +640,7 @@ export default {
     certificate: "Certificate",
     comment: "Сomment",
     connect: "Connect",
+    connect_ca: "Connect service CA",
     delete_service: "Delete service",
     delete_service_ok: "The service is successfully deleted",
     description: "Description",

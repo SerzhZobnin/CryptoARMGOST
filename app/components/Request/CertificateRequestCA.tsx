@@ -11,13 +11,14 @@ import { postCertRequest, postCertRequestAuthCert } from "../../AC/caActions";
 import {
   ALG_GOST12_256, ALG_GOST12_512, ALG_GOST2001, CA_SERVICE, DEFAULT_CSR_PATH,
   HOME_DIR, KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT,
-  MY, PROVIDER_CRYPTOPRO, PROVIDER_SYSTEM, REQUEST,
-  REQUEST_TEMPLATE_ADDITIONAL, REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
+  MODAL_ADD_SERVICE_CA, MY, PROVIDER_CRYPTOPRO, PROVIDER_SYSTEM,
+  REQUEST, REQUEST_TEMPLATE_ADDITIONAL, REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
 import { filteredServicesByType } from "../../selectors/servicesSelectors";
 import * as jwt from "../../trusted/jwt";
-import { arrayToMap, fileCoding, formatDate, mapToArr, uuid, validateInn, validateOgrnip, validateSnils, validateOgrn } from "../../utils";
+import { arrayToMap, fileCoding, formatDate, mapToArr, uuid, validateInn, validateOgrn, validateOgrnip, validateSnils } from "../../utils";
 import logger from "../../winstonLogger";
+import ServiceInfo from "../Services/ServiceInfo";
 import ServiceListItem from "../Services/ServiceListItem";
 import { ICertificateRequestCA, IRegRequest } from "../Services/types";
 import DynamicSubjectName from "./DynamicSubjectName";
@@ -48,6 +49,7 @@ interface IExtendedKeyUsage {
 interface ICertificateRequestCAState {
   activeService: any;
   activeSubjectNameInfoTab: boolean;
+  addService: boolean;
   algorithm: string;
   caTemplate: any;
   caTemplatesArray: any[];
@@ -69,6 +71,7 @@ interface ICertificateRequestCAProps {
   regrequests: Map<any, any>;
   certrequests: Map<any, any>;
   certificates: Map<any, any>;
+  handleShowModalByType: (type: string) => void;
   service?: any;
   servicesMap: Map<any, any>;
   certificateTemplate: any;
@@ -94,6 +97,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
     this.state = {
       activeService: "",
+      addService: false,
       caTemplate: "",
       caTemplatesArray: [],
       OpenButton: false,
@@ -161,13 +165,17 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   render() {
     const { localize, locale } = this.context;
-    const { activeSubjectNameInfoTab, algorithm, containerName, formVerified,
+    const { activeSubjectNameInfoTab, addService, algorithm, containerName, formVerified,
       exportableKey, extKeyUsage, keyLength, keyUsage, keyUsageGroup,
       template, templateName, activeService, OpenButton, RDNsubject } = this.state;
-    const { regrequests, services, templates } = this.props;
+    const { certificates, certrequests, regrequests, services, servicesMap, templates } = this.props;
+
+    let regRequest;
+    let certrequest;
+    let certificate;
 
     const elements = services.map((service: any) => {
-      const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
+      const rrequest = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
 
       return (
         <ServiceListItem
@@ -175,13 +183,20 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
           chooseCert={() => this.activeItemChose(service)}
           isOpen={activeService === service.id}
           toggleOpen={() => this.activeItemChose(service)}
-          regRequest={regrequest}
+          regRequest={rrequest}
           service={service} />
       );
     });
 
     let disabled = "disabled";
     if (activeService) {
+      disabled = " ";
+      regRequest = regrequests.find((obj: any) => obj.get("serviceId") === activeService);
+      certrequest = certrequests.find((obj: any) => obj.get("serviceId") === activeService);
+      certificate = certrequest ? certificates.get(certrequest.certificateId) : null;
+    }
+
+    if (addService) {
       disabled = " ";
     }
 
@@ -296,8 +311,22 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                         <label>{localize("Services.type_certificate_holder", locale)}</label>
                       </div>
                     </div>
+
+                    <div className="row" />
+
+                    <div className="row">
+                      <ServiceInfo service={{
+                        ...(servicesMap.get(activeService)).toJS(), login: regRequest ? regRequest.Token : "",
+                        password: regRequest ? regRequest.Password : "",
+                        comment: regRequest ? regRequest.Comment : "",
+                        keyPhrase: regRequest ? regRequest.KeyPhrase : "",
+                        email: regRequest ? regRequest.Email : "",
+                      }} certificate={certificate} />
+
+                    </div>
                   </div>
                 </div>
+
               </ React.Fragment> :
               null
           }
@@ -305,6 +334,22 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
           <div className="row halfbottom" />
 
           <div className="row halfbottom">
+            <div style={{ float: "left" }}>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <input
+                  name="addService"
+                  className="filled-in"
+                  type="checkbox"
+                  id="addService"
+                  checked={addService}
+                  onChange={this.toggleAddService}
+                />
+                <label htmlFor="addService">
+                  {localize("Services.add_new_service", locale)}
+                </label>
+              </div>
+            </div>
+
             <div style={{ float: "right" }}>
               <div style={{ display: "inline-block", margin: "10px" }}>
                 <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
@@ -330,7 +375,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     if (this.state.activeService && this.state.activeService === service.id) {
       this.setState({ activeService: null });
     } else {
-      this.setState({ activeService: service.id });
+      this.setState({ activeService: service.id, addService: false });
 
       const request = regrequests.find((obj: any) => obj.get("serviceId") === service.id);
       if (request && request.RDN) {
@@ -354,9 +399,24 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     }
   }
 
+  toggleAddService = () => {
+    const { activeService, addService } = this.state;
+    this.setState({
+      activeService: addService ? activeService : "",
+      addService: !addService,
+    });
+  }
+
   funcOpenButton = () => {
-    const { activeService } = this.state;
+    const { activeService, addService } = this.state;
     const { regrequests } = this.props;
+
+    if (addService) {
+      this.handelCancel();
+      setTimeout(() => {
+        this.props.handleShowModalByType(MODAL_ADD_SERVICE_CA);
+      }, 100);
+    }
 
     const regrequest = regrequests.find((obj: any) => obj.get("serviceId") === activeService);
     const caTemplatesObj = this.props.caTemplates.get(regrequest.id);

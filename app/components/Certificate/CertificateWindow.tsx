@@ -10,7 +10,7 @@ import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
 import {
   ADDRESS_BOOK, CA, CERTIFICATE, CRL,
-  DEFAULT_CSR_PATH, MODAL_ADD_CERTIFICATE, MODAL_BEST_STORE,
+  DEFAULT_CSR_PATH, MODAL_ADD_CERTIFICATE, MODAL_ADD_SERVICE_CA, MODAL_BEST_STORE,
   MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA, MODAL_CLOUD_CSP,
   MODAL_DELETE_CERTIFICATE, MODAL_DELETE_CRL, MODAL_DELETE_REQUEST_CA, MODAL_EXPORT_CERTIFICATE,
   MODAL_EXPORT_CRL, MODAL_EXPORT_REQUEST_CA, MY, PFX, PROVIDER_CRYPTOPRO, REQUEST, ROOT,
@@ -36,6 +36,7 @@ import CertificateRequestCA from "../Request/CertificateRequestCA";
 import RequestCADelete from "../Request/RequestCADelete";
 import RequestCAExport from "../Request/RequestCAExport";
 import RequestCAInfo from "../Request/RequestCAInfo";
+import AddService from "../Services/AddService";
 import AddCertificate from "./AddCertificate";
 import BestStore from "./BestStore";
 import CertificateChainInfo from "./CertificateChainInfo";
@@ -67,6 +68,7 @@ class CertWindow extends React.Component<any, any> {
       requestCA: null,
       showDialogInstallRootCertificate: false,
       showModalAddCertificate: false,
+      showModalAddService: false,
       showModalBestStore: false,
       showModalCertificateImportDSS: false,
       showModalCertificateRequest: false,
@@ -89,6 +91,9 @@ class CertWindow extends React.Component<any, any> {
     switch (typeOfModal) {
       case MODAL_ADD_CERTIFICATE:
         this.setState({ showModalAddCertificate: true });
+        break;
+      case MODAL_ADD_SERVICE_CA:
+        this.setState({ showModalAddService: true });
         break;
       case MODAL_DELETE_CERTIFICATE:
         this.setState({ showModalDeleteCertifiacte: true });
@@ -132,6 +137,9 @@ class CertWindow extends React.Component<any, any> {
     switch (typeOfModal) {
       case MODAL_ADD_CERTIFICATE:
         this.setState({ showModalAddCertificate: false });
+        break;
+      case MODAL_ADD_SERVICE_CA:
+        this.setState({ showModalAddService: false });
         break;
       case MODAL_DELETE_CERTIFICATE:
         this.setState({ showModalDeleteCertifiacte: false });
@@ -182,6 +190,7 @@ class CertWindow extends React.Component<any, any> {
       showModalExportCRL: false,
       showModalExportCertifiacte: false,
       showModalBestStore: false,
+      showModalAddService: false,
     });
   }
 
@@ -1060,6 +1069,26 @@ class CertWindow extends React.Component<any, any> {
     );
   }
 
+  showModalAddService = () => {
+    const { localize, locale } = this.context;
+    const { showModalAddService } = this.state;
+
+    if (!showModalAddService) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalAddService}
+        header={localize("Services.add_new_service", locale)}
+        onClose={() => this.handleCloseModalByType(MODAL_ADD_SERVICE_CA)}
+        style={{ width: "600px" }}>
+
+        <AddService onCancel={() => this.handleCloseModalByType(MODAL_ADD_SERVICE_CA)} />
+      </Modal>
+    );
+  }
+
   showModalExportRequestCA = () => {
     const { localize, locale } = this.context;
     const { requestCA, showModalExportRequestCA } = this.state;
@@ -1150,6 +1179,7 @@ class CertWindow extends React.Component<any, any> {
 
         <CertificateRequestCA
           certificateTemplate={certificateTemplate}
+          handleShowModalByType={this.handleShowModalByType}
           onCancel={() => this.handleCloseModalByType(MODAL_CERTIFICATE_REQUEST_CA)}
           selfSigned={false}
         />
@@ -1437,6 +1467,7 @@ class CertWindow extends React.Component<any, any> {
 
           </div>
           {this.showModalAddCertificate()}
+          {this.showModalAddService()}
           {this.showModalDeleteCertificate()}
           {this.showModalExportCertificate()}
           {this.showModalExportCRL()}
