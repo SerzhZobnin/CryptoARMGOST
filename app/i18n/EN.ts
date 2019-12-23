@@ -586,6 +586,7 @@ export default {
     problem_5: "Certificates not linked to a key container",
     problem_6: "Trusted Crypto module is not loaded",
     problem_7: "trusted-curl module is not loaded",
+    problem_8: "Module with TSP / OCSP support in not loaded",
     resolve_1_1: "The system does not have the cryptoPro CSP crypto provider installed. The further operation of the application is impossible and the application will be closed.",
     resolve_1_2: "To solve this problem, install CryptoPro CSP version 5.0 and run the application again.",
     resolve_1_3: "Distribution of the crypto provider CryptoPro CSP can be downloaded from the official CryptoPro website",
@@ -611,6 +612,9 @@ export default {
     resolve_7_1: "When you run Crypto ARM GOST, the trusted-curl module is not loaded.",
     resolve_7_2: "To solve this problem, open the application control panel and forward error messages displayed on the Console tab to the technical support.",
     resolve_7_3: "Detailed instructions on how to open the control panel under the required platform can be found in the product documentation that is available on the link ",
+    resolve_8_1: "The system does not have the CryptoPro TSP Client 2.0 and CryptoPro OCSP Client 2.0 installed. Create CAdES-X Long Type 1 and set timestamps will not supported",
+    resolve_8_2: "To solve this problem, install CryptoPro TSP Client 2.0 and CryptoPro OCSP Client 2.0 and run the application again.",
+    resolve_8_3: "Distribution of the CryptoPro TSP Client 2.0 and CryptoPro OCSP Client 2.0 can be downloaded from the official CryptoPro website",
   },
   Request: {
     delete_request: "Delete request",

@@ -6,7 +6,7 @@ import {
   ERROR_CHECK_CSP_LICENSE, ERROR_CHECK_CSP_PARAMS,
   ERROR_LOAD_TRUSTED_CRYPTO, ERROR_LOAD_TRUSTED_CURL, NO_CORRECT_CRYPTOARM_LICENSE,
   NO_CRYPTOARM_LICENSE,
-  NO_GOST_2001, NO_HAVE_CERTIFICATES_WITH_KEY, NOT_INSTALLED_CSP,
+  NO_GOST_2001, NO_HAVE_CERTIFICATES_WITH_KEY, NO_TSP_OCSP_ENABLED, NOT_INSTALLED_CSP,
 } from "../../errors";
 import HeaderWorkspaceBlock from "../HeaderWorkspaceBlock";
 
@@ -77,6 +77,18 @@ class Resolve extends React.Component<IResolveProps, {}> {
             </p>
           </div>
         );
+
+      case NO_TSP_OCSP_ENABLED:
+        return (
+          <div className="resolve-content">
+            <p className="help_paragraf">{localize("Problems.resolve_8_1", locale)}</p>
+            <p className="help_paragraf">{localize("Problems.resolve_8_2", locale)}</p>
+            <p className="help_paragraf">{localize("Problems.resolve_8_3", locale)}
+              <a className="hlink" onClick={(event) => this.gotoLink("https://www.cryptopro.ru/")}> www.cryptopro.ru</a>
+            </p>
+          </div>
+        );
+
       case ERROR_CHECK_CSP_LICENSE:
         return (
           <div className="resolve-content">

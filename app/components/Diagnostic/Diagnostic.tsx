@@ -4,11 +4,12 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { loadAllCertificates } from "../../AC";
 import { loadLicense } from "../../AC/licenseActions";
-import { LOCATION_ABOUT } from "../../constants";
+import { LOCATION_ABOUT, TSP_OCSP_ENABLED } from "../../constants";
 import {
   BUG, ERROR_CHECK_CSP_LICENSE, ERROR_CHECK_CSP_PARAMS,
   ERROR_LOAD_TRUSTED_CRYPTO, ERROR_LOAD_TRUSTED_CURL, NO_CORRECT_CRYPTOARM_LICENSE,
-  NO_CRYPTOARM_LICENSE, NO_GOST_2001, NO_HAVE_CERTIFICATES_WITH_KEY, NOT_INSTALLED_CSP, WARNING,
+  NO_CRYPTOARM_LICENSE, NO_GOST_2001, NO_HAVE_CERTIFICATES_WITH_KEY, NO_TSP_OCSP_ENABLED,
+  NOT_INSTALLED_CSP, WARNING,
 } from "../../errors";
 import { filteredCertificatesSelector } from "../../selectors";
 import DiagnosticModal from "../Diagnostic/DiagnosticModal";
@@ -93,6 +94,17 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
     }
 
     return true;
+  }
+
+  checkTspAndOcsp = () => {
+    if (!(TSP_OCSP_ENABLED)) {
+      this.setState({
+        errors: [...this.state.errors, {
+          important: WARNING,
+          type: NO_TSP_OCSP_ENABLED,
+        }],
+      });
+    }
   }
 
   checkTrustedCryptoLoadedErr = () => {
@@ -196,6 +208,8 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
     if (this.checkTrustedCryptoLoadedErr()) {
       this.checkCPCSP();
     }
+
+    this.checkTspAndOcsp();
 
     loadLicense();
 

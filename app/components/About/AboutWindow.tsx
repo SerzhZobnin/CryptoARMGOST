@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { TSP_OCSP_ENABLED } from "../../constants";
 import LicenseCSPSetup from "../License/LicenseCSPSetup";
 import LicenseInfo from "../License/LicenseInfo";
 import LicenseOCSPSetup from "../License/LicenseOCSPSetup";
@@ -100,6 +101,23 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
                   </div>
                 </div>
               </div>
+
+              {!(TSP_OCSP_ENABLED) ?
+                <React.Fragment>
+                  <div className="row" />
+
+                  <div className="col s12">
+                    <div className="headline6">Ограничения</div>
+                    <hr />
+                    <div className="row">
+                      <div className="col s12">
+                        <div className="primary-text">{localize("Problems.resolve_8_1", locale)}</div>
+                      </div>
+                    </div>
+                  </div>
+                </ React.Fragment>
+                : null
+              }
             </div>
           </div>
           <div className="col s4 rightcol">

@@ -4,7 +4,8 @@ import {
   ERROR_CHECK_CSP_LICENSE, ERROR_CHECK_CSP_PARAMS,
   ERROR_LOAD_TRUSTED_CRYPTO,
   ERROR_LOAD_TRUSTED_CURL, NO_CORRECT_CRYPTOARM_LICENSE,
-  NO_CRYPTOARM_LICENSE, NO_GOST_2001, NO_HAVE_CERTIFICATES_WITH_KEY, NOT_INSTALLED_CSP,
+  NO_CRYPTOARM_LICENSE, NO_GOST_2001, NO_HAVE_CERTIFICATES_WITH_KEY, NO_TSP_OCSP_ENABLED,
+  NOT_INSTALLED_CSP,
 } from "../../errors";
 import HeaderWorkspaceBlock from "../HeaderWorkspaceBlock";
 
@@ -33,6 +34,8 @@ class Problems extends React.Component<IProblemsProps, {}> {
         return "Problems.problem_7";
       case NOT_INSTALLED_CSP:
         return "Problems.problem_1";
+      case NO_TSP_OCSP_ENABLED:
+        return "Problems.problem_8";
       case ERROR_CHECK_CSP_LICENSE:
         return "Problems.problem_2";
       case NO_GOST_2001:
