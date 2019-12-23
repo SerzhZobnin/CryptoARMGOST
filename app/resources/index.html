@@ -54,14 +54,6 @@
       window.RESOURCES_PATH = process.cwd();
       window.framework_NW = true;
     }
-    var crypto_module = require('crypto');
-    if (process.platform == 'win32') {
-      try {
-        crypto_module.loadConfig("./config/openssl.cfg");
-      } catch (e) {
-        // error
-      }
-    }
 
     var trusted;
     try {
