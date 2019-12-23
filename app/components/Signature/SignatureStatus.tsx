@@ -60,7 +60,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
     const timeStampTypes = this.getTimeStampTypes(signature);
 
     const dateSigningTime = new Date(signature.signingTime);
-    dateSigningTime.setHours(dateSigningTime.getHours() + 3);
+    dateSigningTime.setHours(dateSigningTime.getHours());
 
     return (
       <div className="row halfbottom" onClick={this.handleClick}>

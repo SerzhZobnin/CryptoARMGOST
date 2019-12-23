@@ -644,7 +644,7 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
           ocsp.Certificates = ocspResp.Certificates;
           ocsp.NextUpdate = ocspResp.NextUpdate();
           ocsp.OCSP = ocspResp;
-          ocsp.OcspCert = undefined;
+          ocsp.OcspCert = ocspResp.OcspCert;
           ocsp.ProducedAt = ocspResp.ProducedAt;
           ocsp.RespNumber = ocspResp.RespNumber;
           ocsp.RespStatus = ocspResp.RespStatus;
