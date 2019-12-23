@@ -171,7 +171,7 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
               <div className="primary-text">Управление лицензией КриптоПро TSP</div>
               <hr />
               <div className="row" >
-                <div className="col s6 waves-effect waves-cryptoarm hover_outline" onClick={this.showModalLicenseTSPSetup}>
+                <div className={`col s6 waves-effect waves-cryptoarm hover_outline ${TSP_OCSP_ENABLED ? "" : "disabled"}`} onClick={this.showModalLicenseTSPSetup}>
                   <div className="col s12 svg_icon">
                     <a data-position="bottom">
                       <i className="material-icons license install" />
@@ -194,7 +194,7 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
               <div className="primary-text">Управление лицензией КриптоПро OCSP</div>
               <hr />
               <div className="row" >
-                <div className="col s6 waves-effect waves-cryptoarm hover_outline" onClick={this.showModalLicenseOCSPSetup}>
+                <div className={`col s6 waves-effect waves-cryptoarm hover_outline ${TSP_OCSP_ENABLED ? "" : "disabled"}`} onClick={this.showModalLicenseOCSPSetup}>
                   <div className="col s12 svg_icon">
                     <a data-position="bottom">
                       <i className="material-icons license install" />
