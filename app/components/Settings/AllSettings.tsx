@@ -37,7 +37,8 @@ class AllSettings extends React.Component<any, {}> {
 
   componentDidMount() {
     // tslint:disable-next-line: no-shadowed-variable
-    const { changeSignatureTime, changeSignatureTimestamp, changeSignatureTimestampOnSign, changeSignatureStandard, settings } = this.props;
+    const { changeSignatureTime, changeSignatureTimestamp, changeSignatureTimestampOnSign,
+      changeSignatureStandard, settings, signer } = this.props;
 
     $(".btn-floated, .nav-small-btn").dropdown({
       alignment: "left",
@@ -62,6 +63,12 @@ class AllSettings extends React.Component<any, {}> {
       changeSignatureTimestamp(false);
       changeSignatureTimestampOnSign(false);
     }
+
+    if (signer && (signer.service || signer.dssUserID)) {
+      changeSignatureStandard(SignatureStandard.CMS);
+      changeSignatureTimestamp(false);
+      changeSignatureTimestampOnSign(false);
+    }
   }
 
   render() {
@@ -76,7 +83,7 @@ class AllSettings extends React.Component<any, {}> {
     const classDisabledTspAndOcsp = signatureStandard === SignatureStandard.CADES ? "" : "disabled";
     const isDetached = settings.sign.detached;
 
-    if (signer && signer.service && encoding !== "BASE-64") {
+    if (signer && (signer.service || signer.dssUserID) && encoding !== "BASE-64") {
       encoding = "BASE-64";
     }
 
@@ -119,17 +126,16 @@ class AllSettings extends React.Component<any, {}> {
             <SignatureStandardSelector
               value={signatureStandard}
               handleChange={this.handleSignatureStandardChange}
-              disabled={signer && signer.service || !(TSP_OCSP_ENABLED)} />
+              disabled={signer && (signer.service || signer.dssUserID) || !(TSP_OCSP_ENABLED)} />
 
             <SignatureTypeSelector
               detached={isDetached}
               handleChange={this.handleDetachedChange}
-              disabled={disabled || signer && signer.service} />
+              disabled={disabled} />
 
             <EncodingTypeSelector
               EncodingValue={encoding}
-              handleChange={this.handleEncodingChange}
-              disabled={signer && signer.service} />
+              handleChange={this.handleEncodingChange} />
           </div>
 
           <div className="col s12">
@@ -141,14 +147,14 @@ class AllSettings extends React.Component<any, {}> {
               title={localize("Sign.sign_time", locale)} />
 
             <CheckBoxWithLabel
-              disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES}
+              disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES || signer && (signer.service || signer.dssUserID)}
               onClickCheckBox={this.handleTimestampOnSignClick}
               isChecked={signatureStandard === SignatureStandard.CADES ? true : settings.sign.timestamp_on_sign}
               elementId="set_timestamp_on_sign"
               title={localize("Cades.set_timestamp_on_sign", locale)} />
 
             <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
-              disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES}
+              disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES || signer && (signer.service || signer.dssUserID)}
               isChecked={signatureStandard === SignatureStandard.CADES ? false : settings.sign.timestamp}
               elementId="set_timestamp_on_data"
               title={localize("Cades.set_timestamp_on_data", locale)} />
@@ -164,7 +170,7 @@ class AllSettings extends React.Component<any, {}> {
           <EncodingTypeSelector
             EncodingValue={settings.encrypt.encoding}
             handleChange={this.handleEncryptEncodingChange}
-            disabled={disabled || signer && signer.service}
+            disabled={disabled}
           />
 
           <CheckBoxWithLabel
