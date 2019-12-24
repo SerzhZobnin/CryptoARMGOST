@@ -32,6 +32,21 @@ class SignatureStandardSelector extends React.Component<ISignatureStandardSelect
     $(ReactDOM.findDOMNode(this.refs.standard)).on("change", this.changeStandard);
   }
 
+  componentDidUpdate() {
+    $(document).ready(() => {
+      $("select").material_select();
+    });
+  }
+
+  shouldComponentUpdate(nextProps: any) {
+    if (nextProps.disabled !== this.props.disabled ||
+      nextProps.value !== this.props.value) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   changeStandard = (ev: any) => {
     this.props.handleChange(ev.target.value);
   }
@@ -49,7 +64,7 @@ class SignatureStandardSelector extends React.Component<ISignatureStandardSelect
             disabled={!(TSP_OCSP_ENABLED) || this.props.disabled}
             id="standard"
             ref="standard"
-            defaultValue={defaultValue}
+            value={defaultValue}
           >
             <option value={SignatureStandard.CMS}>
               {SignatureStandard.CMS}
