@@ -64,7 +64,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
           </label>
         </div>
 
-        <div className="col s12">
+        {/* <div className="col s12">
           <CheckBoxWithLabel
             disabled={!isCades}
             isChecked={use_proxy}
@@ -92,23 +92,23 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
                 </label>
               </div>
 
-              {/* <div className="input-field col s12">
-          <input
-            id="port_ocsp"
-            disabled={!isCades || !use_proxy}
-            type="number"
-            className="validate"
-            max={65536}
-            min={0}
-            name="port_ocsp"
-            value={proxy_port}
-            onChange={this.handleInputPort}
-            placeholder="0 - 65536"
-          />
-          <label htmlFor="port_ocsp">
-            {localize("Cades.port", locale)}
-          </label>
-        </div> */}
+              <div className="input-field col s12">
+                <input
+                  id="port_ocsp"
+                  disabled={!isCades || !use_proxy}
+                  type="number"
+                  className="validate"
+                  max={65536}
+                  min={0}
+                  name="port_ocsp"
+                  value={proxy_port}
+                  onChange={this.handleInputPort}
+                  placeholder="0 - 65536"
+                />
+                <label htmlFor="port_ocsp">
+                  {localize("Cades.port", locale)}
+                </label>
+              </div>
 
               <LoginForm
                 disabled={!isCades || !use_proxy}
@@ -118,7 +118,7 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
                 passwordChange={this.props.changeOcspProxyPassword} />
             </ React.Fragment>
             : null
-        }
+        } */}
       </div>
     );
   }
