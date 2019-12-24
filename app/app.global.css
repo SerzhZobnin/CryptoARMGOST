@@ -850,9 +850,11 @@ i.material-icons.choosefolder {
 }
 
 .collapsible-header.params{
-  border-left: 1px solid #ddd !important;
-  border-right: 1px solid #ddd !important;
-  border-bottom: 1px solid #ddd !important;
+  border-color: #bf3817;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
+  background-color: transparent;
 }
 
 .collapsible-header.active i {
