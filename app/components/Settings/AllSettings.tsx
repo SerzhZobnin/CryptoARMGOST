@@ -52,7 +52,7 @@ class AllSettings extends React.Component<any, {}> {
     const signatureStandard = settings.sign.standard;
 
     if (signatureStandard === SignatureStandard.CADES) {
-      changeSignatureTime(false);
+      changeSignatureTime(true);
       changeSignatureTimestamp(false);
       changeSignatureTimestampOnSign(true);
     }
@@ -124,7 +124,7 @@ class AllSettings extends React.Component<any, {}> {
             <SignatureTypeSelector
               detached={isDetached}
               handleChange={this.handleDetachedChange}
-              disabled={signer && signer.service} />
+              disabled={disabled || signer && signer.service} />
 
             <EncodingTypeSelector
               EncodingValue={encoding}
@@ -136,19 +136,19 @@ class AllSettings extends React.Component<any, {}> {
             <CheckBoxWithLabel
               disabled={disabled || signatureStandard === SignatureStandard.CADES}
               onClickCheckBox={this.handleTimeClick}
-              isChecked={signatureStandard === SignatureStandard.CADES ? false : settings.sign.time}
+              isChecked={signatureStandard === SignatureStandard.CADES ? true : settings.sign.time}
               elementId="sign_time"
               title={localize("Sign.sign_time", locale)} />
 
             <CheckBoxWithLabel
-              disabled={disabled || !(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES}
+              disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES}
               onClickCheckBox={this.handleTimestampOnSignClick}
               isChecked={signatureStandard === SignatureStandard.CADES ? true : settings.sign.timestamp_on_sign}
               elementId="set_timestamp_on_sign"
               title={localize("Cades.set_timestamp_on_sign", locale)} />
 
             <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
-              disabled={disabled || !(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES}
+              disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES}
               isChecked={signatureStandard === SignatureStandard.CADES ? false : settings.sign.timestamp}
               elementId="set_timestamp_on_data"
               title={localize("Cades.set_timestamp_on_data", locale)} />
@@ -164,6 +164,7 @@ class AllSettings extends React.Component<any, {}> {
           <EncodingTypeSelector
             EncodingValue={settings.encrypt.encoding}
             handleChange={this.handleEncryptEncodingChange}
+            disabled={disabled || signer && signer.service}
           />
 
           <CheckBoxWithLabel
@@ -292,7 +293,7 @@ class AllSettings extends React.Component<any, {}> {
     changeSignatureStandard(value);
 
     if (value === SignatureStandard.CADES) {
-      changeSignatureTime(false);
+      changeSignatureTime(true);
       changeSignatureTimestamp(false);
       changeSignatureTimestampOnSign(true);
     }

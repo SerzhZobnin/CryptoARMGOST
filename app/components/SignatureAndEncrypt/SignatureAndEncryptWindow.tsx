@@ -194,11 +194,15 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
           {this.showModalFilterDocuments()}
         </div>
 
-        <div className={`fixed-action-btn ${classDisabled}`} style={{ bottom: "30px", right: "380px" }} onClick={this.addFiles.bind(this)}>
-          <a className="btn-floating btn-large cryptoarm-red">
-            <i className="large material-icons">add</i>
-          </a>
-        </div>
+        {
+          disabledNavigate ? null :
+            <div className="fixed-action-btn" style={{ bottom: "30px", right: "380px" }} onClick={this.addFiles.bind(this)}>
+              <a className="btn-floating btn-large cryptoarm-red">
+                <i className="large material-icons">add</i>
+              </a>
+            </div>
+        }
+
       </div>
     );
   }

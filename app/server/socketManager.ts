@@ -71,7 +71,7 @@ io.on(CONNECTION, (socket) => {
     downloadFiles(data, socket);
 
     store.dispatch({ type: CHANGE_SIGNATURE_DETACHED, payload: { detached: false } });
-    store.dispatch({ type: CHANGE_SIGNATURE_TIME, payload: { timestamp: true } });
+    store.dispatch({ type: CHANGE_SIGNATURE_TIME, payload: { time: true } });
     store.dispatch({ type: CHANGE_OUTFOLDER, payload: { outfolder: "" } });
     store.dispatch({ type: TOGGLE_SAVE_TO_DOCUMENTS, payload: { saveToDocuments: false } });
 
@@ -92,7 +92,7 @@ io.on(CONNECTION, (socket) => {
     downloadFiles(data, socket);
 
     store.dispatch({ type: CHANGE_SIGNATURE_DETACHED, payload: { detached: false } });
-    store.dispatch({ type: CHANGE_SIGNATURE_TIME, payload: { timestamp: true } });
+    store.dispatch({ type: CHANGE_SIGNATURE_TIME, payload: { time: true } });
     store.dispatch({ type: CHANGE_OUTFOLDER, payload: { outfolder: "" } });
     store.dispatch({ type: TOGGLE_SAVE_TO_DOCUMENTS, payload: { saveToDocuments: false } });
   });

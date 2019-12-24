@@ -29,6 +29,21 @@ class SignatureTypeSelector extends React.Component<ISignatureTypeSelectorProps,
     $(ReactDOM.findDOMNode(this.refs.type_of_signature)).on("change", this.changeSignatureType);
   }
 
+  componentDidUpdate() {
+    $(document).ready(() => {
+      $("select").material_select();
+    });
+  }
+
+  shouldComponentUpdate(nextProps: any) {
+    if (nextProps.disabled !== this.props.disabled ||
+      nextProps.detached !== this.props.detached) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   changeSignatureType = (ev: any) => {
     this.props.handleChange(ev.target.value === SignatureTypes.DETACHED);
   }
@@ -44,7 +59,7 @@ class SignatureTypeSelector extends React.Component<ISignatureTypeSelectorProps,
             className="select"
             id="type_of_signature"
             ref="type_of_signature"
-            defaultValue={this.props.detached ? SignatureTypes.DETACHED : SignatureTypes.ATTACHED}
+            value={this.props.detached ? SignatureTypes.DETACHED : SignatureTypes.ATTACHED}
           >
             <option value={SignatureTypes.ATTACHED}>
               {localize("Sign.sign_type_attached", locale)}
