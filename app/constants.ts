@@ -183,7 +183,6 @@ export const GOST94 = "1.2.643.2.2.20";
 export const GOST89 = "1.2.643.2.2.21";
 
 export const ALG_RSA = "RSA";
-export const ALG_GOST2001 = "gost2001";
 export const ALG_GOST12_256 = "gost2012-256";
 export const ALG_GOST12_512 = "gost2012-512";
 
