@@ -758,9 +758,13 @@ export function getSignPropertys(cms: trusted.cms.SignedData) {
         Materialize.toast(localize("Sign.verify_signercontent_founds_errors", window.locale), 2000, "toast-verify_signercontent_founds_errors");
       }
 
-      curRes.status_verify = certificatesSignStatus && signerStatus,
+      if (TSP_OCSP_ENABLED && signer.isCades) {
+        curRes.status_verify = signerStatus;
+      } else {
+        curRes.status_verify = certificatesSignStatus && signerStatus;
+      }
 
-        result.push(curRes);
+      result.push(curRes);
     }
 
     return result;
