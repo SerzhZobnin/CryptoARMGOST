@@ -58,7 +58,7 @@ export const SignModel = Record({
   signer: "",
   standard: "CMS",
   time: true,
-  timestamp: true,
+  timestamp: false,
   timestamp_on_sign: false,
 });
 
