@@ -1,5 +1,6 @@
 import { execFile } from "child_process";
 import * as os from "os";
+import * as path_module from "path";
 import PropTypes from "prop-types";
 import React from "react";
 import Media from "react-media";
@@ -304,7 +305,7 @@ class CertWindow extends React.Component<any, any> {
         return;
 
       case PFX:
-        this.p12Import(event);
+        this.p12Import(path);
         return;
       default:
         $(".toast-cert_import_failed").remove();
@@ -764,11 +765,11 @@ class CertWindow extends React.Component<any, any> {
     }
   }
 
-  p12Import = (event: any) => {
+  p12Import = (fpath: string) => {
     const { localize, locale } = this.context;
     const self = this;
 
-    const P12_PATH = event[0].path;
+    const P12_PATH = fpath;
     let p12: trusted.pki.PKCS12 | undefined;
 
     try {
@@ -808,7 +809,7 @@ class CertWindow extends React.Component<any, any> {
             message: "",
             operation: "Импорт PKCS12",
             operationObject: {
-              in: path.basename(P12_PATH),
+              in: path_module.basename(P12_PATH),
               out: "Null",
             },
             userName: USER_NAME,
@@ -825,7 +826,7 @@ class CertWindow extends React.Component<any, any> {
             message: err.message ? err.message : err,
             operation: "Импорт PKCS12",
             operationObject: {
-              in: path.basename(P12_PATH),
+              in: path_module.basename(P12_PATH),
               out: "Null",
             },
             userName: USER_NAME,
