@@ -40,8 +40,8 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
 #toast-container {
   top: auto !important;
   right: auto !important;
-  left: 5%;
-  bottom: 7%;
+  left: 80px;
+  bottom: 30px;
 }
 
 .cryptoarm-blue {
