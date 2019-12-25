@@ -101,6 +101,10 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
     if (prevProps.searchValue && !this.props.searchValue) {
       this.setState({ foundDocuments: [] });
     }
+
+    if (prevProps.location !== this.props.location) {
+      this.sort(this.state);
+    }
   }
 
   componentDidMount() {
@@ -460,4 +464,5 @@ interface IOwnProps {
 
 export default connect((state, ownProps: IOwnProps) => ({
   certificatesMap: filteredCertificatesSelector(state, { operation: ownProps.operation }),
+  location: state.router.location,
 }), { activeFile, deleteFile, selectTempContentOfSignedFiles })(CertificateTable);
