@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { Link } from "react-router-dom";
-import { LOCATION_CERTIFICATES, LOCATION_CONTAINERS } from "../../constants";
+import { LOCATION_CERTIFICATES, LOCATION_CONTAINERS, MY } from "../../constants";
 import {
   ERROR_CHECK_CSP_LICENSE, ERROR_CHECK_CSP_PARAMS,
   ERROR_LOAD_TRUSTED_CRYPTO, ERROR_LOAD_TRUSTED_CURL, NO_CORRECT_CRYPTOARM_LICENSE,
@@ -168,7 +168,9 @@ class Resolve extends React.Component<IResolveProps, {}> {
             </p>
             <p className="help_paragraf">
               {Number(this.getCPCSPVersion().charAt(0)) < 5 ? localize("Problems.resolve_5_4_1", locale) : localize("Problems.resolve_5_4", locale)}
-              <Link to={LOCATION_CERTIFICATES} onClick={() => $("#modal-window-diagnostic").closeModal()}>
+              <Link
+                to={{ pathname: LOCATION_CERTIFICATES, search: "my", state: { head: localize("Certificate.certs_my", locale), store: MY } }}
+                onClick={() => $("#modal-window-diagnostic").closeModal()}>
                 {localize("Certificate.Certificate", locale)}
               </Link>
             </p>
