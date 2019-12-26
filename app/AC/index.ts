@@ -767,7 +767,6 @@ export function verifySignature(fileId: string, showOpenDialogForDetached: boole
       });
     } else if (signatureInfo) {
       dispatch({
-        generateId: true,
         payload: { fileId, signaruteStatus, signatureInfo },
         type: VERIFY_SIGNATURE + SUCCESS,
       });

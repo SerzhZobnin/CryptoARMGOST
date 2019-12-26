@@ -6,7 +6,7 @@ import {
 } from "../../constants";
 import { DECRYPT, ENCRYPT, SIGN, VERIFY } from "../../constants";
 import store from "../../store/index";
-import { extFile, fileExists } from "../../utils";
+import { extFile, fileExists, md5 } from "../../utils";
 
 const remote = window.electron.remote;
 const ipcRenderer = window.electron.ipcRenderer;
@@ -26,7 +26,6 @@ const openFile = (openFilePath: string) => {
     const file = getFileProperty(openFilePath);
 
     store.dispatch({
-      generateId: true,
       payload: {
         file,
       },
@@ -53,6 +52,7 @@ const getFileProperty = (filepath: string) => {
 
   return {
     extension,
+    id: md5(filepath),
     filename: path.basename(filepath),
     filesize: stat.size,
     fullpath: filepath,

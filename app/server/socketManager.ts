@@ -14,7 +14,7 @@ import store from "../store/index";
 import { checkLicense } from "../trusted/jwt";
 import * as signs from "../trusted/sign";
 import { extFile } from "../utils";
-import { fileExists } from "../utils";
+import { fileExists, md5 } from "../utils";
 import { CONNECTION, DECRYPT, DISCONNECT, ENCRYPT, SIGN, UNAVAILABLE, VERIFIED, VERIFY } from "./constants";
 import io from "./socketIO";
 
@@ -186,7 +186,7 @@ const downloadFiles = (data: ISignRequest | IEncryptRequest, socket: SocketIO.So
             type: PACKAGE_SELECT_FILE + START,
           });
 
-          const fileId = Date.now() + Math.random();
+          const fileId = fileProps.id;
 
           setTimeout(() => {
             if (fileProps.filename.split(".").pop() === "sig") {
@@ -213,6 +213,7 @@ const downloadFiles = (data: ISignRequest | IEncryptRequest, socket: SocketIO.So
                     fileId,
                     ...info,
                     id: Math.random(),
+                    verifyingTime: new Date().getTime(),
                   };
                 });
 
@@ -225,7 +226,6 @@ const downloadFiles = (data: ISignRequest | IEncryptRequest, socket: SocketIO.So
 
               if (signatureInfo) {
                 store.dispatch({
-                  generateId: true,
                   payload: { fileId, signaruteStatus, signatureInfo },
                   type: VERIFY_SIGNATURE + SUCCESS,
                 });
@@ -303,6 +303,7 @@ const getFileProperty = (filepath: string) => {
 
   return {
     extension,
+    id: md5(filepath),
     filename: path.basename(filepath),
     filesize: stat.size,
     fullpath: filepath,
