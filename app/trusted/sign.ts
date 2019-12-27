@@ -153,7 +153,7 @@ export function signFile(
         }
 
         sd.signParams = cadesParams;
-      } else if (params.tspModel && params.signModel && (params.signModel.timestamp || params.signModel.timestamp_on_sign)) {
+      } else if (params.tspModel && params.signModel && (params.signModel.timestamp_on_data || params.signModel.timestamp_on_sign)) {
         const connSettings = new trusted.utils.ConnectionSettings();
 
         if (params.tspModel.use_proxy) {
@@ -179,11 +179,11 @@ export function signFile(
 
         let stampType;
 
-        if (params.signModel.timestamp && !params.signModel.timestamp_on_sign) {
+        if (params.signModel.timestamp_on_data && !params.signModel.timestamp_on_sign) {
           stampType = trusted.cms.StampType.stContent;
-        } else if (!params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+        } else if (!params.signModel.timestamp_on_data && params.signModel.timestamp_on_sign) {
           stampType = trusted.cms.StampType.stSignature;
-        } else if (params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+        } else if (params.signModel.timestamp_on_data && params.signModel.timestamp_on_sign) {
           // tslint:disable-next-line: no-bitwise
           stampType = trusted.cms.StampType.stContent | trusted.cms.StampType.stSignature;
         }
@@ -346,7 +346,7 @@ export function resignFile(
         }
 
         sd.signParams = cadesParams;
-      } else if (params.tspModel && params.signModel && (params.signModel.timestamp || params.signModel.timestamp_on_sign)) {
+      } else if (params.tspModel && params.signModel && (params.signModel.timestamp_on_data || params.signModel.timestamp_on_sign)) {
         const connSettings = new trusted.utils.ConnectionSettings();
 
         if (params.tspModel.use_proxy) {
@@ -372,11 +372,11 @@ export function resignFile(
 
         let stampType;
 
-        if (params.signModel.timestamp && !params.signModel.timestamp_on_sign) {
+        if (params.signModel.timestamp_on_data && !params.signModel.timestamp_on_sign) {
           stampType = trusted.cms.StampType.stContent;
-        } else if (!params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+        } else if (!params.signModel.timestamp_on_data && params.signModel.timestamp_on_sign) {
           stampType = trusted.cms.StampType.stSignature;
-        } else if (params.signModel.timestamp && params.signModel.timestamp_on_sign) {
+        } else if (params.signModel.timestamp_on_data && params.signModel.timestamp_on_sign) {
           // tslint:disable-next-line: no-bitwise
           stampType = trusted.cms.StampType.stContent | trusted.cms.StampType.stSignature;
         }

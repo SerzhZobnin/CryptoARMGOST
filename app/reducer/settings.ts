@@ -24,7 +24,7 @@ export interface ISignModel {
   signer: string;
   standard: string;
   time: boolean;
-  timestamp: boolean;
+  timestamp_on_data: boolean;
   timestamp_on_sign: boolean;
 }
 
@@ -58,7 +58,7 @@ export const SignModel = Record({
   signer: "",
   standard: "CMS",
   time: true,
-  timestamp: false,
+  timestamp_on_data: false,
   timestamp_on_sign: false,
 });
 
@@ -179,7 +179,7 @@ export default (settings = new DefaultReducerState(), action) => {
 
     case CHANGE_SIGNATURE_TIMESTAMP:
       settings = settings
-        .setIn(["entities", settings.active, "sign", "timestamp"], payload.timestamp);
+        .setIn(["entities", settings.active, "sign", "timestamp_on_data"], payload.timestamp);
       break;
 
     case CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN:
