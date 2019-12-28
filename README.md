@@ -18,6 +18,10 @@
 
 ![demo-sign](https://user-images.githubusercontent.com/16474118/71544314-e6a6b000-298e-11ea-906f-b27b6b73e546.gif)
 
+Для создания усовершенствованной подписи, формата CAdES-X Long Type 1 выберите соответсвующий пункт в Параметрах и укажите ссылку TSP службы, наприvер http://qs.cryptopro.ru/tsp/tsp.srf
+
+![изображение](https://user-images.githubusercontent.com/16474118/71544424-49e51200-2990-11ea-99b6-4fcad9fd7767.png)
+
 * **Шифрование** - шифрование файлов в адрес нескольких получателей. Расшифрование данных. Архивирование результатов после шифрования.
 
 ![demo-enc](https://user-images.githubusercontent.com/16474118/71544318-f1f9db80-298e-11ea-8cd3-b988bb87ebe5.gif)
