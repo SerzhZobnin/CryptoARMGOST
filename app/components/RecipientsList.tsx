@@ -75,7 +75,7 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
               <div className="collection-item avatar certs-collection "
                 onClick={() => this.handleClick(recipient)}>
                 <React.Fragment>
-                  <div className="col s12">
+                  <div>
                     <div className="col s2">
                       <div className={curStatusStyle} />
                     </div>
