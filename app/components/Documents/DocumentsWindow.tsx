@@ -18,7 +18,6 @@ import {
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
 import { mapToArr } from "../../utils";
 import Modal from "../Modal";
-import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 import DeleteDocuments from "./DeleteDocuments";
 import DocumentsRightColumn from "./DocumentsRightColumn";
 import DocumentsTable from "./DocumentsTable";
@@ -168,44 +167,17 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
           </div>
           <div className="col s4 rightcol">
             <div className="row halfbottom" />
-
-            {(showSignatureInfo && fileSignatures) ?
-              (
-                <React.Fragment>
-                  <div className="col s12">
-                    <div className="primary-text">{localize("Sign.sign_info", locale)}</div>
-                    <hr />
-                  </div>
-                  <div style={{ height: "calc(100vh - 80px)" }}>
-                    <div className="add-certs">
-                      <SignatureInfoBlock
-                        signatures={fileSignatures}
-                        file={file}
-                      />
-                    </div>
-                  </div>
-                  <div className="row fixed-bottom-rightcolumn">
-                    <div className="col s1 offset-s4">
-                      <a className="btn btn-text waves-effect waves-light" onClick={this.backView}>
-                        {"< НАЗАД"}
-                      </a>
-                    </div>
-                  </div>
-                </React.Fragment>
-              ) :
-              <DocumentsRightColumn handleClickDelete={this.handleShowModalDeleteDocuments} />
-            }
-
+            <DocumentsRightColumn
+              handleClickDelete={this.handleShowModalDeleteDocuments}
+              fileSignatures={fileSignatures}
+              file={file}
+              showSignatureInfo={showSignatureInfo} />
           </div>
           {this.showModalFilterDocuments()}
           {this.showModalDeleteDocuments()}
         </div>
       </div>
     );
-  }
-
-  backView = () => {
-    this.setState({ showSignatureInfo: false });
   }
 
   showModalFilterDocuments = () => {

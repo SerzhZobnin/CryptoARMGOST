@@ -74,7 +74,7 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
           <div className="col s2" style={{ width: "11%" }}>
             <div className={status ? "status_ok_icon" : "status_error_icon"} />
           </div>
-          <div className="col s8 ">
+          <div className="col s10 ">
             <div className="col s12">
               <div className={status ? "valid" : "unvalid"}>{status ? localize("Sign.sign_ok", locale) : localize("Sign.sign_error", locale)}</div>
               <div className="collection-info ">{"Проверена:"} {(new Date(signatures[0].verifyingTime)).toLocaleDateString(locale, {

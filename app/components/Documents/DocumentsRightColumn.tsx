@@ -12,6 +12,7 @@ import {
 } from "../../constants";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
 import { mapToArr } from "../../utils";
+import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 
 interface IDocumentsWindowProps {
   documents: any;
@@ -53,14 +54,28 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
 
   render() {
     const { localize, locale } = this.context;
+    const { file, fileSignatures, showSignatureInfo } = this.props;
 
     return (
       <React.Fragment>
-        <div style={{ height: "calc(100vh - 150px)" }}>
-          <div className="add-certs">
-
-          </div>
-        </div>
+        {
+          showSignatureInfo ?
+            <React.Fragment>
+              <div className="col s12">
+                <div className="primary-text">{localize("Sign.sign_info", locale)}</div>
+                <hr />
+              </div>
+              <div style={{ height: "calc(100vh - 110px)" }}>
+                <div className="add-certs">
+                  <SignatureInfoBlock
+                    signatures={fileSignatures}
+                    file={file}
+                  />
+                </div>
+              </div>
+            </React.Fragment>
+            : null
+        }
 
         <div className="row fixed-bottom-rightcolumn" >
           <div className="col s12">
