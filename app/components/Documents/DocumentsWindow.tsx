@@ -1,60 +1,36 @@
-import * as fs from "fs";
-import * as path from "path";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import {
-  activeFile, changeLocation, deleteFile, deleteRecipient,
-  filePackageDelete, filePackageSelect, packageSign,
-  removeAllFiles, removeAllRemoteFiles, selectFile,
-  selectSignerCertificate, verifySignature,
+  deleteRecipient, packageSign, selectSignerCertificate,
 } from "../../AC";
-import { addDocuments, documentsReviewed, IDocument } from "../../AC/documentsActions";
+import { documentsReviewed } from "../../AC/documentsActions";
 import {
   arhiveDocuments, loadAllDocuments, removeAllDocuments,
-  removeDocuments, selectAllDocuments, selectDocument,
+  removeDocuments, selectAllDocuments,
 } from "../../AC/documentsActions";
 import {
   activeSetting,
 } from "../../AC/settingsActions";
 import {
-  DECRYPT, DEFAULT_DOCUMENTS_PATH, ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
-  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_MAIN, LOCATION_SETTINGS_CONFIG,
-  REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
+  DEFAULT_DOCUMENTS_PATH,
 } from "../../constants";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
-import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
-import * as jwt from "../../trusted/jwt";
-import { checkLicense } from "../../trusted/jwt";
-import * as trustedSign from "../../trusted/sign";
-import { dirExists, extFile, fileCoding, mapToArr, md5 } from "../../utils";
-import logger from "../../winstonLogger";
+import { mapToArr } from "../../utils";
 import Modal from "../Modal";
-import RecipientsList from "../RecipientsList";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
-import SignerInfo from "../Signature/SignerInfo";
 import DeleteDocuments from "./DeleteDocuments";
 import DocumentsRightColumn from "./DocumentsRightColumn";
 import DocumentsTable from "./DocumentsTable";
 import FilterDocuments from "./FilterDocuments";
 
-const dialog = window.electron.remote.dialog;
-
 interface IDocumentsWindowProps {
-  addDocuments: (documents: string[]) => void;
   documents: any;
-  documentsLoaded: boolean;
   documentsLoading: boolean;
   isDefaultFilters: boolean;
-  changeLocation: (locaion: string) => void;
   loadAllDocuments: () => void;
-  filePackageSelect: (files: string[]) => void;
   removeAllDocuments: () => void;
-  removeAllFiles: () => void;
-  removeAllRemoteFiles: () => void;
   selectAllDocuments: () => void;
-  selectDocument: (uid: number) => void;
   removeDocuments: (documents: any) => void;
   arhiveDocuments: (documents: any, arhiveName: string) => void;
 }
@@ -141,7 +117,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
   render() {
     const { localize, locale } = this.context;
-    const { documents, isDefaultFilters, isDocumentsReviewed, recipients, setting, signer } = this.props;
+    const { documents, isDefaultFilters, setting } = this.props;
     const { fileSignatures, file, showSignatureInfo } = this.state;
 
     const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
@@ -185,12 +161,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
               </div>
             </div>
             <div style={{ height: "calc(100% - 56px)", position: "relative" }}>
-              <div id="droppableZone" onDragEnter={(event: any) => this.dragEnterHandler(event)}
-                onDrop={(event: any) => this.dropHandler(event)}
-                onDragOver={(event: any) => this.dragOverHandler(event)}
-                onDragLeave={(event: any) => this.dragLeaveHandler(event)}>
-              </div>
-              <div onDragEnter={this.dropZoneActive.bind(this)}>
+              <div>
                 <DocumentsTable searchValue={this.state.searchValue} />
               </div>
             </div>
@@ -229,192 +200,12 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
           {this.showModalFilterDocuments()}
           {this.showModalDeleteDocuments()}
         </div>
-
-        <div className="fixed-action-btn" style={{ bottom: "30px", right: "380px" }} onClick={this.addFiles.bind(this)}>
-          <a className="btn-floating btn-large cryptoarm-red">
-            <i className="large material-icons">add</i>
-          </a>
-        </div>
       </div>
     );
   }
 
   backView = () => {
     this.setState({ showSignatureInfo: false });
-  }
-
-  addFiles() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { addDocuments } = this.props;
-
-    dialog.showOpenDialog(null, { properties: ["openFile", "multiSelections"] }, (selectedFiles: string[]) => {
-      if (selectedFiles) {
-        const documents: string[] = [];
-
-        selectedFiles.forEach((file) => {
-          const fullpath = file;
-          const stat = fs.statSync(fullpath);
-          if (!stat.isDirectory()) {
-            documents.push(fullpath);
-          }
-        });
-
-        addDocuments(documents);
-      }
-    });
-  }
-
-  dragLeaveHandler(event: any) {
-    event.target.classList.remove("draggedOver");
-
-    const zone = document.querySelector("#droppableZone");
-    if (zone) {
-      zone.classList.remove("droppableZone-active");
-    }
-  }
-
-  dragEnterHandler(event: any) {
-    event.target.classList.add("draggedOver");
-  }
-
-  dragOverHandler(event: any) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
-
-  directoryReader = (reader: any) => {
-    reader.readEntries((entries: any) => {
-      entries.forEach((entry: any) => {
-        this.scanFiles(entry);
-      });
-
-      if (entries.length === 100) {
-        this.directoryReader(reader);
-      }
-    });
-  }
-
-  scanFiles = (item: any) => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { addDocuments } = this.props;
-
-    if (item.isDirectory) {
-      const reader = item.createReader();
-
-      this.directoryReader(reader);
-    } else {
-      item.file((dropfile: any) => {
-        const documents: string[] = [];
-
-        const fullpath = dropfile.path;
-        const stat = fs.statSync(fullpath);
-
-        if (!stat.isDirectory()) {
-          documents.push(fullpath);
-        }
-
-        addDocuments(documents);
-      });
-    }
-  }
-
-  dropHandler = (event: any) => {
-    event.stopPropagation();
-    event.preventDefault();
-    event.target.classList.remove("draggedOver");
-
-    const zone = document.querySelector("#droppableZone");
-    if (zone) {
-      zone.classList.remove("droppableZone-active");
-    }
-
-    const items = event.dataTransfer.items;
-
-    for (const item of items) {
-      const entry = item.webkitGetAsEntry();
-
-      if (entry) {
-        this.scanFiles(entry);
-      }
-    }
-  }
-
-  dropZoneActive() {
-    const zone = document.querySelector("#droppableZone");
-    if (zone) {
-      zone.classList.add("droppableZone-active");
-    }
-  }
-
-  toggleDocumentsReviewed = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { documentsReviewed, isDocumentsReviewed } = this.props;
-
-    documentsReviewed(!isDocumentsReviewed);
-  }
-
-  handleCleanRecipientsList = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { deleteRecipient, recipients } = this.props;
-
-    recipients.forEach((recipient) => deleteRecipient(recipient.id));
-  }
-
-  checkEnableOperationButton = (operation: string) => {
-    const { documents, isDocumentsReviewed, signer } = this.props;
-
-    if (!documents.length) {
-      return false;
-    }
-
-    switch (operation) {
-      case SIGN:
-        if (!isDocumentsReviewed || !signer) {
-          return false;
-        } else {
-          for (const document of documents) {
-            if (document.extension === "enc") {
-              return false;
-            }
-          }
-        }
-
-        return true;
-
-      case VERIFY:
-      case UNSIGN:
-        for (const document of documents) {
-          if (document.extension !== "sig") {
-            return false;
-          }
-        }
-
-        return true;
-
-      case ENCRYPT:
-        for (const document of documents) {
-          if (document.extension === "enc") {
-            return false;
-          }
-        }
-
-        return true;
-
-      case DECRYPT:
-        for (const document of documents) {
-          if (document.extension !== "enc") {
-            return false;
-          }
-        }
-
-        return true;
-
-      case REMOVE:
-        return true;
-
-      default:
-        return false;
-    }
   }
 
   showModalFilterDocuments = () => {
@@ -458,24 +249,6 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     );
   }
 
-  handleClickSign = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { documents, filePackageSelect, removeAllFiles, removeAllRemoteFiles } = this.props;
-    removeAllFiles();
-    removeAllRemoteFiles();
-    filePackageSelect(documents);
-    this.openWindow(SIGN);
-  }
-
-  handleClickEncrypt = () => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { documents, filePackageSelect, removeAllFiles, removeAllRemoteFiles } = this.props;
-    removeAllFiles();
-    removeAllRemoteFiles();
-    filePackageSelect(documents);
-    this.openWindow(ENCRYPT);
-  }
-
   handleClickDelete = () => {
     const { localize, locale } = this.context;
     const { documents } = this.props;
@@ -488,26 +261,6 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     Materialize.toast(message, 2000, "toast-remove_documents");
 
     this.handleCloseModalDeleteDocuments();
-  }
-
-  openWindow = (operation: string) => {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { changeLocation } = this.props;
-
-    switch (operation) {
-      case SIGN:
-      case VERIFY:
-        changeLocation(LOCATION_MAIN);
-        return;
-
-      case ENCRYPT:
-      case DECRYPT:
-        changeLocation(LOCATION_MAIN);
-        return;
-
-      default:
-        return;
-    }
   }
 
   handleSearchValueChange = (ev: any) => {
@@ -576,23 +329,17 @@ export default connect((state) => {
 
   return {
     documents: selectedDocumentsSelector(state),
-    documentsLoaded: state.events.loaded,
     documentsLoading: state.events.loading,
     isDefaultFilters: state.filters.documents.isDefaultFilters,
-    isDocumentsReviewed: state.files.documentsReviewed,
     lic_error: state.license.lic_error,
     packageSignResult: state.signatures.packageSignResult,
-    recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)
-      .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
-      .filter((recipient) => recipient !== undefined),
     setting: state.settings.getIn(["entities", state.settings.default]),
     signatures,
     signedPackage: state.signatures.signedPackage,
-    signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
 }, {
-  addDocuments, arhiveDocuments, activeSetting, changeLocation, deleteRecipient, documentsReviewed,
-  filePackageSelect, filePackageDelete, packageSign, loadAllDocuments,
-  removeAllDocuments, removeAllFiles, removeAllRemoteFiles, removeDocuments,
-  selectAllDocuments, selectDocument, selectSignerCertificate,
+  arhiveDocuments, activeSetting, deleteRecipient, documentsReviewed,
+  packageSign, loadAllDocuments,
+  removeAllDocuments, removeDocuments,
+  selectAllDocuments, selectSignerCertificate,
 })(DocumentsWindow);
