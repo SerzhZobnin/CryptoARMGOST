@@ -3,14 +3,14 @@ import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
-  deleteRecipient, selectSignerCertificate,
+  changeLocation, deleteRecipient, filePackageSelect, selectSignerCertificate,
 } from "../../AC";
 import {
   activeSetting,
 } from "../../AC/settingsActions";
 import {
   LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
-  REMOVE, SIGN,
+  LOCATION_MAIN, REMOVE, SIGN,
 } from "../../constants";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
 import { mapToArr } from "../../utils";
@@ -163,11 +163,9 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
 
   handleClickSign = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { activeDocumentsArr } = this.props;
-
-    if (activeDocumentsArr.length > 0) {
-      //
-    }
+    const { changeLocation, documents, filePackageSelect } = this.props;
+    filePackageSelect(documents);
+    changeLocation(LOCATION_MAIN);
   }
 
   handleCleanRecipientsList = () => {
@@ -222,4 +220,7 @@ export default connect((state) => {
     signatures,
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
-}, { activeSetting, deleteRecipient, selectSignerCertificate })(DocumentsRightColumn);
+}, {
+  activeSetting, changeLocation, deleteRecipient,
+  filePackageSelect, selectSignerCertificate,
+})(DocumentsRightColumn);
