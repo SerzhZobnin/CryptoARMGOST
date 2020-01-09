@@ -126,7 +126,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
   getSignAndEncryptMenu = () => {
     return (
-      <div>
+      <div style={{display: "none"}}>
         <Link to={LOCATION_MAIN}>
           <ul id="dropdown-sign_and_encrypt" className="dropdown-content">
             <li>
@@ -142,7 +142,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
   getDocumentsMenu = () => {
     return (
-      <div>
+      <div style={{display: "none"}}>
         <Link to={LOCATION_DOCUMENTS}>
           <ul id="dropdown-documents-stores" className="dropdown-content">
             <li>
@@ -160,7 +160,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     const { localize, locale } = this.context;
 
     return (
-      <div>
+      <div style={{display: "none"}}>
         <Link
           to={{ pathname: LOCATION_ADDRESS_BOOK, search: ADDRESS_BOOK, state: { head: localize("AddressBook.address_book", locale), store: ADDRESS_BOOK } }}>
           <ul id="dropdown-address-book" className="dropdown-content">
@@ -203,7 +203,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     });
 
     return (
-      <div>
+      <div style={{display: "none"}}>
         <ul id="dropdown-certificate-stores" className="dropdown-content" style={{ minHeight: "85px" }}>
           <Link
             to={{ pathname: LOCATION_CERTIFICATES, search: "my", state: { head: localize("Certificate.certs_my", locale), store: MY } }}
@@ -263,7 +263,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     const { localize, locale } = this.context;
 
     return (
-      <div>
+      <div style={{display: "none"}}>
         <ul id="dropdown-about-pages" className="dropdown-content" style={{ minHeight: "150px", height: "150px" }}>
           <Link
             to={LOCATION_ABOUT}
@@ -320,7 +320,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
   getExitMenu = () => {
     return (
-      <div>
+      <div style={{display: "none"}}>
         <Link to="/" onClick={() => {
           remote.getGlobal("sharedObject").isQuiting = true;
           remote.getCurrentWindow().close();
