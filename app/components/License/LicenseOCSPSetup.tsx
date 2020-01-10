@@ -99,7 +99,7 @@ class LicenseOCSPSetup extends React.Component<ILicenseOCSPSetupProps, ILicenseO
   }
 
   handleLicenseChange = (ev: any) => {
-    this.setState({ license: ev.target.value });
+    this.setState({ license: ev.target.value.trim() });
   }
 
   validateLicense = (license: string) => {

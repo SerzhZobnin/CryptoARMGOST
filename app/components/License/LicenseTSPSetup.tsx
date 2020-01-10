@@ -99,7 +99,7 @@ class LicenseTSPSetup extends React.Component<ILicenseTSPSetupProps, ILicenseTSP
   }
 
   handleLicenseChange = (ev: any) => {
-    this.setState({ license: ev.target.value });
+    this.setState({ license: ev.target.value.trim() });
   }
 
   validateLicense = (license: string) => {

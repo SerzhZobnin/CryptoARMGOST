@@ -99,12 +99,24 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
   }
 
   handleLicenseChange = (ev: any) => {
-    this.setState({ license: ev.target.value });
+    this.setState({ license: ev.target.value.trim() });
   }
 
   validateLicense = (license: string) => {
     if (license && license.length === 29 && license.match(/^[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}/)) {
-      return true;
+      const cspVersion = this.getCPCSPVersion();
+      const versionPKZI = this.getCPCSPVersionPKZI();
+
+      if (cspVersion && versionPKZI
+        && parseInt((cspVersion.charAt(0)), 10) === 5 && parseInt((versionPKZI), 10) >= 11635) {
+        if (parseInt((license.charAt(0)), 10) === 5) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
     }
 
     return false;
@@ -163,6 +175,14 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
   getCPCSPVersion = () => {
     try {
       return trusted.utils.Csp.getCPCSPVersion();
+    } catch (e) {
+      return "";
+    }
+  }
+
+  getCPCSPVersionPKZI = () => {
+    try {
+      return trusted.utils.Csp.getCPCSPVersionPKZI();
     } catch (e) {
       return "";
     }
