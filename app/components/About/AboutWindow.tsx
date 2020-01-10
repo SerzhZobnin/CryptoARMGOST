@@ -274,7 +274,7 @@ class AboutWindow extends React.Component<{}, ILicenseInfoCSPState> {
           this.closeModalLicenseCSPSetup();
           this.forceUpdate();
         }}
-        style={{ height: "210px", width: "600px" }}
+        style={{  width: "600px" }}
       >
 
         <LicenseCSPSetup onCancel={this.closeModalLicenseCSPSetup} />

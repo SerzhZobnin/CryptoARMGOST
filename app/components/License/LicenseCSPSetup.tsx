@@ -9,7 +9,9 @@ interface ILicenseCSPSetupProps {
 }
 
 interface ILicenseCSPSetupState {
+  isCsp5R2: boolean;
   license: string;
+  temporyLicense: boolean;
 }
 
 class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSPSetupState> {
@@ -22,7 +24,9 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
     super(props);
 
     this.state = ({
+      isCsp5R2: this.isCsp5R2(),
       license: "",
+      temporyLicense: false,
     });
   }
 
@@ -40,7 +44,7 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
 
   render() {
     const { localize, locale } = this.context;
-    const { license } = this.state;
+    const { isCsp5R2, license, temporyLicense } = this.state;
 
     const disabledClass = license && this.validateLicense(license) ? "" : "disabled";
 
@@ -72,6 +76,26 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
                   </a>
                 </div>
               </div>
+
+              {
+                isCsp5R2 ?
+                  <div className="row">
+                    <div className="input-field col s12">
+                      <input
+                        name="groupTemporyLicenset"
+                        type="checkbox"
+                        id="temporyLicense"
+                        className="checkbox-red"
+                        checked={temporyLicense}
+                        onClick={this.toggleTemporyLicense}
+                      />
+                      <label htmlFor="temporyLicense">Временная лицензия с датой окончания. Продолжить установку</label>
+                    </div>
+                    <div className="row" />
+                  </div>
+                  : null
+              }
+
             </div>
           </div>
         </div>
@@ -92,6 +116,10 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
     );
   }
 
+  toggleTemporyLicense = () => {
+    this.setState({ temporyLicense: !this.state.temporyLicense });
+  }
+
   paste = () => {
     $("#license").focus();
     document.execCommand("paste");
@@ -103,13 +131,11 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
   }
 
   validateLicense = (license: string) => {
-    if (license && license.length === 29 && license.match(/^[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}/)) {
-      const cspVersion = this.getCPCSPVersion();
-      const versionPKZI = this.getCPCSPVersionPKZI();
+    const { isCsp5R2, temporyLicense } = this.state;
 
-      if (cspVersion && versionPKZI
-        && parseInt((cspVersion.charAt(0)), 10) === 5 && parseInt((versionPKZI), 10) >= 11635) {
-        if (parseInt((license.charAt(0)), 10) === 5) {
+    if (license && license.length === 29 && license.match(/^[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}/)) {
+      if (isCsp5R2) {
+        if (parseInt((license.charAt(0)), 10) === 5 || temporyLicense) {
           return true;
         } else {
           return false;
@@ -120,6 +146,18 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
     }
 
     return false;
+  }
+
+  isCsp5R2 = () => {
+    const cspVersion = this.getCPCSPVersion();
+    const versionPKZI = this.getCPCSPVersionPKZI();
+
+    if (cspVersion && versionPKZI
+      && parseInt((cspVersion.charAt(0)), 10) === 5 && parseInt((versionPKZI), 10) >= 11635) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   handleApplyLicense = () => {
