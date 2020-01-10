@@ -83,9 +83,9 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     const { documents, signatures } = this.props;
 
     if (documents.length !== nextProps.documents.length || signatures.length !== nextProps.signatures.length) {
-      if (nextProps.documents && nextProps.documents.length === 1) {
+      if (nextProps.documents && nextProps.documents.length) {
         if (nextProps.signatures && nextProps.signatures.length) {
-          const file = nextProps.documents[0];
+          const file = nextProps.documentsMap.get(nextProps.selectedDocs.last());
 
           const fileSignatures = nextProps.signatures.filter((signature: any) => {
             return signature.fileId === file.id;
@@ -100,8 +100,8 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
       }
     }
 
-    if (!documents || !documents.length || !nextProps.documents || !nextProps.documents.length || nextProps.documents.length > 1 || documents[0].id !== nextProps.documents[0].id) {
-      this.setState({ showSignatureInfo: false, signerCertificate: null });
+    if (!documents || !documents.length || !nextProps.documents || !nextProps.documents.length) {
+      this.setState({ showSignatureInfo: false });
     }
 
     if (!this.props.signedPackage && nextProps.signedPackage) {
@@ -311,9 +311,11 @@ export default connect((state) => {
   return {
     documents: selectedDocumentsSelector(state),
     documentsLoading: state.events.loading,
+    documentsMap: state.documents.entities,
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     lic_error: state.license.lic_error,
     packageSignResult: state.signatures.packageSignResult,
+    selectedDocs: state.documents.selected,
     setting: state.settings.getIn(["entities", state.settings.default]),
     signatures,
     signedPackage: state.signatures.signedPackage,

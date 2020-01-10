@@ -72,7 +72,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
     return (
       <React.Fragment>
         {
-          showSignatureInfo && documents && documents.length ?
+          showSignatureInfo && lastSelectDocument ?
             <React.Fragment>
               <div className="col s12">
                 <div className="primary-text">{localize("Sign.sign_info", locale)}</div>
@@ -82,7 +82,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                 <div className="add-certs">
                   <SignatureInfoBlock
                     signatures={fileSignatures}
-                    file={documents[0]}
+                    file={lastSelectDocument}
                   />
                 </div>
               </div>
