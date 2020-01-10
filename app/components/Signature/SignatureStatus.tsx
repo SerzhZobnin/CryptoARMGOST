@@ -3,6 +3,7 @@ import React from "react";
 import { localizeAlgorithm } from "../../i18n/localize";
 import CertificateChainInfo from "../Certificate/CertificateChainInfo";
 import OcspInfo from "./OcspInfo";
+import { SignatureStandard } from "./SignatureStandardSelector";
 import TimestampInfo from "./TimestampInfo";
 import TimestampTypeSelector from "./TimestampTypeSelector";
 
@@ -67,7 +68,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
         <div className="col s12 primary-text">Свойства подписи:</div>
         <div className="col s12 ">
           <div className={isHaveTimeStamps ? "col s10" : "col s12"}>
-          <div className="collection-info">Стандарт подписи: CMS</div>
+            <div className="collection-info">{localize("Sign.standard", locale)}: {signature.ocsp && signature.ocsp.OCSP ? SignatureStandard.CADES : SignatureStandard.CMS}</div>
 
             <div className="collection-info">{localize("Sign.signingTime", locale)}: {signature.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
               day: "numeric",
@@ -95,7 +96,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
         {
           this.state.isShowTimeStamps ?
             <div>
-              <TimestampTypeSelector timeStampTypes={timeStampTypes} changeType={this.handleChangeTimeStampType}/>
+              <TimestampTypeSelector timeStampTypes={timeStampTypes} changeType={this.handleChangeTimeStampType} />
               <TimestampInfo timestamp={this.getTimeStamp()} />
             </div>
             :
@@ -161,7 +162,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
   }
 
   getTimeStamp = () => {
-    const {currentStampType} = this.state;
+    const { currentStampType } = this.state;
     const { signature } = this.props;
 
     if (signature) {
@@ -174,7 +175,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
   }
 
   handleChangeTimeStampType = (currentStampType: string) => {
-    this.setState({currentStampType});
+    this.setState({ currentStampType });
   }
 
   toggleShowTimestamp = () => {
