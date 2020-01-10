@@ -5,6 +5,9 @@ import {
   changeLocation, deleteRecipient, filePackageSelect, selectSignerCertificate,
 } from "../../AC";
 import {
+  unselectAllDocuments,
+} from "../../AC/documentsActions";
+import {
   activeSetting,
 } from "../../AC/settingsActions";
 import {
@@ -12,11 +15,12 @@ import {
 } from "../../constants";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
 import { bytesToSize, mapToArr } from "../../utils";
-import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 import FileIcon from "../Files/FileIcon";
+import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 
 interface IDocumentsWindowProps {
   documents: any;
+  unselectAllDocuments: () => void;
 }
 
 class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
@@ -42,7 +46,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
       outDuration: 225,
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
       $(".tooltipped").tooltip();
     });
 
@@ -51,16 +55,24 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
 
   componentWillUnmount() {
     $(".tooltipped").tooltip("remove");
+
+    this.props.unselectAllDocuments();
   }
 
   render() {
     const { localize, locale } = this.context;
-    const { documents, file, fileSignatures, showSignatureInfo } = this.props;
+    const { documents, documentsMap, fileSignatures, selectedDocs, showSignatureInfo } = this.props;
+
+    let lastSelectDocument;
+
+    if (selectedDocs && selectedDocs.size) {
+      lastSelectDocument = documentsMap.get(selectedDocs.last());
+    }
 
     return (
       <React.Fragment>
         {
-          showSignatureInfo ?
+          showSignatureInfo && documents && documents.length ?
             <React.Fragment>
               <div className="col s12">
                 <div className="primary-text">{localize("Sign.sign_info", locale)}</div>
@@ -70,12 +82,12 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                 <div className="add-certs">
                   <SignatureInfoBlock
                     signatures={fileSignatures}
-                    file={file}
+                    file={documents[0]}
                   />
                 </div>
               </div>
             </React.Fragment>
-            : documents && documents.length === 1 ?
+            : lastSelectDocument ?
               <React.Fragment>
                 <div className="col s12">
                   <div className="primary-text">{localize("Documents.information_about_doc", locale)}</div>
@@ -84,7 +96,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                 <div style={{ height: "calc(100vh - 120px)" }}>
                   <div className="add-certs">
                     {
-                      documents[0].extension === "sig" ?
+                      lastSelectDocument.extension === "sig" ?
                         <div className="row">
                           <div className="col s2" style={{ width: "11%" }}>
                             <div className="status_unknown_icon" />
@@ -99,15 +111,15 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                     }
                     <div className="row">
                       <div className="col s2" style={{ width: "11%" }}>
-                        <FileIcon file={file} style={{ left: "0px", position: "relative" }} />
+                        <FileIcon file={lastSelectDocument} style={{ left: "0px", position: "relative" }} />
                       </div>
 
                       <div className="col s10">
                         <div className="col s12">
-                          <div className="truncate">{file.filename}</div>
+                          <div className="truncate">{lastSelectDocument.filename}</div>
                         </div>
                         <div className="col s7">
-                          <div className="collection-info truncate">{(new Date(file.mtime)).toLocaleDateString(locale, {
+                          <div className="collection-info truncate">{(new Date(lastSelectDocument.mtime)).toLocaleDateString(locale, {
                             day: "numeric",
                             hour: "numeric",
                             minute: "numeric",
@@ -117,7 +129,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                           </div>
                         </div>
                         <div className="col s4">
-                          <div className="collection-info truncate">{bytesToSize(file.filesize)}</div>
+                          <div className="collection-info truncate">{bytesToSize(lastSelectDocument.filesize)}</div>
                         </div>
                       </div>
                     </div>
@@ -127,12 +139,12 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                       <div className="col s12">
                         <div className="collection">
                           <div className="collection-item certs-collection certificate-info">
-                            <div className="collection-title">{bytesToSize(documents[0].filesize)}</div>
+                            <div className="collection-title">{bytesToSize(lastSelectDocument.filesize)}</div>
                             <div className="collection-info">{localize("Documents.filesize", locale)}</div>
                           </div>
 
                           <div className="collection-item certs-collection certificate-info">
-                            <div className="collection-title">{(new Date(documents[0].birthtime)).toLocaleDateString(locale, {
+                            <div className="collection-title">{(new Date(lastSelectDocument.birthtime)).toLocaleDateString(locale, {
                               day: "numeric",
                               hour: "numeric",
                               minute: "numeric",
@@ -143,7 +155,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                           </div>
 
                           <div className="collection-item certs-collection certificate-info">
-                            <div className="collection-title">{(new Date(documents[0].mtime)).toLocaleDateString(locale, {
+                            <div className="collection-title">{(new Date(lastSelectDocument.mtime)).toLocaleDateString(locale, {
                               day: "numeric",
                               hour: "numeric",
                               minute: "numeric",
@@ -154,7 +166,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                           </div>
 
                           <div className="collection-item certs-collection certificate-info">
-                            <div className="collection-title">{(new Date(documents[0].atime)).toLocaleDateString(locale, {
+                            <div className="collection-title">{(new Date(lastSelectDocument.atime)).toLocaleDateString(locale, {
                               day: "numeric",
                               hour: "numeric",
                               minute: "numeric",
@@ -243,11 +255,13 @@ export default connect((state) => {
   return {
     activeDocumentsArr: selectedDocumentsSelector(state),
     documents: selectedDocumentsSelector(state),
+    documentsMap: state.documents.entities,
+    selectedDocs: state.documents.selected,
     setting: state.settings.getIn(["entities", state.settings.default]),
     settings: state.settings.entities,
     signatures,
   };
 }, {
   activeSetting, changeLocation, deleteRecipient,
-  filePackageSelect, selectSignerCertificate,
+  filePackageSelect, selectSignerCertificate, unselectAllDocuments,
 })(DocumentsRightColumn);
