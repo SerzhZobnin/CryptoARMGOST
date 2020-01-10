@@ -98,7 +98,8 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
 
         {signatures.length > 1 ?
           <div className="row">
-            <div className="col s12 primary-text">Подписи документа:</div>
+            <div className="col s10 primary-text">Подписи документа:</div>
+            <div className="col s1" id="rectangle">{signatures.length}</div>
             <div className="row halfbottom" />
             <div className="add-cert-collection collection">
               {this.getSigners()}

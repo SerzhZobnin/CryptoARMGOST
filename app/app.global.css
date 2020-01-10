@@ -2405,6 +2405,16 @@ i.material-icons.left.chain_10 {
   float: left;
 }
 
+#rectangle{
+  width:35px;
+  height:20px;
+  background:#0262aa;
+  float: right;
+  color: white;
+  text-align: center;
+  margin-right: 10px;
+}
+
 .vert_line {
 	position:absolute;
     float:left;
