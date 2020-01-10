@@ -7,7 +7,7 @@ import {
 import { documentsReviewed } from "../../AC/documentsActions";
 import {
   arhiveDocuments, loadAllDocuments, removeAllDocuments,
-  removeDocuments, selectAllDocuments,
+  removeDocuments, selectAllDocuments, unselectAllDocuments,
 } from "../../AC/documentsActions";
 import {
   activeSetting,
@@ -32,6 +32,7 @@ interface IDocumentsWindowProps {
   selectAllDocuments: () => void;
   removeDocuments: (documents: any) => void;
   arhiveDocuments: (documents: any, arhiveName: string) => void;
+  unselectAllDocuments: () => void;
 }
 
 interface IDocumentsWindowState {
@@ -154,6 +155,7 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
                   <ul id="dropdown-btn-set-add-files" className="dropdown-content">
                     <li><a onClick={this.handleReloadDocuments}>{localize("Common.update", locale)}</a></li>
                     <li><a onClick={this.handleSelectAllDocuments}>{localize("Documents.selected_all", locale)}</a></li>
+                    <li><a onClick={this.handleUnselectAllDocuments}>{localize("Documents.unselect_all", locale)}</a></li>
                     <li><a onClick={this.handleOpenDocumentsFolder}>{localize("Documents.go_to_documents_folder", locale)}</a></li>
                   </ul>
                 </div>
@@ -287,6 +289,13 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
     selectAllDocuments();
   }
 
+  handleUnselectAllDocuments = () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { unselectAllDocuments } = this.props;
+
+    unselectAllDocuments();
+  }
+
   handleOpenDocumentsFolder = () => {
     window.electron.shell.openItem(DEFAULT_DOCUMENTS_PATH);
   }
@@ -313,5 +322,5 @@ export default connect((state) => {
   arhiveDocuments, activeSetting, deleteRecipient, documentsReviewed,
   packageSign, loadAllDocuments,
   removeAllDocuments, removeDocuments,
-  selectAllDocuments, selectSignerCertificate,
+  selectAllDocuments, selectSignerCertificate, unselectAllDocuments,
 })(DocumentsWindow);

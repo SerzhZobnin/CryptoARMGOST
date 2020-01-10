@@ -393,6 +393,7 @@ export default {
     selected_all: "Selected all",
     signed_files: "Signed files",
     type: "Type",
+    unselect_all: "Unselect",
   },
   Encrypt: {
     Encrypt: "ENCRYPT",

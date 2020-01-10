@@ -393,6 +393,7 @@ export default {
     selected_all: "Выделить все",
     signed_files: "Подписанные файлы",
     type: "Тип",
+    unselect_all: "Сбросить выделение",
   },
   Encrypt: {
     Encrypt: "ЗАШИФРОВАТЬ",
