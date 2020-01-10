@@ -139,7 +139,7 @@ class FilterDocuments extends React.Component<IFilterDocumentsProps, IDocumentsS
                 <div className="row nobottom">
                   <div className="col s12">
                     <p className="label-csr">
-                      {localize("Documents.mdate", locale)}
+                      {localize("Documents.mtime", locale)}
                     </p>
                   </div>
                   <div className="col s6">

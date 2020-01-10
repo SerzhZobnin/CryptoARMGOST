@@ -207,7 +207,7 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     width={width * 0.2}
-                    label={localize("Documents.mdate", locale)}
+                    label={localize("Documents.mtime", locale)}
                   />
                   <Column
                     cellRenderer={({ cellData, rowData, rowIndex }) => {

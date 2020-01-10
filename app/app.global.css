@@ -88,6 +88,10 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
   color: #bf3817 !important;
 }
 
+.unknown {
+  color: #F1B915 !important;
+}
+
 .setting-window-btn, .cert-setting-btn, .setting-btn  {
     border-radius: 100%;
     overflow: hidden;
@@ -1672,6 +1676,13 @@ a.menuheaderlink:hover {
   width: 30px;
   height: 30px;
   background: url(./resources/image/status_error.svg);
+  background-size: 30px 30px;
+}
+
+.status_unknown_icon{
+  width: 30px;
+  height: 30px;
+  background: url(./resources/image/status_unknow.svg);
   background-size: 30px 30px;
 }
 

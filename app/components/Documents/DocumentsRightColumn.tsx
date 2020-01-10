@@ -11,8 +11,9 @@ import {
   LOCATION_MAIN, REMOVE, SIGN,
 } from "../../constants";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
-import { mapToArr } from "../../utils";
+import { bytesToSize, mapToArr } from "../../utils";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
+import FileIcon from "../Files/FileIcon";
 
 interface IDocumentsWindowProps {
   documents: any;
@@ -54,7 +55,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
 
   render() {
     const { localize, locale } = this.context;
-    const { file, fileSignatures, showSignatureInfo } = this.props;
+    const { documents, file, fileSignatures, showSignatureInfo } = this.props;
 
     return (
       <React.Fragment>
@@ -65,7 +66,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                 <div className="primary-text">{localize("Sign.sign_info", locale)}</div>
                 <hr />
               </div>
-              <div style={{ height: "calc(100vh - 110px)" }}>
+              <div style={{ height: "calc(100vh - 120px)" }}>
                 <div className="add-certs">
                   <SignatureInfoBlock
                     signatures={fileSignatures}
@@ -74,7 +75,100 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                 </div>
               </div>
             </React.Fragment>
-            : null
+            : documents && documents.length === 1 ?
+              <React.Fragment>
+                <div className="col s12">
+                  <div className="primary-text">{localize("Documents.information_about_doc", locale)}</div>
+                  <hr />
+                </div>
+                <div style={{ height: "calc(100vh - 120px)" }}>
+                  <div className="add-certs">
+                    {
+                      documents[0].extension === "sig" ?
+                        <div className="row">
+                          <div className="col s2" style={{ width: "11%" }}>
+                            <div className="status_unknown_icon" />
+                          </div>
+                          <div className="col s10 ">
+                            <div className="col s12">
+                              <div className="unknown">{localize("Sign.sign_unknown", locale)}</div>
+                              <div className="collection-info">Исходный файл не найден</div>
+                            </div>
+                          </div>
+                        </div> : null
+                    }
+                    <div className="row">
+                      <div className="col s2" style={{ width: "11%" }}>
+                        <FileIcon file={file} style={{ left: "0px", position: "relative" }} />
+                      </div>
+
+                      <div className="col s10">
+                        <div className="col s12">
+                          <div className="truncate">{file.filename}</div>
+                        </div>
+                        <div className="col s7">
+                          <div className="collection-info truncate">{(new Date(file.mtime)).toLocaleDateString(locale, {
+                            day: "numeric",
+                            hour: "numeric",
+                            minute: "numeric",
+                            month: "numeric",
+                            year: "numeric",
+                          })}
+                          </div>
+                        </div>
+                        <div className="col s4">
+                          <div className="collection-info truncate">{bytesToSize(file.filesize)}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="row">
+                      <div className="col s12 primary-text">Свойства:</div>
+                      <div className="col s12">
+                        <div className="collection">
+                          <div className="collection-item certs-collection certificate-info">
+                            <div className="collection-title">{bytesToSize(documents[0].filesize)}</div>
+                            <div className="collection-info">{localize("Documents.filesize", locale)}</div>
+                          </div>
+
+                          <div className="collection-item certs-collection certificate-info">
+                            <div className="collection-title">{(new Date(documents[0].birthtime)).toLocaleDateString(locale, {
+                              day: "numeric",
+                              hour: "numeric",
+                              minute: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}</div>
+                            <div className="collection-info">{localize("Documents.birthtime", locale)}</div>
+                          </div>
+
+                          <div className="collection-item certs-collection certificate-info">
+                            <div className="collection-title">{(new Date(documents[0].mtime)).toLocaleDateString(locale, {
+                              day: "numeric",
+                              hour: "numeric",
+                              minute: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}</div>
+                            <div className="collection-info">{localize("Documents.mtime", locale)}</div>
+                          </div>
+
+                          <div className="collection-item certs-collection certificate-info">
+                            <div className="collection-title">{(new Date(documents[0].atime)).toLocaleDateString(locale, {
+                              day: "numeric",
+                              hour: "numeric",
+                              minute: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}</div>
+                            <div className="collection-info">{localize("Documents.atime", locale)}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </React.Fragment> : null
         }
 
         <div className="row fixed-bottom-rightcolumn" >
@@ -82,13 +176,13 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
             <hr />
           </div>
 
-          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
+          <div className={`col s8 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
             <div className="col s12 svg_icon">
               <a data-position="bottom">
                 <i className="material-icons docmenu sign" />
               </a>
             </div>
-            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_sign", locale)}</div>
+            <div className="col s12 svg_icon_text">{localize("Documents.open_in_sign_and_encrypt", locale)}</div>
           </div>
 
           <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleClickDelete}>

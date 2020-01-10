@@ -158,7 +158,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     width={155}
-                    label={localize("Documents.mdate", locale)}
+                    label={localize("Documents.mtime", locale)}
                   />
                   <Column
                     dataKey="filename"

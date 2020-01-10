@@ -200,7 +200,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     width={width * 0.27}
-                    label={localize("Documents.mdate", locale)}
+                    label={localize("Documents.mtime", locale)}
                   />
                   <Column
                     cellRenderer={({ cellData, rowData, rowIndex }) => {
