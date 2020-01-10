@@ -78,7 +78,7 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
               </div>
 
               {
-                isCsp5R2 ?
+                isCsp5R2 && license ?
                   <div className="row">
                     <div className="input-field col s12">
                       <input
