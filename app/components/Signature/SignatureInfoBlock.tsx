@@ -25,15 +25,6 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
   }
 
   componentDidMount() {
-    /* https://github.com/facebook/react/issues/3667
-    * fix onChange for < select >
-    */
-    $(document).ready(() => {
-      $("select").material_select();
-    });
-
-    $(ReactDOM.findDOMNode(this.refs.signer_select)).on("change", this.handleSignerChange);
-
     Materialize.updateTextFields();
   }
 
@@ -58,14 +49,6 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
 
     const element = elements[signerIndex];
 
-    const options = signatures.map((signature: any, index: number) => {
-      return (
-        <option value={index}>
-          {signature.subject}
-        </option>
-      );
-    });
-
     const status = this.getSignaturesStatus(signatures);
 
     return (
@@ -89,7 +72,7 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
         </div>
 
         <div className="row">
-          <div className="col s2" style={{ width: "11%" }}>
+          <div className="col s2 " style={{ width: "11%" }}>
             <FileIcon file={file} style={{ left: "0px", position: "relative" }} />
           </div>
 
@@ -113,16 +96,11 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
           </div>
         </div>
 
-        <div className="row nobottom">
-          <div className="input-field col s12">
-            <select
-              className="select"
-              defaultValue={"0"}
-              ref="signer_select"
-              onChange={this.handleSignerChange} >
-              {options}
-            </select>
-            <label>{localize("Sign.signer", locale)}</label>
+        <div className="row">
+          <div className="col s12 primary-text">Подписи документа:</div>
+          <div className="row halfbottom" />
+          <div className="add-cert-collection collection">
+            {this.getSigners()}
           </div>
         </div>
 
@@ -133,8 +111,64 @@ class SignatureInfoBlock extends React.Component<any, ISignatureInfoBlockState> 
     );
   }
 
-  handleSignerChange = (ev: any) => {
-    this.setState({ signerIndex: ev.target.value });
+  getSigners = () => {
+    const { localize, locale } = this.context;
+    const { signatures } = this.props;
+    const { signerIndex } = this.state;
+
+    return (
+      signatures.map((signature: any, index: number) => {
+        let status = "";
+        let icon = "";
+        let isValid = "";
+
+        if (signature.status_verify === true) {
+          status = localize("Sign.sign_ok", locale);
+          icon = "status_ok_icon";
+          isValid = "valid";
+        } else {
+          status = localize("Sign.sign_error", locale);
+          icon = "status_error_icon";
+          isValid = "unvalid";
+        }
+
+        const dateSigningTime = new Date(signature.signingTime);
+        dateSigningTime.setHours(dateSigningTime.getHours());
+
+        const active = signerIndex === index ? "active" : "";
+
+        return (
+          <div key={signature.id} className="row certificate-list-item col s12" id={signature.id}>
+            <div className={`collection-item avatar certs-collection valign-wrapper ${active}`}
+              onClick={() => this.handleSignerChange(index)}>
+              <React.Fragment>
+                <div className="col s1" style={{ width: "15%" }}>
+                  <div className={icon} />
+                </div>
+                <div className="col s11">
+                  <div className="collection-title">{signature.subject}</div>
+
+                  <div className={isValid}>{status}</div>
+
+                  <div className="collection-info">{localize("Sign.signingTime", locale)}: {signature.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  }) : "-"}
+                  </div>
+                </div>
+              </React.Fragment>
+            </div>
+          </div>
+        );
+      })
+    );
+  }
+
+  handleSignerChange = (index: any) => {
+    this.setState({ signerIndex: index });
   }
 
   getSignaturesStatus = (signatures) => {

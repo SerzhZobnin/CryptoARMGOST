@@ -83,6 +83,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
                   <SignatureInfoBlock
                     signatures={fileSignatures}
                     file={lastSelectDocument}
+                    key={lastSelectDocument.id}
                   />
                 </div>
               </div>

@@ -64,12 +64,10 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
 
     return (
       <div className="row halfbottom" onClick={this.handleClick}>
-        <div className="col s2" style={{ width: "11%" }}>
-          <div className={icon} />
-        </div>
-        <div className="col s10 ">
+        <div className="col s12 primary-text">Свойства подписи:</div>
+        <div className="col s12 ">
           <div className={isHaveTimeStamps ? "col s10" : "col s12"}>
-            <div className={isValid}>{status}</div>
+          <div className="collection-info">Стандарт подписи: CMS</div>
 
             <div className="collection-info">{localize("Sign.signingTime", locale)}: {signature.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
               day: "numeric",
