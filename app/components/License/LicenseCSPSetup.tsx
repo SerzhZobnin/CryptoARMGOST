@@ -1,6 +1,7 @@
 import * as os from "os";
 import PropTypes from "prop-types";
 import React from "react";
+import { getCPCSPVersion, isCsp5R2 } from "../../utils";
 
 const OS_TYPE = os.type();
 
@@ -9,7 +10,7 @@ interface ILicenseCSPSetupProps {
 }
 
 interface ILicenseCSPSetupState {
-  isCsp5R2: boolean;
+  isCsp5R2orHigh: boolean;
   license: string;
   temporyLicense: boolean;
 }
@@ -24,7 +25,7 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
     super(props);
 
     this.state = ({
-      isCsp5R2: this.isCsp5R2(),
+      isCsp5R2orHigh: isCsp5R2(),
       license: "",
       temporyLicense: false,
     });
@@ -44,7 +45,7 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
 
   render() {
     const { localize, locale } = this.context;
-    const { isCsp5R2, license, temporyLicense } = this.state;
+    const { isCsp5R2orHigh, license, temporyLicense } = this.state;
 
     const disabledClass = license && this.validateLicense(license) ? "" : "disabled";
 
@@ -78,7 +79,7 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
               </div>
 
               {
-                isCsp5R2 && license ?
+                isCsp5R2orHigh && license ?
                   <div className="row">
                     <div className="input-field col s12">
                       <input
@@ -131,10 +132,10 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
   }
 
   validateLicense = (license: string) => {
-    const { isCsp5R2, temporyLicense } = this.state;
+    const { isCsp5R2orHigh, temporyLicense } = this.state;
 
     if (license && license.length === 29 && license.match(/^[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}/)) {
-      if (isCsp5R2) {
+      if (isCsp5R2orHigh) {
         if (parseInt((license.charAt(0)), 10) === 5 || temporyLicense) {
           return true;
         } else {
@@ -146,18 +147,6 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
     }
 
     return false;
-  }
-
-  isCsp5R2 = () => {
-    const cspVersion = this.getCPCSPVersion();
-    const versionPKZI = this.getCPCSPVersionPKZI();
-
-    if (cspVersion && versionPKZI
-      && parseInt((cspVersion.charAt(0)), 10) === 5 && parseInt((versionPKZI), 10) >= 11635) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   handleApplyLicense = () => {
@@ -174,7 +163,7 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
     }
 
     if (OS_TYPE === "Windows_NT") {
-      if (parseInt((this.getCPCSPVersion().charAt(0)), 10) < 5) {
+      if (parseInt((getCPCSPVersion().charAt(0)), 10) < 5) {
         // tslint:disable-next-line:max-line-length
         cmnd = "reg add HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Installer\\UserData\\S-1-5-18\\Products\\7AB5E7046046FB044ACD63458B5F481C\\InstallProperties /v ProductID /t REG_SZ /f /d " + license;
       } else {
@@ -207,22 +196,6 @@ class LicenseCSPSetup extends React.Component<ILicenseCSPSetupProps, ILicenseCSP
 
     if (onCancel) {
       onCancel();
-    }
-  }
-
-  getCPCSPVersion = () => {
-    try {
-      return trusted.utils.Csp.getCPCSPVersion();
-    } catch (e) {
-      return "";
-    }
-  }
-
-  getCPCSPVersionPKZI = () => {
-    try {
-      return trusted.utils.Csp.getCPCSPVersionPKZI();
-    } catch (e) {
-      return "";
     }
   }
 }

@@ -11,9 +11,10 @@ import {
   changeSignatureTimestampOnSign, toggleSaveToDocuments,
 } from "../../AC/settingsActions";
 import {
-  DEFAULT_DOCUMENTS_PATH, TSP_OCSP_ENABLED,
+  DEFAULT_DOCUMENTS_PATH, GOST_28147, TSP_OCSP_ENABLED,
 } from "../../constants";
 import { loadingRemoteFilesSelector } from "../../selectors";
+import { isCsp5R2 } from "../../utils";
 import { mapToArr } from "../../utils";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 import EncodingTypeSelector from "../EncodingTypeSelector";
@@ -25,6 +26,7 @@ import OcspSettings from "./OcspSettings";
 import TspSettings from "./TspSettings";
 
 const dialog = window.electron.remote.dialog;
+const isCsp5R2orHigh = isCsp5R2();
 
 class AllSettings extends React.Component<any, {}> {
   static contextTypes = {
@@ -38,7 +40,7 @@ class AllSettings extends React.Component<any, {}> {
 
   componentDidMount() {
     // tslint:disable-next-line: no-shadowed-variable
-    const { changeSignatureTime, changeSignatureTimestamp, changeSignatureTimestampOnSign,
+    const { changeEncryptionAlgorithm, changeSignatureTime, changeSignatureTimestamp, changeSignatureTimestampOnSign,
       changeSignatureStandard, settings, signer } = this.props;
 
     $(".btn-floated, .nav-small-btn").dropdown({
@@ -69,6 +71,10 @@ class AllSettings extends React.Component<any, {}> {
       changeSignatureStandard(SignatureStandard.CMS);
       changeSignatureTimestamp(false);
       changeSignatureTimestampOnSign(false);
+    }
+
+    if (!isCsp5R2orHigh) {
+      changeEncryptionAlgorithm(GOST_28147);
     }
   }
 
@@ -174,9 +180,13 @@ class AllSettings extends React.Component<any, {}> {
             disabled={disabled}
           />
 
-          <EncryptionAlgorithmSelector
-            EncryptionValue={settings.encrypt.algorithm}
-            handleChange={this.handleEncryptAlgoritmChange} />
+          {
+            isCsp5R2orHigh ?
+              <EncryptionAlgorithmSelector
+                EncryptionValue={settings.encrypt.algorithm}
+                handleChange={this.handleEncryptAlgoritmChange} />
+              : null
+          }
 
           <CheckBoxWithLabel
             disabled={disabled}

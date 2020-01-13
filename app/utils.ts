@@ -399,3 +399,31 @@ export function fileNameForResign(folderOut: any, document: IFile) {
 
   return outURI;
 }
+
+export const getCPCSPVersion = () => {
+  try {
+    return trusted.utils.Csp.getCPCSPVersion();
+  } catch (e) {
+    return "";
+  }
+};
+
+export const getCPCSPVersionPKZI = () => {
+  try {
+    return trusted.utils.Csp.getCPCSPVersionPKZI();
+  } catch (e) {
+    return "";
+  }
+};
+
+export const isCsp5R2 = () => {
+  const cspVersion = getCPCSPVersion();
+  const versionPKZI = getCPCSPVersionPKZI();
+
+  if (cspVersion && versionPKZI
+    && parseInt((cspVersion.charAt(0)), 10) === 5 && parseInt((versionPKZI), 10) >= 11635) {
+    return true;
+  } else {
+    return false;
+  }
+};
