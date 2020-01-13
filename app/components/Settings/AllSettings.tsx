@@ -5,7 +5,7 @@ import {
   deleteRecipient, selectSignerCertificate,
 } from "../../AC";
 import {
-  changeArchiveFilesBeforeEncrypt, changeDeleteFilesAfterEncrypt, changeEncryptEncoding,
+  changeArchiveFilesBeforeEncrypt, changeDeleteFilesAfterEncrypt, changeEncryptEncoding, changeEncryptionAlgorithm,
   changeOutfolder, changeSignatureDetached, changeSignatureEncoding,
   changeSignatureStandard, changeSignatureTime, changeSignatureTimestamp,
   changeSignatureTimestampOnSign, toggleSaveToDocuments,
@@ -17,6 +17,7 @@ import { loadingRemoteFilesSelector } from "../../selectors";
 import { mapToArr } from "../../utils";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
 import EncodingTypeSelector from "../EncodingTypeSelector";
+import EncryptionAlgorithmSelector from "../Encryption/EncryptionAlgorithmSelector";
 import SelectFolder from "../SelectFolder";
 import SignatureStandardSelector, { SignatureStandard } from "../Signature/SignatureStandardSelector";
 import SignatureTypeSelector from "../Signature/SignatureTypeSelector";
@@ -173,6 +174,10 @@ class AllSettings extends React.Component<any, {}> {
             disabled={disabled}
           />
 
+          <EncryptionAlgorithmSelector
+            EncryptionValue={settings.encrypt.algorithm}
+            handleChange={this.handleEncryptAlgoritmChange} />
+
           <CheckBoxWithLabel
             disabled={disabled}
             onClickCheckBox={this.handleDeleteClick}
@@ -186,6 +191,7 @@ class AllSettings extends React.Component<any, {}> {
             isChecked={settings.encrypt.archive}
             elementId="archive_files"
             title={localize("Encrypt.archive_files_before", locale)} />
+
         </div>
 
         <div className="row" />
@@ -325,6 +331,13 @@ class AllSettings extends React.Component<any, {}> {
 
     changeArchiveFilesBeforeEncrypt(!settings.encrypt.archive);
   }
+
+  handleEncryptAlgoritmChange = (value: string) => {
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeEncryptionAlgorithm } = this.props;
+
+    changeEncryptionAlgorithm(value);
+  }
 }
 
 export default connect((state) => {
@@ -338,7 +351,7 @@ export default connect((state) => {
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
   };
 }, {
-  changeArchiveFilesBeforeEncrypt, changeDeleteFilesAfterEncrypt, changeEncryptEncoding, changeOutfolder,
+  changeArchiveFilesBeforeEncrypt, changeEncryptionAlgorithm, changeDeleteFilesAfterEncrypt, changeEncryptEncoding, changeOutfolder,
   changeSignatureDetached, changeSignatureEncoding, changeSignatureStandard, changeSignatureTime,
   changeSignatureTimestamp, changeSignatureTimestampOnSign, toggleSaveToDocuments,
   deleteRecipient, selectSignerCertificate,

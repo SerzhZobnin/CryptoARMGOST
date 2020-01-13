@@ -5,7 +5,7 @@ import localize from "../i18n/localize";
 import { fileCoding, fileExists } from "../utils";
 import logger from "../winstonLogger";
 
-export function encryptFile(uri: string, certs: trusted.pkistore.PkiItem[], policies: any, format: trusted.DataFormat, folderOut: string): string {
+export function encryptFile(uri: string, certs: trusted.pkistore.PkiItem[], policies: any, encAlg: trusted.EncryptAlg, format: trusted.DataFormat, folderOut: string): string {
   let cipher: trusted.pki.Cipher;
   let certsCollection: trusted.pki.CertificateCollection;
   let cert: trusted.pki.Certificate;
@@ -43,7 +43,7 @@ export function encryptFile(uri: string, certs: trusted.pkistore.PkiItem[], poli
 
     cipher.recipientsCerts = certsCollection;
 
-    cipher.encrypt(uri, outURI, format);
+    cipher.encrypt(uri, outURI, encAlg, format);
   } catch (err) {
     logger.log({
       certificate: "",

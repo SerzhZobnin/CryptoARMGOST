@@ -18,7 +18,7 @@ import {
   activeSetting,
 } from "../../AC/settingsActions";
 import {
-  DECRYPT, DSS_ACTIONS, ENCRYPT, HOME_DIR,
+  DECRYPT, DSS_ACTIONS, ENCRYPT, GOST_28147, GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
   LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
   LOCATION_SETTINGS_CONFIG,
   LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
@@ -1089,6 +1089,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
       let format = trusted.DataFormat.PEM;
       let res = true;
+      let encAlg = trusted.EncryptAlg.GOST_28147;
 
       if (folderOut.length > 0) {
         if (!dirExists(folderOut)) {
@@ -1096,6 +1097,18 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           Materialize.toast(localize("Settings.failed_find_directory", locale), 2000, "toast-failed_find_directory");
           return;
         }
+      }
+
+      switch (setting.encrypt.algorithm) {
+        case GOST_28147:
+          encAlg = trusted.EncryptAlg.GOST_28147;
+          break;
+        case GOST_R3412_2015_M:
+          encAlg = trusted.EncryptAlg.GOST_R3412_2015_M;
+          break;
+        case GOST_R3412_2015_K:
+          encAlg = trusted.EncryptAlg.GOST_R3412_2015_K;
+          break;
       }
 
       policies.deleteFiles = setting.encrypt.delete;
@@ -1127,7 +1140,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             });
           }
 
-          const newPath = trustedEncrypts.encryptFile(outURI, certs, policies, format, folderOut);
+          const newPath = trustedEncrypts.encryptFile(outURI, certs, policies, encAlg, format, folderOut);
           if (newPath) {
             activeFilesArr.forEach((file) => {
               deleteFile(file.id);
@@ -1171,7 +1184,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         archive.finalize();
       } else {
         activeFilesArr.forEach((file) => {
-          const newPath = trustedEncrypts.encryptFile(file.fullpath, certs, policies, format, folderOut);
+          const newPath = trustedEncrypts.encryptFile(file.fullpath, certs, policies, encAlg, format, folderOut);
           if (newPath) {
             deleteFile(file.id);
             selectFile(newPath);

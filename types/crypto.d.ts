@@ -5,6 +5,18 @@ declare namespace trusted {
      * @export
      * @enum {number}
      */
+    enum EncryptAlg {
+        GOST_28147 = 0,
+        GOST_R3412_2015_M = 1,
+        GOST_R3412_2015_K = 2
+    }
+}
+declare namespace trusted {
+    /**
+     *
+     * @export
+     * @enum {number}
+     */
     enum DataFormat {
         DER = 0,
         PEM = 1
@@ -103,7 +115,7 @@ declare namespace native {
         class Cipher {
             constructor();
             setProvAlgorithm(name: string): void;
-            encrypt(filenameSource: string, filenameEnc: string, format: trusted.DataFormat): void;
+            encrypt(filenameSource: string, filenameEnc: string, alg?: trusted.EncryptAlg, format?: trusted.DataFormat): void;
             decrypt(filenameEnc: string, filenameDec: string, format: trusted.DataFormat): void;
             addRecipientsCerts(certs: CertificateCollection): void;
         }
@@ -136,7 +148,7 @@ declare namespace native {
         class OCSP {
             constructor(inData: Certificate | Buffer, connSettings?: native.UTILS.ConnectionSettings);
             Export(): Buffer;
-            Verify(): number;
+            Verify(serviceCert?: PKI.Certificate): number;
             VerifyCertificate(cert: PKI.Certificate): number;
             RespStatus(): number;
             SignatureAlgorithmOid(): string;
@@ -145,6 +157,7 @@ declare namespace native {
             RespNumber(): number;
             RespIndexByCert(cert: PKI.Certificate, issuer?: PKI.Certificate): number;
             OcspCert(): PKI.Certificate;
+            getOcspCert(certs?: PKI.CertificateCollection): PKI.Certificate;
             Status(respIdx?: number): number;
             RevTime(respIdx?: number): string;
             RevReason(respIdx?: number): number;
@@ -225,6 +238,7 @@ declare namespace native {
         class ModuleInfo {
             getModuleVersion(): string;
             getModuleName(): string;
+            getCadesEnabled(): string;
         }
         class Tools {
             stringFromBase64(instr: string, flag?: number): string;
@@ -328,6 +342,7 @@ declare namespace native {
             timestamp(tspType: number): native.PKI.TSP;
             verifyTimestamp(tspType: number): boolean;
             isCades(): boolean;
+            certificateValues(): PKI.CertificateCollection;
             revocationValues(): Buffer[];
             ocspResp(): native.PKI.OCSP;
         }
@@ -639,6 +654,13 @@ declare namespace trusted.cms {
          * @memberOf Signer
          */
         readonly isCades: boolean;
+        /**
+         * For CAdES returns collection of certificates from certificateValues attribute
+         *
+         * @type {CertificateCollection}
+         * @memberOf Signer
+         */
+        readonly certificateValues: pki.CertificateCollection;
         /**
          * For CAdES returns array of buffers with encoded revocation values (OCSP response or CRL)
          *
@@ -1179,6 +1201,14 @@ declare namespace trusted.utils {
          * @memberOf ModuleInfo
          */
         readonly name: string;
+        /**
+         * CAdES support flag
+         *
+         * @readonly
+         * @type {boolean}
+         * @memberOf ModuleInfo
+         */
+        readonly cadesEnabled: string;
         /**
          * Creates an instance of ModuleInfo.
          *
@@ -1757,14 +1787,6 @@ declare namespace trusted.pki {
         * @memberOf Certificate
         */
         serialNumber: string;
-        /**
-         * Return type of certificate
-         *
-         * @readonly
-         * @type {number}
-         * @memberOf Certificate
-         */
-        readonly type: number;
         /**
          * Return KeyUsageFlags collection
          *
@@ -2438,11 +2460,12 @@ declare namespace trusted.pki {
          *
          * @param {string} filenameSource This file will encrypted
          * @param {string} filenameEnc File path for save encrypted data
+         * @param {EncryptAlg} [alg]
          * @param {DataFormat} [format]
          *
          * @memberOf Cipher
          */
-        encrypt(filenameSource: string, filenameEnc: string, format: DataFormat): void;
+        encrypt(filenameSource: string, filenameEnc: string, alg?: EncryptAlg, format?: DataFormat): void;
         /**
          * Decrypt data
          *
@@ -2550,7 +2573,16 @@ declare namespace trusted.pki {
          */
         constructor(inData: Certificate | Buffer | native.PKI.OCSP, connSettings?: trusted.utils.ConnectionSettings);
         Export(): Buffer;
-        Verify(): number;
+        /**
+         * Verify response signature with specified certificate. If certificate not cpecified, internal certificates used.
+         * On success returns 0 and on error returns error code.
+         *
+         * @param {Certificate} serviceCert
+         * @returns {number}
+         *
+         * @memberOf OCSP
+         */
+        Verify(serviceCert?: Certificate): number;
         VerifyCertificate(cert: Certificate): number;
         readonly RespStatus: CPRespStatus;
         readonly SignatureAlgorithmOid: string;
@@ -2559,6 +2591,15 @@ declare namespace trusted.pki {
         readonly RespNumber: number;
         RespIndexByCert(cert: pki.Certificate, issuer?: pki.Certificate): number;
         readonly OcspCert: pki.Certificate;
+        /**
+         * Returns OCSP service certificate. if paraneter certs specified then searched through certificates in collection.
+         *
+         * @param {CertificateCollection} certs
+         * @returns {Certificate}
+         *
+         * @memberOf OCSP
+         */
+        getOcspCert(certs?: pki.CertificateCollection): pki.Certificate;
         Status(respIdx?: number): CPCertStatus;
         RevTime(respIdx?: number): Date;
         RevReason(respIdx?: number): CPCrlReason;
