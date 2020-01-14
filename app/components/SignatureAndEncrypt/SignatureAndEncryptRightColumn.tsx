@@ -15,7 +15,7 @@ import { IFile } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import { createTransactionDSS, dssOperationConfirmation, dssPerformOperation } from "../../AC/dssActions";
 import {
-  activeSetting,
+  activeSetting, saveSettings,
 } from "../../AC/settingsActions";
 import {
   DECRYPT, DSS_ACTIONS, ENCRYPT, GOST_28147, GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
@@ -42,6 +42,7 @@ import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
 import AllSettings from "../Settings/AllSettings";
 import SignerInfo from "../Signature/SignerInfo";
+import CheckBoxWithLabel from "../CheckBoxWithLabel";
 
 const dialog = window.electron.remote.dialog;
 
@@ -64,6 +65,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   users: any;
   transactionDSS: any;
   policyDSS: any;
+  saveSettings: () => void;
 }
 
 interface ISignatureAndEncryptRightColumnSettingsState {
@@ -136,7 +138,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   render() {
     const { localize, locale } = this.context;
-    const { activeFiles, isDocumentsReviewed, recipients, setting, settings, signer } = this.props;
+    const { activeFiles, isDocumentsReviewed, recipients, saveSettings, setting, settings, signer } = this.props;
     const { file } = this.state;
 
     const disabledNavigate = this.isFilesFromSocket();
@@ -146,6 +148,76 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       <React.Fragment>
         <div style={{ height: "calc(100vh - 150px)" }}>
           <div className="add-certs">
+            <div className="col s10">
+              <div className="desktoplic_text_item">Параметры:</div>
+              <hr />
+            </div>
+            <div className="col s2">
+              <div className="right import-col">
+                <a className="btn-floated" data-activates="dropdown-btn-settings">
+                  <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                </a>
+                {/* <ul id="dropdown-btn-settings" className="dropdown-content">
+                  <Link to={LOCATION_SETTINGS_CONFIG}>
+                    <li><a onClick={() => {
+                      this.props.activeSetting(this.props.setting.id);
+                    }}>Изменить</a></li>
+                  </Link>
+                  {
+                    settings && settings.size > 1 ?
+                      <Link to={LOCATION_SETTINGS_SELECT}>
+                        <li>
+                          <a onClick={() => {
+                            this.props.activeSetting(this.props.setting.id);
+                          }}>Выбрать</a>
+                        </li>
+                      </Link> :
+                      null
+                  }
+                </ul> */}
+              </div>
+            </div>
+            <div className="col s12 valign-wrapper">
+              <div className="col s2">
+                <div className="setting" />
+              </div>
+              <div className="col s10" style={{ fontSize: "75%" }}>
+                <div className="collection-title">{setting.name}</div>
+              </div>
+            </div>
+
+            {
+              setting.changed ?
+                <React.Fragment>
+                  <div className="row" />
+
+                  <div className="col s12">
+                    <CheckBoxWithLabel
+                      disabled={false}
+                      onClickCheckBox={() => console.log("ss")}
+                      isChecked={false}
+                      elementId="new_time"
+                      title={"Сохранить параметры с новым именем"} />
+                  </div>
+
+                  <div className="row" />
+
+                  <div className="col s12">
+                    <a className="btn btn-outlined waves-effect waves-light"
+                      onClick={() => {
+                        saveSettings();
+                      }}
+                      style={{ width: "100%" }}>
+                      {localize("Settings.save", locale)}
+                    </a>
+
+                  </div>
+                </React.Fragment>
+                : null
+            }
+
+            <div className="row" />
+
             <div className="col s10">
               <div className="subtitle">{localize("Sign.signer_cert", locale)}</div>
               <hr />
@@ -1509,6 +1581,7 @@ export default connect((state) => {
 }, {
   activeFile, activeSetting, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
   deleteFile, deleteRecipient, documentsReviewed,
-  filePackageSelect, filePackageDelete, packageSign, packageReSign, selectFile,
+  filePackageSelect, filePackageDelete, packageSign, packageReSign,
+  saveSettings, selectFile,
   verifyCertificate, selectSignerCertificate, verifySignature,
 })(SignatureAndEncryptRightColumnSettings);

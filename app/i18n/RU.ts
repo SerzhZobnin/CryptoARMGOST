@@ -708,6 +708,7 @@ export default {
     remove_all_files: "Удалить все из списка",
     remove_list: "Очистить список",
     remove_selected: "Сбросить выделение",
+    save: "Сохранить параметры",
     selected_all: "Выделить все",
     setting_file: "settings.json",
     setting_not_select: "Настройка не выбрана",

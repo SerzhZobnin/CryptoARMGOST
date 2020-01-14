@@ -10,7 +10,7 @@ import {
   CHANGE_SETTINGS_NAME, CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING, CHANGE_SIGNATURE_STANDARD,
   CHANGE_SIGNATURE_TIME, CHANGE_SIGNATURE_TIMESTAMP, CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN, CHANGE_TSP_PROXY_LOGIN, CHANGE_TSP_PROXY_PASSWORD,
   CHANGE_TSP_PROXY_PORT, CHANGE_TSP_PROXY_URL, CHANGE_TSP_URL, CHANGE_TSP_USE_PROXY, CREATE_SETTING,
-  DELETE_RECIPIENT_CERTIFICATE, DELETE_SETTING, GOST_28147, REMOVE_ALL_CERTIFICATES, RU, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_SAVE_TO_DOCUMENTS,
+  DELETE_RECIPIENT_CERTIFICATE, DELETE_SETTING, GOST_28147, REMOVE_ALL_CERTIFICATES, RU, SAVE_SETTINGS, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_SAVE_TO_DOCUMENTS,
 } from "../constants";
 import { fileExists, mapToArr, uuid } from "../utils";
 
@@ -91,6 +91,7 @@ export const OcspModel = Record({
 const DEFAULT_ID = "DEFAULT_ID";
 
 export const SettingsModel = Record({
+  changed: false,
   encrypt: new EncryptModel(),
   id: DEFAULT_ID,
   locale: RU,
@@ -98,6 +99,7 @@ export const SettingsModel = Record({
   ocsp: new OcspModel(),
   outfolder: "",
   saveToDocuments: false,
+  savetime: null,
   sign: new SignModel(),
   tsp: new TspModel(),
 });
@@ -112,6 +114,9 @@ export const DefaultReducerState = Record({
 
 export default (settings = new DefaultReducerState(), action) => {
   const { type, payload } = action;
+
+  let modifiedSettings;
+
   switch (type) {
     case CREATE_SETTING:
       const id = uuid();
@@ -144,127 +149,127 @@ export default (settings = new DefaultReducerState(), action) => {
       break;
 
     case TOGGLE_SAVE_TO_DOCUMENTS:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "saveToDocuments"], payload.saveToDocuments);
       break;
 
     case CHANGE_SETTINGS_NAME:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "name"], payload.name);
       break;
 
     case CHANGE_SIGNATURE_DETACHED:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "sign", "detached"], payload.detached);
       break;
 
     case CHANGE_SIGNATURE_ENCODING:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "sign", "encoding"], payload.encoding);
       break;
 
     case CHANGE_OUTFOLDER:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "outfolder"], payload.outfolder);
       break;
 
     case CHANGE_SIGNATURE_STANDARD:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "sign", "standard"], payload.standard);
       break;
 
     case CHANGE_SIGNATURE_TIME:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "sign", "time"], payload.time);
       break;
 
     case CHANGE_SIGNATURE_TIMESTAMP:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "sign", "timestamp_on_data"], payload.timestamp);
       break;
 
     case CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "sign", "timestamp_on_sign"], payload.timestamp);
       break;
 
     case CHANGE_ARCHIVE_FILES_BEFORE_ENCRYPT:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "encrypt", "archive"], payload.archive);
       break;
 
     case CHANGE_DELETE_FILES_AFTER_ENCRYPT:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "encrypt", "delete"], payload.del);
       break;
 
     case CHANGE_ECRYPT_ALGORITHM:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "encrypt", "algorithm"], payload.algorithm);
       break;
 
     case CHANGE_ECRYPT_ENCODING:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "encrypt", "encoding"], payload.encoding);
       break;
 
     case CHANGE_TSP_PROXY_PORT:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "tsp", "proxy_port"], payload.port);
       break;
 
     case CHANGE_TSP_PROXY_URL:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "tsp", "proxy_url"], payload.url);
       break;
 
     case CHANGE_TSP_URL:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "tsp", "url"], payload.url);
       break;
 
     case CHANGE_TSP_PROXY_LOGIN:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "tsp", "proxy_login"], payload.proxy_login);
       break;
 
     case CHANGE_TSP_PROXY_PASSWORD:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "tsp", "proxy_password"], payload.proxy_password);
       break;
 
     case CHANGE_TSP_USE_PROXY:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "tsp", "use_proxy"], payload.use_proxy);
       break;
 
     case CHANGE_OCSP_PROXY_PORT:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "ocsp", "proxy_port"], payload.port);
       break;
 
     case CHANGE_OCSP_PROXY_URL:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "ocsp", "proxy_url"], payload.url);
       break;
 
     case CHANGE_OCSP_URL:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "ocsp", "url"], payload.url);
       break;
 
     case CHANGE_OCSP_USE_PROXY:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "ocsp", "use_proxy"], payload.use_proxy);
       break;
 
     case CHANGE_OCSP_PROXY_LOGIN:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "ocsp", "proxy_login"], payload.proxy_login);
       break;
 
     case CHANGE_OCSP_PROXY_PASSWORD:
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "ocsp", "proxy_password"], payload.proxy_password);
       break;
 
@@ -280,7 +285,7 @@ export default (settings = new DefaultReducerState(), action) => {
         settings = settings.set("active", settings.default);
       }
 
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "sign", "signer"], payload.selected);
       break;
 
@@ -289,7 +294,7 @@ export default (settings = new DefaultReducerState(), action) => {
         settings = settings.set("active", settings.default);
       }
 
-      settings = settings
+      modifiedSettings = settings
         .setIn(["entities", settings.active, "encrypt", "recipients", payload.certId], new RecipientModel({
           certId: payload.certId,
         }));
@@ -300,7 +305,7 @@ export default (settings = new DefaultReducerState(), action) => {
         settings = settings.set("active", settings.default);
       }
 
-      settings = settings
+      modifiedSettings = settings
         .deleteIn(["entities", settings.active, "encrypt", "recipients", payload.recipient]);
       break;
   }
@@ -333,6 +338,17 @@ export default (settings = new DefaultReducerState(), action) => {
     || type === CHANGE_OCSP_PROXY_LOGIN
     || type === CHANGE_OCSP_PROXY_PASSWORD
   ) {
+    if (modifiedSettings && !modifiedSettings.equals(settings)) {
+      settings = modifiedSettings;
+      settings = settings
+        .setIn(["entities", settings.active, "changed"], true);
+    }
+  }
+
+  if (type === SAVE_SETTINGS) {
+    settings = settings
+      .setIn(["entities", settings.active, "savetime"], new Date().getTime())
+      .setIn(["entities", settings.active, "changed"], false);
 
     const state = ({
       default: settings.default,
@@ -360,6 +376,7 @@ export default (settings = new DefaultReducerState(), action) => {
         console.log(err);
       }
     });
+
   }
 
   return settings;

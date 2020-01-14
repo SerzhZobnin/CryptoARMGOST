@@ -706,6 +706,7 @@ export default {
     remove_all_files: "Remove all listed files",
     remove_list: "Clear the list",
     remove_selected: "Delete selection",
+    save: "Save parameters",
     selected_all: "Select all",
     setting_file: "settings.json",
     setting_not_select: "No setting selected",
