@@ -126,6 +126,7 @@ export default (settings = new DefaultReducerState(), action) => {
         name: `Настройка #${settings.entities.size + 1}`,
       }));
       settings = settings.set("active", id);
+      settings = settings.set("default", id);
       break;
 
     case APPLY_SETTINGS:

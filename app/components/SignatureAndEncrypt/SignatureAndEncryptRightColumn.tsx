@@ -3,6 +3,7 @@ import { OrderedMap } from "immutable";
 import * as path from "path";
 import PropTypes, { any } from "prop-types";
 import React from "react";
+import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -15,7 +16,7 @@ import { IFile } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import { createTransactionDSS, dssOperationConfirmation, dssPerformOperation } from "../../AC/dssActions";
 import {
-  activeSetting, saveSettings,
+  activeSetting, changeDefaultSettings, saveSettings,
 } from "../../AC/settingsActions";
 import {
   DECRYPT, DSS_ACTIONS, ENCRYPT, GOST_28147, GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
@@ -35,14 +36,15 @@ import { bytesToSize, dirExists, fileCoding, fileNameForResign, fileNameForSign,
 import { fileExists } from "../../utils";
 import { buildDocumentDSS, buildDocumentPackageDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
+import CheckBoxWithLabel from "../CheckBoxWithLabel";
 import ConfirmTransaction from "../DSS/ConfirmTransaction";
 import PinCodeForDssContainer from "../DSS/PinCodeForDssContainer";
 import ReAuth from "../DSS/ReAuth";
 import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
 import AllSettings from "../Settings/AllSettings";
+import SaveSettings from "../Settings/SaveSettings";
 import SignerInfo from "../Signature/SignerInfo";
-import CheckBoxWithLabel from "../CheckBoxWithLabel";
 
 const dialog = window.electron.remote.dialog;
 
@@ -50,6 +52,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   activeFilesArr: any;
   isDefaultFilters: boolean;
   isDocumentsReviewed: boolean;
+  changeDefaultSettings: (id: string) => void;
   dssResponses: OrderedMap<any, any>;
   loadingFiles: any;
   files: any;
@@ -72,10 +75,12 @@ interface ISignatureAndEncryptRightColumnSettingsState {
   allSettingsMaunted: boolean;
   currentOperation: string;
   pinCode: string;
+  saveSettingsWithNewName: boolean;
   searchValue: string;
   showModalDssPin: boolean;
   showModalDssResponse: boolean;
   showModalReAuth: boolean;
+  showModalSaveParams: boolean;
 }
 
 class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureAndEncryptRightColumnSettingsProps, ISignatureAndEncryptRightColumnSettingsState> {
@@ -91,10 +96,12 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       allSettingsMaunted: false,
       currentOperation: "",
       pinCode: "",
+      saveSettingsWithNewName: false,
       searchValue: "",
       showModalDssPin: false,
       showModalDssResponse: false,
       showModalReAuth: false,
+      showModalSaveParams: false,
     };
   }
 
@@ -119,6 +126,12 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     $(".collapsible").collapsible();
+
+    $(document).ready(() => {
+      $("select").material_select();
+    });
+
+    $(ReactDOM.findDOMNode(this.refs.settingsSelectRef)).on("change", this.handleChangeDefaultSettings);
   }
 
   componentDidUpdate(prevProps: ISignatureAndEncryptRightColumnSettingsProps, prevState: ISignatureAndEncryptRightColumnSettingsState) {
@@ -138,8 +151,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   render() {
     const { localize, locale } = this.context;
-    const { activeFiles, isDocumentsReviewed, recipients, saveSettings, setting, settings, signer } = this.props;
-    const { file } = this.state;
+    const { activeFiles, isDocumentsReviewed, recipients, setting, settings, signer } = this.props;
+    const { file, saveSettingsWithNewName } = this.state;
 
     const disabledNavigate = this.isFilesFromSocket();
     const classDisabled = disabledNavigate ? "disabled" : "";
@@ -157,24 +170,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 <a className="btn-floated" data-activates="dropdown-btn-settings">
                   <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
                 </a>
-                {/* <ul id="dropdown-btn-settings" className="dropdown-content">
-                  <Link to={LOCATION_SETTINGS_CONFIG}>
-                    <li><a onClick={() => {
-                      this.props.activeSetting(this.props.setting.id);
-                    }}>Изменить</a></li>
-                  </Link>
-                  {
-                    settings && settings.size > 1 ?
-                      <Link to={LOCATION_SETTINGS_SELECT}>
-                        <li>
-                          <a onClick={() => {
-                            this.props.activeSetting(this.props.setting.id);
-                          }}>Выбрать</a>
-                        </li>
-                      </Link> :
-                      null
-                  }
-                </ul> */}
+                <ul id="dropdown-btn-settings" className="dropdown-content">
+                  <li>
+                    <a onClick={() => {
+                      console.log("+++++");
+                    }}>Удалить</a>
+                  </li>
+                </ul>
               </div>
             </div>
             <div className="col s12 valign-wrapper">
@@ -182,20 +184,31 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 <div className="setting" />
               </div>
               <div className="col s10" style={{ fontSize: "75%" }}>
-                <div className="collection-title">{setting.name}</div>
+                <div className="input-field" style={{ marginTop: "0px" }}>
+                  <select
+                    className="select"
+                    ref="settingsSelectRef"
+                    value={setting.name}
+                    defaultValue={setting.name}
+                    onChange={this.handleChangeDefaultSettings} >
+                    {
+                      settings.map((settingItem: any) => {
+                        return <option key={settingItem.id} value={settingItem.id}>{settingItem.name}</option>;
+                      })
+                    }
+                  </select>
+                </div>
               </div>
             </div>
 
             {
               setting.changed ?
                 <React.Fragment>
-                  <div className="row" />
-
                   <div className="col s12">
                     <CheckBoxWithLabel
                       disabled={false}
-                      onClickCheckBox={() => console.log("ss")}
-                      isChecked={false}
+                      onClickCheckBox={this.toggleSaveSettingsWithNewName}
+                      isChecked={saveSettingsWithNewName}
                       elementId="new_time"
                       title={"Сохранить параметры с новым именем"} />
                   </div>
@@ -204,19 +217,16 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
                   <div className="col s12">
                     <a className="btn btn-outlined waves-effect waves-light"
-                      onClick={() => {
-                        saveSettings();
-                      }}
+                      onClick={this.handleSaveSettings}
                       style={{ width: "100%" }}>
                       {localize("Settings.save", locale)}
                     </a>
-
                   </div>
+
+                  <div className="row" />
                 </React.Fragment>
                 : null
             }
-
-            <div className="row" />
 
             <div className="col s10">
               <div className="subtitle">{localize("Sign.signer_cert", locale)}</div>
@@ -458,6 +468,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         {this.showModalReAuth()}
         {this.showModalDssPin()}
         {this.showModalDssResponse()}
+        {this.showModalSaveParams()}
       </React.Fragment>
     );
   }
@@ -538,6 +549,29 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     );
   }
 
+  showModalSaveParams = () => {
+    const { localize, locale } = this.context;
+    const { showModalSaveParams } = this.state;
+
+    if (!showModalSaveParams) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalSaveParams}
+        key="ShowModalSaveParams"
+        header={localize("Settings.save", locale)}
+        onClose={this.handleCloseModalSaveParams}
+        style={{ width: "500px" }}>
+
+        <SaveSettings
+          onCancel={this.handleCloseModalSaveParams}
+        />
+      </Modal>
+    );
+  }
+
   handleShowModalReAuth = () => {
     this.setState({
       showModalReAuth: true,
@@ -566,11 +600,51 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     this.setState({ showModalDssPin: false });
   }
 
+  handleShowModalSaveParams = () => {
+    this.setState({ showModalSaveParams: true });
+  }
+
+  handleCloseModalSaveParams = () => {
+    this.setState({ showModalSaveParams: false });
+  }
+
   toggleDocumentsReviewed = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { documentsReviewed, isDocumentsReviewed } = this.props;
 
     documentsReviewed(!isDocumentsReviewed);
+  }
+
+  toggleSaveSettingsWithNewName = () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const { saveSettingsWithNewName } = this.state;
+
+    this.setState({ saveSettingsWithNewName: !saveSettingsWithNewName });
+  }
+
+  handleChangeDefaultSettings = (ev: any) => {
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeDefaultSettings } = this.props;
+    const name = ev.target.value;
+
+    console.log("name", name);
+
+
+    if (name && changeDefaultSettings) {
+      changeDefaultSettings(name);
+    }
+  }
+
+  handleSaveSettings = () => {
+    const { saveSettingsWithNewName } = this.state;
+    // tslint:disable-next-line: no-shadowed-variable
+    const { saveSettings } = this.props;
+
+    if (saveSettingsWithNewName) {
+      this.handleShowModalSaveParams();
+    } else {
+      saveSettings();
+    }
   }
 
   handleClickSign = () => {
@@ -1579,7 +1653,7 @@ export default connect((state) => {
     policyDSS: state.policyDSS.entities,
   };
 }, {
-  activeFile, activeSetting, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
+  activeFile, activeSetting, changeDefaultSettings, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
   deleteFile, deleteRecipient, documentsReviewed,
   filePackageSelect, filePackageDelete, packageSign, packageReSign,
   saveSettings, selectFile,
