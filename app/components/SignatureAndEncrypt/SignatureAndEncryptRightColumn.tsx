@@ -44,8 +44,8 @@ import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
 import AllSettings from "../Settings/AllSettings";
 import SaveSettings from "../Settings/SaveSettings";
-import SignerInfo from "../Signature/SignerInfo";
 import SettingsSelector from "../Settings/SettingsSelector";
+import SignerInfo from "../Signature/SignerInfo";
 
 const dialog = window.electron.remote.dialog;
 
@@ -189,9 +189,12 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   value={setting.id}
                   handleChange={this.handleChangeDefaultSettings}
                   disabled={false}
+                  setting={setting}
                   settings={settings} />
               </div>
             </div>
+
+            <div className="row" />
 
             {
               setting.changed ?

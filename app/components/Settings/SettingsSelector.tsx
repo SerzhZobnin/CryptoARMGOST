@@ -1,15 +1,13 @@
 import PropTypes from "prop-types";
 import React from "react";
 import ReactDOM from "react-dom";
-import {
-  TSP_OCSP_ENABLED,
-} from "../../constants";
 
 interface ISettingsSelectorProps {
   value: string;
   disabled?: boolean;
   handleChange: (encoding: string) => void;
   settings: any;
+  setting: any;
 }
 
 class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
@@ -24,6 +22,12 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
   componentDidMount() {
     $(document).ready(() => {
       $("select").material_select();
+
+      setTimeout(() => {
+        $(".select-dropdown").css("border-bottom", "none");
+        $(".select-dropdown").css("margin", "0");
+        $(".select-dropdown").css("height", "2rem");
+      }, 0);
     });
     $(ReactDOM.findDOMNode(this.refs.settingsSelectRef)).on("change", this.changeStandard);
   }
@@ -31,12 +35,17 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
   componentDidUpdate() {
     $(document).ready(() => {
       $("select").material_select();
+
+      $(".select-dropdown").css("border-bottom", "none");
+      $(".select-dropdown").css("margin", "0");
+      $(".select-dropdown").css("height", "2rem");
     });
   }
 
   shouldComponentUpdate(nextProps: any) {
     if (nextProps.disabled !== this.props.disabled ||
-      nextProps.value !== this.props.value) {
+      nextProps.value !== this.props.value ||
+      nextProps.setting.savetime !== this.props.setting.savetime) {
       return true;
     } else {
       return false;
@@ -48,7 +57,8 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
   }
 
   render() {
-    const { settings, value } = this.props;
+    const { localize, locale } = this.context;
+    const { setting, settings, value } = this.props;
 
     return (
       <div>
@@ -66,6 +76,14 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
               })
             }
           </select>
+          <span className="helper-text" data-error="wrong" data-success="right">{`Сохранено: ${setting && setting.savetime ? (new Date(setting.savetime)).toLocaleDateString(locale, {
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            month: "long",
+            year: "numeric",
+          }) : "-"}`}
+          </span>
         </div>
       </div>
     );

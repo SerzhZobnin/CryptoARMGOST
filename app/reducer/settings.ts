@@ -154,8 +154,14 @@ export default (settings = new DefaultReducerState(), action) => {
         settings = settings
           .setIn(["entities", settings.active], newSetting);
 
+        unsavedSettings = newSetting;
       }
 
+      break;
+
+    case SAVE_SETTINGS:
+      unsavedSettings = settings.getIn(["entities", settings.active])
+        .set("changed", false);
       break;
 
     case APPLY_SETTINGS:
@@ -179,6 +185,7 @@ export default (settings = new DefaultReducerState(), action) => {
       break;
 
     case CHANGE_DEFAULT_SETTINGS:
+      unsavedSettings = settings.getIn(["entities", payload.id]);
       settings = settings.set("default", payload.id);
       break;
 
@@ -379,7 +386,8 @@ export default (settings = new DefaultReducerState(), action) => {
     }
   }
 
-  if (type === SAVE_SETTINGS) {
+  if (type === SAVE_SETTINGS
+    || type === CREATE_SETTING) {
     settings = settings
       .setIn(["entities", settings.active, "savetime"], new Date().getTime())
       .setIn(["entities", settings.active, "changed"], false);
@@ -412,6 +420,8 @@ export default (settings = new DefaultReducerState(), action) => {
     });
 
   }
+
+  window.unsavedSettings = unsavedSettings;
 
   return settings;
 };
