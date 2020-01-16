@@ -112,8 +112,18 @@ export const DefaultReducerState = Record({
   }),
 });
 
+let unsavedSettings: any; //сохраняем исходное состояние активной настрйоки
+
 export default (settings = new DefaultReducerState(), action) => {
   const { type, payload } = action;
+
+  let name;
+  let setting;
+
+  if (payload) {
+    name = payload.name;
+    setting = payload.setting;
+  }
 
   let modifiedSettings;
 
@@ -123,10 +133,29 @@ export default (settings = new DefaultReducerState(), action) => {
 
       settings = settings.setIn(["entities", id], new SettingsModel({
         id,
-        name: `Настройка #${settings.entities.size + 1}`,
+        name: name ? name : `Настройка #${settings.entities.size + 1}`,
       }));
+
+      if (unsavedSettings) {
+        settings = settings
+          .setIn(["entities", unsavedSettings.id], unsavedSettings);
+      }
+
       settings = settings.set("active", id);
       settings = settings.set("default", id);
+
+      if (payload && payload.setting) {
+        let newSetting = payload.setting;
+
+        newSetting = newSetting.set("id", id);
+        newSetting = newSetting.set("name", name);
+        newSetting = newSetting.set("changed", false);
+
+        settings = settings
+          .setIn(["entities", settings.active], newSetting);
+
+      }
+
       break;
 
     case APPLY_SETTINGS:
@@ -135,6 +164,10 @@ export default (settings = new DefaultReducerState(), action) => {
       break;
 
     case ACTIVE_SETTING:
+      if (!unsavedSettings) {
+        unsavedSettings = settings.getIn(["entities", payload.id]);
+      }
+
       return settings.set("active", payload.id);
 
     case DELETE_SETTING:

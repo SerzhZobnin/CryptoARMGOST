@@ -10,8 +10,9 @@ import {
    DELETE_SETTING, SAVE_SETTINGS, TOGGLE_SAVE_TO_DOCUMENTS,
 } from "../constants";
 
-export function createSettings() {
+export function createSettings(name?: string, setting?: any) {
   return {
+    payload: { name, setting },
     type: CREATE_SETTING,
   };
 }

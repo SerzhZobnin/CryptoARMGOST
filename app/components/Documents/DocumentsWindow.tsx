@@ -10,9 +10,6 @@ import {
   removeDocuments, selectAllDocuments, unselectAllDocuments,
 } from "../../AC/documentsActions";
 import {
-  activeSetting,
-} from "../../AC/settingsActions";
-import {
   DEFAULT_DOCUMENTS_PATH,
 } from "../../constants";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
@@ -321,7 +318,7 @@ export default connect((state) => {
     signedPackage: state.signatures.signedPackage,
   };
 }, {
-  arhiveDocuments, activeSetting, deleteRecipient, documentsReviewed,
+  arhiveDocuments, deleteRecipient, documentsReviewed,
   packageSign, loadAllDocuments,
   removeAllDocuments, removeDocuments,
   selectAllDocuments, selectSignerCertificate, unselectAllDocuments,

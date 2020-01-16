@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import {
-  activeSetting, changeDefaultSettings, createSettings,
+  applySettings, changeDefaultSettings, createSettings,
 } from "../../AC/settingsActions";
 
 interface ICertificateDeleteState {
@@ -92,7 +92,11 @@ class SaveSettings extends React.Component<ISaveSettingsProps, ICertificateDelet
   }
 
   handelSave = () => {
-    this.props.createSettings();
+    const { setting } = this.props;
+    const { name } = this.state;
+
+    this.props.createSettings(name, setting);
+
     this.handelCancel();
   }
 }
@@ -103,4 +107,4 @@ export default connect((state) => {
   return {
     setting,
   };
-}, { activeSetting, changeDefaultSettings, createSettings })(SaveSettings);
+}, { applySettings, changeDefaultSettings, createSettings })(SaveSettings);

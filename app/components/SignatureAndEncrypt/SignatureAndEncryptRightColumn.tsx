@@ -45,6 +45,7 @@ import RecipientsList from "../RecipientsList";
 import AllSettings from "../Settings/AllSettings";
 import SaveSettings from "../Settings/SaveSettings";
 import SignerInfo from "../Signature/SignerInfo";
+import SettingsSelector from "../Settings/SettingsSelector";
 
 const dialog = window.electron.remote.dialog;
 
@@ -184,20 +185,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 <div className="setting" />
               </div>
               <div className="col s10" style={{ fontSize: "75%" }}>
-                <div className="input-field" style={{ marginTop: "0px" }}>
-                  <select
-                    className="select"
-                    ref="settingsSelectRef"
-                    value={setting.name}
-                    defaultValue={setting.name}
-                    onChange={this.handleChangeDefaultSettings} >
-                    {
-                      settings.map((settingItem: any) => {
-                        return <option key={settingItem.id} value={settingItem.id}>{settingItem.name}</option>;
-                      })
-                    }
-                  </select>
-                </div>
+                <SettingsSelector
+                  value={setting.id}
+                  handleChange={this.handleChangeDefaultSettings}
+                  disabled={false}
+                  settings={settings} />
               </div>
             </div>
 
@@ -239,9 +231,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 </a>
                 <ul id="dropdown-btn-signer" className="dropdown-content">
                   <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
-                    <li><a onClick={() => {
-                      this.props.activeSetting(this.props.setting.id);
-                    }}>Заменить</a></li>
+                    <li><a>Заменить</a></li>
                   </Link>
                   <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
                 </ul>
@@ -252,9 +242,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 <div className="col s12">
                   <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
                     <a className="btn btn-outlined waves-effect waves-light"
-                      onClick={() => {
-                        this.props.activeSetting(this.props.setting.id);
-                      }}
                       style={{ width: "100%" }}>
                       {localize("Settings.Choose", locale)}
                     </a>
@@ -275,9 +262,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 </a>
                 <ul id="dropdown-btn-encrypt" className="dropdown-content">
                   <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
-                    <li><a onClick={() => {
-                      this.props.activeSetting(this.props.setting.id);
-                    }}>{localize("Settings.add", locale)}</a></li>
+                    <li><a>{localize("Settings.add", locale)}</a></li>
                   </Link>
                   <li><a onClick={() => this.handleCleanRecipientsList()}>{localize("Common.clear", locale)}</a></li>
                 </ul>
@@ -290,10 +275,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 </div> :
                 <div className={`col s12 ${classDisabled}`}>
                   <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
-                    <a onClick={() => {
-                      this.props.activeSetting(this.props.setting.id);
-                    }}
-                      className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}
+                    <a className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}
                       style={{ width: "100%" }}>
                       {localize("Settings.Choose", locale)}
                     </a>
@@ -622,16 +604,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     this.setState({ saveSettingsWithNewName: !saveSettingsWithNewName });
   }
 
-  handleChangeDefaultSettings = (ev: any) => {
+  handleChangeDefaultSettings = (name: string) => {
     // tslint:disable-next-line: no-shadowed-variable
-    const { changeDefaultSettings } = this.props;
-    const name = ev.target.value;
-
-    console.log("name", name);
-
+    const { activeSetting, changeDefaultSettings } = this.props;
 
     if (name && changeDefaultSettings) {
       changeDefaultSettings(name);
+      activeSetting(name);
     }
   }
 

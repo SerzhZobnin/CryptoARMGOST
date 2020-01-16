@@ -8,9 +8,6 @@ import {
   unselectAllDocuments,
 } from "../../AC/documentsActions";
 import {
-  activeSetting,
-} from "../../AC/settingsActions";
-import {
   LOCATION_MAIN, REMOVE, SIGN,
 } from "../../constants";
 import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
@@ -31,10 +28,6 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
 
   constructor(props: IDocumentsWindowProps) {
     super(props);
-  }
-
-  componentWillMount() {
-    this.props.activeSetting(this.props.setting.id);
   }
 
   componentDidMount() {
@@ -263,6 +256,6 @@ export default connect((state) => {
     signatures,
   };
 }, {
-  activeSetting, changeLocation, deleteRecipient,
+  changeLocation, deleteRecipient,
   filePackageSelect, selectSignerCertificate, unselectAllDocuments,
 })(DocumentsRightColumn);
