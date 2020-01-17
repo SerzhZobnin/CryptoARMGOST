@@ -126,9 +126,9 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
   getSignAndEncryptMenu = () => {
     return (
-      <div style={{display: "none"}}>
+      <div style={{ display: "none", pointerEvents: "none", cursor: "default" }}>
         <Link to={LOCATION_MAIN}>
-          <ul id="dropdown-sign_and_encrypt" className="dropdown-content">
+          <ul id="dropdown-sign_and_encrypt" className="dropdown-content" style={{ display: "none" }}>
             <li>
               <div className="center-align">
                 <a style={{ fontWeight: "bold", color: "#bf3817" }}>ПОДПИСЬ И ШИФРОВАНИЕ</a>
@@ -142,9 +142,9 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
   getDocumentsMenu = () => {
     return (
-      <div style={{display: "none"}}>
+      <div style={{ display: "none", pointerEvents: "none", cursor: "default" }}>
         <Link to={LOCATION_DOCUMENTS}>
-          <ul id="dropdown-documents-stores" className="dropdown-content">
+          <ul id="dropdown-documents-stores" className="dropdown-content" style={{ display: "none" }}>
             <li>
               <div className="center-align">
                 <a style={{ fontWeight: "bold", color: "#bf3817" }}>ДОКУМЕНТЫ</a>
@@ -160,10 +160,10 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     const { localize, locale } = this.context;
 
     return (
-      <div style={{display: "none"}}>
+      <div style={{ display: "none", pointerEvents: "none", cursor: "default" }}>
         <Link
           to={{ pathname: LOCATION_ADDRESS_BOOK, search: ADDRESS_BOOK, state: { head: localize("AddressBook.address_book", locale), store: ADDRESS_BOOK } }}>
-          <ul id="dropdown-address-book" className="dropdown-content">
+          <ul id="dropdown-address-book" className="dropdown-content" style={{ display: "none" }}>
             <li>
               <div className="center-align">
                 <a style={{ fontWeight: "bold", color: "#bf3817" }}>КОНТАКТЫ</a>
@@ -203,8 +203,8 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     });
 
     return (
-      <div style={{display: "none"}}>
-        <ul id="dropdown-certificate-stores" className="dropdown-content" style={{ minHeight: "85px" }}>
+      <div style={{ display: "none", pointerEvents: "none", cursor: "default" }}>
+        <ul id="dropdown-certificate-stores" className="dropdown-content" style={{ minHeight: "85px", display: "none" }}>
           <Link
             to={{ pathname: LOCATION_CERTIFICATES, search: "my", state: { head: localize("Certificate.certs_my", locale), store: MY } }}
             style={{ padding: "0px" }}
@@ -263,8 +263,8 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     const { localize, locale } = this.context;
 
     return (
-      <div style={{display: "none"}}>
-        <ul id="dropdown-about-pages" className="dropdown-content" style={{ minHeight: "150px", height: "150px" }}>
+      <div style={{ display: "none", pointerEvents: "none", cursor: "default" }}>
+        <ul id="dropdown-about-pages" className="dropdown-content" style={{ display: "none", minHeight: "150px", height: "150px" }}>
           <Link
             to={LOCATION_ABOUT}
             style={{ padding: "0px" }}
@@ -320,13 +320,13 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 
   getExitMenu = () => {
     return (
-      <div style={{display: "none"}}>
+      <div style={{ display: "none", pointerEvents: "none", cursor: "default" }}>
         <Link to="/" onClick={() => {
           remote.getGlobal("sharedObject").isQuiting = true;
           remote.getCurrentWindow().close();
         }} style={{ padding: "0 10px" }}>
 
-          <ul id="dropdown-menu-exit" className="dropdown-content" style={{ top: "34px !impotant" }}>
+          <ul id="dropdown-menu-exit" className="dropdown-content" style={{ top: "34px !impotant", display: "none" }}>
             <li>
               <div className="center-align">
                 <a style={{ fontWeight: "bold", color: "#bf3817" }}>ВЫХОД</a>
