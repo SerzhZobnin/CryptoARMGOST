@@ -80,7 +80,7 @@ class RecipientsList extends React.Component<IRecipientsListProps, any> {
                       <div className={curStatusStyle} />
                     </div>
                     {
-                      this.state.hoveredRowIndex === recipient.id ?
+                      !disabled && this.state.hoveredRowIndex === recipient.id ?
                         <div className="col s8">
                           <div className="collection-title">{recipient.subjectFriendlyName}</div>
                           <div className="collection-info">{recipient.issuerFriendlyName}</div>

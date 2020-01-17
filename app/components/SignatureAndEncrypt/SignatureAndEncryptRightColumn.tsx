@@ -272,8 +272,12 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             </div>
             {
               (recipients && recipients.length) ?
-                <div className="col s12">
-                  <RecipientsList recipients={recipients} handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)} />
+                <div className={`col s12 ${classDisabled}`}>
+                  <RecipientsList
+                    disabled={disabledNavigate}
+                    recipients={recipients}
+                    handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)}
+                  />
                 </div> :
                 <div className={`col s12 ${classDisabled}`}>
                   <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>

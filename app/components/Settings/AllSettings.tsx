@@ -183,6 +183,7 @@ class AllSettings extends React.Component<any, {}> {
           {
             isCsp5R2orHigh ?
               <EncryptionAlgorithmSelector
+                disabled={disabled}
                 EncryptionValue={settings.encrypt.algorithm}
                 handleChange={this.handleEncryptAlgoritmChange} />
               : null
