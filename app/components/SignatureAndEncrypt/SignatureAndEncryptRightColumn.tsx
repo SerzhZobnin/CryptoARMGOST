@@ -297,6 +297,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                     if (!this.state.allSettingsMaunted) {
                       this.setState({ allSettingsMaunted: true });
                     }
+
+                    $(document).ready(() => {
+                      setTimeout(() => {
+                        $(".select-dropdown:eq(0)").css("border-bottom", "none");
+                        $(".select-dropdown:eq(0)").css("margin", "0");
+                        $(".select-dropdown:eq(0)").css("height", "2rem");
+                      }, 0);
+                    });
                   }
                   }>
                     <i className="material-icons right">expand_more</i>

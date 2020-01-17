@@ -36,16 +36,19 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
     $(document).ready(() => {
       $("select").material_select();
 
-      $(".select-dropdown").css("border-bottom", "none");
-      $(".select-dropdown").css("margin", "0");
-      $(".select-dropdown").css("height", "2rem");
+      setTimeout(() => {
+        $(".select-dropdown:eq(0)").css("border-bottom", "none");
+        $(".select-dropdown:eq(0)").css("margin", "0");
+        $(".select-dropdown:eq(0)").css("height", "2rem");
+      }, 0);
     });
   }
 
   shouldComponentUpdate(nextProps: any) {
     if (nextProps.disabled !== this.props.disabled ||
       nextProps.value !== this.props.value ||
-      nextProps.setting.savetime !== this.props.setting.savetime) {
+      nextProps.setting.savetime !== this.props.setting.savetime ||
+      nextProps.setting.changed !== this.props.setting.changed) {
       return true;
     } else {
       return false;
@@ -64,7 +67,6 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
       <div>
         <div className="input-field" style={{ marginTop: "0px" }}>
           <select
-            className="select"
             disabled={this.props.disabled}
             id="settingsSelectRef"
             ref="settingsSelectRef"
