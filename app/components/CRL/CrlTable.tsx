@@ -156,8 +156,16 @@ class CrlTable extends React.Component<ICrlTableProps & ICrlTableDispatch, ICrlT
                                   <CrlStatusIcon crl={rowData} key={rowData.id} />
                                 </div>
                                 <div className="col s11">
-                                  <div className="collection-title truncate">{cellData}</div>
-                                  <div className="collection-info truncate">{rowData.lastUpdate}</div>
+                                  <div className="collection-title truncate">
+                                    {cellData ? cellData : rowData.issuerName}
+                                  </div>
+                                  <div className="collection-info truncate">{(new Date(rowData.lastUpdate)).toLocaleDateString(locale, {
+                                    day: "numeric",
+                                    hour: "numeric",
+                                    minute: "numeric",
+                                    month: "numeric",
+                                    year: "numeric",
+                                  })}</div>
                                 </div>
                               </div>);
                           }
@@ -202,7 +210,7 @@ class CrlTable extends React.Component<ICrlTableProps & ICrlTableDispatch, ICrlT
                                   <CrlStatusIcon crl={rowData} key={rowData.id} />
                                 </div>
                                 <div className="col s10" style={{ marginLeft: "10px" }}>
-                                  <div className="collection-title truncate">{cellData}</div>
+                                  <div className="collection-title truncate">{cellData ? cellData : rowData.issuerName}</div>
                                 </div>
                               </div>);
                           }
