@@ -95,7 +95,7 @@ export const SettingsModel = Record({
   encrypt: new EncryptModel(),
   id: DEFAULT_ID,
   locale: RU,
-  name: "Настройка #1",
+  name: "По умолчанию",
   ocsp: new OcspModel(),
   outfolder: "",
   saveToDocuments: false,
@@ -177,11 +177,11 @@ export default (settings = new DefaultReducerState(), action) => {
       return settings.set("active", payload.id);
 
     case DELETE_SETTING:
-      if (DEFAULT_ID === payload.id) {
-        return settings;
-      }
-
       settings = settings.deleteIn(["entities", payload.id]);
+
+      if (!settings.get("entities").size) {
+        settings = settings.setIn(["entities", DEFAULT_ID], new SettingsModel());
+      }
 
       const firstSetting = settings.get("entities").first();
 
@@ -189,8 +189,8 @@ export default (settings = new DefaultReducerState(), action) => {
         unsavedSettings = firstSetting;
 
         settings = settings
-        .set("default", firstSetting.id)
-        .set("active", firstSetting.id);
+          .set("default", firstSetting.id)
+          .set("active", firstSetting.id);
       }
 
       break;
@@ -398,7 +398,8 @@ export default (settings = new DefaultReducerState(), action) => {
   }
 
   if (type === SAVE_SETTINGS
-    || type === CREATE_SETTING) {
+    || type === CREATE_SETTING
+    || type === DELETE_SETTING) {
     settings = settings
       .setIn(["entities", settings.active, "savetime"], new Date().getTime())
       .setIn(["entities", settings.active, "changed"], false);

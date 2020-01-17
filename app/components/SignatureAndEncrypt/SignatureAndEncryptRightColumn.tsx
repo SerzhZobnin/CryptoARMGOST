@@ -164,23 +164,20 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               <div className="desktoplic_text_item">Параметры:</div>
               <hr />
             </div>
-            {
-              setting && setting.id === DEFAULT_ID ? null :
-                <div className="col s2">
-                  <div className="right import-col">
-                    <a className="btn-floated" data-activates="dropdown-btn-settings">
-                      <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+            <div className="col s2">
+              <div className="right import-col">
+                <a className="btn-floated" data-activates="dropdown-btn-settings">
+                  <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                </a>
+                <ul id="dropdown-btn-settings" className="dropdown-content">
+                  <li>
+                    <a onClick={() => this.props.deleteSetting(setting.id)}>
+                      {localize("Common.delete", locale)}
                     </a>
-                    <ul id="dropdown-btn-settings" className="dropdown-content">
-                      <li>
-                        <a onClick={() => this.props.deleteSetting(setting.id)}>
-                          {localize("Common.delete", locale)}
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-            }
+                  </li>
+                </ul>
+              </div>
+            </div>
 
             <div className="col s12 valign-wrapper">
               <div className="col s2">
