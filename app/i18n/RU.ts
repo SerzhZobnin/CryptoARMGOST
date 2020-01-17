@@ -288,6 +288,7 @@ export default {
     clear: "Очистить",
     close: "Закрыть",
     copy: "Копировать",
+    create: "Создать",
     delete: "Удалить",
     en: "Английский",
     error: "ОШИБКА",

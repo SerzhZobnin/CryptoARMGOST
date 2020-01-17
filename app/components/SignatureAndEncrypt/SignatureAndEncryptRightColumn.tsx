@@ -16,7 +16,7 @@ import { IFile } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import { createTransactionDSS, dssOperationConfirmation, dssPerformOperation } from "../../AC/dssActions";
 import {
-  activeSetting, changeDefaultSettings, saveSettings,
+  activeSetting, changeDefaultSettings, deleteSetting, saveSettings,
 } from "../../AC/settingsActions";
 import {
   DECRYPT, DSS_ACTIONS, ENCRYPT, GOST_28147, GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
@@ -24,7 +24,7 @@ import {
   LOCATION_SETTINGS_CONFIG,
   LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
-import { ISignParams } from "../../reducer/settings";
+import { DEFAULT_ID, ISignParams } from "../../reducer/settings";
 import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
 import { DECRYPTED, ENCRYPTED, ERROR, SIGNED, UPLOADED } from "../../server/constants";
 import * as trustedEncrypts from "../../trusted/encrypt";
@@ -113,13 +113,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   componentDidMount() {
     const { dssResponses } = this.props;
 
-    $(".btn-floated").dropdown({
-      alignment: "left",
-      belowOrigin: false,
-      gutter: 0,
-      inDuration: 300,
-      outDuration: 225,
-    });
+    $(".btn-floated").dropdown();
 
     if (dssResponses && dssResponses.size) {
       this.handleCloseModalReAuth();
@@ -148,6 +142,10 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     if (prevProps.dssResponses.size && !this.props.dssResponses.size) {
       this.handleCloseModalDssResponse();
     }
+
+    if (prevProps.setting.id !== this.props.setting.id) {
+      $(".btn-floated").dropdown();
+    }
   }
 
   render() {
@@ -166,20 +164,24 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               <div className="desktoplic_text_item">Параметры:</div>
               <hr />
             </div>
-            <div className="col s2">
-              <div className="right import-col">
-                <a className="btn-floated" data-activates="dropdown-btn-settings">
-                  <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
-                </a>
-                <ul id="dropdown-btn-settings" className="dropdown-content">
-                  <li>
-                    <a onClick={() => {
-                      console.log("+++++");
-                    }}>Удалить</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            {
+              setting && setting.id === DEFAULT_ID ? null :
+                <div className="col s2">
+                  <div className="right import-col">
+                    <a className="btn-floated" data-activates="dropdown-btn-settings">
+                      <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                    </a>
+                    <ul id="dropdown-btn-settings" className="dropdown-content">
+                      <li>
+                        <a onClick={() => this.props.deleteSetting(setting.id)}>
+                          {localize("Common.delete", locale)}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+            }
+
             <div className="col s12 valign-wrapper">
               <div className="col s2">
                 <div className="setting" />
@@ -1636,7 +1638,7 @@ export default connect((state) => {
   };
 }, {
   activeFile, activeSetting, changeDefaultSettings, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
-  deleteFile, deleteRecipient, documentsReviewed,
+  deleteSetting, deleteFile, deleteRecipient, documentsReviewed,
   filePackageSelect, filePackageDelete, packageSign, packageReSign,
   saveSettings, selectFile,
   verifyCertificate, selectSignerCertificate, verifySignature,

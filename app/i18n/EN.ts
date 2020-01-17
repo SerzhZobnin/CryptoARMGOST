@@ -288,6 +288,7 @@ export default {
     clear: "Clear",
     close: "Close",
     copy: "Copy",
+    create: "Create",
     delete: "Delete",
     en: "English",
     error: "ERROR",

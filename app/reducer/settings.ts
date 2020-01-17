@@ -88,7 +88,7 @@ export const OcspModel = Record({
   use_proxy: false,
 });
 
-const DEFAULT_ID = "DEFAULT_ID";
+export const DEFAULT_ID = "DEFAULT_ID";
 
 export const SettingsModel = Record({
   changed: false,
@@ -177,11 +177,22 @@ export default (settings = new DefaultReducerState(), action) => {
       return settings.set("active", payload.id);
 
     case DELETE_SETTING:
-      if (settings.default === payload.id || DEFAULT_ID === payload.id) {
+      if (DEFAULT_ID === payload.id) {
         return settings;
       }
 
       settings = settings.deleteIn(["entities", payload.id]);
+
+      const firstSetting = settings.get("entities").first();
+
+      if (firstSetting) {
+        unsavedSettings = firstSetting;
+
+        settings = settings
+        .set("default", firstSetting.id)
+        .set("active", firstSetting.id);
+      }
+
       break;
 
     case CHANGE_DEFAULT_SETTINGS:
@@ -420,8 +431,6 @@ export default (settings = new DefaultReducerState(), action) => {
     });
 
   }
-
-  window.unsavedSettings = unsavedSettings;
 
   return settings;
 };
