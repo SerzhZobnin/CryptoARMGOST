@@ -44,6 +44,10 @@ export function encryptFile(uri: string, certs: trusted.pkistore.PkiItem[], poli
     cipher.recipientsCerts = certsCollection;
 
     cipher.encrypt(uri, outURI, encAlg, format);
+
+    if (policies.deleteFiles) {
+      fs.unlinkSync(uri);
+    }
   } catch (err) {
     logger.log({
       certificate: "",
@@ -57,11 +61,13 @@ export function encryptFile(uri: string, certs: trusted.pkistore.PkiItem[], poli
       userName: USER_NAME,
     });
 
-    outURI = "";
-  }
+    try {
+      fs.unlinkSync(outURI);
+    } catch (e) {
+      //
+    }
 
-  if (policies.deleteFiles) {
-    fs.unlinkSync(uri);
+    outURI = "";
   }
 
   logger.log({
@@ -133,6 +139,12 @@ export function decryptFile(uri: string, folderOut: string): string {
       },
       userName: USER_NAME,
     });
+
+    try {
+      fs.unlinkSync(outURI);
+    } catch (e) {
+      //
+    }
 
     return "";
   }
