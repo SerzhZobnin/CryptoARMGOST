@@ -184,7 +184,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
             <div className="col s12 valign-wrapper">
               <div className="col s2">
-                <div className="setting" />
+                <div className="setting_color" />
               </div>
               <div className="col s10" style={{ fontSize: "75%" }}>
                 <SettingsSelector

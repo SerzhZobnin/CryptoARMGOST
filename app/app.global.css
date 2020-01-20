@@ -684,6 +684,14 @@ div::-webkit-scrollbar-thumb {
   text-align: center;
 }
 
+.setting_color {
+  background: url(./resources/image/setting_color.svg);
+  background-size: 100%;
+  height: 32px;
+  width: 32px;
+  text-align: center;
+}
+
 
 /*-------------------------------Стили главного меню------------------*/
 .side-nav {
@@ -2966,6 +2974,11 @@ svg:hover {
   i.material-icons.docmenu.cancel {
     background: url(./resources/image/cancel_button.svg);
   }
+
+  i.material-icons.docmenu.send_in_sign_and_encrypt {
+    background: url(./resources/image/operations/send_in_sign_and_encrypt.svg);
+  }
+
 
   i.material-icons.license.install {
     background: url(./resources/image/operations/add_lic.svg);
