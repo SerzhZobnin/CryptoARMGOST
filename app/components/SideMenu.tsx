@@ -17,6 +17,7 @@ interface ISideMenuProps {
   certrequests: any;
   crls: any;
   pathname: string;
+  setting: any;
 }
 
 class SideMenu extends React.Component<ISideMenuProps, {}> {
@@ -104,10 +105,8 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
                 to="/"
                 data-activates="dropdown-menu-exit"
                 data-hover="hover"
-                onClick={() => {
-                  remote.getGlobal("sharedObject").isQuiting = true;
-                  remote.getCurrentWindow().close();
-                }} style={{ padding: "0 10px" }}>
+                onClick={this.onExit}
+                style={{ padding: "0 10px" }}>
 
                 <i className="material-icons sidevan exit">exit_to_app</i>
               </Link>
@@ -321,10 +320,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
   getExitMenu = () => {
     return (
       <div style={{ display: "none", pointerEvents: "none", cursor: "default" }}>
-        <Link to="/" onClick={() => {
-          remote.getGlobal("sharedObject").isQuiting = true;
-          remote.getCurrentWindow().close();
-        }} style={{ padding: "0 10px" }}>
+        <Link to="/" onClick={this.onExit} style={{ padding: "0 10px" }}>
 
           <ul id="dropdown-menu-exit" className="dropdown-content" style={{ top: "34px !impotant", display: "none" }}>
             <li>
@@ -337,6 +333,17 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
       </div>
     );
   }
+
+  onExit = () => {
+    const { setting } = this.props;
+
+    if (setting && setting.changed) {
+      this.props.showModalAskSaveSetting();
+    } else {
+      remote.getGlobal("sharedObject").isQuiting = true;
+      remote.getCurrentWindow().close();
+    }
+  }
 }
 
 export default connect((state) => {
@@ -344,5 +351,6 @@ export default connect((state) => {
     certificates: state.certificates.entities,
     certrequests: state.certrequests.entities,
     crls: mapToArr(state.crls.entities),
+    setting: state.settings.getIn(["entities", state.settings.active]),
   };
 })(SideMenu);

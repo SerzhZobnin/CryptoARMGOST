@@ -43,6 +43,7 @@ import ReAuth from "../DSS/ReAuth";
 import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
 import AllSettings from "../Settings/AllSettings";
+import AskSaveSetting from "../Settings/AskSaveSetting";
 import SaveSettings from "../Settings/SaveSettings";
 import SettingsSelector from "../Settings/SettingsSelector";
 import SignerInfo from "../Signature/SignerInfo";
@@ -78,6 +79,7 @@ interface ISignatureAndEncryptRightColumnSettingsState {
   pinCode: string;
   saveSettingsWithNewName: boolean;
   searchValue: string;
+  showModalAskSaveSetting: boolean;
   showModalDssPin: boolean;
   showModalDssResponse: boolean;
   showModalReAuth: boolean;
@@ -99,6 +101,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       pinCode: "",
       saveSettingsWithNewName: false,
       searchValue: "",
+      showModalAskSaveSetting: false,
       showModalDssPin: false,
       showModalDssResponse: false,
       showModalReAuth: false,
@@ -187,6 +190,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 <SettingsSelector
                   value={setting.id}
                   handleChange={this.handleChangeDefaultSettings}
+                  showModalAskSaveSetting={this.handleShowModalAskSaveSetting}
                   disabled={false}
                   setting={setting}
                   settings={settings} />
@@ -465,6 +469,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         {this.showModalDssPin()}
         {this.showModalDssResponse()}
         {this.showModalSaveParams()}
+        {this.showModalAskSaveSetting()}
       </React.Fragment>
     );
   }
@@ -568,6 +573,29 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     );
   }
 
+  showModalAskSaveSetting = () => {
+    const { localize, locale } = this.context;
+    const { showModalAskSaveSetting } = this.state;
+
+    if (!showModalAskSaveSetting) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalAskSaveSetting}
+        key="ShowModalAskSaveSetting"
+        header={localize("Settings.save", locale)}
+        onClose={this.handleCloseModalAskSaveSetting}
+        style={{ width: "500px" }}>
+
+        <AskSaveSetting
+          onCancel={this.handleCloseModalAskSaveSetting}
+        />
+      </Modal>
+    );
+  }
+
   handleShowModalReAuth = () => {
     this.setState({
       showModalReAuth: true,
@@ -602,6 +630,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   handleCloseModalSaveParams = () => {
     this.setState({ showModalSaveParams: false });
+  }
+
+  handleShowModalAskSaveSetting = () => {
+    this.setState({ showModalAskSaveSetting: true });
+  }
+
+  handleCloseModalAskSaveSetting = () => {
+    this.setState({ showModalAskSaveSetting: false });
   }
 
   toggleDocumentsReviewed = () => {

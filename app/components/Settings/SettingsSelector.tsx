@@ -8,6 +8,7 @@ interface ISettingsSelectorProps {
   handleChange: (encoding: string) => void;
   settings: any;
   setting: any;
+  showModalAskSaveSetting?: () => void;
 }
 
 class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
@@ -63,10 +64,14 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
     const { localize, locale } = this.context;
     const { setting, settings, value } = this.props;
 
+    const disabled = this.props.disabled || (setting.changed);
+
     return (
-      <div>
-        <div className="input-field" style={{ marginTop: "0px" }}>
+      <div className="row" onClick={this.showToast}>
+        <div className={`input-field  ${disabled ? "disabled" : ""}`}
+          style={{ marginTop: "0px" }}>
           <select
+            className="padding-end"
             disabled={this.props.disabled}
             id="settingsSelectRef"
             ref="settingsSelectRef"
@@ -89,6 +94,20 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
         </div>
       </div>
     );
+  }
+
+  showToast = () => {
+    const { localize, locale } = this.context;
+    const { setting, showModalAskSaveSetting } = this.props;
+
+    if (setting && setting.changed) {
+      $(".toast-need_save_settings").remove();
+      Materialize.toast(localize("Settings.need_save_settings", locale), 2000, "toast-need_save_settings");
+
+      if (showModalAskSaveSetting) {
+        showModalAskSaveSetting();
+      }
+    }
   }
 }
 

@@ -15,6 +15,8 @@ import { connectedSelector, loadingRemoteFilesSelector } from "../selectors";
 import { CANCELLED } from "../server/constants";
 import { fileExists, mapToArr } from "../utils";
 import Diagnostic from "./Diagnostic/Diagnostic";
+import Modal from "./Modal";
+import AskSaveSetting from "./Settings/AskSaveSetting";
 import LocaleSelect from "./Settings/LocaleSelect";
 import SideMenu from "./SideMenu";
 
@@ -28,6 +30,7 @@ if (remote.getGlobal("sharedObject").logcrypto) {
 
 interface IMenuBarState {
   isMaximized: boolean;
+  showModalAskSaveSetting: boolean;
 }
 
 class MenuBar extends React.Component<any, IMenuBarState> {
@@ -40,6 +43,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
     super(props);
     this.state = ({
       isMaximized: false,
+      showModalAskSaveSetting: false,
     });
   }
 
@@ -178,12 +182,13 @@ class MenuBar extends React.Component<any, IMenuBarState> {
             </ul>
           </div>
           <ul id="slide-out" className={`side-nav fixed ${disabledNavigate ? "disabled" : ""}`} style={{ width: "50px", left: "2px", overflow: "visible", backgroundColor: "rgba(242,245,245,0.8)" }}>
-            <SideMenu pathname={pathname} />
+            <SideMenu pathname={pathname} showModalAskSaveSetting={this.handleShowModalAskSaveSetting} />
           </ul>
 
         </nav>
         {this.props.children}
         <Diagnostic />
+        {this.showModalAskSaveSetting()}
       </React.Fragment>
     );
   }
@@ -230,6 +235,38 @@ class MenuBar extends React.Component<any, IMenuBarState> {
     }
 
     filePackageDelete(filePackage);
+  }
+
+  showModalAskSaveSetting = () => {
+    const { localize, locale } = this.context;
+    const { showModalAskSaveSetting } = this.state;
+
+    if (!showModalAskSaveSetting) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalAskSaveSetting}
+        key="ShowModalAskSaveSetting"
+        header={localize("Settings.save", locale)}
+        onClose={this.handleCloseModalAskSaveSetting}
+        style={{ width: "500px" }}>
+
+        <AskSaveSetting
+          isOnExit={true}
+          onCancel={this.handleCloseModalAskSaveSetting}
+        />
+      </Modal>
+    );
+  }
+
+  handleShowModalAskSaveSetting = () => {
+    this.setState({ showModalAskSaveSetting: true });
+  }
+
+  handleCloseModalAskSaveSetting = () => {
+    this.setState({ showModalAskSaveSetting: false });
   }
 }
 
