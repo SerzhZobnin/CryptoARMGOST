@@ -756,11 +756,20 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   sign = (files: IFile[], cert: any) => {
-    const { setting, signer, tokensAuth, users, policyDSS } = this.props;
+    const { signer, tokensAuth, users, policyDSS } = this.props;
+    let { setting } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { packageSign, createTransactionDSS, dssPerformOperation } = this.props;
     const { localize, locale } = this.context;
     const { pinCode } = this.state;
+
+    const isSockets = this.isFilesFromSocket();
+
+    if (isSockets) {
+      setting = setting.set("outfolder", "");
+      setting = setting.setIn(["sign", "detached"], false);
+      setting = setting.setIn(["sign", "time"], true);
+    }
 
     if (files.length > 0) {
       const policies = ["noAttributes"];
@@ -909,11 +918,20 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   resign = (files: IFile[], cert: any) => {
-    const { connections, connectedList, setting, signer, tokensAuth, users, uploader, policyDSS } = this.props;
+    const { connections, connectedList, signer, tokensAuth, users, uploader, policyDSS } = this.props;
+    let { setting } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
     const { deleteFile, selectFile, createTransactionDSS, packageReSign } = this.props;
     const { localize, locale } = this.context;
     const { pinCode } = this.state;
+
+    const isSockets = this.isFilesFromSocket();
+
+    if (isSockets) {
+      setting = setting.set("outfolder", "");
+      setting = setting.setIn(["sign", "detached"], false);
+      setting = setting.setIn(["sign", "time"], true);
+    }
 
     if (files.length > 0) {
       const policies = ["noAttributes"];

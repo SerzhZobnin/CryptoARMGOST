@@ -70,11 +70,6 @@ io.on(CONNECTION, (socket) => {
     openWindow(SIGN);
     downloadFiles(data, socket);
 
-    store.dispatch({ type: CHANGE_SIGNATURE_DETACHED, payload: { detached: false } });
-    store.dispatch({ type: CHANGE_SIGNATURE_TIME, payload: { time: true } });
-    store.dispatch({ type: CHANGE_OUTFOLDER, payload: { outfolder: "" } });
-    store.dispatch({ type: TOGGLE_SAVE_TO_DOCUMENTS, payload: { saveToDocuments: false } });
-
     if (data && data.params && data.params.license) {
       addLicenseToStore(socket.id, data.params.license);
     }
@@ -90,11 +85,6 @@ io.on(CONNECTION, (socket) => {
     cleanFileLists();
     openWindow(VERIFY);
     downloadFiles(data, socket);
-
-    store.dispatch({ type: CHANGE_SIGNATURE_DETACHED, payload: { detached: false } });
-    store.dispatch({ type: CHANGE_SIGNATURE_TIME, payload: { time: true } });
-    store.dispatch({ type: CHANGE_OUTFOLDER, payload: { outfolder: "" } });
-    store.dispatch({ type: TOGGLE_SAVE_TO_DOCUMENTS, payload: { saveToDocuments: false } });
   });
 
   socket.on(ENCRYPT, (data: IEncryptRequest) => {
