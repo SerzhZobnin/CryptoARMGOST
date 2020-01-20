@@ -164,7 +164,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         <div style={{ height: "calc(100vh - 150px)" }}>
           <div className="add-certs">
             <div className="col s10">
-              <div className="desktoplic_text_item">Параметры:</div>
+              <div className="subtitle">Параметры операций</div>
               <hr />
             </div>
             <div className="col s2">

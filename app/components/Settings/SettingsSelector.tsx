@@ -67,7 +67,7 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
     const disabled = this.props.disabled || (setting.changed);
 
     return (
-      <div className="row" onClick={this.showToast}>
+      <div onClick={this.showToast}>
         <div className={`input-field  ${disabled ? "disabled" : ""}`}
           style={{ marginTop: "0px" }}>
           <select
@@ -83,13 +83,21 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
               })
             }
           </select>
-          <span className="helper-text" data-error="wrong" data-success="right">{`Сохранено: ${setting && setting.savetime ? (new Date(setting.savetime)).toLocaleDateString(locale, {
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            month: "long",
-            year: "numeric",
-          }) : "-"}`}
+          <span
+            className="collection-info"
+            data-error="wrong"
+            data-success="right"
+            onClick={() => setTimeout(() => {
+              $(".select-dropdown:eq(0)").click();
+            }, 0)}
+            style={{ cursor: "pointer" }}>
+            {`Сохранено: ${setting && setting.savetime ? (new Date(setting.savetime)).toLocaleDateString(locale, {
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              month: "numeric",
+              year: "numeric",
+            }) : "-"}`}
           </span>
         </div>
       </div>
