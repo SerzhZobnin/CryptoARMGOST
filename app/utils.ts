@@ -77,8 +77,9 @@ export function fileCoding(filePath: string): number {
   let res: any;
 
   fs.readSync(FD, BUFFER, 0, 2, 0);
+  const firstTwoSymbols = BUFFER.toString("utf8", 0, 2);
 
-  if (BUFFER.toString("utf8", 0, 2) === "--") {
+  if (firstTwoSymbols === "--" || firstTwoSymbols === "MI") {
     res = trusted.DataFormat.PEM;
   } else {
     res = trusted.DataFormat.DER;

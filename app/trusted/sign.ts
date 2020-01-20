@@ -388,6 +388,8 @@ export function resignFile(
       }
     }
 
+    format = fileCoding(uri);
+
     sd.policies = policies;
     sd.sign(cert);
     sd.save(outURI, format);
