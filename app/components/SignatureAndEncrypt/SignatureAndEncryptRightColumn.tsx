@@ -44,6 +44,7 @@ import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
 import AllSettings from "../Settings/AllSettings";
 import AskSaveSetting from "../Settings/AskSaveSetting";
+import RenameSettings from "../Settings/RenameSettings";
 import SaveSettings from "../Settings/SaveSettings";
 import SettingsSelector from "../Settings/SettingsSelector";
 import SignerInfo from "../Signature/SignerInfo";
@@ -83,6 +84,7 @@ interface ISignatureAndEncryptRightColumnSettingsState {
   showModalDssPin: boolean;
   showModalDssResponse: boolean;
   showModalReAuth: boolean;
+  showModalRenameParams: boolean;
   showModalSaveParams: boolean;
 }
 
@@ -105,6 +107,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       showModalDssPin: false,
       showModalDssResponse: false,
       showModalReAuth: false,
+      showModalRenameParams: false,
       showModalSaveParams: false,
     };
   }
@@ -173,6 +176,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
                 </a>
                 <ul id="dropdown-btn-settings" className="dropdown-content">
+                <li>
+                    <a onClick={this.handleShowModalRenameParams}>
+                      {localize("Common.rename", locale)}
+                    </a>
+                  </li>
                   <li>
                     <a onClick={() => this.props.deleteSetting(setting.id)}>
                       {localize("Common.delete", locale)}
@@ -470,6 +478,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         {this.showModalDssResponse()}
         {this.showModalSaveParams()}
         {this.showModalAskSaveSetting()}
+        {this.showModalRenameParams()}
       </React.Fragment>
     );
   }
@@ -573,6 +582,31 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     );
   }
 
+  showModalRenameParams = () => {
+    const { localize, locale } = this.context;
+    const { showModalRenameParams } = this.state;
+    const { setting } = this.props;
+
+    if (!showModalRenameParams) {
+      return;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalRenameParams}
+        key="ShowModalRenameParams"
+        header={localize("Settings.rename", locale)}
+        onClose={this.handleCloseModalRenameParams}
+        style={{ width: "500px" }}>
+
+        <RenameSettings
+          onCancel={this.handleCloseModalRenameParams}
+          currentName={setting.name}
+        />
+      </Modal>
+    );
+  }
+
   showModalAskSaveSetting = () => {
     const { localize, locale } = this.context;
     const { showModalAskSaveSetting } = this.state;
@@ -630,6 +664,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   handleCloseModalSaveParams = () => {
     this.setState({ showModalSaveParams: false });
+  }
+
+  handleShowModalRenameParams = () => {
+    this.setState({ showModalRenameParams: true });
+  }
+
+  handleCloseModalRenameParams = () => {
+    this.setState({ showModalRenameParams: false });
   }
 
   handleShowModalAskSaveSetting = () => {

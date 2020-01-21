@@ -302,6 +302,7 @@ export default {
     product: "Product",
     read_file_error: "Reading from the file error",
     ready: "Ready",
+    rename: "Rename",
     reset: "Reset",
     ru: "Russian",
     save: "Save",

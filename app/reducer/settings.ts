@@ -399,6 +399,7 @@ export default (settings = new DefaultReducerState(), action) => {
     || type === CHANGE_OCSP_USE_PROXY
     || type === CHANGE_OCSP_PROXY_LOGIN
     || type === CHANGE_OCSP_PROXY_PASSWORD
+    || type === CHANGE_SETTINGS_NAME
   ) {
     if (modifiedSettings && !modifiedSettings.equals(settings)) {
       settings = modifiedSettings;
