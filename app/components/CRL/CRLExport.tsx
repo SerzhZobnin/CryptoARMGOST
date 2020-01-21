@@ -1,9 +1,8 @@
 import * as fs from "fs";
 import PropTypes from "prop-types";
 import React from "react";
-import { BASE64 } from "../../constants";
+import { BASE64, DER } from "../../constants";
 import { fileExists } from "../../utils";
-import EncodingTypeSelector from "../EncodingTypeSelector";
 
 interface ICRLExportState {
   encodingType: string;
@@ -28,7 +27,7 @@ class CRLExport extends React.Component<ICRLExportProps, ICRLExportState> {
     super(props);
 
     this.state = ({
-      encodingType: BASE64,
+      encodingType: DER,
     });
   }
 
@@ -46,7 +45,6 @@ class CRLExport extends React.Component<ICRLExportProps, ICRLExportState> {
                 </span>
               </div>
             </div>
-            {this.getBody()}
           </div>
         </div>
 
@@ -72,21 +70,6 @@ class CRLExport extends React.Component<ICRLExportProps, ICRLExportState> {
       + (encodingType === BASE64 ? localize("Export.export_crl_format_base64", locale) : localize("Export.export_crl_format_der", locale));
   }
 
-  getBody = () => {
-    const { encodingType } = this.state;
-
-    return (
-      <React.Fragment>
-        <div className="row">
-          <div className="col s12 card-infos sub">
-            <EncodingTypeSelector EncodingValue={encodingType} handleChange={(encoding: string) => this.handleEncodingChange(encoding)} />
-            <div className="row" />
-          </div>
-        </div>
-      </React.Fragment>
-    );
-  }
-
   handleEncodingChange = (encoding: string) => {
     this.setState({ encodingType: encoding });
   }
@@ -106,10 +89,20 @@ class CRLExport extends React.Component<ICRLExportProps, ICRLExportState> {
 
     const X509_CRL = window.PKISTORE.getPkiObject(crl);
 
+    if (!X509_CRL) {
+      $(".toast-crl_export_failed").remove();
+      Materialize.toast(localize("CRL.crl_export_failed", locale), 2000, "toast-crl_export_failed");
+
+      if (onCancel) {
+        onCancel();
+      }
+
+      return;
+    }
+
     if (outFilePAth && X509_CRL) {
       try {
-        const encoding = encodingType === BASE64 ? trusted.DataFormat.PEM : trusted.DataFormat.DER;
-        X509_CRL.save(outFilePAth, encoding);
+        X509_CRL.save(outFilePAth);
       } catch (e) {
         $(".toast-crl_export_failed").remove();
         Materialize.toast(localize("CRL.crl_export_failed", locale), 2000, "toast-crl_export_failed");
