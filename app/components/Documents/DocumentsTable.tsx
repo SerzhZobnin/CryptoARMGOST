@@ -264,15 +264,17 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
 
   rowClassName = ({ index }: { index: number }) => {
     const { foundDocuments } = this.state;
-    const { selectedDocuments } = this.props;
+    const { selectedDocsMap, selectedDocuments } = this.props;
 
     if (index < 0) {
       return "headerRow";
     } else {
       let rowClassName = index % 2 === 0 ? "evenRow " : "oddRow ";
 
+      const doc = this.getDatum(this.state.sortedList, index);
+
       const founded = foundDocuments.indexOf(index) >= 0;
-      const selected = selectedDocuments.includes(this.getDatum(this.state.sortedList, index));
+      const selected = selectedDocuments.includes(doc);
 
       if (founded && selected) {
         rowClassName += "foundAndSelectedEvent ";
@@ -280,6 +282,10 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
         rowClassName += "foundEvent ";
       } else if (selected) {
         rowClassName += "selectedRow ";
+      }
+
+      if (doc.id === selectedDocsMap.last()) {
+        rowClassName += "lastSelectedRow ";
       }
 
       return rowClassName;
@@ -366,6 +372,7 @@ export default connect((state) => ({
   documentsMap: filteredDocumentsSelector(state),
   isLoaded: state.documents.loaded,
   isLoading: state.documents.loading,
+  selectedDocsMap: state.documents.selected,
   selectedDocuments: selectedDocumentsSelector(state),
   signatures: state.signatures,
 }), { loadAllDocuments, removeAllDocuments, selectDocument, selectTempContentOfSignedFiles, unselectAllDocuments })(DocumentTable);
