@@ -54,6 +54,7 @@ class SaveSettings extends React.Component<ISaveSettingsProps, ICertificateDelet
               id="name"
               type="text"
               className="validate"
+              maxLength={50}
               name="name"
               value={name}
               placeholder={localize("Settings.save_placeholder", locale)}

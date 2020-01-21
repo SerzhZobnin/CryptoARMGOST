@@ -4,12 +4,14 @@ import { connect } from "react-redux";
 import {
   resetSettingChanges, saveSettings,
 } from "../../AC/settingsActions";
+import { writeSettingsToFile } from "../../reducer/settings";
 
 interface IAskSaveSettingProps {
   isOnExit?: boolean;
   onCancel?: () => void;
   resetSettingChanges: () => void;
   saveSettings: () => void;
+  settings: any;
 }
 
 const remote = window.electron.remote;
@@ -57,7 +59,7 @@ class AskSaveSetting extends React.Component<IAskSaveSettingProps, {}> {
               </a>
             </div>
             <div style={{ display: "inline-block", margin: "10px" }}>
-              <a className={`btn btn-outlined waves-effect waves-light modal-close`} onClick={this.handelSave}>{localize("Common.save", locale)}</a>
+              <a className="btn btn-outlined waves-effect waves-light" onClick={this.handelSave}>{localize("Common.save", locale)}</a>
             </div>
           </div>
         </div>
@@ -85,9 +87,20 @@ class AskSaveSetting extends React.Component<IAskSaveSettingProps, {}> {
   }
 
   handelSave = () => {
-    this.props.saveSettings();
+    const { isOnExit } = this.props;
+    let { settings } = this.props;
 
-    this.handelCancel();
+    if (isOnExit) {
+      settings = settings
+        .setIn(["entities", settings.active, "savetime"], new Date().getTime())
+        .setIn(["entities", settings.active, "changed"], false);
+
+      writeSettingsToFile(settings, (err: any) => this.handelCancel());
+    } else {
+      this.props.saveSettings();
+
+      this.handelCancel();
+    }
   }
 }
 
@@ -96,5 +109,6 @@ export default connect((state) => {
 
   return {
     setting,
+    settings: state.settings,
   };
 }, { resetSettingChanges, saveSettings })(AskSaveSetting);

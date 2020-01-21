@@ -414,34 +414,37 @@ export default (settings = new DefaultReducerState(), action) => {
       .setIn(["entities", settings.active, "savetime"], new Date().getTime())
       .setIn(["entities", settings.active, "changed"], false);
 
-    const state = ({
-      default: settings.default,
-      settings: settings.toJS(),
-    });
-
-    state.settings = mapToArr(settings.entities);
-
-    const newSettings = [];
-
-    for (let setting of state.settings) {
-      if (setting && setting.encrypt) {
-        setting = setting.setIn(["encrypt", "recipients"], mapToArr(setting.encrypt.recipients));
-      }
-
-      newSettings.push(setting);
-    }
-
-    state.settings = newSettings;
-
-    const sstate = JSON.stringify(state, null, 4);
-    fs.writeFile(SETTINGS_JSON, sstate, (err: any) => {
+    writeSettingsToFile(settings, (err: any) => {
       if (err) {
         // tslint:disable-next-line:no-console
         console.log(err);
       }
     });
-
   }
 
   return settings;
+};
+
+export const writeSettingsToFile = (settings: any, cb: any) => {
+  const state = ({
+    default: settings.default,
+    settings: settings.toJS(),
+  });
+
+  state.settings = mapToArr(settings.entities);
+
+  const newSettings = [];
+
+  for (let setting of state.settings) {
+    if (setting && setting.encrypt) {
+      setting = setting.setIn(["encrypt", "recipients"], mapToArr(setting.encrypt.recipients));
+    }
+
+    newSettings.push(setting);
+  }
+
+  state.settings = newSettings;
+
+  const sstate = JSON.stringify(state, null, 4);
+  fs.writeFile(SETTINGS_JSON, sstate, (err) => cb(err));
 };
