@@ -23,7 +23,11 @@ class AskSaveSetting extends React.Component<IAskSaveSettingProps, {}> {
   };
 
   componentWillUnmount() {
-    this.handelCancel();
+    const { onCancel } = this.props;
+
+    if (onCancel) {
+      onCancel();
+    }
   }
 
   render() {
