@@ -401,9 +401,9 @@ export default {
   Encrypt: {
     Encrypt: "ЗАШИФРОВАТЬ",
     Encryption: "ШИФРОВАНИЕ",
-    GOST_28147: "GOST 28147-89",
-    GOST_R3412_2015_K: "GOST R3412 2015 K",
-    GOST_R3412_2015_M: "GOST R3412 2015 M",
+    GOST_28147: "ГОСТ 28147-89",
+    GOST_R3412_2015_K: "ГОСТ Р 34.12-2015 Кузнечик",
+    GOST_R3412_2015_M: "ГОСТ Р 34.12-2015 Магма",
     archive_files_before: "Архивировать перед шифрованием",
     archive_name: "encrypt_files.zip",
     decrypt: "Расшифровать",
