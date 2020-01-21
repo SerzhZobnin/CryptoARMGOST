@@ -254,9 +254,11 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
   }
 
   handleOnRowMouseOut = () => {
-    this.setState({
-      hoveredRowIndex: -1,
-    });
+    if (this.state.hoveredRowIndex !== -1) {
+      this.setState({
+        hoveredRowIndex: -1,
+      });
+    }
   }
 
   handleOnRowClick = ({ rowData }: { rowData: any }) => {
