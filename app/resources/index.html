@@ -63,6 +63,7 @@
       window.LICENSE_MNG = LICENSE_MNG;
       var result = LICENSE_MNG.generateTrial();
     } catch (err) {
+      window.tcerr = err;
       console.log("Error load trusted-crypto", err);
     }
 
