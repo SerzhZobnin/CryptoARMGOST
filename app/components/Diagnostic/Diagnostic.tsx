@@ -207,9 +207,9 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
 
     if (this.checkTrustedCryptoLoadedErr()) {
       this.checkCPCSP();
-    }
 
-    this.checkTspAndOcsp();
+      this.checkTspAndOcsp();
+    }
 
     loadLicense();
 
