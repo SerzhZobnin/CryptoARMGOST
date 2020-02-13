@@ -12,7 +12,8 @@ import {
   CHANGE_TSP_PROXY_LOGIN, CHANGE_TSP_PROXY_PASSWORD, CHANGE_TSP_PROXY_PORT, CHANGE_TSP_PROXY_URL,
   CHANGE_TSP_URL, CHANGE_TSP_USE_PROXY, CREATE_SETTING, DELETE_RECIPIENT_CERTIFICATE,
   DELETE_SETTING, GOST_28147, REMOVE_ALL_CERTIFICATES, RESET_SETTING_CHANGES, RU,
-  SAVE_SETTINGS, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_SAVE_TO_DOCUMENTS,
+  SAVE_SETTINGS, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_ARCHIVATION_OPERATION, TOGGLE_ENCRYPTION_OPERATION,
+  TOGGLE_SAVE_COPY_TO_DOCUMENTS, TOGGLE_SAVE_TO_DOCUMENTS, TOGGLE_SIGNING_OPERATION,
 } from "../constants";
 import { fileExists, mapToArr, uuid } from "../utils";
 
@@ -90,6 +91,13 @@ export const OcspModel = Record({
   use_proxy: false,
 });
 
+export const OperationsModel = Record({
+  archivation_operation: false,
+  encryption_operation: false,
+  save_copy_to_documents: false,
+  signing_operation: false,
+});
+
 export const DEFAULT_ID = "DEFAULT_ID";
 
 export const SettingsModel = Record({
@@ -99,6 +107,7 @@ export const SettingsModel = Record({
   locale: RU,
   name: "По умолчанию",
   ocsp: new OcspModel(),
+  operations: new OperationsModel(),
   outfolder: "",
   saveToDocuments: false,
   savetime: null,
@@ -208,6 +217,26 @@ export default (settings = new DefaultReducerState(), action) => {
     case CHANGE_DEFAULT_SETTINGS:
       unsavedSettings = settings.getIn(["entities", payload.id]);
       settings = settings.set("default", payload.id);
+      break;
+
+    case TOGGLE_SIGNING_OPERATION:
+      modifiedSettings = settings
+        .setIn(["entities", settings.active, "operations", "signing_operation"], payload.signingOperation);
+      break;
+
+    case TOGGLE_ARCHIVATION_OPERATION:
+      modifiedSettings = settings
+        .setIn(["entities", settings.active, "operations", "archivation_operation"], payload.archivationOperation);
+      break;
+
+    case TOGGLE_ENCRYPTION_OPERATION:
+      modifiedSettings = settings
+        .setIn(["entities", settings.active, "operations", "encryption_operation"], payload.encryptionOperation);
+      break;
+
+    case TOGGLE_SAVE_COPY_TO_DOCUMENTS:
+      modifiedSettings = settings
+        .setIn(["entities", settings.active, "operations", "save_copy_to_documents"], payload.saveCopyToDocuments);
       break;
 
     case TOGGLE_SAVE_TO_DOCUMENTS:
@@ -376,6 +405,10 @@ export default (settings = new DefaultReducerState(), action) => {
     || type === ADD_RECIPIENT_CERTIFICATE
     || type === DELETE_RECIPIENT_CERTIFICATE
     || type === CHANGE_SIGNATURE_STANDARD
+    || type === TOGGLE_SIGNING_OPERATION
+    || type === TOGGLE_ARCHIVATION_OPERATION
+    || type === TOGGLE_ENCRYPTION_OPERATION
+    || type === TOGGLE_SAVE_COPY_TO_DOCUMENTS
     || type === TOGGLE_SAVE_TO_DOCUMENTS
     || type === CHANGE_SIGNATURE_DETACHED
     || type === CHANGE_SIGNATURE_ENCODING

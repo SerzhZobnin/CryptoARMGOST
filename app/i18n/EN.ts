@@ -592,6 +592,13 @@ export default {
     signer_cert_ok: "Signer certificate is valid",
     this_update: "This update",
   },
+  Operations: {
+    Operations: "Operations",
+    archivation_operation: "Archivation",
+    encryption_operation: "Encryption",
+    save_copy_to_documents: "Save copy to documents",
+    signing_operation: "Signing",
+  },
   Problems: {
     problem_1: "There is no crypto provider CryptoPro CSP",
     problem_2: "There is no license for crypto provider CryptoPro CSP",

@@ -594,6 +594,13 @@ export default {
     signer_cert_ok: "Сертификат подписчика действителен",
     this_update: "Время проверки статуса сертификата",
   },
+  Operations: {
+    Operations: "Операции",
+    archivation_operation: "Архивирование",
+    encryption_operation: "Шифрование",
+    save_copy_to_documents: "Сохранить архивную копию в документах",
+    signing_operation: "Подпись",
+  },
   Problems: {
     problem_1: "Отсутствует СКЗИ КриптоПро CSP",
     problem_2: "Отсутствует лицензия на СКЗИ КриптоПро CSP",

@@ -7,7 +7,8 @@ import {
   CHANGE_OUTFOLDER, CHANGE_SETTINGS_NAME, CHANGE_SIGNATURE_DETACHED, CHANGE_SIGNATURE_ENCODING,
   CHANGE_SIGNATURE_STANDARD, CHANGE_SIGNATURE_TIME, CHANGE_SIGNATURE_TIMESTAMP, CHANGE_SIGNATURE_TIMESTAMP_ON_SIGN, CHANGE_TSP_PROXY_LOGIN,
   CHANGE_TSP_PROXY_PASSWORD, CHANGE_TSP_PROXY_PORT, CHANGE_TSP_PROXY_URL, CHANGE_TSP_URL, CHANGE_TSP_USE_PROXY, CREATE_SETTING, DEFAULT_DOCUMENTS_PATH,
-  DELETE_SETTING, RESET_SETTING_CHANGES, SAVE_SETTINGS, TOGGLE_SAVE_TO_DOCUMENTS,
+  DELETE_SETTING, RESET_SETTING_CHANGES, SAVE_SETTINGS, TOGGLE_ARCHIVATION_OPERATION, TOGGLE_ENCRYPTION_OPERATION,
+  TOGGLE_SAVE_COPY_TO_DOCUMENTS, TOGGLE_SAVE_TO_DOCUMENTS, TOGGLE_SIGNING_OPERATION,
 } from "../constants";
 
 export function createSettings(name?: string, setting?: any) {
@@ -55,6 +56,34 @@ export function saveSettings() {
 export function resetSettingChanges() {
   return {
     type: RESET_SETTING_CHANGES,
+  };
+}
+
+export function toggleArchivationOperation(archivationOperation: boolean) {
+  return {
+    payload: { archivationOperation },
+    type: TOGGLE_ARCHIVATION_OPERATION,
+  };
+}
+
+export function toggleEncryptionOperation(encryptionOperation: boolean) {
+  return {
+    payload: { encryptionOperation },
+    type: TOGGLE_ENCRYPTION_OPERATION,
+  };
+}
+
+export function toggleSaveCopyToDocuments(saveCopyToDocuments: boolean) {
+  return {
+    payload: { saveCopyToDocuments },
+    type: TOGGLE_SAVE_COPY_TO_DOCUMENTS,
+  };
+}
+
+export function toggleSigningOperation(signingOperation: boolean) {
+  return {
+    payload: { signingOperation },
+    type: TOGGLE_SIGNING_OPERATION,
   };
 }
 

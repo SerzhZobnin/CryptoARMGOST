@@ -44,6 +44,7 @@ import Modal from "../Modal";
 import RecipientsList from "../RecipientsList";
 import AllSettings from "../Settings/AllSettings";
 import AskSaveSetting from "../Settings/AskSaveSetting";
+import Operations from "../Settings/Operations";
 import RenameSettings from "../Settings/RenameSettings";
 import SaveSettings from "../Settings/SaveSettings";
 import SettingsSelector from "../Settings/SettingsSelector";
@@ -176,7 +177,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
                 </a>
                 <ul id="dropdown-btn-settings" className="dropdown-content">
-                <li>
+                  <li>
                     <a onClick={this.handleShowModalRenameParams}>
                       {localize("Common.rename", locale)}
                     </a>
@@ -233,6 +234,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 </React.Fragment>
                 : null
             }
+
+            <div className="col s12">
+              <div className="subtitle">Операции</div>
+              <hr />
+            </div>
+
+            <Operations />
 
             <div className="col s10">
               <div className="subtitle">{localize("Sign.signer_cert", locale)}</div>
