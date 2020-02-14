@@ -51,7 +51,9 @@ class AllSettings extends React.Component<any, {}> {
       outDuration: 225,
     });
 
-    Materialize.updateTextFields();
+    $(document).on("ready", function() {
+      Materialize.updateTextFields();
+    });
 
     const signatureStandard = settings.sign.standard;
 
@@ -96,31 +98,6 @@ class AllSettings extends React.Component<any, {}> {
 
     return (
       <div className="row">
-        <div className="row" />
-
-        <div className="subtitle">
-          {localize("Settings.general", locale)}
-        </div>
-        <hr />
-
-        <div className="row halfbottom" />
-
-        <div className="col s12" >
-          <CheckBoxWithLabel
-            disabled={disabled}
-            onClickCheckBox={this.handleSaveToDocumentsClick}
-            isChecked={settings.saveToDocuments}
-            elementId="saveToDocuments"
-            title={localize("Documents.save_to_documents", locale)} />
-        </div>
-
-        <SelectFolder
-          disabled={disabled}
-          directory={settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder}
-          viewDirect={this.handleOutfolderChange}
-          openDirect={this.addDirect.bind(this)}
-        />
-
         <div className="row" />
 
         <div className="row">
@@ -226,22 +203,6 @@ class AllSettings extends React.Component<any, {}> {
     );
   }
 
-  addDirect() {
-    // tslint:disable-next-line: no-shadowed-variable
-    const { changeOutfolder } = this.props;
-
-    if (!window.framework_NW) {
-      const directory = dialog.showOpenDialog({ properties: ["openDirectory"] });
-      if (directory) {
-        changeOutfolder(directory[0]);
-      }
-    } else {
-      const clickEvent = document.createEvent("MouseEvents");
-      clickEvent.initEvent("click", true, true);
-      document.querySelector("#choose-folder").dispatchEvent(clickEvent);
-    }
-  }
-
   getDisabled = () => {
     const { files, loadingFiles } = this.props;
 
@@ -258,13 +219,6 @@ class AllSettings extends React.Component<any, {}> {
     }
 
     return false;
-  }
-
-  handleOutfolderChange = (ev: any) => {
-    // tslint:disable-next-line: no-shadowed-variable
-    const { changeOutfolder, settings } = this.props;
-
-    changeOutfolder(ev.target.value);
   }
 
   handleDetachedChange = (detached: boolean) => {
@@ -293,13 +247,6 @@ class AllSettings extends React.Component<any, {}> {
     const { changeSignatureTimestampOnSign, settings } = this.props;
 
     changeSignatureTimestampOnSign(!settings.sign.timestamp_on_sign);
-  }
-
-  handleSaveToDocumentsClick = () => {
-    // tslint:disable-next-line: no-shadowed-variable
-    const { toggleSaveToDocuments, settings } = this.props;
-
-    toggleSaveToDocuments(!settings.saveToDocuments);
   }
 
   handleEncodingChange = (encoding: string) => {

@@ -312,33 +312,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             <div className="row" />
 
             <div className="col s12">
-              <ul className="collapsible params" data-collapsible="accordion">
-                <li>
-                  <div className="collapsible-header params" onClick={() => {
-                    if (!this.state.allSettingsMaunted) {
-                      this.setState({ allSettingsMaunted: true });
-                    }
-
-                    $(document).ready(() => {
-                      setTimeout(() => {
-                        $(".select-dropdown:eq(0)").css("border-bottom", "none");
-                        $(".select-dropdown:eq(0)").css("margin", "0");
-                        $(".select-dropdown:eq(0)").css("height", "2rem");
-                      }, 0);
-                    });
-                  }
-                  }>
-                    <i className="material-icons right">expand_more</i>
-                    Параметры
-                  </div>
-                  <div className="collapsible-body params">
-                    {
-                      this.state.allSettingsMaunted ? < AllSettings /> : null
-                    }
-
-                  </div>
-                </li>
-              </ul>
+              < AllSettings />
             </div>
           </div>
         </div>
@@ -418,7 +392,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   <a className={`btn-floating btn-large ${this.checkEnableOperationButton(SIGN) || this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled"}`}
                     style={{ width: "60%", backgroundColor: "#334294", lineHeight: "55px", borderRadius: "27.75px" }}
                     onClick={this.handleClickPerformOperations}
-                    >
+                  >
                     {localize("Common.perform", locale)}
                   </a>
                 </div>

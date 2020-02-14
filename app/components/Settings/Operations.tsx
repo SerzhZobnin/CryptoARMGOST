@@ -2,17 +2,23 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import {
-  toggleArchivationOperation, toggleEncryptionOperation, toggleSaveCopyToDocuments,
-  toggleSigningOperation,
+  changeOutfolder, toggleArchivationOperation, toggleEncryptionOperation, toggleSaveCopyToDocuments,
+  toggleSaveResultToFolder, toggleSigningOperation,
 } from "../../AC/settingsActions";
+import { DEFAULT_DOCUMENTS_PATH } from "../../constants";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
+import SelectFolder from "../SelectFolder";
+
+const dialog = window.electron.remote.dialog;
 
 interface IOperationsProps {
   settings: any;
+  changeOutfolder: (value: string) => void;
   toggleSigningOperation: (value: boolean) => void;
   toggleArchivationOperation: (value: boolean) => void;
   toggleEncryptionOperation: (value: boolean) => void;
   toggleSaveCopyToDocuments: (value: boolean) => void;
+  toggleSaveResultToFolder: (value: boolean) => void;
 }
 
 class Operations extends React.Component<IOperationsProps, {}> {
@@ -27,8 +33,9 @@ class Operations extends React.Component<IOperationsProps, {}> {
 
   render() {
     const { localize, locale } = this.context;
-    const { operations } = this.props.settings;
-    const { archivation_operation, encryption_operation, save_copy_to_documents, signing_operation } = operations;
+    const { settings } = this.props;
+    const { operations } = settings;
+    const { archivation_operation, encryption_operation, save_copy_to_documents, save_result_to_folder, signing_operation } = operations;
 
     return (
       <div className="row">
@@ -60,8 +67,32 @@ class Operations extends React.Component<IOperationsProps, {}> {
             onClickCheckBox={this.handleSaveCopyClick}
             title={localize("Operations.save_copy_to_documents", locale)} />
         </div>
+
+        <div className="col s12" >
+          <CheckBoxWithLabel
+            onClickCheckBox={this.handleSaveResultToFolder}
+            isChecked={save_result_to_folder}
+            elementId="save_result_to_folder"
+            title={localize("Documents.save_to_documents", locale)} />
+        </div>
+
+        <SelectFolder
+          directory={settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder}
+          viewDirect={this.handleOutfolderChange}
+          openDirect={this.addDirect.bind(this)}
+        />
       </div>
     );
+  }
+
+  addDirect() {
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeOutfolder } = this.props;
+
+    const directory = dialog.showOpenDialog({ properties: ["openDirectory"] });
+    if (directory) {
+      changeOutfolder(directory[0]);
+    }
   }
 
   handleSigningOperationClick = () => {
@@ -91,10 +122,27 @@ class Operations extends React.Component<IOperationsProps, {}> {
 
     toggleSaveCopyToDocuments(!settings.operations.save_copy_to_documents);
   }
+
+  handleOutfolderChange = (ev: any) => {
+    // tslint:disable-next-line: no-shadowed-variable
+    const { changeOutfolder, settings } = this.props;
+
+    changeOutfolder(ev.target.value);
+  }
+
+  handleSaveResultToFolder = () => {
+    // tslint:disable-next-line: no-shadowed-variable
+    const { toggleSaveResultToFolder, settings } = this.props;
+
+    toggleSaveResultToFolder(!settings.operations.save_result_to_folder);
+  }
 }
 
 export default connect((state) => {
   return {
     settings: state.settings.getIn(["entities", state.settings.active]),
   };
-}, { toggleArchivationOperation, toggleEncryptionOperation, toggleSaveCopyToDocuments, toggleSigningOperation })(Operations);
+}, {
+  changeOutfolder, toggleArchivationOperation, toggleEncryptionOperation,
+  toggleSaveCopyToDocuments, toggleSaveResultToFolder, toggleSigningOperation,
+})(Operations);

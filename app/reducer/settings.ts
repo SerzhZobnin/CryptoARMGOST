@@ -13,7 +13,7 @@ import {
   CHANGE_TSP_URL, CHANGE_TSP_USE_PROXY, CREATE_SETTING, DELETE_RECIPIENT_CERTIFICATE,
   DELETE_SETTING, GOST_28147, REMOVE_ALL_CERTIFICATES, RESET_SETTING_CHANGES, RU,
   SAVE_SETTINGS, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_ARCHIVATION_OPERATION, TOGGLE_ENCRYPTION_OPERATION,
-  TOGGLE_SAVE_COPY_TO_DOCUMENTS, TOGGLE_SAVE_TO_DOCUMENTS, TOGGLE_SIGNING_OPERATION,
+  TOGGLE_SAVE_COPY_TO_DOCUMENTS, TOGGLE_SAVE_RESULT_TO_FOLDER, TOGGLE_SAVE_TO_DOCUMENTS, TOGGLE_SIGNING_OPERATION,
 } from "../constants";
 import { fileExists, mapToArr, uuid } from "../utils";
 
@@ -95,6 +95,7 @@ export const OperationsModel = Record({
   archivation_operation: false,
   encryption_operation: false,
   save_copy_to_documents: false,
+  save_result_to_folder: false,
   signing_operation: false,
 });
 
@@ -242,6 +243,11 @@ export default (settings = new DefaultReducerState(), action) => {
     case TOGGLE_SAVE_TO_DOCUMENTS:
       modifiedSettings = settings
         .setIn(["entities", settings.active, "saveToDocuments"], payload.saveToDocuments);
+      break;
+
+    case TOGGLE_SAVE_RESULT_TO_FOLDER:
+      modifiedSettings = settings
+        .setIn(["entities", settings.active, "operations", "save_result_to_folder"], payload.saveResultToFolder);
       break;
 
     case CHANGE_SETTINGS_NAME:
@@ -409,6 +415,7 @@ export default (settings = new DefaultReducerState(), action) => {
     || type === TOGGLE_ARCHIVATION_OPERATION
     || type === TOGGLE_ENCRYPTION_OPERATION
     || type === TOGGLE_SAVE_COPY_TO_DOCUMENTS
+    || type === TOGGLE_SAVE_RESULT_TO_FOLDER
     || type === TOGGLE_SAVE_TO_DOCUMENTS
     || type === CHANGE_SIGNATURE_DETACHED
     || type === CHANGE_SIGNATURE_ENCODING
