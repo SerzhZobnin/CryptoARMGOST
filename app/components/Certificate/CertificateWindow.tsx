@@ -1487,7 +1487,7 @@ class CertWindow extends React.Component<any, any> {
           <PasswordDialog value={this.state.password} onChange={this.handlePasswordChange} />
         </div>
 
-        <div className="fixed-action-btn" style={{ bottom: "30px", right: "380px" }} onClick={() => this.handleShowModalByType(MODAL_ADD_CERTIFICATE)}>
+        <div className="fixed-action-btn" style={{ bottom: "20px", right: "380px" }} onClick={() => this.handleShowModalByType(MODAL_ADD_CERTIFICATE)}>
           <a className="btn-floating btn-large cryptoarm-red">
             <i className="large material-icons">add</i>
           </a>

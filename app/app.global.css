@@ -587,7 +587,7 @@ div::-webkit-scrollbar-thumb {
 
 /*-------------------------------Стили кнопок------------------*/
 
-.btn, .add-cert-btn, .operation-btn, .choose-btn {
+.add-cert-btn, .operation-btn, .choose-btn {
     background-color: #bf3817;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -597,6 +597,13 @@ div::-webkit-scrollbar-thumb {
 
 .fixed-action-btn {
   z-index: 899 !important;
+}
+
+.btn {
+  background-color: #bf3817;
+  font-size: 0.875rem;
+  font-weight: bold;
+  letter-spacing: 0.10204081632rem;
 }
 
 .btn-text {

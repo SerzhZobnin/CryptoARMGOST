@@ -165,8 +165,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     return (
       <React.Fragment>
-        <div style={{ height: "calc(100vh - 150px)" }}>
-          <div className="add-certs">
+        <div style={{ height: `calc(100vh - ${activeFiles && activeFiles.size && setting.operations.signing_operation ? "180px" : "140px"})` }}>
+          <div className="add-certs" style={{ height: "100%" }}>
             <div className="col s10">
               <div className="subtitle">Параметры операций</div>
               <hr />
@@ -343,13 +343,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           </div>
         </div>
 
-        <div className="row fixed-bottom-rightcolumn" >
-          <div className="col s12">
-            <hr />
-          </div>
-
+        <div className="row fixed-bottom-rightcolumn center-align" style={{ bottom: "20px" }}>
           {
-            activeFiles && activeFiles.size ?
+            activeFiles && activeFiles.size && setting.operations.signing_operation ?
               <div className="col s12">
                 <div className="input-checkbox">
                   <input
@@ -360,7 +356,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                     checked={isDocumentsReviewed}
                     onClick={this.toggleDocumentsReviewed}
                   />
-                  <label htmlFor={"filesview"} className="truncate" style={{ fontSize: "0.875rem" }}>
+                  <label htmlFor={"filesview"} className="truncate">
                     {localize("Sign.documents_reviewed", locale)}
                   </label>
                 </div>
@@ -418,64 +414,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               :
 
               <React.Fragment>
-                <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
-                  <div className="col s12 svg_icon">
-                    <a data-position="bottom">
-                      <i className="material-icons docmenu sign" />
-                    </a>
-                  </div>
-                  <div className="col s12 svg_icon_text">{localize("Documents.docmenu_sign", locale)}</div>
-                </div>
-
-                <div className={`col s4 waves-effect waves-cryptoarm  ${this.checkEnableOperationButton(VERIFY) ? "" : "disabled_docs"}`} onClick={this.verifySign}>
-                  <div className="col s12 svg_icon">
-                    <a data-position="bottom"
-                      data-tooltip={localize("Sign.sign_and_verify", locale)}>
-                      <i className="material-icons docmenu verifysign" />
-                    </a>
-                  </div>
-                  <div className="col s12 svg_icon_text">{"Проверить"}</div>
-                </div>
-
-                <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(UNSIGN) ? "" : "disabled_docs"}`} onClick={this.unSign}>
-                  <div className="col s12 svg_icon">
-                    <a data-position="bottom">
-                      <i className="material-icons docmenu removesign" />
-                    </a>
-                  </div>
-                  <div className="col s12 svg_icon_text">{localize("Documents.docmenu_removesign", locale)}</div>
-                </div>
-
                 <div className="col s12">
-                  <div className="row halfbottom" />
-                </div>
-
-                <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled_docs"}`} onClick={this.encrypt}>
-                  <div className="col s12 svg_icon">
-                    <a data-position="bottom">
-                      <i className="material-icons docmenu encrypt" />
-                    </a>
-                  </div>
-                  <div className="col s12 svg_icon_text">{localize("Documents.docmenu_enctypt", locale)}</div>
-                </div>
-
-                <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(DECRYPT) ? "" : "disabled_docs"}`} onClick={this.decrypt}>
-                  <div className="col s12 svg_icon">
-                    <a data-position="bottom">
-                      <i className="material-icons docmenu decrypt" />
-                    </a>
-                  </div>
-                  <div className="col s12 svg_icon_text">{localize("Documents.docmenu_dectypt", locale)}</div>
-                </div>
-
-                <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleRemoveFiles}>
-                  <div className="col s12 svg_icon">
-                    <a data-position="bottom"
-                      data-tooltip={localize("Sign.sign_and_verify", locale)}>
-                      <i className="material-icons docmenu remove" />
-                    </a>
-                  </div>
-                  <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+                  <a className={`btn-floating btn-large ${this.checkEnableOperationButton(SIGN) || this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled"}`}
+                    style={{ width: "60%", backgroundColor: "#334294", lineHeight: "55px", borderRadius: "27.75px" }}
+                    onClick={this.handleClickPerformOperations}
+                    >
+                    {localize("Common.perform", locale)}
+                  </a>
                 </div>
               </React.Fragment>
           }
@@ -723,6 +668,17 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       this.handleShowModalSaveParams();
     } else {
       saveSettings();
+    }
+  }
+
+  handleClickPerformOperations = () => {
+    const { setting } = this.props;
+    const { operations } = setting;
+
+    if (operations.signing_operation) {
+      this.handleClickSign();
+    } else if (operations.encryption_operation) {
+      this.encrypt();
     }
   }
 

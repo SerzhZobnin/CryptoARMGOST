@@ -196,7 +196,7 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
         {
           disabledNavigate ? null :
-            <div className="fixed-action-btn" style={{ bottom: "30px", right: "380px" }} onClick={this.addFiles.bind(this)}>
+            <div className="fixed-action-btn" style={{ bottom: "20px", right: "380px" }} onClick={this.addFiles.bind(this)}>
               <a className="btn-floating btn-large cryptoarm-red">
                 <i className="large material-icons">add</i>
               </a>
