@@ -73,14 +73,16 @@ class Operations extends React.Component<IOperationsProps, {}> {
             onClickCheckBox={this.handleSaveResultToFolder}
             isChecked={save_result_to_folder}
             elementId="save_result_to_folder"
-            title={localize("Documents.save_to_documents", locale)} />
+            title={localize("Operations.save_result_to_folder", locale)} />
         </div>
 
-        <SelectFolder
-          directory={settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder}
-          viewDirect={this.handleOutfolderChange}
-          openDirect={this.addDirect.bind(this)}
-        />
+        <div className="col s12">
+          <SelectFolder
+            directory={settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder}
+            viewDirect={this.handleOutfolderChange}
+            openDirect={this.addDirect.bind(this)}
+          />
+        </div>
       </div>
     );
   }

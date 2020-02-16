@@ -1,0 +1,247 @@
+import * as fs from "fs";
+import * as path from "path";
+import {
+  BASE64, DER, GOST_28147,
+  GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
+  MULTI_DIRECT_OPERATION,
+  MULTI_REVERSE_OPERATION,
+  START,
+  SUCCESS,
+} from "../constants";
+import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
+import * as trustedEncrypts from "../trusted/encrypt";
+import * as signs from "../trusted/sign";
+import { extFile, md5 } from "../utils";
+import { filePackageSelect, IFile } from "./index";
+
+interface ISignParams {
+  signModel: ISignModel;
+  tspModel: ITspModel;
+  ocspModel: IOcspModel;
+}
+
+export function multiDirectOperation(
+  files: IFile[],
+  setting: any,
+  signer: any,
+  recipients: any,
+) {
+  return (dispatch: (action: {}) => void, getState: () => any) => {
+    dispatch({
+      type: MULTI_DIRECT_OPERATION + START,
+    });
+
+    let packageResult = true;
+    const directResult: any = {};
+
+    setTimeout(async () => {
+      const { operations, outfolder } = setting;
+      const { archivation_operation, encryption_operation, save_copy_to_documents,
+        save_result_to_folder, signing_operation } = operations;
+
+      let signedFiles: any[] = [];
+
+      files.forEach((file: IFile) => {
+        directResult[file.id] = { original: { ...file } };
+      });
+
+      if (signing_operation) {
+        const policies = ["noAttributes"];
+        if (setting.sign.detached) {
+          policies.push("detached");
+        }
+        if (setting.sign.time) {
+          policies.splice(0, 1);
+        }
+
+        const params: ISignParams | null = {
+          ocspModel: setting.ocsp.toJS(),
+          signModel: setting.sign.toJS(),
+          tspModel: setting.tsp.toJS(),
+        };
+
+        let format = trusted.DataFormat.PEM;
+        if (setting.sign.encoding !== BASE64) {
+          format = trusted.DataFormat.DER;
+        }
+
+        files.forEach((file: IFile) => {
+          let newPath = "";
+          if (file.fullpath.split(".").pop() === "sig") {
+            newPath = signs.resignFile(file.fullpath, signer, policies, params, format, outfolder);
+          } else {
+            newPath = signs.signFile(file.fullpath, signer, policies, params, format, outfolder);
+          }
+
+          if (newPath) {
+            const newFileProps = getFileProps(newPath);
+
+            signedFiles.push({ ...newFileProps, originalId: file.id });
+
+            directResult[file.id] = {
+              ...directResult[file.id],
+              signed: {
+                out: {
+                  ...newFileProps,
+                },
+                result: true,
+              },
+            };
+          } else {
+            packageResult = false;
+
+            directResult[file.id] = {
+              ...directResult[file.id],
+              signed: {
+                result: false,
+              },
+            };
+          }
+        });
+      } else {
+        signedFiles = [...files];
+      }
+
+      let archiveName = "";
+      let archivedFiles: any[] = [];
+
+      if (archivation_operation) {
+        archiveName = await archiveFiles(signedFiles, outfolder);
+        archivedFiles = [getFileProps(archiveName)];
+
+        const newFileProps = getFileProps(archiveName);
+
+        for (const signedFile of signedFiles) {
+          directResult[signedFile.id] = {
+            ...directResult[signedFile.id],
+            archived: {
+              out: {
+                ...newFileProps,
+              },
+              result: true,
+            },
+          };
+        }
+      } else {
+        archivedFiles = [...signedFiles];
+      }
+
+      let encryptedFiles: any[] = [];
+
+      if (encryption_operation) {
+        const policies = { deleteFiles: setting.encrypt.delete, archiveFiles: setting.encrypt.archive };
+
+        let encAlg = trusted.EncryptAlg.GOST_28147;
+        switch (setting.encrypt.algorithm) {
+          case GOST_28147:
+            encAlg = trusted.EncryptAlg.GOST_28147;
+            break;
+          case GOST_R3412_2015_M:
+            encAlg = trusted.EncryptAlg.GOST_R3412_2015_M;
+            break;
+          case GOST_R3412_2015_K:
+            encAlg = trusted.EncryptAlg.GOST_R3412_2015_K;
+            break;
+        }
+
+        let format = trusted.DataFormat.PEM;
+        if (setting.encrypt.encoding !== BASE64) {
+          format = trusted.DataFormat.DER;
+        }
+
+        archivedFiles.forEach((file) => {
+          const newPath = trustedEncrypts.encryptFile(file.fullpath, recipients, policies, encAlg, format, outfolder);
+          const currentId = file.originalId ? file.originalId : file.id;
+
+          if (newPath) {
+            const newFileProps = getFileProps(newPath);
+
+            encryptedFiles.push(newFileProps);
+
+            directResult[currentId] = {
+              ...directResult[currentId],
+              encrypted: {
+                out: {
+                  ...newFileProps,
+                },
+                result: true,
+              },
+            };
+          } else {
+            packageResult = false;
+
+            directResult[currentId] = {
+              ...directResult[currentId],
+              encrypted: {
+                result: false,
+              },
+            };
+          }
+        });
+
+      } else {
+        encryptedFiles = [...archivedFiles];
+      }
+
+      console.log("directResult", directResult);
+
+      // dispatch(filePackageSelect(signedFilePackage));
+
+      dispatch({
+        payload: { packageResult },
+        type: MULTI_DIRECT_OPERATION + SUCCESS,
+      });
+
+    }, 0);
+  };
+}
+
+const getFileProps = (fullpath: string) => {
+  const stat = fs.statSync(fullpath);
+  const extension = extFile(fullpath);
+
+  return {
+    active: true,
+    extension,
+    extra: undefined,
+    filename: path.basename(fullpath),
+    filesize: stat.size,
+    fullpath,
+    id: md5(fullpath),
+    mtime: stat.birthtime,
+    remoteId: undefined,
+    size: stat.size,
+    socket: undefined,
+  };
+};
+
+async function archiveFiles(files: any[], folderOut: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let outURI: string;
+    const archiveName = files.length === 1 ? `${files[0].filename}.zip` : "encrypt_files.zip";
+    if (folderOut.length > 0) {
+      outURI = path.join(folderOut, archiveName);
+    } else {
+      outURI = path.join(HOME_DIR, archiveName);
+    }
+
+    const output = fs.createWriteStream(outURI);
+    const archive = window.archiver("zip");
+
+    output.on("close", () => {
+      resolve(outURI);
+    });
+
+    archive.on("error", () => {
+      reject("Error archive");
+    });
+
+    archive.pipe(output);
+
+    files.forEach((file) => {
+      archive.append(fs.createReadStream(file.fullpath), { name: file.filename });
+    });
+
+    archive.finalize();
+  });
+}

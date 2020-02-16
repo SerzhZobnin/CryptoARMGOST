@@ -600,6 +600,7 @@ export default {
     archivation_operation: "Архивирование",
     encryption_operation: "Шифрование",
     save_copy_to_documents: "Сохранить архивную копию в документах",
+    save_result_to_folder: "Сохранить результат в каталоге",
     signing_operation: "Подпись",
   },
   Problems: {
