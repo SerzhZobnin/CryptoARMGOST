@@ -25,9 +25,9 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
       $("select").material_select();
 
       setTimeout(() => {
-        $(".select-dropdown").css("border-bottom", "none");
-        $(".select-dropdown").css("margin", "0");
-        $(".select-dropdown").css("height", "2rem");
+        $(".select-dropdown:eq(0)").css("border-bottom", "none");
+        $(".select-dropdown:eq(0)").css("margin", "0");
+        $(".select-dropdown:eq(0)").css("height", "2rem");
       }, 0);
     });
     $(ReactDOM.findDOMNode(this.refs.settingsSelectRef)).on("change", this.changeStandard);
