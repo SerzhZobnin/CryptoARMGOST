@@ -14,6 +14,7 @@ import events from "./events";
 import files from "./files";
 import filters from "./filters";
 import license from "./license";
+import multiOperations from "./multiOperations";
 import passwordDSS from "./passwordDSS";
 import policyDSS from "./policyDSS";
 import regrequests from "./regrequests";
@@ -43,6 +44,7 @@ export default combineReducers({
   files,
   filters,
   license,
+  multiOperations,
   remoteFiles,
   certrequests,
   certtemplate,

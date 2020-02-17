@@ -12,7 +12,7 @@ import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import * as trustedEncrypts from "../trusted/encrypt";
 import * as signs from "../trusted/sign";
 import { extFile, md5 } from "../utils";
-import { filePackageSelect, IFile } from "./index";
+import { filePackageSelect, IFile, removeAllFiles } from "./index";
 
 interface ISignParams {
   signModel: ISignModel;
@@ -33,6 +33,7 @@ export function multiDirectOperation(
 
     let packageResult = true;
     const directResult: any = {};
+    const directFiles: any = {};
 
     setTimeout(async () => {
       const { operations, outfolder } = setting;
@@ -41,9 +42,11 @@ export function multiDirectOperation(
 
       let signedFiles: any[] = [];
 
-      files.forEach((file: IFile) => {
-        directResult[file.id] = { original: { ...file } };
+      files.forEach((file: any) => {
+        directFiles[file.id] = { original: file.toJS() };
       });
+
+      directResult.operations = operations.toJS();
 
       if (signing_operation) {
         const policies = ["noAttributes"];
@@ -78,9 +81,9 @@ export function multiDirectOperation(
 
             signedFiles.push({ ...newFileProps, originalId: file.id });
 
-            directResult[file.id] = {
-              ...directResult[file.id],
-              signed: {
+            directFiles[file.id] = {
+              ...directFiles[file.id],
+              signing_operation: {
                 out: {
                   ...newFileProps,
                 },
@@ -90,9 +93,9 @@ export function multiDirectOperation(
           } else {
             packageResult = false;
 
-            directResult[file.id] = {
-              ...directResult[file.id],
-              signed: {
+            directFiles[file.id] = {
+              ...directFiles[file.id],
+              signing_operation: {
                 result: false,
               },
             };
@@ -112,9 +115,11 @@ export function multiDirectOperation(
         const newFileProps = getFileProps(archiveName);
 
         for (const signedFile of signedFiles) {
-          directResult[signedFile.id] = {
-            ...directResult[signedFile.id],
-            archived: {
+          const currentId = signedFile.originalId ? signedFile.originalId : signedFile.id;
+
+          directFiles[currentId] = {
+            ...directFiles[currentId],
+            archivation_operation: {
               out: {
                 ...newFileProps,
               },
@@ -158,24 +163,53 @@ export function multiDirectOperation(
 
             encryptedFiles.push(newFileProps);
 
-            directResult[currentId] = {
-              ...directResult[currentId],
-              encrypted: {
-                out: {
-                  ...newFileProps,
+            if (archivation_operation) {
+              for (const signedFile of signedFiles) {
+                const currentIdSigned = signedFile.originalId ? signedFile.originalId : signedFile.id;
+
+                directFiles[currentIdSigned] = {
+                  ...directFiles[currentIdSigned],
+                  encryption_operation: {
+                    out: {
+                      ...newFileProps,
+                    },
+                    result: true,
+                  },
+                };
+              }
+            } else {
+              directFiles[currentId] = {
+                ...directFiles[currentId],
+                encryption_operation: {
+                  out: {
+                    ...newFileProps,
+                  },
+                  result: true,
                 },
-                result: true,
-              },
-            };
+              };
+            }
           } else {
             packageResult = false;
 
-            directResult[currentId] = {
-              ...directResult[currentId],
-              encrypted: {
-                result: false,
-              },
-            };
+            if (archivation_operation) {
+              for (const signedFile of signedFiles) {
+                const currentIdSigned = signedFile.originalId ? signedFile.originalId : signedFile.id;
+
+                directFiles[currentIdSigned] = {
+                  ...directFiles[currentIdSigned],
+                  encryption_operation: {
+                    result: false,
+                  },
+                };
+              }
+            } else {
+              directFiles[currentId] = {
+                ...directFiles[currentId],
+                encryption_operation: {
+                  result: false,
+                },
+              };
+            }
           }
         });
 
@@ -183,12 +217,12 @@ export function multiDirectOperation(
         encryptedFiles = [...archivedFiles];
       }
 
-      console.log("directResult", directResult);
+      directResult.files = directFiles;
 
-      // dispatch(filePackageSelect(signedFilePackage));
+      dispatch(removeAllFiles());
 
       dispatch({
-        payload: { packageResult },
+        payload: { status: packageResult, directResult },
         type: MULTI_DIRECT_OPERATION + SUCCESS,
       });
 
