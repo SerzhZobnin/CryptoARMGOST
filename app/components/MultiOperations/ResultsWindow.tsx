@@ -6,7 +6,8 @@ import { changeSearchValue } from "../../AC/searchActions";
 import FilterDocuments from "../Documents/FilterDocuments";
 import Modal from "../Modal";
 import ProgressBars from "../ProgressBars";
-import FileTableSmall from "./FileTableSmall";
+import FileTableSmall from "./OperationsResultsTable";
+
 class ResultsWindow extends React.Component<any, any> {
   static contextTypes = {
     locale: PropTypes.string,
@@ -129,7 +130,7 @@ class ResultsWindow extends React.Component<any, any> {
   }
 }
 
-export default connect((state) => {
+export default connect((state: any) => {
   return {
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     isPerformed: state.multiOperations.performed,
