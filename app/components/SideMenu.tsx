@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import {
   ADDRESS_BOOK, CA, LOCATION_ABOUT,
   LOCATION_ADDRESS_BOOK, LOCATION_CERTIFICATES, LOCATION_CONTAINERS,
-  LOCATION_DOCUMENTS, LOCATION_EVENTS, LOCATION_MAIN,
+  LOCATION_DOCUMENTS, LOCATION_EVENTS, LOCATION_MAIN, LOCATION_RESULTS_MULTI_OPERATIONS,
   MY, REQUEST, ROOT,
 } from "../constants";
 import { mapToArr } from "../utils";
@@ -124,6 +124,8 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
   }
 
   getSignAndEncryptMenu = () => {
+    const { localize, locale } = this.context;
+
     return (
       <div style={{ display: "none", pointerEvents: "none", cursor: "default" }}>
         <Link to={LOCATION_MAIN}>
@@ -132,6 +134,18 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               <div className="center-align">
                 <a style={{ fontWeight: "bold", color: "#bf3817" }}>ПОДПИСЬ И ШИФРОВАНИЕ</a>
               </div>
+            </li>
+            <li onClick={() => $("#sign_encrypt").dropdown("close")}>
+              <Link to={LOCATION_RESULTS_MULTI_OPERATIONS} style={{ height: "33px", padding: "0px" }}>
+                <div className="row nobottom valign-wrapper">
+                  <div className="col" style={{ width: "36px" }}>
+                    <i className="material-icons left container" />
+                  </div>
+                  <div className="col">
+                    {localize("Operations.last_operation_result", locale)}
+                  </div>
+                </div>
+              </Link>
             </li>
           </ul>
         </Link>

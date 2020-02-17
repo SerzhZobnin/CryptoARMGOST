@@ -235,7 +235,7 @@ const getFileProps = (fullpath: string) => {
   const extension = extFile(fullpath);
 
   return {
-    active: true,
+    active: false,
     extension,
     extra: undefined,
     filename: path.basename(fullpath),

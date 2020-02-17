@@ -7,8 +7,8 @@ import {
   LOCATION_ABOUT, LOCATION_ADDRESS_BOOK, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_CERTIFICATES,
   LOCATION_CONTAINERS, LOCATION_DOCUMENTS, LOCATION_EVENTS,
-  LOCATION_SERVICES, LOCATION_SETTINGS, LOCATION_SETTINGS_CONFIG,
-  LOCATION_SETTINGS_SELECT,
+  LOCATION_RESULTS_MULTI_OPERATIONS, LOCATION_SERVICES, LOCATION_SETTINGS,
+  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT,
 } from "../constants";
 import history from "../history";
 import localize from "../i18n/localize";
@@ -23,6 +23,7 @@ import DocumentsWindow from "./Documents/DocumentsWindow";
 import EventsWindow from "./Events/EventsWindow";
 import * as fileManager from "./Files/fileManager";
 import MenuBar from "./MenuBar";
+import ResultsWindow from "./MultiOperations/ResultsWindow";
 import ServiceWindow from "./Services/ServiceWindow";
 import SettingsConfig from "./Settings/SettingsConfig";
 import SettingsSelect from "./Settings/SettingsSelect";
@@ -69,6 +70,7 @@ class App extends React.Component<IAppProps, {}> {
           <Route path={LOCATION_SETTINGS_SELECT} component={SettingsSelect} />
           <Route path={LOCATION_SETTINGS_CONFIG} component={SettingsConfig} />
           <Route path={LOCATION_SERVICES} component={ServiceWindow} />
+          <Route path={LOCATION_RESULTS_MULTI_OPERATIONS} component={ResultsWindow} />
         </React.Fragment>
       </Router>
     );

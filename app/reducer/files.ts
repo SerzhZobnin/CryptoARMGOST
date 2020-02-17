@@ -7,7 +7,7 @@ import {
 } from "../constants";
 import { arrayToMap, fileExists } from "../utils";
 
-const FileModel = Record({
+export const FileModel = Record({
   active: true,
   extension: null,
   extra: null,
