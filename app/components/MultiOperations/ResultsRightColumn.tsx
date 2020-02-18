@@ -89,10 +89,10 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
           <div className="row">
             <div className="col s12 primary-text">Цепочка операций:</div>
             <div className="row halfbottom" />
-            <div className="add-certs">
-              <div className="collection">
-                {this.getOperationsChain()}
-              </div>
+
+            <div className="collection">
+              {this.getOperationsChain()}
+
             </div>
           </div>
         </div>
@@ -196,69 +196,90 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
   getOperationsChain = () => {
     const { selectedOriginalFileIndex } = this.state;
     const { entitiesMap, filesMap, originalFiles, operations } = this.props;
+    let { } = this.props;
 
     if (selectedOriginalFileIndex) {
       const results = filesMap.get(selectedOriginalFileIndex);
 
       const elements: any[] = [];
+      const operationsArrSorted: any[] = [];
       let curKeyStyle = "";
       let curStatusStyle = "";
       let j = 0;
 
-      operations.map((value: boolean, key: string) => {
+      operations.map((value: boolean, operationKey: string) => {
         if (value) {
-          const result = results[key];
-
-          if (result) {
-            let circleStyle = "material-icons left chain_1";
-            const vertlineStyle = {
-              visibility: "visible",
-            };
-
-            if (j < 10) {
-              circleStyle = "material-icons left chain_" + (j + 1);
-            } else {
-              circleStyle = "material-icons left chain_10";
-            }
-
-            if (status) {
-              curStatusStyle = "cert_status_ok";
-            } else {
-              curStatusStyle = "cert_status_error";
-            }
-
-            if (j === 0) {
-              curKeyStyle = "";
-
-              if (curKeyStyle) {
-                curKeyStyle += "localkey";
-              }
-            }
-
-            elements.push(
-              <div className={"collection-item avatar certs-collection "} >
-                <div className="row chain-item">
-                  <div className="col s1">
-                    <i className={circleStyle}></i>
-                    <div className={"vert_line"} style={vertlineStyle}></div>
-                  </div>
-                  <div className="col s10">
-                    <div className="r-iconbox-link">
-                      <div className="collection-title">{key}</div>
-                      <div className="collection-info">{result.out.filename}</div>
-                    </div>
-                  </div>
-                  <div className="col s1">
-                    <div className="row nobottom">
-                      <div className={curStatusStyle + " "} style={{ marginLeft: "-15px" }} />
-                    </div>
-                  </div>
-                </div>
-              </div>);
+          if (operationKey === "signing_operation") {
+            operationsArrSorted.unshift({ value, key: operationKey });
+          } else if (operationKey === "encryption_operation") {
+            operationsArrSorted.push({ value, key: operationKey });
+          } else {
+            operationsArrSorted.push({ value, key: operationKey });
           }
-
-          j++;
         }
+      });
+
+      operationsArrSorted.forEach((operation: any) => {
+        const result = results[operation.key];
+
+        let circleStyle = "material-icons left chain_1";
+        const vertlineStyle = {
+          visibility: "visible",
+        };
+
+        if (j < 10) {
+          circleStyle = "material-icons left chain_" + (j + 1);
+        } else {
+          circleStyle = "material-icons left chain_10";
+        }
+
+        if (j === operationsArrSorted.length - 1) {
+          vertlineStyle.visibility = "hidden";
+        }
+
+        if (result && result.result) {
+          curStatusStyle = "cert_status_ok";
+        } else {
+          curStatusStyle = "cert_status_error";
+        }
+
+        if (j === 0) {
+          curKeyStyle = "";
+
+          if (curKeyStyle) {
+            curKeyStyle += "localkey";
+          }
+        }
+
+        const element = <div className={"collection-item avatar certs-collection "} >
+          <div className="row chain-item">
+            <div className="col s1">
+              <i className={circleStyle}></i>
+              <div className={"vert_line"} style={vertlineStyle}></div>
+            </div>
+            <div className="col s10">
+              <div className="r-iconbox-link">
+                <div className="collection-title">{operation.key}</div>
+                <div className="collection-info">{result && result.out ? result.out.filename : "-"}</div>
+              </div>
+            </div>
+            <div className="col s1">
+              <div className="row nobottom">
+                <div className={curStatusStyle + " "} style={{ marginLeft: "-15px" }} />
+              </div>
+            </div>
+          </div>
+        </div>;
+
+        if (operation.key === "signing_operation") {
+          elements.unshift(element);
+        } else if (operation.key === "encryption_operation") {
+          elements.push(element);
+        } else {
+          elements.push(element);
+        }
+
+        j++;
       });
 
       return elements;
