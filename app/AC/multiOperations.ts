@@ -5,8 +5,12 @@ import {
   GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
   MULTI_DIRECT_OPERATION,
   MULTI_REVERSE_OPERATION,
+  SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
+  SELECT_DOCUMENT_IN_OPERAIONS_RESULT,
   START,
   SUCCESS,
+  UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
+  UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT,
 } from "../constants";
 import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import * as trustedEncrypts from "../trusted/encrypt";
@@ -278,4 +282,30 @@ async function archiveFiles(files: any[], folderOut: string): Promise<string> {
 
     archive.finalize();
   });
+}
+
+export function selectDocument(uid: number) {
+  return {
+    payload: { uid },
+    type: SELECT_DOCUMENT_IN_OPERAIONS_RESULT,
+  };
+}
+
+export function unselectDocument(uid: string) {
+  return {
+    payload: { uid },
+    type: UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT,
+  };
+}
+
+export function unselectAllDocuments() {
+  return {
+    type: UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
+  };
+}
+
+export function selectAllDocuments() {
+  return {
+    type: SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
+  };
 }

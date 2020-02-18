@@ -1,17 +1,12 @@
-import { is } from "immutable";
-import * as path from "path";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { AutoSizer, Column, Table } from "react-virtualized";
-import { activeFile, deleteFile, selectTempContentOfSignedFiles } from "../../AC";
-import { FileModel } from "../../reducer/files";
-import { activeFilesSelector, filteredFilesSelector, loadingRemoteFilesSelector } from "../../selectors";
+import { selectDocument } from "../../AC/multiOperations";
 import { filteredOperationsResultsSelector, selectedOperationsResultsSelector } from "../../selectors/operatiosResultsSelector";
 import "../../table.global.css";
-import { arrayToMap, bytesToSize, mapToArr, extFile } from "../../utils";
+import { bytesToSize, extFile, mapToArr } from "../../utils";
 import FileIcon from "../Files/FileIcon";
-import FileItemButtons from "../Files/FileItemButtons";
 import SortDirection from "../Sort/SortDirection";
 import SortIndicator from "../Sort/SortIndicator";
 
@@ -29,7 +24,6 @@ interface IFileRedux {
 
 interface IOperationsResultsTableProps {
   activeFile: (id: number, active?: boolean) => void;
-  deleteFile: (fileId: number) => void;
   location: any;
   filesMap: any;
   operation: string;
@@ -358,14 +352,8 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
   }
 }
 
-interface IOwnProps {
-  operation: string;
-}
-
-export default connect((state: any, ownProps: IOwnProps) => ({
-
+export default connect((state: any) => ({
   filesMap: filteredOperationsResultsSelector(state),
   selectedFiles: selectedOperationsResultsSelector(state),
   selectedFilesMap: state.multiOperations.selected,
-
-}), { activeFile, deleteFile, selectTempContentOfSignedFiles })(OperationsResultsTable);
+}), { selectDocument })(OperationsResultsTable);

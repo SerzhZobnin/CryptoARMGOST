@@ -1,6 +1,9 @@
 import { Map, OrderedMap, OrderedSet, Record } from "immutable";
 import {
-  FAIL, MULTI_DIRECT_OPERATION, START, SUCCESS, VERIFY_LICENSE,
+  FAIL, MULTI_DIRECT_OPERATION, SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
+  SELECT_DOCUMENT_IN_OPERAIONS_RESULT, START, SUCCESS,
+  UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT, UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT,
+  VERIFY_LICENSE,
 } from "../constants";
 import { arrayToMap } from "../utils";
 
@@ -48,6 +51,25 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
         .set("performing", false)
         .set("performed", false)
         .set("status", false);
+
+    case SELECT_DOCUMENT_IN_OPERAIONS_RESULT:
+      return lastOperationResults.update("selected", (selected) => selected.has(payload.uid)
+        ? selected.remove(payload.uid)
+        : selected.add(payload.uid),
+      );
+
+    case UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT:
+      return lastOperationResults.update("selected", (selected) => selected.remove(payload.uid));
+
+    case UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT:
+      const allDocumentsId: number[] = [];
+
+      lastOperationResults.files.map((item: any) => allDocumentsId.push(item.id));
+
+      return lastOperationResults.set("selected", new OrderedSet(allDocumentsId));
+
+    case SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT:
+      return lastOperationResults.set("selected", new OrderedSet([]));
   }
 
   return lastOperationResults;
