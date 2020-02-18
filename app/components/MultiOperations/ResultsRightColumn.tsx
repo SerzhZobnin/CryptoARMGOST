@@ -1,3 +1,4 @@
+import { Map } from "immutable";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
@@ -82,6 +83,16 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
             <div className="row halfbottom" />
             <div className="add-cert-collection collection">
               {this.getOriginalFiles()}
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col s12 primary-text">Цепочка операций:</div>
+            <div className="row halfbottom" />
+            <div className="add-certs">
+              <div className="collection">
+                {this.getOperationsChain()}
+              </div>
             </div>
           </div>
         </div>
@@ -179,9 +190,81 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
       );
     });
 
-    console.log("elements", elements);
-
     return elements;
+  }
+
+  getOperationsChain = () => {
+    const { selectedOriginalFileIndex } = this.state;
+    const { entitiesMap, filesMap, originalFiles, operations } = this.props;
+
+    if (selectedOriginalFileIndex) {
+      const results = filesMap.get(selectedOriginalFileIndex);
+
+      const elements: any[] = [];
+      let curKeyStyle = "";
+      let curStatusStyle = "";
+      let j = 0;
+
+      operations.map((value: boolean, key: string) => {
+        if (value) {
+          const result = results[key];
+
+          if (result) {
+            let circleStyle = "material-icons left chain_1";
+            const vertlineStyle = {
+              visibility: "visible",
+            };
+
+            if (j < 10) {
+              circleStyle = "material-icons left chain_" + (j + 1);
+            } else {
+              circleStyle = "material-icons left chain_10";
+            }
+
+            if (status) {
+              curStatusStyle = "cert_status_ok";
+            } else {
+              curStatusStyle = "cert_status_error";
+            }
+
+            if (j === 0) {
+              curKeyStyle = "";
+
+              if (curKeyStyle) {
+                curKeyStyle += "localkey";
+              }
+            }
+
+            elements.push(
+              <div className={"collection-item avatar certs-collection "} >
+                <div className="row chain-item">
+                  <div className="col s1">
+                    <i className={circleStyle}></i>
+                    <div className={"vert_line"} style={vertlineStyle}></div>
+                  </div>
+                  <div className="col s10">
+                    <div className="r-iconbox-link">
+                      <div className="collection-title">{key}</div>
+                      <div className="collection-info">{result.out.filename}</div>
+                    </div>
+                  </div>
+                  <div className="col s1">
+                    <div className="row nobottom">
+                      <div className={curStatusStyle + " "} style={{ marginLeft: "-15px" }} />
+                    </div>
+                  </div>
+                </div>
+              </div>);
+          }
+
+          j++;
+        }
+      });
+
+      return elements;
+    } else {
+      return;
+    }
   }
 
   handleSelectOriginalFile = (index: any) => {
