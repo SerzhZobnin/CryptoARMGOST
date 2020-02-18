@@ -3,7 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { AutoSizer, Column, Table } from "react-virtualized";
 import { selectDocument } from "../../AC/multiOperations";
-import { filteredOperationsResultsSelector, selectedOperationsResultsSelector } from "../../selectors/operatiosResultsSelector";
+import { filteredOperationsResultsSelector, selectedOperationsResultsSelector } from "../../selectors/operationsResultsSelector";
 import "../../table.global.css";
 import { bytesToSize, extFile, mapToArr } from "../../utils";
 import FileIcon from "../Files/FileIcon";

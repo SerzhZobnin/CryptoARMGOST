@@ -31,3 +31,5 @@ export const selectionSelector = createSelector(stateSelector, (state) => state.
 export const selectedOperationsResultsSelector = createSelector(entitiesSelector, selectionSelector, (entities, selection) =>
   selection.map((uid: any) => entities.get(uid)),
 );
+
+export const originalSelector = createSelector(stateSelector, (state) => state.files.map((file: any) => file.original));

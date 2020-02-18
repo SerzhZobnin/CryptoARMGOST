@@ -597,10 +597,12 @@ export default {
     Operations: "Operations",
     archivation_operation: "Archivation",
     encryption_operation: "Encryption",
+    failed: "Failed",
     last_operation_result: "Last results",
     save_copy_to_documents: "Save copy to documents",
     save_result_to_folder: "Save result to folder",
     signing_operation: "Signing",
+    successful: "Successful",
   },
   Problems: {
     problem_1: "There is no crypto provider CryptoPro CSP",

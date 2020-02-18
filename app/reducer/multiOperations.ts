@@ -21,6 +21,7 @@ export const FileModel = Record({
 const DefaultReducerState = Record({
   entities: OrderedMap({}),
   files: OrderedMap({}),
+  operations: OrderedMap({}),
   performed: false,
   performing: false,
   status: false,
@@ -34,7 +35,8 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
     case MULTI_DIRECT_OPERATION + START:
       return lastOperationResults
         .set("performing", true)
-        .set("performed", false);
+        .set("performed", false)
+        .set("operations", OrderedMap(payload.operations));
 
     case MULTI_DIRECT_OPERATION + SUCCESS:
       const oMap = OrderedMap(payload.directResult.files);

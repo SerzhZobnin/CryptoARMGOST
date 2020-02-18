@@ -7,6 +7,7 @@ import FilterDocuments from "../Documents/FilterDocuments";
 import Modal from "../Modal";
 import ProgressBars from "../ProgressBars";
 import FileTableSmall from "./OperationsResultsTable";
+import ResultsRightColumn from "./ResultsRightColumn";
 
 class ResultsWindow extends React.Component<any, any> {
   static contextTypes = {
@@ -81,6 +82,8 @@ class ResultsWindow extends React.Component<any, any> {
           </div>
 
           <div className="col s4 rightcol">
+          <div className="row halfbottom" />
+            <ResultsRightColumn />
           </div>
         </div>
         {this.showModalFilterDocuments()}

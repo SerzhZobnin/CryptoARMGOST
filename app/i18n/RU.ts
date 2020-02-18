@@ -599,10 +599,12 @@ export default {
     Operations: "Операции",
     archivation_operation: "Архивирование",
     encryption_operation: "Шифрование",
+    failed: "Ошибка",
     last_operation_result: "Последняя операция",
     save_copy_to_documents: "Сохранить архивную копию в документах",
     save_result_to_folder: "Сохранить результат в каталоге",
     signing_operation: "Подпись",
+    successful: "Успешно",
   },
   Problems: {
     problem_1: "Отсутствует СКЗИ КриптоПро CSP",

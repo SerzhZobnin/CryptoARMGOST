@@ -32,6 +32,7 @@ export function multiDirectOperation(
 ) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     dispatch({
+      payload: { operations: setting.operations },
       type: MULTI_DIRECT_OPERATION + START,
     });
 
