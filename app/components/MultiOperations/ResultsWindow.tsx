@@ -6,7 +6,7 @@ import { changeSearchValue } from "../../AC/searchActions";
 import FilterDocuments from "../Documents/FilterDocuments";
 import Modal from "../Modal";
 import ProgressBars from "../ProgressBars";
-import FileTableSmall from "./OperationsResultsTable";
+import OperationsResultsTable from "./OperationsResultsTable";
 import ResultsRightColumn from "./ResultsRightColumn";
 
 class ResultsWindow extends React.Component<any, any> {
@@ -76,7 +76,7 @@ class ResultsWindow extends React.Component<any, any> {
             </div>
             <div className="collection">
               <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
-                <FileTableSmall searchValue={this.props.searchValue} />
+                <OperationsResultsTable searchValue={this.props.searchValue} />
               </div>
             </div>
           </div>

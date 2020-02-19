@@ -74,7 +74,7 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
     return (
       <React.Fragment>
         <div className="col s12">
-          <div className="primary-text">{localize("Sign.sign_info", locale)}</div>
+          <div className="primary-text">{localize("Events.operations_log", locale)}</div>
           <hr />
 
           <div className="row">
@@ -98,8 +98,11 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
         </div>
 
         <div className="row fixed-bottom-rightcolumn">
+          <div className="col s12">
+            <hr />
+          </div>
 
-          <div className={`col s8 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
+          <div className={`col s6 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(SIGN) ? "" : "disabled_docs"}`} onClick={this.handleClickSign}>
             <div className="col s12 svg_icon">
               <a data-position="bottom">
                 <i className="material-icons docmenu send_in_sign_and_encrypt" />
@@ -108,14 +111,14 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
             <div className="col s12 svg_icon_text">{localize("Documents.open_in_sign_and_encrypt", locale)}</div>
           </div>
 
-          <div className={`col s4 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleClickDelete}>
+          <div className={`col s5 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleClickDelete}>
             <div className="col s12 svg_icon">
               <a data-position="bottom"
                 data-tooltip={localize("Sign.sign_and_verify", locale)}>
-                <i className="material-icons docmenu remove" />
+                <i className="material-icons docmenu journal" />
               </a>
             </div>
-            <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
+            <div className="col s12 svg_icon_text">{localize("Operations.save_copy_to_documents", locale)}</div>
           </div>
         </div>
       </React.Fragment>

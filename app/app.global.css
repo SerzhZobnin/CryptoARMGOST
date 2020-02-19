@@ -2986,6 +2986,9 @@ svg:hover {
     background: url(./resources/image/operations/send_in_sign_and_encrypt.svg);
   }
 
+  i.material-icons.docmenu.journal {
+    background: url(./resources/image/sidemenu/journal.svg);
+  }
 
   i.material-icons.license.install {
     background: url(./resources/image/operations/add_lic.svg);

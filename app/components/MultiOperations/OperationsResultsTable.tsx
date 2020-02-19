@@ -341,10 +341,7 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
   noRowsRenderer = () => {
     const { locale, localize } = this.context;
 
-    return <div className={"add-file-item not-active"} id="items-hidden">
-      <div className="headline6 add-file-item-text">{localize("Settings.drag_drop", locale)}</div>
-      <i className="material-icons large fullscreen">fullscreen</i>
-    </div>;
+    return <div className={"noRows"}>{localize("EventsTable.no_rows", locale)}</div>;
   }
 
   scrollToRow = (index: number) => {
