@@ -49,7 +49,8 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
     if (nextProps.disabled !== this.props.disabled ||
       nextProps.value !== this.props.value ||
       nextProps.setting.savetime !== this.props.setting.savetime ||
-      nextProps.setting.changed !== this.props.setting.changed) {
+      nextProps.setting.changed !== this.props.setting.changed ||
+      nextProps.setting !== this.props.setting) {
       return true;
     } else {
       return false;
@@ -67,7 +68,7 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
     const disabled = this.props.disabled || (setting.changed);
 
     return (
-      <div onClick={this.showToast}>
+      <div onClick={this.showToast} style={{ maxHeight: "46px" }}>
         <div className={`input-field  ${disabled ? "disabled" : ""}`}
           style={{ marginTop: "0px" }}>
           <select
