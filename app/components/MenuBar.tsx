@@ -7,7 +7,7 @@ import {
   LOCATION_ABOUT, LOCATION_ADDRESS_BOOK, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
   LOCATION_CERTIFICATES, LOCATION_CONTAINERS,
-  LOCATION_DOCUMENTS, LOCATION_EVENTS, LOCATION_LICENSE,
+  LOCATION_DOCUMENTS, LOCATION_EVENTS, LOCATION_LICENSE, LOCATION_RESULTS_MULTI_OPERATIONS,
   LOCATION_SERVICES, LOCATION_SETTINGS, LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT,
   SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
 } from "../constants";
@@ -115,6 +115,9 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
       case LOCATION_DOCUMENTS:
         return `${localize("About.product_NAME", locale)} - ${localize("Documents.documents", locale)}`;
+
+      case LOCATION_RESULTS_MULTI_OPERATIONS:
+        return `${localize("About.product_NAME", locale)} - ${localize("Operations.results", locale)}`;
 
       case LOCATION_EVENTS:
         let title = `${localize("About.product_NAME", locale)} - ${localize("Events.operations_log", locale)}`;
