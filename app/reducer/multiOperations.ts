@@ -1,8 +1,9 @@
 import { Map, OrderedMap, OrderedSet, Record } from "immutable";
 import {
-  FAIL, MULTI_DIRECT_OPERATION, SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
-  SELECT_DOCUMENT_IN_OPERAIONS_RESULT, START, SUCCESS,
-  UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT, UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT,
+  FAIL, MULTI_DIRECT_OPERATION, MULTI_REVERSE_OPERATION,
+  SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_DOCUMENT_IN_OPERAIONS_RESULT, START,
+  SUCCESS, UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
+  UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT,
   VERIFY_LICENSE,
 } from "../constants";
 import { arrayToMap } from "../utils";
@@ -32,7 +33,14 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
   const { type, payload } = action;
 
   switch (type) {
+    case MULTI_REVERSE_OPERATION + START:
+      lastOperationResults = new DefaultReducerState();
+      return lastOperationResults
+        .set("performing", true)
+        .set("performed", false);
+
     case MULTI_DIRECT_OPERATION + START:
+      lastOperationResults = new DefaultReducerState();
       return lastOperationResults
         .set("performing", true)
         .set("performed", false)
@@ -48,6 +56,17 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
         .set("files", oMap)
         .update("entities", (entities) => arrayToMap(getFilesArray(oMap), FileModel).merge(entities));
 
+    case MULTI_REVERSE_OPERATION + SUCCESS:
+      const oMapReverse = OrderedMap(payload.reverseResult.files);
+
+      return lastOperationResults
+        .set("performing", false)
+        .set("performed", true)
+        .set("status", payload.status)
+        .set("files", oMapReverse)
+        .update("entities", (entities) => arrayToMap(getFilesArray(oMapReverse), FileModel).merge(entities));
+
+    case MULTI_REVERSE_OPERATION + FAIL:
     case MULTI_DIRECT_OPERATION + FAIL:
       return lastOperationResults
         .set("performing", false)
@@ -63,14 +82,14 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
     case UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT:
       return lastOperationResults.update("selected", (selected) => selected.remove(payload.uid));
 
-    case UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT:
+    case SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT:
       const allDocumentsId: number[] = [];
 
-      lastOperationResults.files.map((item: any) => allDocumentsId.push(item.id));
+      lastOperationResults.entities.map((item: any) => allDocumentsId.push(item.id));
 
       return lastOperationResults.set("selected", new OrderedSet(allDocumentsId));
 
-    case SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT:
+    case UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT:
       return lastOperationResults.set("selected", new OrderedSet([]));
   }
 

@@ -15,7 +15,7 @@ import {
 import { IFile } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import { createTransactionDSS, dssOperationConfirmation, dssPerformOperation } from "../../AC/dssActions";
-import { multiDirectOperation } from "../../AC/multiOperations";
+import { multiDirectOperation, multiReverseOperation } from "../../AC/multiOperations";
 import {
   activeSetting, changeDefaultSettings, deleteSetting, saveSettings,
 } from "../../AC/settingsActions";
@@ -694,14 +694,20 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   handleClickPerformOperations = () => {
-    const { activeFilesArr, setting, signer, multiDirectOperation, recipients } = this.props;
+    const { activeFilesArr, setting, signer,
+      multiDirectOperation, multiReverseOperation, recipients } = this.props;
+    const { isDirectOperations } = this.state;
     let sinerCert = null;
 
     if (signer) {
       sinerCert = window.PKISTORE.getPkiObject(signer);
     }
 
+    if (isDirectOperations) {
     multiDirectOperation(activeFilesArr, setting, sinerCert, recipients);
+    } else {
+      multiReverseOperation(activeFilesArr);
+    }
   }
 
   handleClickSign = () => {
@@ -1769,6 +1775,7 @@ export default connect((state) => {
   activeFile, activeSetting, changeDefaultSettings, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
   deleteSetting, deleteFile, deleteRecipient, documentsReviewed,
   filePackageSelect, filePackageDelete, multiDirectOperation,
+  multiReverseOperation,
   packageSign, packageReSign, saveSettings, selectFile,
   verifyCertificate, selectSignerCertificate, verifySignature,
 })(SignatureAndEncryptRightColumnSettings);

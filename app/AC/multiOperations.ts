@@ -238,6 +238,37 @@ export function multiDirectOperation(
   };
 }
 
+export function multiReverseOperation(
+  files: IFile[],
+) {
+  return (dispatch: (action: {}) => void, getState: () => any) => {
+    dispatch({
+      type: MULTI_REVERSE_OPERATION + START,
+    });
+
+    let packageResult = true;
+    const reverseResult: any = {};
+    const reverseFiles: any = {};
+
+    setTimeout(async () => {
+      files.forEach((file: any) => {
+        reverseFiles[file.id] = { original: file.toJS() };
+      });
+
+      reverseResult.files = reverseFiles;
+
+      dispatch(removeAllFiles());
+
+      dispatch({
+        payload: { status: packageResult, reverseResult },
+        type: MULTI_REVERSE_OPERATION + SUCCESS,
+      });
+
+      dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
+    }, 0);
+  };
+}
+
 const getFileProps = (fullpath: string) => {
   const stat = fs.statSync(fullpath);
   const extension = extFile(fullpath);

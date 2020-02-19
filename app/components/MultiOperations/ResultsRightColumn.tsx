@@ -178,14 +178,14 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
 
                 <div className={isValid}>{status}</div>
 
-                <div className="collection-info">{localize("Sign.signingTime", locale)}: {originalFile.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
+                {/* <div className="collection-info">{localize("Sign.signingTime", locale)}: {originalFile.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
                   day: "numeric",
                   hour: "numeric",
                   minute: "numeric",
                   month: "long",
                   year: "numeric",
                 }) : "-"}
-                </div>
+                </div> */}
               </div>
             </React.Fragment>
           </div>
@@ -197,6 +197,7 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
   }
 
   getOperationsChain = () => {
+    const { localize, locale } = this.context;
     const { selectedOriginalFileIndex } = this.state;
     const { entitiesMap, filesMap, originalFiles, operations } = this.props;
     let { } = this.props;
@@ -262,7 +263,7 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
             </div>
             <div className="col s10">
               <div className="r-iconbox-link">
-                <div className="collection-title">{operation.key}</div>
+                <div className="collection-title">{localize(`Operations.${operation.key}`, locale)}</div>
                 <div className="collection-info">{result && result.out ? result.out.filename : "-"}</div>
               </div>
             </div>

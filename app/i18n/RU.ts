@@ -602,7 +602,7 @@ export default {
     failed: "Ошибка",
     last_operation_result: "Последняя операция",
     results: "Результаты операций",
-    save_copy_to_documents: "Сохранить архивную копию в документах",
+    save_copy_to_documents: "Сохранить архивную копию в Документах",
     save_result_to_folder: "Сохранить результат в каталоге",
     signing_operation: "Подпись",
     successful: "Успешно",
