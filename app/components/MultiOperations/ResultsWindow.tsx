@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { resetDocumentsFilters } from "../../AC/documentsFiltersActions";
+import { selectAllDocuments, unselectAllDocuments } from "../../AC/multiOperations";
 import { changeSearchValue } from "../../AC/searchActions";
 import FilterDocuments from "../Documents/FilterDocuments";
 import Modal from "../Modal";
@@ -125,11 +126,11 @@ class ResultsWindow extends React.Component<any, any> {
   }
 
   handleSelectAllDocuments = () => {
-    //
+    this.props.selectAllDocuments();
   }
 
   handleUnselectAllDocuments = () => {
-    //
+    this.props.unselectAllDocuments();
   }
 }
 
@@ -142,4 +143,4 @@ export default connect((state: any) => {
     searchValue: state.filters.searchValue,
     status: state.multiOperations.status,
   };
-}, { changeSearchValue, resetDocumentsFilters })(ResultsWindow);
+}, { changeSearchValue, resetDocumentsFilters, selectAllDocuments, unselectAllDocuments})(ResultsWindow);
