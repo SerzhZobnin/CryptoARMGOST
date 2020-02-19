@@ -20,10 +20,10 @@ import {
   activeSetting, changeDefaultSettings, deleteSetting, saveSettings,
 } from "../../AC/settingsActions";
 import {
-  DECRYPT, DSS_ACTIONS, ENCRYPT, GOST_28147, GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
-  LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
-  LOCATION_SETTINGS_CONFIG,
-  LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
+  ARCHIVE, DECRYPT, DSS_ACTIONS, ENCRYPT, GOST_28147, GOST_R3412_2015_K, GOST_R3412_2015_M,
+  HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
+  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
+  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, USER_NAME, VERIFY,
 } from "../../constants";
 import { DEFAULT_ID, ISignParams } from "../../reducer/settings";
 import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
@@ -169,14 +169,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   render() {
     const { localize, locale } = this.context;
     const { activeFiles, isDocumentsReviewed, recipients, setting, settings, signer } = this.props;
-    const { file, saveSettingsWithNewName } = this.state;
+    const { isDirectOperations, file, saveSettingsWithNewName } = this.state;
 
     const disabledNavigate = this.isFilesFromSocket();
     const classDisabled = disabledNavigate ? "disabled" : "";
 
     return (
       <React.Fragment>
-        <div style={{ height: `calc(100vh - ${activeFiles && activeFiles.size && setting.operations.signing_operation ? "180px" : "140px"})` }}>
+        <div style={{ height: `calc(100vh - ${activeFiles && activeFiles.size && setting.operations.signing_operation && isDirectOperations ? "180px" : "140px"})` }}>
           <div style={{ height: "100%", overflow: "auto" }}>
             <div className="col s12">
               <div className="subtitle">Тип операций</div>
@@ -363,7 +363,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
         <div className="row fixed-bottom-rightcolumn center-align" style={{ bottom: "20px" }}>
           {
-            activeFiles && activeFiles.size && setting.operations.signing_operation ?
+            activeFiles && activeFiles.size && setting.operations.signing_operation && isDirectOperations ?
               <div className="col s12">
                 <div className="input-checkbox">
                   <input
@@ -433,7 +433,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
               <React.Fragment>
                 <div className="col s12">
-                  <a className={`btn-floating btn-large ${this.checkEnableOperationButton(SIGN) || this.checkEnableOperationButton(ENCRYPT) ? "" : "disabled"}`}
+                  <a className={`btn-floating btn-large ${this.checkEnableMultiOperations() ? "" : "disabled"}`}
                     style={{ width: "60%", backgroundColor: "#334294", lineHeight: "55px", borderRadius: "27.75px" }}
                     onClick={this.handleClickPerformOperations}
                   >
@@ -1577,6 +1577,40 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     recipients.forEach((recipient) => deleteRecipient(recipient.id));
   }
 
+  checkEnableMultiOperations = () => {
+    const { isDirectOperations } = this.state;
+    const { setting } = this.props;
+
+    if (isDirectOperations) {
+      let flag = true;
+      let operationsCount = 0;
+
+      setting.operations.map((value: boolean, operationKey: string) => {
+        if (value) {
+          operationsCount++;
+          let result = false;
+
+          if (operationKey === "signing_operation") {
+            result = this.checkEnableOperationButton(SIGN);
+          } else if (operationKey === "encryption_operation") {
+            result = this.checkEnableOperationButton(ENCRYPT);
+          } else if (operationKey === "archivation_operation") {
+            result = this.checkEnableOperationButton(ARCHIVE);
+          }
+
+          flag = flag && result;
+        }
+      });
+
+      flag = operationsCount ? flag : false;
+
+      return flag;
+    } else {
+      return this.checkEnableOperationButton(UNSIGN) ||
+        this.checkEnableOperationButton(DECRYPT);
+    }
+  }
+
   checkEnableOperationButton = (operation: string) => {
     const { activeFilesArr, isDocumentsReviewed, filesInTransactionList, signer, recipients } = this.props;
 
@@ -1636,6 +1670,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
         return true;
 
+      case ARCHIVE:
       case REMOVE:
         return true;
 
