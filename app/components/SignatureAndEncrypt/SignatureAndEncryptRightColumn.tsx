@@ -167,7 +167,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     return (
       <React.Fragment>
         <div style={{ height: `calc(100vh - ${activeFiles && activeFiles.size && setting.operations.signing_operation ? "180px" : "140px"})` }}>
-          <div className="add-certs" style={{ height: "100%" }}>
+          <div style={{ height: "100%", overflow: "auto" }}>
             <div className="col s10">
               <div className="subtitle">Параметры операций</div>
               <hr />
