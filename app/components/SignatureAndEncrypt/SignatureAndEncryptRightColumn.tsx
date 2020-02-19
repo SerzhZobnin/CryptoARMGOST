@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { OrderedMap } from "immutable";
+import { Map, OrderedMap } from "immutable";
 import * as path from "path";
 import PropTypes, { any } from "prop-types";
 import React from "react";
@@ -1580,12 +1580,15 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   checkEnableMultiOperations = () => {
     const { isDirectOperations } = this.state;
     const { setting } = this.props;
+    const { operations } = setting;
+
+    const toperations = Map(operations);
 
     if (isDirectOperations) {
       let flag = true;
       let operationsCount = 0;
 
-      setting.operations.map((value: boolean, operationKey: string) => {
+      toperations.map((value: boolean, operationKey: string) => {
         if (value) {
           operationsCount++;
           let result = false;
