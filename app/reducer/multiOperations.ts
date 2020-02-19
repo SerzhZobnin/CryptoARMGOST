@@ -122,6 +122,18 @@ const getFilesArray = (oMap: any) => {
         files.push(v.encryption_operation.out);
       }
     }
+
+    if (v.decryption_operation && v.decryption_operation.result && v.decryption_operation.out) {
+      if (!files.find((file) => file.id === v.decryption_operation.out.id)) {
+        files.push(v.decryption_operation.out);
+      }
+    }
+
+    if (v.unsign_operation && v.unsign_operation.result && v.unsign_operation.out) {
+      if (!files.find((file) => file.id === v.unsign_operation.out.id)) {
+        files.push(v.unsign_operation.out);
+      }
+    }
   });
 
   return files;

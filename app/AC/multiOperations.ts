@@ -248,11 +248,17 @@ export function multiReverseOperation(
 
     let packageResult = true;
     const reverseResult: any = {};
-    const reverseFiles: any = {};
+    let reverseFiles: any = {};
 
     setTimeout(async () => {
       files.forEach((file: any) => {
-        reverseFiles[file.id] = { original: file.toJS() };
+        const jsObjFile = file.toJS();
+
+        reverseFiles[file.id] = { original: { ...jsObjFile, originalId: jsObjFile.id } };
+      });
+
+      files.forEach((file: any) => {
+        reverseFiles = reverseOperations(file, reverseFiles);
       });
 
       reverseResult.files = reverseFiles;
@@ -268,6 +274,71 @@ export function multiReverseOperation(
     }, 0);
   };
 }
+
+const reverseOperations = (file: any, reverseFiles: any) => {
+  if (file) {
+    if (file.extension === "enc") {
+      const newPath = trustedEncrypts.decryptFile(file.fullpath, "");
+      const currentId = file.originalId ? file.originalId : file.id;
+
+      if (newPath) {
+        const newFileProps = { ...getFileProps(newPath), originalId: file.id };
+
+        reverseFiles[currentId] = {
+          ...reverseFiles[currentId],
+          decryption_operation: {
+            out: {
+              ...newFileProps,
+            },
+            result: true,
+          },
+        };
+
+        if (newFileProps.extension === "enc" || newFileProps.extension === "sig") {
+          reverseOperations(newFileProps, reverseFiles);
+        }
+      } else {
+        reverseFiles[currentId] = {
+          ...reverseFiles[currentId],
+          decryption_operation: {
+            result: false,
+          },
+        };
+      }
+    } else if (file.extension === "sig") {
+      const newPath = signs.unSign(file.fullpath, "");
+      const currentId = file.originalId ? file.originalId : file.id;
+
+      if (newPath) {
+        const newFileProps = { ...getFileProps(newPath), originalId: file.id };
+
+        reverseFiles[currentId] = {
+          ...reverseFiles[currentId],
+          unsign_operation: {
+            out: {
+              ...newFileProps,
+            },
+            result: true,
+          },
+        };
+
+        if (newFileProps.extension === "enc" || newFileProps.extension === "sig") {
+          reverseOperations(newFileProps, reverseFiles);
+        }
+      } else {
+        reverseFiles[currentId] = {
+          ...reverseFiles[currentId],
+          unsign_operation: {
+            result: false,
+          },
+        };
+      }
+    }
+    return reverseFiles;
+  } else {
+    return reverseFiles;
+  }
+};
 
 const getFileProps = (fullpath: string) => {
   const stat = fs.statSync(fullpath);
