@@ -12,6 +12,7 @@ import { mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
 import FileSelector from "../Files/FileSelector";
 import Modal from "../Modal";
+import ProgressBars from "../ProgressBars";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 import SignatureAndEncryptRightColumn from "./SignatureAndEncryptRightColumn";
 
@@ -25,6 +26,7 @@ interface ISignatureAndEncryptWindowProps {
   loadingFiles: any;
   files: any;
   method: string;
+  operationsPerforming: boolean;
   packageSignResult: any;
   removeAllRemoteFiles: () => void;
   signatures: any;
@@ -114,11 +116,15 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
   render() {
     const { localize, locale } = this.context;
     const { fileSignatures, file, showSignatureInfo } = this.state;
-    const { isDefaultFilters } = this.props;
+    const { isDefaultFilters, operationsPerforming } = this.props;
 
     const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
     const disabledNavigate = this.isFilesFromSocket();
     const classDisabled = disabledNavigate ? "disabled" : "";
+
+    if (operationsPerforming) {
+      return <ProgressBars />;
+    }
 
     return (
       <div className="content-noflex">
@@ -340,6 +346,7 @@ export default connect((state) => {
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     method: state.remoteFiles.method,
+    operationsPerforming: state.multiOperations.performing,
     packageSignResult: state.signatures.packageSignResult,
     signatures,
     signedPackage: state.signatures.signedPackage,
