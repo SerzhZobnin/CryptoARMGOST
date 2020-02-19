@@ -1,8 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
+import { push } from "react-router-redux";
 import {
   BASE64, DER, GOST_28147,
   GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
+  LOCATION_RESULTS_MULTI_OPERATIONS,
   MULTI_DIRECT_OPERATION,
   MULTI_REVERSE_OPERATION,
   SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
@@ -231,6 +233,7 @@ export function multiDirectOperation(
         type: MULTI_DIRECT_OPERATION + SUCCESS,
       });
 
+      dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
     }, 0);
   };
 }
