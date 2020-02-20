@@ -138,14 +138,16 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
       const results = filesMap.get(originalFile.id);
       let flag = true;
 
-      operations.map((value: boolean, key: string) => {
+      operations.map((value: boolean, operationKey: string) => {
         if (value) {
-          const result = results[key];
+          if (operationKey === "signing_operation" || operationKey === "encryption_operation" || operationKey === "archivation_operation") {
+            const result = results[operationKey];
 
-          if (result) {
-            flag = flag && result.result;
-          } else {
-            flag = false;
+            if (result) {
+              flag = flag && result.result;
+            } else {
+              flag = false;
+            }
           }
         }
       });
@@ -217,7 +219,7 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
             operationsArrSorted.unshift({ value, key: operationKey });
           } else if (operationKey === "encryption_operation") {
             operationsArrSorted.push({ value, key: operationKey });
-          } else {
+          } else if (operationKey === "archivation_operation") {
             operationsArrSorted.push({ value, key: operationKey });
           }
         }

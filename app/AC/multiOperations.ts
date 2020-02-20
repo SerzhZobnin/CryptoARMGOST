@@ -3,7 +3,7 @@ import * as path from "path";
 import { push } from "react-router-redux";
 import * as unzipper from "unzipper";
 import {
-  BASE64, DER, GOST_28147,
+  BASE64, DEFAULT_DOCUMENTS_PATH, DEFAULT_TEMP_PATH, DER, GOST_28147,
   GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
   LOCATION_RESULTS_MULTI_OPERATIONS,
   MULTI_DIRECT_OPERATION,
@@ -78,13 +78,19 @@ export function multiDirectOperation(
 
         files.forEach((file: IFile) => {
           let newPath = "";
+          const newoutfolder = archivation_operation ? DEFAULT_TEMP_PATH : save_result_to_folder ? outfolder : "";
+
           if (file.fullpath.split(".").pop() === "sig") {
-            newPath = signs.resignFile(file.fullpath, signer, policies, params, format, outfolder);
+            newPath = signs.resignFile(file.fullpath, signer, policies, params, format, newoutfolder);
           } else {
-            newPath = signs.signFile(file.fullpath, signer, policies, params, format, outfolder);
+            newPath = signs.signFile(file.fullpath, signer, policies, params, format, newoutfolder);
           }
 
           if (newPath) {
+            if (!archivation_operation && save_copy_to_documents) {
+              fs.copyFileSync(newPath, path.join(DEFAULT_DOCUMENTS_PATH, path.basename(newPath)));
+            }
+
             const newFileProps = getFileProps(newPath);
 
             signedFiles.push({ ...newFileProps, originalId: file.id });
@@ -117,7 +123,13 @@ export function multiDirectOperation(
       let archivedFiles: any[] = [];
 
       if (archivation_operation) {
-        archiveName = await archiveFiles(signedFiles, outfolder);
+        const newoutfolder = encryption_operation ? DEFAULT_TEMP_PATH : save_result_to_folder ? outfolder : "";
+
+        archiveName = await archiveFiles(signedFiles, newoutfolder);
+        if (!encryption_operation && save_copy_to_documents) {
+          fs.copyFileSync(archiveName, path.join(DEFAULT_DOCUMENTS_PATH, path.basename(archiveName)));
+        }
+
         archivedFiles = [getFileProps(archiveName)];
 
         const newFileProps = getFileProps(archiveName);
@@ -162,11 +174,17 @@ export function multiDirectOperation(
           format = trusted.DataFormat.DER;
         }
 
+        const newoutfolder = archivation_operation || signing_operation ? DEFAULT_TEMP_PATH : save_result_to_folder ? outfolder : "";
+
         archivedFiles.forEach((file) => {
-          const newPath = trustedEncrypts.encryptFile(file.fullpath, recipients, policies, encAlg, format, outfolder);
+          const newPath = trustedEncrypts.encryptFile(file.fullpath, recipients, policies, encAlg, format, newoutfolder);
           const currentId = file.originalId ? file.originalId : file.id;
 
           if (newPath) {
+            if (save_copy_to_documents) {
+              fs.copyFileSync(newPath, path.join(DEFAULT_DOCUMENTS_PATH, path.basename(newPath)));
+            }
+
             const newFileProps = getFileProps(newPath);
 
             encryptedFiles.push(newFileProps);
@@ -347,12 +365,12 @@ const reverseOperations = (file: any, reverseFiles: any) => {
 };
 
 async function uzipAndWriteStream(file: any, reverseFiles: any) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const currentId = file.originalId ? file.originalId : file.id;
 
     fs.createReadStream(file.fullpath)
       .pipe(unzipper.Parse())
-      .on("entry", function(entry, e, cb = (reverseFiles: any) => {
+      .on("entry", function (entry, e, cb = (reverseFiles: any) => {
         resolve(reverseFiles);
       }) {
         const fileName = entry.path;
