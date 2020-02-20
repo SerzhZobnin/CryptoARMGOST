@@ -168,6 +168,7 @@
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
+    "@types/unzipper": "^0.10.2",
     "babelify": "^7.3.0",
     "browserify": "^16.2.3",
     "electron-debug": "^1.1.0",

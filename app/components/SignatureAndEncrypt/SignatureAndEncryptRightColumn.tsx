@@ -704,7 +704,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (isDirectOperations) {
-    multiDirectOperation(activeFilesArr, setting, sinerCert, recipients);
+      multiDirectOperation(activeFilesArr, setting, sinerCert, recipients);
     } else {
       multiReverseOperation(activeFilesArr);
     }
@@ -1616,7 +1616,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       return flag;
     } else {
       return this.checkEnableOperationButton(UNSIGN) ||
-        this.checkEnableOperationButton(DECRYPT);
+        this.checkEnableOperationButton(DECRYPT) ||
+        this.checkEnableOperationButton(ARCHIVE);
     }
   }
 

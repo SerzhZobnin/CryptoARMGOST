@@ -134,6 +134,12 @@ const getFilesArray = (oMap: any) => {
         files.push(v.unsign_operation.out);
       }
     }
+
+    if (v.unzip_operation && v.unzip_operation.result && v.unzip_operation.out) {
+      if (!files.find((file) => file.id === v.unzip_operation.out.id)) {
+        files.push(v.unzip_operation.out);
+      }
+    }
   });
 
   return files;

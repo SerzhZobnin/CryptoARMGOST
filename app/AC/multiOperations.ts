@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { push } from "react-router-redux";
+import * as unzipper from "unzipper";
 import {
   BASE64, DER, GOST_28147,
   GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
@@ -258,7 +259,7 @@ export function multiReverseOperation(
       });
 
       files.forEach((file: any) => {
-        reverseFiles = reverseOperations(file, reverseFiles);
+        reverseFiles = reverseOperations(file, reverseFiles, reverseResult);
       });
 
       reverseResult.files = reverseFiles;
@@ -333,12 +334,52 @@ const reverseOperations = (file: any, reverseFiles: any) => {
           },
         };
       }
-    }
+    } /*else if (file.extension === "zip") {
+      setTimeout(async () => {
+        reverseFiles = await uzipAndWriteStream(file, reverseFiles);
+      });
+    }*/
+
     return reverseFiles;
   } else {
     return reverseFiles;
   }
 };
+
+async function uzipAndWriteStream(file: any, reverseFiles: any) {
+  return new Promise(function(resolve, reject) {
+    const currentId = file.originalId ? file.originalId : file.id;
+
+    fs.createReadStream(file.fullpath)
+      .pipe(unzipper.Parse())
+      .on("entry", function(entry, e, cb = (reverseFiles: any) => {
+        resolve(reverseFiles);
+      }) {
+        const fileName = entry.path;
+
+        entry.pipe(fs.createWriteStream(path.join("D://outzip2", fileName))
+          .on("finish", () => {
+            const newFileProps = { ...getFileProps(path.join("D://outzip2", fileName)), originalId: file.id };
+
+            reverseFiles[currentId] = {
+              ...reverseFiles[currentId],
+              unzip_operation: {
+                out: {
+                  ...newFileProps,
+                },
+                result: true,
+              },
+            };
+
+            if (newFileProps.extension === "enc" || newFileProps.extension === "sig") {
+              reverseOperations(newFileProps, reverseFiles);
+            }
+
+            cb();
+          }));
+      });
+  });
+}
 
 const getFileProps = (fullpath: string) => {
   const stat = fs.statSync(fullpath);
