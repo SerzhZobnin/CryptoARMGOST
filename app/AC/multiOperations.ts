@@ -18,7 +18,7 @@ import {
 import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import * as trustedEncrypts from "../trusted/encrypt";
 import * as signs from "../trusted/sign";
-import { extFile, md5 } from "../utils";
+import { extFile, md5, fileExists } from "../utils";
 import { filePackageSelect, IFile, removeAllFiles } from "./index";
 
 interface ISignParams {
@@ -88,7 +88,11 @@ export function multiDirectOperation(
 
           if (newPath) {
             if (!archivation_operation && save_copy_to_documents) {
-              fs.copyFileSync(newPath, path.join(DEFAULT_DOCUMENTS_PATH, path.basename(newPath)));
+              const copyUri = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(newPath));
+
+              if (!fileExists(copyUri)) {
+                fs.copyFileSync(newPath, copyUri);
+              }
             }
 
             const newFileProps = getFileProps(newPath);
@@ -127,7 +131,11 @@ export function multiDirectOperation(
 
         archiveName = await archiveFiles(signedFiles, newoutfolder);
         if (!encryption_operation && save_copy_to_documents) {
-          fs.copyFileSync(archiveName, path.join(DEFAULT_DOCUMENTS_PATH, path.basename(archiveName)));
+          const copyUri = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(archiveName));
+
+          if (!fileExists(copyUri)) {
+            fs.copyFileSync(archiveName, copyUri);
+          }
         }
 
         archivedFiles = [getFileProps(archiveName)];
@@ -182,7 +190,11 @@ export function multiDirectOperation(
 
           if (newPath) {
             if (save_copy_to_documents) {
-              fs.copyFileSync(newPath, path.join(DEFAULT_DOCUMENTS_PATH, path.basename(newPath)));
+              const copyUri = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(newPath));
+
+              if (!fileExists(copyUri)) {
+                fs.copyFileSync(newPath, copyUri);
+              }
             }
 
             const newFileProps = getFileProps(newPath);
@@ -352,11 +364,11 @@ const reverseOperations = (file: any, reverseFiles: any) => {
           },
         };
       }
-    } /*else if (file.extension === "zip") {
+    } else if (file.extension === "zip") {
       setTimeout(async () => {
         reverseFiles = await uzipAndWriteStream(file, reverseFiles);
       });
-    }*/
+    }
 
     return reverseFiles;
   } else {
@@ -375,9 +387,9 @@ async function uzipAndWriteStream(file: any, reverseFiles: any) {
       }) {
         const fileName = entry.path;
 
-        entry.pipe(fs.createWriteStream(path.join("D://outzip2", fileName))
+        entry.pipe(fs.createWriteStream(path.join(DEFAULT_TEMP_PATH, fileName))
           .on("finish", () => {
-            const newFileProps = { ...getFileProps(path.join("D://outzip2", fileName)), originalId: file.id };
+            const newFileProps = { ...getFileProps(path.join(DEFAULT_TEMP_PATH, fileName)), originalId: file.id };
 
             reverseFiles[currentId] = {
               ...reverseFiles[currentId],
@@ -389,7 +401,7 @@ async function uzipAndWriteStream(file: any, reverseFiles: any) {
               },
             };
 
-            if (newFileProps.extension === "enc" || newFileProps.extension === "sig") {
+            if (newFileProps.extension === "enc" || newFileProps.extension === "sig" || newFileProps.extension === "zip") {
               reverseOperations(newFileProps, reverseFiles);
             }
 

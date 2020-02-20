@@ -1,4 +1,6 @@
+import * as fs from "fs";
 import { Map } from "immutable";
+import * as path from "path";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
@@ -9,10 +11,10 @@ import {
   unselectAllDocuments,
 } from "../../AC/documentsActions";
 import {
-  LOCATION_MAIN, REMOVE, SIGN,
+  DEFAULT_DOCUMENTS_PATH, LOCATION_MAIN, REMOVE, SIGN,
 } from "../../constants";
 import { originalSelector, selectedOperationsResultsSelector } from "../../selectors/operationsResultsSelector";
-import { bytesToSize, mapToArr } from "../../utils";
+import { bytesToSize, fileExists, mapToArr } from "../../utils";
 import FileIcon from "../Files/FileIcon";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 
@@ -111,7 +113,7 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
             <div className="col s12 svg_icon_text">{localize("Documents.open_in_sign_and_encrypt", locale)}</div>
           </div>
 
-          <div className={`col s5 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleClickDelete}>
+          <div className={`col s5 waves-effect waves-cryptoarm ${this.checkEnableOperationButton(REMOVE) ? "" : "disabled_docs"}`} onClick={this.handleSaveCopy}>
             <div className="col s12 svg_icon">
               <a data-position="bottom"
                 data-tooltip={localize("Sign.sign_and_verify", locale)}>
@@ -327,8 +329,19 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
     }
   }
 
-  handleClickDelete = () => {
-    this.props.handleClickDelete();
+  handleSaveCopy = () => {
+    const { documents } = this.props;
+
+    documents.forEach((doc: any) => {
+      const newFileUri = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(doc.fullpath));
+
+      if (!fileExists(newFileUri)) {
+        fs.copyFileSync(doc.fullpath, newFileUri);
+      }
+    });
+
+    $(".toast-cert_import_failed").remove();
+    Materialize.toast("Файлы скопированы в Документы", 2000, "toast-cert_import_failed");
   }
 }
 
