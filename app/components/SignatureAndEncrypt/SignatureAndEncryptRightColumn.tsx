@@ -249,33 +249,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
                   <div className="row" />
 
-                  {
-                    setting.changed ?
-                      <React.Fragment>
-                        <div className="col s12">
-                          <CheckBoxWithLabel
-                            disabled={false}
-                            onClickCheckBox={this.toggleSaveSettingsWithNewName}
-                            isChecked={saveSettingsWithNewName}
-                            elementId="new_time"
-                            title={"Сохранить параметры с новым именем"} />
-                        </div>
-
-                        <div className="row" />
-
-                        <div className="col s12">
-                          <a className="btn btn-outlined waves-effect waves-light"
-                            onClick={this.handleSaveSettings}
-                            style={{ width: "100%" }}>
-                            {localize("Settings.save", locale)}
-                          </a>
-                        </div>
-
-                        <div className="row" />
-                      </React.Fragment>
-                      : null
-                  }
-
                   <div className="col s12">
                     <div className="subtitle">Операции</div>
                     <hr />
@@ -352,8 +325,37 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
                   <div className="row" />
 
-                  <div className="col s12">
+                  <div className="col s12" style={{ position: "relative" }}>
                     < AllSettings />
+                  </div>
+
+                  <div className="col s12" style={{ position: "relative" }}>
+                    {
+                      setting.changed ?
+                        <React.Fragment>
+                          <div className="col s12">
+                            <CheckBoxWithLabel
+                              disabled={false}
+                              onClickCheckBox={this.toggleSaveSettingsWithNewName}
+                              isChecked={saveSettingsWithNewName}
+                              elementId="new_time"
+                              title={"Сохранить параметры с новым именем"} />
+                          </div>
+
+                          <div className="row" />
+
+                          <div className="col s12">
+                            <a className="btn btn-outlined waves-effect waves-light"
+                              onClick={this.handleSaveSettings}
+                              style={{ width: "100%" }}>
+                              {localize("Settings.save", locale)}
+                            </a>
+                          </div>
+
+                          <div className="row" />
+                        </React.Fragment>
+                        : null
+                    }
                   </div>
                 </React.Fragment>
                 : null
