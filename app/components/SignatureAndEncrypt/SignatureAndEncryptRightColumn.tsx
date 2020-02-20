@@ -182,7 +182,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               <div className="subtitle">Тип операций</div>
               <hr />
             </div>
-            <div className="row">
+            <div className="row nobottom">
               <div className="col s12">
                 <form action="#">
                   <p className="col s6">
