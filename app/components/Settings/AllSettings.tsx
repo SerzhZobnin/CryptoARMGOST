@@ -51,7 +51,7 @@ class AllSettings extends React.Component<any, {}> {
       outDuration: 225,
     });
 
-    $(document).on("ready", function() {
+    $(document).on("ready", function () {
       Materialize.updateTextFields();
     });
 
@@ -100,98 +100,115 @@ class AllSettings extends React.Component<any, {}> {
       <div className="row">
         <div className="row" />
 
-        <div className="row">
-          <div className="subtitle">
-            {localize("Sign.sign_setting", locale)}
-            <hr />
-          </div>
+        {
+          settings.operations.signing_operation ?
+            <React.Fragment>
+              <div className="row">
+                <div className="subtitle">
+                  {localize("Sign.sign_setting", locale)}
+                  <hr />
+                </div>
 
-          <div className="col s12">
-            <SignatureStandardSelector
-              value={signatureStandard}
-              handleChange={this.handleSignatureStandardChange}
-              disabled={signer && (signer.service || signer.dssUserID) || !(TSP_OCSP_ENABLED)} />
+                <div className="col s12">
+                  <SignatureStandardSelector
+                    value={signatureStandard}
+                    handleChange={this.handleSignatureStandardChange}
+                    disabled={signer && (signer.service || signer.dssUserID) || !(TSP_OCSP_ENABLED)} />
 
-            <SignatureTypeSelector
-              detached={isDetached}
-              handleChange={this.handleDetachedChange}
-              disabled={disabled} />
+                  <SignatureTypeSelector
+                    detached={isDetached}
+                    handleChange={this.handleDetachedChange}
+                    disabled={disabled} />
 
-            <EncodingTypeSelector
-              EncodingValue={encoding}
-              handleChange={this.handleEncodingChange} />
-          </div>
+                  <EncodingTypeSelector
+                    EncodingValue={encoding}
+                    handleChange={this.handleEncodingChange} />
+                </div>
 
-          <div className="col s12">
-            <CheckBoxWithLabel
-              disabled={disabled || signatureStandard === SignatureStandard.CADES}
-              onClickCheckBox={this.handleTimeClick}
-              isChecked={signatureStandard === SignatureStandard.CADES ? true : settings.sign.time}
-              elementId="sign_time"
-              title={localize("Sign.sign_time", locale)} />
+                <div className="col s12">
+                  <CheckBoxWithLabel
+                    disabled={disabled || signatureStandard === SignatureStandard.CADES}
+                    onClickCheckBox={this.handleTimeClick}
+                    isChecked={signatureStandard === SignatureStandard.CADES ? true : settings.sign.time}
+                    elementId="sign_time"
+                    title={localize("Sign.sign_time", locale)} />
 
-            <CheckBoxWithLabel
-              disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES || signer && (signer.service || signer.dssUserID)}
-              onClickCheckBox={this.handleTimestampOnSignClick}
-              isChecked={signatureStandard === SignatureStandard.CADES ? true : settings.sign.timestamp_on_sign}
-              elementId="set_timestamp_on_sign"
-              title={localize("Cades.set_timestamp_on_sign", locale)} />
+                  <CheckBoxWithLabel
+                    disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES || signer && (signer.service || signer.dssUserID)}
+                    onClickCheckBox={this.handleTimestampOnSignClick}
+                    isChecked={signatureStandard === SignatureStandard.CADES ? true : settings.sign.timestamp_on_sign}
+                    elementId="set_timestamp_on_sign"
+                    title={localize("Cades.set_timestamp_on_sign", locale)} />
 
-            <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
-              disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES || signer && (signer.service || signer.dssUserID)}
-              isChecked={signatureStandard === SignatureStandard.CADES ? false : settings.sign.timestamp_on_data}
-              elementId="set_timestamp_on_data"
-              title={localize("Cades.set_timestamp_on_data", locale)} />
-          </div>
-        </div>
+                  <CheckBoxWithLabel onClickCheckBox={this.handleTimestampClick}
+                    disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES || signer && (signer.service || signer.dssUserID)}
+                    isChecked={signatureStandard === SignatureStandard.CADES ? false : settings.sign.timestamp_on_data}
+                    elementId="set_timestamp_on_data"
+                    title={localize("Cades.set_timestamp_on_data", locale)} />
+                </div>
+              </div>
+            </React.Fragment>
+            : null
+        }
 
-        <div className="subtitle">
-          {localize("Encrypt.encrypt_setting", locale)}
-        </div>
-        <hr />
+        {
+          settings.operations.encryption_operation ?
+            <React.Fragment>
+              <div className="subtitle">
+                {localize("Encrypt.encrypt_setting", locale)}
+              </div>
+              <hr />
 
-        <div className="col s12">
-          <EncodingTypeSelector
-            EncodingValue={settings.encrypt.encoding}
-            handleChange={this.handleEncryptEncodingChange}
-            disabled={disabled}
-          />
+              <div className="col s12">
+                <EncodingTypeSelector
+                  EncodingValue={settings.encrypt.encoding}
+                  handleChange={this.handleEncryptEncodingChange}
+                  disabled={disabled}
+                />
 
-          {
-            isCsp5R2orHigh ?
-              <EncryptionAlgorithmSelector
-                disabled={disabled}
-                EncryptionValue={settings.encrypt.algorithm}
-                handleChange={this.handleEncryptAlgoritmChange} />
-              : null
-          }
+                {
+                  isCsp5R2orHigh ?
+                    <EncryptionAlgorithmSelector
+                      disabled={disabled}
+                      EncryptionValue={settings.encrypt.algorithm}
+                      handleChange={this.handleEncryptAlgoritmChange} />
+                    : null
+                }
 
-          <CheckBoxWithLabel
-            disabled={disabled}
-            onClickCheckBox={this.handleDeleteClick}
-            isChecked={settings.encrypt.delete}
-            elementId="delete_files"
-            title={localize("Encrypt.delete_files_after", locale)} />
+                <CheckBoxWithLabel
+                  disabled={disabled}
+                  onClickCheckBox={this.handleDeleteClick}
+                  isChecked={settings.encrypt.delete}
+                  elementId="delete_files"
+                  title={localize("Encrypt.delete_files_after", locale)} />
 
-        </div>
+              </div>
+            </React.Fragment>
+            : null
+        }
 
-        <div className="row" />
+        {
+          settings.operations.signing_operation ?
+            <React.Fragment>
+              <div className="subtitle">
+                {localize("Cades.service_tsp", locale)}
+              </div>
+              <hr />
 
-        <div className="subtitle">
-          {localize("Cades.service_tsp", locale)}
-        </div>
-        <hr />
+              <TspSettings />
 
-        <TspSettings />
+              <div className="subtitle">
+                {localize("Cades.service_ocsp", locale)}
+              </div>
+              <hr />
 
-        <div className="subtitle">
-          {localize("Cades.service_ocsp", locale)}
-        </div>
-        <hr />
+              <div className={classDisabledTspAndOcsp}>
+                <OcspSettings isCades={signatureStandard === SignatureStandard.CADES} />
+              </div>
+            </React.Fragment>
+            : null
+        }
 
-        <div className={classDisabledTspAndOcsp}>
-          <OcspSettings isCades={signatureStandard === SignatureStandard.CADES} />
-        </div>
       </div>
     );
   }

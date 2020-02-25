@@ -224,78 +224,95 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
             <Operations />
 
-            <div className="col s10">
-              <div className="subtitle">{localize("Sign.signer_cert", locale)}</div>
-              <hr />
-            </div>
-            <div className="col s2">
-              <div className="right import-col">
-                <a className="btn-floated" data-activates="dropdown-btn-signer">
-                  <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
-                </a>
-                <ul id="dropdown-btn-signer" className="dropdown-content">
-                  <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
-                    <li><a>Заменить</a></li>
-                  </Link>
-                  <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
-                </ul>
-              </div>
-            </div>
             {
-              (signer) ? <SignerInfo signer={signer} /> :
-                <div className="col s12">
-                  <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
-                    <a className="btn btn-outlined waves-effect waves-light"
-                      style={{ width: "100%" }}>
-                      {localize("Settings.Choose", locale)}
-                    </a>
-                  </Link>
-                </div>
+              setting.operations.reverse_operations ? null :
+                <React.Fragment>
+                  {
+                    setting.operations.signing_operation ?
+                      <React.Fragment>
+                        <div className="col s10">
+                          <div className="subtitle">{localize("Sign.signer_cert", locale)}</div>
+                          <hr />
+                        </div>
+                        <div className="col s2">
+                          <div className="right import-col">
+                            <a className="btn-floated" data-activates="dropdown-btn-signer">
+                              <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
+                            </a>
+                            <ul id="dropdown-btn-signer" className="dropdown-content">
+                              <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
+                                <li><a>Заменить</a></li>
+                              </Link>
+                              <li><a onClick={() => this.props.selectSignerCertificate(0)}>{localize("Common.clear", locale)}</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                        {
+                          (signer) ? <SignerInfo signer={signer} /> :
+                            <div className="col s12">
+                              <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE}>
+                                <a className="btn btn-outlined waves-effect waves-light"
+                                  style={{ width: "100%" }}>
+                                  {localize("Settings.Choose", locale)}
+                                </a>
+                              </Link>
+                            </div>
+                        }
+
+                        <div className="row" />
+                      </React.Fragment>
+                      : null
+                  }
+
+                  {
+                    setting.operations.encryption_operation ?
+                      <React.Fragment>
+                        <div className="col s10">
+                          <div className="subtitle">Сертификаты шифрования</div>
+                          <hr />
+                        </div>
+
+                        <div className={`col s2 ${classDisabled}`}>
+                          <div className="right import-col">
+                            <a className="btn-floated" data-activates="dropdown-btn-encrypt">
+                              <i className={`file-setting-item waves-effect material-icons secondary-content ${classDisabled}`}>more_vert</i>
+                            </a>
+                            <ul id="dropdown-btn-encrypt" className="dropdown-content">
+                              <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
+                                <li><a>{localize("Settings.add", locale)}</a></li>
+                              </Link>
+                              <li><a onClick={() => this.handleCleanRecipientsList()}>{localize("Common.clear", locale)}</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                        {
+                          (recipients && recipients.length) ?
+                            <div className={`col s12 ${classDisabled}`}>
+                              <RecipientsList
+                                disabled={disabledNavigate}
+                                recipients={recipients}
+                                handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)}
+                              />
+                            </div> :
+                            <div className={`col s12 ${classDisabled}`}>
+                              <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
+                                <a className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}
+                                  style={{ width: "100%" }}>
+                                  {localize("Settings.Choose", locale)}
+                                </a>
+                              </Link>
+                            </div>
+                        }
+
+                        <div className="row" />
+                      </React.Fragment> : null
+                  }
+
+                  <div className="col s12" style={{ position: "relative" }}>
+                    < AllSettings />
+                  </div>
+                </React.Fragment>
             }
-            <div className="row" />
-
-            <div className="col s10">
-              <div className="subtitle">Сертификаты шифрования</div>
-              <hr />
-            </div>
-
-            <div className={`col s2 ${classDisabled}`}>
-              <div className="right import-col">
-                <a className="btn-floated" data-activates="dropdown-btn-encrypt">
-                  <i className={`file-setting-item waves-effect material-icons secondary-content ${classDisabled}`}>more_vert</i>
-                </a>
-                <ul id="dropdown-btn-encrypt" className="dropdown-content">
-                  <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
-                    <li><a>{localize("Settings.add", locale)}</a></li>
-                  </Link>
-                  <li><a onClick={() => this.handleCleanRecipientsList()}>{localize("Common.clear", locale)}</a></li>
-                </ul>
-              </div>
-            </div>
-            {
-              (recipients && recipients.length) ?
-                <div className={`col s12 ${classDisabled}`}>
-                  <RecipientsList
-                    disabled={disabledNavigate}
-                    recipients={recipients}
-                    handleRemoveRecipient={(recipient) => this.props.deleteRecipient(recipient.id)}
-                  />
-                </div> :
-                <div className={`col s12 ${classDisabled}`}>
-                  <Link to={LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT}>
-                    <a className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}
-                      style={{ width: "100%" }}>
-                      {localize("Settings.Choose", locale)}
-                    </a>
-                  </Link>
-                </div>
-            }
-
-            <div className="row" />
-
-            <div className="col s12" style={{ position: "relative" }}>
-              < AllSettings />
-            </div>
 
             <div className="col s12" style={{ position: "relative" }}>
               {
