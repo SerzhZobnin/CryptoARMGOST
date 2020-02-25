@@ -18,8 +18,8 @@ import {
 import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import * as trustedEncrypts from "../trusted/encrypt";
 import * as signs from "../trusted/sign";
-import { extFile, md5, fileExists } from "../utils";
-import { filePackageSelect, IFile, removeAllFiles } from "./index";
+import { extFile, fileExists, md5 } from "../utils";
+import { filePackageDelete, IFile, removeAllFiles } from "./index";
 
 interface ISignParams {
   signModel: ISignModel;
@@ -42,6 +42,7 @@ export function multiDirectOperation(
     let packageResult = true;
     const directResult: any = {};
     const directFiles: any = {};
+    const filesId : any[] = [];
 
     setTimeout(async () => {
       const { operations, outfolder } = setting;
@@ -52,6 +53,7 @@ export function multiDirectOperation(
 
       files.forEach((file: any) => {
         directFiles[file.id] = { original: file.toJS() };
+        filesId.push(file.id);
       });
 
       directResult.operations = operations.toJS();
@@ -257,7 +259,7 @@ export function multiDirectOperation(
 
       directResult.files = directFiles;
 
-      dispatch(removeAllFiles());
+      dispatch(filePackageDelete(filesId));
 
       dispatch({
         payload: { status: packageResult, directResult },
