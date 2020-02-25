@@ -99,7 +99,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
         return `${localize("About.product_NAME", locale)} - ${head}`;
 
       case LOCATION_CONTAINERS:
-        return `${localize("About.product_NAME", locale)} - ${localize("Containers.containers", locale)}`;
+        return `${localize("About.product_NAME", locale)} - ${localize("Certificate.sidesubmenu_keys", locale)}`;
 
       case LOCATION_LICENSE:
         return `${localize("About.product_NAME", locale)} - ${localize("License.license", locale)}`;
