@@ -173,13 +173,6 @@ class AllSettings extends React.Component<any, {}> {
             elementId="delete_files"
             title={localize("Encrypt.delete_files_after", locale)} />
 
-          <CheckBoxWithLabel
-            disabled={disabled}
-            onClickCheckBox={this.handleArchiveClick}
-            isChecked={settings.encrypt.archive}
-            elementId="archive_files"
-            title={localize("Encrypt.archive_files_before", locale)} />
-
         </div>
 
         <div className="row" />
@@ -281,13 +274,6 @@ class AllSettings extends React.Component<any, {}> {
     const { changeDeleteFilesAfterEncrypt, settings } = this.props;
 
     changeDeleteFilesAfterEncrypt(!settings.encrypt.delete);
-  }
-
-  handleArchiveClick = () => {
-    // tslint:disable-next-line: no-shadowed-variable
-    const { changeArchiveFilesBeforeEncrypt, settings } = this.props;
-
-    changeArchiveFilesBeforeEncrypt(!settings.encrypt.archive);
   }
 
   handleEncryptAlgoritmChange = (value: string) => {
