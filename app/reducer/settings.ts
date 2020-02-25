@@ -13,6 +13,7 @@ import {
   CHANGE_TSP_URL, CHANGE_TSP_USE_PROXY, CREATE_SETTING, DELETE_RECIPIENT_CERTIFICATE,
   DELETE_SETTING, GOST_28147, REMOVE_ALL_CERTIFICATES, RESET_SETTING_CHANGES, RU,
   SAVE_SETTINGS, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_ARCHIVATION_OPERATION, TOGGLE_ENCRYPTION_OPERATION,
+  TOGGLE_REVERSE_OPERATIONS,
   TOGGLE_SAVE_COPY_TO_DOCUMENTS, TOGGLE_SAVE_RESULT_TO_FOLDER, TOGGLE_SAVE_TO_DOCUMENTS, TOGGLE_SIGNING_OPERATION,
 } from "../constants";
 import { fileExists, mapToArr, uuid } from "../utils";
@@ -94,6 +95,7 @@ export const OcspModel = Record({
 export const OperationsModel = Record({
   archivation_operation: false,
   encryption_operation: false,
+  reverse_operations: false,
   save_copy_to_documents: false,
   save_result_to_folder: false,
   signing_operation: false,
@@ -220,34 +222,78 @@ export default (settings = new DefaultReducerState(), action) => {
       settings = settings.set("default", payload.id);
       break;
 
+    case TOGGLE_REVERSE_OPERATIONS:
+      modifiedSettings = settings
+        .setIn(["entities", settings.active, "operations", "reverse_operations"], payload.reverseOperations);
+
+      if (payload.reverseOperations) {
+        modifiedSettings = modifiedSettings
+          .setIn(["entities", modifiedSettings.active, "operations", "signing_operation"], false)
+          .setIn(["entities", modifiedSettings.active, "operations", "archivation_operation"], false)
+          .setIn(["entities", modifiedSettings.active, "operations", "encryption_operation"], false)
+          .setIn(["entities", modifiedSettings.active, "operations", "save_copy_to_documents"], false)
+          .setIn(["entities", modifiedSettings.active, "operations", "save_result_to_folder"], false);
+      }
+      break;
+
     case TOGGLE_SIGNING_OPERATION:
       modifiedSettings = settings
         .setIn(["entities", settings.active, "operations", "signing_operation"], payload.signingOperation);
+
+      if (payload.signingOperation) {
+        modifiedSettings = modifiedSettings
+          .setIn(["entities", modifiedSettings.active, "operations", "reverse_operations"], false);
+      }
       break;
 
     case TOGGLE_ARCHIVATION_OPERATION:
       modifiedSettings = settings
         .setIn(["entities", settings.active, "operations", "archivation_operation"], payload.archivationOperation);
+
+      if (payload.archivationOperation) {
+        modifiedSettings = modifiedSettings
+          .setIn(["entities", modifiedSettings.active, "operations", "reverse_operations"], false);
+      }
       break;
 
     case TOGGLE_ENCRYPTION_OPERATION:
       modifiedSettings = settings
         .setIn(["entities", settings.active, "operations", "encryption_operation"], payload.encryptionOperation);
+
+      if (payload.encryptionOperation) {
+        modifiedSettings = modifiedSettings
+          .setIn(["entities", modifiedSettings.active, "operations", "reverse_operations"], false);
+      }
       break;
 
     case TOGGLE_SAVE_COPY_TO_DOCUMENTS:
       modifiedSettings = settings
         .setIn(["entities", settings.active, "operations", "save_copy_to_documents"], payload.saveCopyToDocuments);
+
+      if (payload.saveCopyToDocuments) {
+        modifiedSettings = modifiedSettings
+          .setIn(["entities", modifiedSettings.active, "operations", "reverse_operations"], false);
+      }
       break;
 
     case TOGGLE_SAVE_TO_DOCUMENTS:
       modifiedSettings = settings
         .setIn(["entities", settings.active, "saveToDocuments"], payload.saveToDocuments);
+
+      if (payload.saveToDocuments) {
+        modifiedSettings = modifiedSettings
+          .setIn(["entities", modifiedSettings.active, "operations", "reverse_operations"], false);
+      }
       break;
 
     case TOGGLE_SAVE_RESULT_TO_FOLDER:
       modifiedSettings = settings
         .setIn(["entities", settings.active, "operations", "save_result_to_folder"], payload.saveResultToFolder);
+
+      if (payload.saveResultToFolder) {
+        modifiedSettings = modifiedSettings
+          .setIn(["entities", modifiedSettings.active, "operations", "reverse_operations"], false);
+      }
       break;
 
     case CHANGE_SETTINGS_NAME:
@@ -411,6 +457,7 @@ export default (settings = new DefaultReducerState(), action) => {
     || type === ADD_RECIPIENT_CERTIFICATE
     || type === DELETE_RECIPIENT_CERTIFICATE
     || type === CHANGE_SIGNATURE_STANDARD
+    || type === TOGGLE_REVERSE_OPERATIONS
     || type === TOGGLE_SIGNING_OPERATION
     || type === TOGGLE_ARCHIVATION_OPERATION
     || type === TOGGLE_ENCRYPTION_OPERATION

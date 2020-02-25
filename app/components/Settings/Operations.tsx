@@ -2,8 +2,8 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import {
-  changeOutfolder, toggleArchivationOperation, toggleEncryptionOperation, toggleSaveCopyToDocuments,
-  toggleSaveResultToFolder, toggleSigningOperation,
+  changeOutfolder, toggleArchivationOperation, toggleEncryptionOperation, toggleReverseOperations,
+  toggleSaveCopyToDocuments, toggleSaveResultToFolder, toggleSigningOperation,
 } from "../../AC/settingsActions";
 import { DEFAULT_DOCUMENTS_PATH } from "../../constants";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
@@ -17,6 +17,7 @@ interface IOperationsProps {
   toggleSigningOperation: (value: boolean) => void;
   toggleArchivationOperation: (value: boolean) => void;
   toggleEncryptionOperation: (value: boolean) => void;
+  toggleReverseOperations: (value: boolean) => void;
   toggleSaveCopyToDocuments: (value: boolean) => void;
   toggleSaveResultToFolder: (value: boolean) => void;
 }
@@ -35,10 +36,18 @@ class Operations extends React.Component<IOperationsProps, {}> {
     const { localize, locale } = this.context;
     const { settings } = this.props;
     const { operations } = settings;
-    const { archivation_operation, encryption_operation, save_copy_to_documents, save_result_to_folder, signing_operation } = operations;
+    const { archivation_operation, encryption_operation, reverse_operations,
+      save_copy_to_documents, save_result_to_folder, signing_operation } = operations;
 
     return (
       <div className="row">
+        <div className="col s12">
+          <CheckBoxWithLabel
+            isChecked={reverse_operations}
+            elementId="reverse_operations"
+            onClickCheckBox={this.handleReverseOperationsClick}
+            title={localize("Operations.reverse_operations", locale)} />
+        </div>
         <div className="col s12">
           <CheckBoxWithLabel
             isChecked={signing_operation}
@@ -97,6 +106,13 @@ class Operations extends React.Component<IOperationsProps, {}> {
     }
   }
 
+  handleReverseOperationsClick = () => {
+    // tslint:disable-next-line: no-shadowed-variable
+    const { toggleReverseOperations, settings } = this.props;
+
+    toggleReverseOperations(!settings.operations.reverse_operations);
+  }
+
   handleSigningOperationClick = () => {
     // tslint:disable-next-line: no-shadowed-variable
     const { toggleSigningOperation, settings } = this.props;
@@ -146,5 +162,5 @@ export default connect((state) => {
   };
 }, {
   changeOutfolder, toggleArchivationOperation, toggleEncryptionOperation,
-  toggleSaveCopyToDocuments, toggleSaveResultToFolder, toggleSigningOperation,
+  toggleReverseOperations, toggleSaveCopyToDocuments, toggleSaveResultToFolder, toggleSigningOperation,
 })(Operations);

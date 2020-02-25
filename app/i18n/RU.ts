@@ -602,6 +602,7 @@ export default {
     failed: "Ошибка",
     last_operation_result: "Последняя операция",
     results: "Результаты операций",
+    reverse_operations: "Расшифрование, разархивирование, снятие подписи",
     save_copy_to_documents: "Сохранить копию в Документах",
     save_result_to_folder: "Сохранить результат в каталоге",
     signing_operation: "Подпись",
