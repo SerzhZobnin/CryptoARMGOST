@@ -85,8 +85,9 @@ class Operations extends React.Component<IOperationsProps, {}> {
             title={localize("Operations.save_result_to_folder", locale)} />
         </div>
 
-        <div className="col s12">
+        <div className="col s11">
           <SelectFolder
+            disabled={!save_result_to_folder}
             directory={settings.outfolder}
             viewDirect={this.handleOutfolderChange}
             openDirect={this.addDirect.bind(this)}
