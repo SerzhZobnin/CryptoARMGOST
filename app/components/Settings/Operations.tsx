@@ -78,7 +78,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
 
         <div className="col s12">
           <SelectFolder
-            directory={settings.saveToDocuments ? DEFAULT_DOCUMENTS_PATH : settings.outfolder}
+            directory={settings.outfolder}
             viewDirect={this.handleOutfolderChange}
             openDirect={this.addDirect.bind(this)}
           />
