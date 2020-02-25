@@ -25,9 +25,6 @@ import * as fileManager from "./Files/fileManager";
 import MenuBar from "./MenuBar";
 import ResultsWindow from "./MultiOperations/ResultsWindow";
 import ServiceWindow from "./Services/ServiceWindow";
-import SettingsConfig from "./Settings/SettingsConfig";
-import SettingsSelect from "./Settings/SettingsSelect";
-import SettingsWindow from "./Settings/SettingsWindow";
 import SignAndEncryptWindow from "./SignatureAndEncrypt/SignatureAndEncryptWindow";
 
 interface IAppProps {
@@ -66,9 +63,6 @@ class App extends React.Component<IAppProps, {}> {
           <Route path={LOCATION_ABOUT} component={AboutWindow} />
           <Route path={LOCATION_DOCUMENTS} component={DocumentsWindow} />
           <Route path={LOCATION_EVENTS} component={EventsWindow} />
-          <Route path={LOCATION_SETTINGS} component={SettingsWindow} />
-          <Route path={LOCATION_SETTINGS_SELECT} component={SettingsSelect} />
-          <Route path={LOCATION_SETTINGS_CONFIG} component={SettingsConfig} />
           <Route path={LOCATION_SERVICES} component={ServiceWindow} />
           <Route path={LOCATION_RESULTS_MULTI_OPERATIONS} component={ResultsWindow} />
         </React.Fragment>

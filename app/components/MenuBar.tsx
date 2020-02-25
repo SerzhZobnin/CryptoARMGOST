@@ -285,7 +285,6 @@ export default connect((state, ownProps) => {
     isArchiveLog: state.events.isArchive,
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     location: ownProps.location,
-    saveToDocuments: state.settings.getIn(["entities", state.settings.default]).saveToDocuments,
     settingsName: state.settings.getIn(["entities", state.settings.default]).name,
     settings: state.settings,
     signSettings: state.settings.getIn(["entities", state.settings.default]).sign,
