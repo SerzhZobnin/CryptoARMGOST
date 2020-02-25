@@ -32,9 +32,15 @@ class TspSettings extends React.Component<ITspSettingsProps, {}> {
   }
 
   componentDidMount() {
-    $(document).on("ready", function () {
+    $(document).on("ready", function() {
       Materialize.updateTextFields();
     });
+
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
   }
 
   componentDidUpdate() {

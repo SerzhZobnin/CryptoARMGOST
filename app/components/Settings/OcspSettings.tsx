@@ -36,6 +36,12 @@ class OcspSettings extends React.Component<IOcspSettingsProps, {}> {
     $(document).on("ready", function() {
       Materialize.updateTextFields();
     });
+
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
   }
 
   componentDidUpdate() {
