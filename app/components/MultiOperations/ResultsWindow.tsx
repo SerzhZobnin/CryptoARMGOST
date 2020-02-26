@@ -4,9 +4,12 @@ import { connect } from "react-redux";
 import { resetDocumentsFilters } from "../../AC/documentsFiltersActions";
 import { selectAllDocuments, unselectAllDocuments } from "../../AC/multiOperations";
 import { changeSearchValue } from "../../AC/searchActions";
+import { selectedOperationsResultsSelector } from "../../selectors/operationsResultsSelector";
+import { mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
 import Modal from "../Modal";
 import ProgressBars from "../ProgressBars";
+import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 import OperationsResultsTable from "./OperationsResultsTable";
 import ResultsRightColumn from "./ResultsRightColumn";
 
@@ -28,9 +31,39 @@ class ResultsWindow extends React.Component<any, any> {
     this.props.resetDocumentsFilters();
   }
 
-  render() {
-    const { isDefaultFilters, isPerforming, searchValue } = this.props;
+  componentWillReceiveProps(nextProps: any) {
     const { localize, locale } = this.context;
+    const { activeDocumentsArr, signatures } = this.props;
+
+    if (activeDocumentsArr.length !== nextProps.activeDocumentsArr.length || signatures.length !== nextProps.signatures.length) {
+      if (nextProps.activeDocumentsArr && nextProps.activeDocumentsArr.length === 1) {
+        if (nextProps.signatures && nextProps.signatures.length) {
+          const file = nextProps.activeDocumentsArr[0];
+
+          const fileSignatures = nextProps.signatures.filter((signature: any) => {
+            return signature.fileId === file.id;
+          });
+
+          const showSignatureInfo = fileSignatures && fileSignatures.length > 0 ? true : false;
+
+          this.setState({ fileSignatures, file, showSignatureInfo });
+
+          return;
+        }
+      }
+    }
+
+    if (!activeDocumentsArr || !activeDocumentsArr.length ||
+      !nextProps.activeDocumentsArr || !nextProps.activeDocumentsArr.length ||
+      nextProps.activeDocumentsArr.length > 1 || activeDocumentsArr[0].id !== nextProps.activeDocumentsArr[0].id) {
+      this.setState({ showSignatureInfo: false });
+    }
+  }
+
+  render() {
+    const { localize, locale } = this.context;
+    const { isDefaultFilters, isPerforming, searchValue } = this.props;
+    const { fileSignatures, file, showSignatureInfo } = this.state;
 
     if (isPerforming) {
       return <ProgressBars />;
@@ -83,13 +116,44 @@ class ResultsWindow extends React.Component<any, any> {
           </div>
 
           <div className="col s4 rightcol">
-          <div className="row halfbottom" />
-            <ResultsRightColumn />
+            <div className="row halfbottom" />
+
+            {(showSignatureInfo && fileSignatures) ?
+              (
+                <React.Fragment>
+                  <div className="col s12">
+                    <div className="primary-text">{localize("Sign.sign_info", locale)}</div>
+                    <hr />
+                  </div>
+                  <div style={{ height: "calc(100vh - 80px)" }}>
+                    <div className="add-certs">
+                      <SignatureInfoBlock
+                        signatures={fileSignatures}
+                        file={file}
+                      />
+                    </div>
+                  </div>
+                  <div className="row fixed-bottom-rightcolumn">
+                    <div className="col s1 offset-s4">
+                      <a className="btn btn-text waves-effect waves-light" onClick={this.backView}>
+                        {"< НАЗАД"}
+                      </a>
+                    </div>
+                  </div>
+                </React.Fragment>
+              ) :
+              <ResultsRightColumn />
+            }
+
           </div>
         </div>
         {this.showModalFilterDocuments()}
       </div>
     );
+  }
+
+  backView = () => {
+    this.setState({ showSignatureInfo: false });
   }
 
   showModalFilterDocuments = () => {
@@ -135,12 +199,20 @@ class ResultsWindow extends React.Component<any, any> {
 }
 
 export default connect((state: any) => {
+  let signatures: object[] = [];
+
+  mapToArr(state.signatures.entities).forEach((element: any) => {
+    signatures = signatures.concat(mapToArr(element));
+  });
+
   return {
+    activeDocumentsArr: selectedOperationsResultsSelector(state),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     isPerformed: state.multiOperations.performed,
     isPerforming: state.multiOperations.performing,
     location: state.router.location,
     searchValue: state.filters.searchValue,
+    signatures,
     status: state.multiOperations.status,
   };
-}, { changeSearchValue, resetDocumentsFilters, selectAllDocuments, unselectAllDocuments})(ResultsWindow);
+}, { changeSearchValue, resetDocumentsFilters, selectAllDocuments, unselectAllDocuments })(ResultsWindow);

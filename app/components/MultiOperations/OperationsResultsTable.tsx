@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { AutoSizer, Column, Table } from "react-virtualized";
-import {  deleteFile, selectTempContentOfSignedFiles } from "../../AC";
+import { deleteFile, selectTempContentOfSignedFiles } from "../../AC";
 import { selectDocument } from "../../AC/multiOperations";
 import { filteredOperationsResultsSelector, selectedOperationsResultsSelector } from "../../selectors/operationsResultsSelector";
 import "../../table.global.css";
@@ -126,7 +126,7 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
                   <Column
                     cellRenderer={({ cellData, rowData }) => {
                       return (
-                        <FileIcon file={{ extension: extFile(rowData.filename), id: rowData.id }} key={rowData.id} />
+                        <FileIcon file={rowData} />
                       );
                     }}
                     dataKey="extension"

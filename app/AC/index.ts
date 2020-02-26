@@ -662,7 +662,7 @@ export function deleteFile(fileId: number) {
 export function verifySignature(fileId: string, showOpenDialogForDetached: boolean = true, svsURL?: string) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     const state = getState();
-    const { connections, documents, files } = state;
+    const { connections, documents, files, multiOperations } = state;
     let signaruteStatus = false;
     let signatureInfo;
     let cms: trusted.cms.SignedData;
@@ -670,6 +670,10 @@ export function verifySignature(fileId: string, showOpenDialogForDetached: boole
 
     if (!file) {
       file = documents.getIn(["entities", fileId]);
+    }
+
+    if (!file) {
+      file = multiOperations.getIn(["entities", fileId]);
     }
 
     try {
