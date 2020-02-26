@@ -210,7 +210,6 @@ export default connect((state: any) => {
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     isPerformed: state.multiOperations.performed,
     isPerforming: state.multiOperations.performing,
-    location: state.router.location,
     searchValue: state.filters.searchValue,
     signatures,
     status: state.multiOperations.status,

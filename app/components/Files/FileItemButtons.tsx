@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { verifySignature } from "../../AC/index";
-import { TMP_DIR } from "../../constants";
+import { LOCATION_RESULTS_MULTI_OPERATIONS, TMP_DIR } from "../../constants";
 import { filesInTransactionsSelector } from "../../selectors";
 import * as signs from "../../trusted/sign";
 import { fileExists } from "../../utils";
@@ -26,16 +26,17 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
   };
 
   render() {
-    const { file, filesInTransactionList } = this.props;
+    const { file, filesInTransactionList, location } = this.props;
 
     if (!file) {
       return null;
     }
 
+    const isResultsWindow = location.pathname === LOCATION_RESULTS_MULTI_OPERATIONS;
     const classDisabled = file.socket || filesInTransactionList.includes(file.id) ? "disabled" : "";
 
     return (
-      <div className="row nobottom" style={{ width: "160px" }}>
+      <div className="row nobottom" style={isResultsWindow ? { width: "120px" } : { width: "160px" }}>
         {
           file.extension !== "enc" ?
             <div className="col" style={{ width: "40px" }}>
@@ -67,13 +68,18 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
               shell.showItemInFolder(file.fullpath);
             }}>directions</i>
         </div>
-        <div className="col" style={{ width: "40px" }}>
-          <i className={`file-setting-item waves-effect material-icons secondary-content ${classDisabled}`}
-            onClick={(event) => {
-              event.stopPropagation();
-              this.props.deleteFile(file.id);
-            }}>delete</i>
-        </div>
+
+        {
+          isResultsWindow ? null :
+            <div className="col" style={{ width: "40px" }}>
+              <i className={`file-setting-item waves-effect material-icons secondary-content ${classDisabled}`}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  this.props.deleteFile(file.id);
+                }}>delete</i>
+            </div>
+        }
+
       </div>
     );
   }
@@ -131,5 +137,6 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
 export default connect((state) => {
   return {
     filesInTransactionList: filesInTransactionsSelector(state),
+    location: state.router.location,
   };
 }, { verifySignature })(FileItemButtons);

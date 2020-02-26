@@ -155,7 +155,7 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
                     dataKey="filename"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.25}
+                    width={width * 0.34}
                     label={localize("Documents.filename", locale)}
                   />
                   <Column
@@ -178,7 +178,7 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
                     dataKey="filesize"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.4}
+                    width={width * 0.31}
                     label={localize("Documents.filesize", locale)}
                   />
                 </Table>
