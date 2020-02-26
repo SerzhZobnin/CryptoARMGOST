@@ -2,14 +2,15 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { AutoSizer, Column, Table } from "react-virtualized";
+import {  deleteFile, selectTempContentOfSignedFiles } from "../../AC";
 import { selectDocument } from "../../AC/multiOperations";
 import { filteredOperationsResultsSelector, selectedOperationsResultsSelector } from "../../selectors/operationsResultsSelector";
 import "../../table.global.css";
 import { bytesToSize, extFile, mapToArr } from "../../utils";
 import FileIcon from "../Files/FileIcon";
+import FileItemButtons from "../Files/FileItemButtons";
 import SortDirection from "../Sort/SortDirection";
 import SortIndicator from "../Sort/SortIndicator";
-
 type TSortDirection = "ASC" | "DESC" | undefined;
 
 interface IFileRedux {
@@ -131,7 +132,7 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
                     dataKey="extension"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={50}
+                    width={40}
                     label={localize("Documents.type", locale)}
                   />
                   <Column
@@ -147,30 +148,37 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
                     dataKey="mtime"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={155}
+                    width={120}
                     label={localize("Documents.mtime", locale)}
                   />
                   <Column
                     dataKey="filename"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.48}
+                    width={width * 0.25}
                     label={localize("Documents.filename", locale)}
                   />
                   <Column
                     cellRenderer={({ cellData, rowData, rowIndex }) => {
                       return (
-                        <div className="row nobottom">
-                          <div className="col s12">
-                            <div className="truncate">{bytesToSize(cellData)}</div>
+                        (rowIndex === this.state.hoveredRowIndex) ?
+                          <FileItemButtons
+                            deleteFile={this.props.deleteFile}
+                            file={rowData}
+                            selectTempContentOfSignedFiles={this.props.selectTempContentOfSignedFiles}
+                          />
+                          :
+                          <div className="row nobottom">
+                            <div className="col s12">
+                              <div className="truncate">{bytesToSize(cellData)}</div>
+                            </div>
                           </div>
-                        </div>
                       );
                     }}
                     dataKey="filesize"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.22}
+                    width={width * 0.4}
                     label={localize("Documents.filesize", locale)}
                   />
                 </Table>
@@ -353,4 +361,4 @@ export default connect((state: any) => ({
   filesMap: filteredOperationsResultsSelector(state),
   selectedFiles: selectedOperationsResultsSelector(state),
   selectedFilesMap: state.multiOperations.selected,
-}), { selectDocument })(OperationsResultsTable);
+}), { selectDocument, deleteFile, selectTempContentOfSignedFiles })(OperationsResultsTable);
