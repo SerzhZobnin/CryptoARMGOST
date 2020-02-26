@@ -166,11 +166,33 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   render() {
     const { localize, locale } = this.context;
-    const { activeFiles, isDocumentsReviewed, recipients, setting, settings, signer } = this.props;
+    const { activeFiles, activeFilesArr, isDocumentsReviewed, recipients, setting, settings, signer } = this.props;
     const { file, saveSettingsWithNewName } = this.state;
 
     const disabledNavigate = this.isFilesFromSocket();
     const classDisabled = disabledNavigate ? "disabled" : "";
+
+    let countAllFiles = 0;
+    let countSignedFiles = 0;
+    let countArchiveFiles = 0;
+    let countEncryptedFiles = 0;
+
+    if (setting.operations.reverse_operations) {
+      for (const fileitem of activeFilesArr) {
+        if (fileitem.extension === "sig") {
+          countSignedFiles++;
+          countAllFiles++;
+        } else if (fileitem.extension === "enc") {
+          countEncryptedFiles++;
+          countAllFiles++;
+        } else if (fileitem.extension === "zip") {
+          countArchiveFiles++;
+          countAllFiles++;
+        } else {
+          countAllFiles++;
+        }
+      }
+    }
 
     return (
       <React.Fragment>
@@ -218,14 +240,41 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             <div className="row" />
 
             <div className="col s12">
-              <div className="subtitle">Операции</div>
+              <div className="subtitle">{localize("Operations.Operations", locale)}</div>
               <hr />
             </div>
 
             <Operations />
 
             {
-              setting.operations.reverse_operations ? null :
+              setting.operations.reverse_operations ?
+                <React.Fragment>
+                  <div className="col s12">
+                    <div className="subtitle">{localize("Operations.files_selected", locale)}</div>
+                    <hr />
+                  </div>
+                  <div className="row halfbottom">
+                    <div className="col s12">
+                      <div className="primary-text">{localize("Operations.files_all", locale)}: {countAllFiles}</div>
+                    </div>
+                  </div>
+                  <div className="row halfbottom">
+                    <div className="col s12">
+                      <div className="primary-text">{localize("Operations.files_signed", locale)}: {countSignedFiles}</div>
+                    </div>
+                  </div>
+                  <div className="row halfbottom">
+                    <div className="col s12">
+                      <div className="primary-text">{localize("Operations.files_archived", locale)}: {countArchiveFiles}</div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col s12">
+                      <div className="primary-text">{localize("Operations.files_encrypted", locale)}: {countEncryptedFiles}</div>
+                    </div>
+                  </div>
+                  <div className="row"></div>
+                </React.Fragment> :
                 <React.Fragment>
                   {
                     setting.operations.signing_operation ?
