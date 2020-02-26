@@ -183,7 +183,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
                     }
                     dataKey="filename"
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.45}
+                    width={width * 0.35}
                     label={localize("Documents.filename", locale)}
                   />
                   <Column
@@ -199,7 +199,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
                     dataKey="mtime"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.27}
+                    width={width * 0.25}
                     label={localize("Documents.mtime", locale)}
                   />
                   <Column
@@ -220,7 +220,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
                       );
                     }}
                     dataKey="filesize"
-                    width={width * 0.28}
+                    width={width * 0.4}
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     label={localize("Documents.filesize", locale)}
