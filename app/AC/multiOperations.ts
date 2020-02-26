@@ -80,7 +80,7 @@ export function multiDirectOperation(
 
         files.forEach((file: IFile) => {
           let newPath = "";
-          const newoutfolder = archivation_operation ? DEFAULT_TEMP_PATH : save_result_to_folder ? outfolder : "";
+          const newoutfolder = archivation_operation || encryption_operation ? DEFAULT_TEMP_PATH : save_result_to_folder ? outfolder : "";
 
           if (file.fullpath.split(".").pop() === "sig") {
             newPath = signs.resignFile(file.fullpath, signer, policies, params, format, newoutfolder);
@@ -184,7 +184,7 @@ export function multiDirectOperation(
           format = trusted.DataFormat.DER;
         }
 
-        const newoutfolder = archivation_operation || signing_operation ? DEFAULT_TEMP_PATH : save_result_to_folder ? outfolder : "";
+        const newoutfolder = save_result_to_folder ? outfolder : "";
 
         archivedFiles.forEach((file) => {
           const newPath = trustedEncrypts.encryptFile(file.fullpath, recipients, policies, encAlg, format, newoutfolder);
