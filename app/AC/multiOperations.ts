@@ -42,7 +42,7 @@ export function multiDirectOperation(
     let packageResult = true;
     const directResult: any = {};
     const directFiles: any = {};
-    const filesId : any[] = [];
+    const filesId: any[] = [];
 
     setTimeout(async () => {
       const { operations, outfolder } = setting;
@@ -186,7 +186,13 @@ export function multiDirectOperation(
 
         const newoutfolder = save_result_to_folder ? outfolder : "";
 
-        archivedFiles.forEach((file) => {
+        let filesForEncrypt = archivedFiles.slice(0);
+
+        if (signing_operation && setting.sign.detached && !archivation_operation) {
+          filesForEncrypt = files.slice(0);
+        }
+
+        filesForEncrypt.forEach((file) => {
           const newPath = trustedEncrypts.encryptFile(file.fullpath, recipients, policies, encAlg, format, newoutfolder);
           const currentId = file.originalId ? file.originalId : file.id;
 
