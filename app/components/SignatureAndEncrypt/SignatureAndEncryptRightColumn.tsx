@@ -196,7 +196,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     return (
       <React.Fragment>
-        <div style={{ height: `calc(100vh - ${activeFiles && activeFiles.size && setting.operations.signing_operation && !setting.operations.reverse_operations ? "180px" : "140px"})` }}>
+        <div style={{ height: `calc(100vh - ${activeFiles && activeFiles.size && setting.operations.signing_operation && !setting.operations.reverse_operations ? "170px" : "130px"})` }}>
           <div style={{ height: "100%", overflow: "auto" }}>
             <div className="col s10">
               <div className="subtitle">Параметры операций</div>
@@ -367,24 +367,21 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               {
                 setting.changed ?
                   <React.Fragment>
-                    <div className="col s12">
-                      <CheckBoxWithLabel
-                        disabled={false}
-                        onClickCheckBox={this.toggleSaveSettingsWithNewName}
-                        isChecked={saveSettingsWithNewName}
-                        elementId="new_time"
-                        title={"Сохранить параметры с новым именем"} />
-                    </div>
+
+                    <CheckBoxWithLabel
+                      disabled={false}
+                      onClickCheckBox={this.toggleSaveSettingsWithNewName}
+                      isChecked={saveSettingsWithNewName}
+                      elementId="new_time"
+                      title={"Сохранить параметры с новым именем"} />
 
                     <div className="row" />
 
-                    <div className="col s12">
-                      <a className="btn btn-outlined waves-effect waves-light"
-                        onClick={this.handleSaveSettings}
-                        style={{ width: "100%" }}>
-                        {localize("Settings.save", locale)}
-                      </a>
-                    </div>
+                    <a className="btn btn-outlined waves-effect waves-light"
+                      onClick={this.handleSaveSettings}
+                      style={{ width: "100%" }}>
+                      {localize("Settings.save", locale)}
+                    </a>
 
                     <div className="row" />
                   </React.Fragment>
@@ -466,10 +463,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
               <React.Fragment>
                 <div className="col s12">
-                  <a className={`btn-floating btn-large ${this.checkEnableMultiOperations() ? "" : "disabled"}`}
-                    style={{ width: "60%", backgroundColor: "#334294", lineHeight: "55px", borderRadius: "27.75px" }}
+                  <a className={`btn btn-outlined waves-effect waves-light ${this.checkEnableMultiOperations() ? "" : "disabled"}`}
                     onClick={this.handleClickPerformOperations}
-                  >
+                    style={{ width: "100%" }}>
                     {localize("Common.perform", locale)}
                   </a>
                 </div>
