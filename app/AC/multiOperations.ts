@@ -131,7 +131,13 @@ export function multiDirectOperation(
       if (archivation_operation) {
         const newoutfolder = encryption_operation ? DEFAULT_TEMP_PATH : save_result_to_folder ? outfolder : "";
 
-        archiveName = await archiveFiles(signedFiles, newoutfolder);
+        let filesForArchive: any[] = signedFiles.slice(0);
+
+        if (signing_operation && setting.sign.detached) {
+          filesForArchive = filesForArchive.concat(files);
+        }
+
+        archiveName = await archiveFiles(filesForArchive, newoutfolder);
         if (!encryption_operation && save_copy_to_documents) {
           const copyUri = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(archiveName));
 
@@ -186,10 +192,12 @@ export function multiDirectOperation(
 
         const newoutfolder = save_result_to_folder ? outfolder : "";
 
-        let filesForEncrypt = archivedFiles.slice(0);
+        let filesForEncrypt: any[] = [];
 
         if (signing_operation && setting.sign.detached && !archivation_operation) {
           filesForEncrypt = files.slice(0);
+        } else {
+          archivedFiles.slice(0);
         }
 
         filesForEncrypt.forEach((file) => {
