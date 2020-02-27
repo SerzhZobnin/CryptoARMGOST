@@ -153,7 +153,7 @@ class EventsWindow extends React.Component<IEventsWindowProps & IEventsWindowDis
     const { localize, locale } = this.context;
 
     if (!window.framework_NW) {
-      const file = dialog.showOpenDialog({
+      const file = dialog.showOpenDialogSync({
         defaultPath: path.dirname(APP_LOG_FILE),
         filters: [
           { name: localize("Events.operations_log", locale), extensions: ["log"] },

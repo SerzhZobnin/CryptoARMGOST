@@ -102,7 +102,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
     // tslint:disable-next-line: no-shadowed-variable
     const { changeOutfolder } = this.props;
 
-    const directory = dialog.showOpenDialog({ properties: ["openDirectory"] });
+    const directory = dialog.showOpenDialogSync({ properties: ["openDirectory"] });
     if (directory) {
       changeOutfolder(directory[0]);
     }

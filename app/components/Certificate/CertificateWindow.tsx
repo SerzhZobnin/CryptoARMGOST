@@ -1510,7 +1510,7 @@ class CertWindow extends React.Component<any, any> {
   certImport = () => {
     const { localize, locale } = this.context;
 
-    const files = dialog.showOpenDialog({
+    const files = dialog.showOpenDialogSync({
       properties: ["openFile"],
       title: localize("Certificate.certs", locale),
     });
@@ -1523,7 +1523,7 @@ class CertWindow extends React.Component<any, any> {
   crlDialog = () => {
     const { localize, locale } = this.context;
 
-    const files = dialog.showOpenDialog({
+    const files = dialog.showOpenDialogSync({
       filters: [
         { name: localize("CRL.crls", locale), extensions: ["crl"] },
         { name: "All Files", extensions: ["*"] },

@@ -132,7 +132,7 @@ class LicenseSetupModal extends React.Component<ILicenseSetupModalProps, ILicens
     const { localize, locale } = this.context;
 
     if (!window.framework_NW) {
-      const file = dialog.showOpenDialog({
+      const file = dialog.showOpenDialogSync({
         filters: [
           { name: localize("License.license", locale), extensions: ["lic"] },
         ],

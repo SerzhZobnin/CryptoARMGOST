@@ -125,7 +125,7 @@ class FileListItem extends React.Component<IFilelistItemProps, {}> {
     let tempURI: string;
     tempURI = file.substring(0, file.lastIndexOf("."));
     if (!fileExists(tempURI)) {
-      tempURI = dialog.showOpenDialog(null, {
+      tempURI = dialog.showOpenDialogSync(null, {
         properties: ["openFile"],
         title: localize("Sign.sign_content_file", locale) + path.basename(file),
       });

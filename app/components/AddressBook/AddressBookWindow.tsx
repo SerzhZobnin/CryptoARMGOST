@@ -466,7 +466,7 @@ class AddressBookWindow extends React.Component<any, any> {
   certImport = () => {
     const { localize, locale } = this.context;
 
-    const files = dialog.showOpenDialog({
+    const files = dialog.showOpenDialogSync({
       filters: [
         { name: localize("Certificate.certs", locale), extensions: ["cer", "crt"] },
         { name: "All Files", extensions: ["*"] },

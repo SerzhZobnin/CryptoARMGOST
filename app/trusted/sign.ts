@@ -38,7 +38,7 @@ export function setDetachedContent(cms: trusted.cms.SignedData, uri: string, sho
       tempURI = uri.substring(0, uri.lastIndexOf("."));
       if (!fileExists(tempURI)) {
         if (showDialog) {
-          tempURI = dialog.showOpenDialog(null, { title: localize("Sign.sign_content_file", window.locale) + path.basename(uri), properties: ["openFile"] });
+          tempURI = dialog.showOpenDialogSync(null, { title: localize("Sign.sign_content_file", window.locale) + path.basename(uri), properties: ["openFile"] });
 
           if (tempURI) {
             tempURI = tempURI[0];

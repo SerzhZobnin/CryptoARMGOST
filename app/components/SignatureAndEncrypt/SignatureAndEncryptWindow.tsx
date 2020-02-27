@@ -267,11 +267,11 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
     // tslint:disable-next-line:no-shadowed-variable
     const { filePackageSelect } = this.props;
 
-    dialog.showOpenDialog(null, { properties: ["openFile", "multiSelections"] }, (selectedFiles: string[]) => {
-      if (selectedFiles) {
-        const pack: IFilePath[] = [];
+    dialog.showOpenDialog(null, { properties: ["openFile", "multiSelections"] }).then((result: any) => {
+      if (result.filePaths) {
+        const pack: any[] = [];
 
-        selectedFiles.forEach((file) => {
+        result.filePaths.forEach((file) => {
           pack.push({ fullpath: file });
         });
 

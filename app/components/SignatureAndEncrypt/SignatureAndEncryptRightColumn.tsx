@@ -1038,7 +1038,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           if (sd.isDetached()) {
             tempURI = uri.substring(0, uri.lastIndexOf("."));
             if (!fileExists(tempURI)) {
-              tempURI = dialog.showOpenDialog(null,
+              tempURI = dialog.showOpenDialogSync(null,
                 { title: localize("Sign.sign_content_file", window.locale) + path.basename(uri), properties: ["openFile"] });
               if (tempURI) {
                 tempURI = tempURI[0];
@@ -1736,23 +1736,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       default:
         return false;
     }
-  }
-
-  addFiles() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { filePackageSelect } = this.props;
-
-    dialog.showOpenDialog(null, { properties: ["openFile", "multiSelections"] }, (selectedFiles: string[]) => {
-      if (selectedFiles) {
-        const pack: IFilePath[] = [];
-
-        selectedFiles.forEach((file) => {
-          pack.push({ fullpath: file });
-        });
-
-        filePackageSelect(pack);
-      }
-    });
   }
 
   getSelectedFilesSize = () => {
