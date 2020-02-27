@@ -603,7 +603,7 @@ export default {
     files_encrypted: "Encrypted",
     files_selected: "Count of selected documents",
     files_signed: "Signed",
-    last_operation_result: "Last results",
+    last_operation_result: "Results of operations",
     results: "Results",
     reverse_operations: "Decryption, unzipping, unsign",
     save_copy_to_documents: "Save copy to documents",

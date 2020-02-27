@@ -605,7 +605,7 @@ export default {
     files_encrypted: "Зашифрованных",
     files_selected: "Выбрано документов",
     files_signed: "Подписаных",
-    last_operation_result: "Последняя операция",
+    last_operation_result: "Результаты операций",
     results: "Результаты операций",
     reverse_operations: "Расшифрование, разархивирование, снятие подписи",
     save_copy_to_documents: "Сохранить копию в Документах",

@@ -132,8 +132,20 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
           <ul id="dropdown-sign_and_encrypt" className="dropdown-content" style={{ display: "none" }}>
             <li>
               <div className="center-align">
-                <a style={{ fontWeight: "bold", color: "#bf3817" }}>ПОДПИСЬ И ШИФРОВАНИЕ</a>
+                <a style={{ fontWeight: "bold", color: "#bf3817" }}>{localize("SignAndEncrypt.SignAndEncrypt", locale)}</a>
               </div>
+            </li>
+            <li onClick={() => $("#sign_encrypt").dropdown("close")}>
+              <Link to={LOCATION_MAIN} style={{ height: "33px", padding: "0px" }}>
+                <div className="row nobottom valign-wrapper">
+                  <div className="col" style={{ width: "36px" }}>
+                    <i className="material-icons left sign_operation" />
+                  </div>
+                  <div className="col">
+                    {localize("SignAndEncrypt.sign_and_encrypt", locale)}
+                  </div>
+                </div>
+              </Link>
             </li>
             <li onClick={() => $("#sign_encrypt").dropdown("close")}>
               <Link to={LOCATION_RESULTS_MULTI_OPERATIONS} style={{ height: "33px", padding: "0px" }}>
