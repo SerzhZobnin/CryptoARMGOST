@@ -1638,6 +1638,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             result = this.checkEnableOperationButton(ENCRYPT);
           } else if (operationKey === "archivation_operation") {
             result = this.checkEnableOperationButton(ARCHIVE);
+          } else if (operationKey === "save_copy_to_documents") {
+            result = this.checkEnableOperationButton(ARCHIVE);
+          } else if (operationKey === "save_result_to_folder") {
+            result = !(!toperations.get("signing_operation") && !toperations.get("encryption_operation") && !toperations.get("archivation_operation"))
+              || !!toperations.get("save_copy_to_documents");
           } else {
             result = true;
           }

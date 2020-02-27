@@ -79,6 +79,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
 
         <div className="col s12" >
           <CheckBoxWithLabel
+            disabled={!signing_operation && !archivation_operation && !encryption_operation}
             onClickCheckBox={this.handleSaveResultToFolder}
             isChecked={save_result_to_folder}
             elementId="save_result_to_folder"
@@ -87,7 +88,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
 
         <div className="col s11">
           <SelectFolder
-            disabled={!save_result_to_folder}
+            disabled={!save_result_to_folder || (!signing_operation && !archivation_operation && !encryption_operation)}
             directory={settings.outfolder}
             viewDirect={this.handleOutfolderChange}
             openDirect={this.addDirect.bind(this)}

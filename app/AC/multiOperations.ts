@@ -58,6 +58,16 @@ export function multiDirectOperation(
 
       directResult.operations = operations.toJS();
 
+      if (save_copy_to_documents && !signing_operation && !archivation_operation && !encryption_operation) {
+        files.forEach((file: IFile) => {
+          const copyUri = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(file.fullpath));
+
+          if (!fileExists(copyUri)) {
+            fs.copyFileSync(file.fullpath, copyUri);
+          }
+        });
+      }
+
       if (signing_operation) {
         const policies = ["noAttributes"];
         if (setting.sign.detached) {
