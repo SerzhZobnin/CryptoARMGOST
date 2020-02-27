@@ -719,7 +719,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   handleClickPerformOperations = () => {
-    const { activeFilesArr, setting, signer,
+    const { activeFilesArr, inactiveFilesArr, setting, signer,
       multiDirectOperation, multiReverseOperation, operations, recipients } = this.props;
     let sinerCert = null;
 
@@ -731,6 +731,16 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       multiReverseOperation(activeFilesArr);
     } else {
       multiDirectOperation(activeFilesArr, setting, sinerCert, recipients);
+
+      const inactiveFilesIdsForRemoveFromList = [];
+
+      console.log("inactiveFilesArr", inactiveFilesArr);
+
+      for (const inactiveFile of inactiveFilesArr) {
+        inactiveFilesIdsForRemoveFromList.push(inactiveFile.id);
+      }
+
+      this.props.filePackageDelete(inactiveFilesIdsForRemoveFromList);
     }
   }
 
@@ -1786,6 +1796,7 @@ export default connect((state) => {
     dssResponses: state.dssResponses.entities,
     files: mapToArr(state.files.entities),
     filesInTransactionList: filesInTransactionsSelector(state),
+    inactiveFilesArr: mapToArr(activeFilesSelector(state, { active: false })),
     isDocumentsReviewed: state.files.documentsReviewed,
     licenseStatus: state.license.status,
     lic_error: state.license.lic_error,
