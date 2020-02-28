@@ -70,7 +70,7 @@ class RequestCAExport extends React.Component<IRequestCAExportProps, IRequestCAE
 
     const extension = "csr";
 
-    const outFilePAth = DIALOG.showSaveDialog({
+    const outFilePAth = DIALOG.showSaveDialogSync({
       defaultPath: "export." + extension,
       filters: [{ name: localize("Request.requests", locale), extensions: [extension] }],
       title: localize("Request.export_request", locale),

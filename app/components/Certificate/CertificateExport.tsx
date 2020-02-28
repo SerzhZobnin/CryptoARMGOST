@@ -268,7 +268,7 @@ class CertificateExport extends React.Component<ICertificateExportProps, ICertif
       outFormat = PKCS12;
     }
 
-    const outFilePAth = DIALOG.showSaveDialog({
+    const outFilePAth = DIALOG.showSaveDialogSync({
       defaultPath: "export." + extension,
       filters: [{ name: localize("Certificate.certs", locale), extensions: [extension] }],
       title: localize("Certificate.export_cert", locale),

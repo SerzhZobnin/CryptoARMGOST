@@ -81,7 +81,7 @@ class CRLExport extends React.Component<ICRLExportProps, ICRLExportState> {
 
     const extension = "crl";
 
-    const outFilePAth = DIALOG.showSaveDialog({
+    const outFilePAth = DIALOG.showSaveDialogSync({
       defaultPath: "export." + extension,
       filters: [{ name: localize("CRL.crls", locale), extensions: [extension] }],
       title: localize("CRL.export_crl", locale),
