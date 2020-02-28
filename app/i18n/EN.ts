@@ -730,6 +730,7 @@ export default {
     remove_all_files: "Remove all listed files",
     remove_list: "Clear the list",
     remove_selected: "Delete selection",
+    rename: "Rename parameters",
     save: "Save parameters",
     save_placeholder: "Name of operation parameters",
     selected_all: "Select all",

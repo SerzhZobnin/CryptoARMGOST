@@ -732,6 +732,7 @@ export default {
     remove_all_files: "Удалить все из списка",
     remove_list: "Очистить список",
     remove_selected: "Сбросить выделение",
+    rename: "Переименовать параметры",
     save: "Сохранить параметры",
     save_placeholder: "Название параметров операций",
     selected_all: "Выделить все",
