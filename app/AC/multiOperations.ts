@@ -225,7 +225,7 @@ export function multiDirectOperation(
         if (signing_operation && setting.sign.detached && !archivation_operation) {
           filesForEncrypt = files.slice(0);
         } else {
-          archivedFiles.slice(0);
+          filesForEncrypt = archivedFiles.slice(0);
         }
 
         filesForEncrypt.forEach((file) => {
