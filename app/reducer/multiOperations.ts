@@ -1,4 +1,4 @@
-import { Map, OrderedMap, OrderedSet, Record } from "immutable";
+import { List, Map, OrderedMap, OrderedSet, Record } from "immutable";
 import {
   FAIL, MULTI_DIRECT_OPERATION, MULTI_REVERSE_OPERATION,
   SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_DOCUMENT_IN_OPERAIONS_RESULT, START,
@@ -25,8 +25,9 @@ const DefaultReducerState = Record({
   operations: OrderedMap({}),
   performed: false,
   performing: false,
-  status: false,
+  results: List(),
   selected: new OrderedSet([]),
+  status: false,
 });
 
 export default (lastOperationResults = new DefaultReducerState(), action) => {
@@ -54,6 +55,7 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
         .set("performed", true)
         .set("status", payload.status)
         .set("files", oMap)
+        .set("results", List(payload.directResult.results))
         .update("entities", (entities) => arrayToMap(getFilesArray(oMap), FileModel).merge(entities));
 
     case MULTI_REVERSE_OPERATION + SUCCESS:

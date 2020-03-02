@@ -20,6 +20,7 @@ import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 
 interface IDocumentsWindowProps {
   documents: any;
+  results: any;
   unselectAllDocuments: () => void;
 }
 
@@ -75,26 +76,17 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
 
     return (
       <React.Fragment>
-        <div className="col s12">
-          <div className="primary-text">{localize("Events.operations_log", locale)}</div>
-          <hr />
-
-          <div className="row">
-            <div className="col s10 primary-text">Исходные файлы:</div>
-            <div className="col s1" id="rectangle">{originalFiles.length}</div>
-            <div className="row halfbottom" />
-            <div className="add-cert-collection collection">
-              {this.getOriginalFiles()}
+        <div style={{ height: `calc(100vh - 180px)` }}>
+          <div style={{ height: "100%", overflow: "auto" }}>
+            <div className="col s12">
+              <div className="primary-text">{localize("Events.operations_log", locale)}</div>
+              <hr />
             </div>
-          </div>
 
-          <div className="row">
-            <div className="col s12 primary-text">Цепочка операций:</div>
-            <div className="row halfbottom" />
-
-            <div className="collection">
-              {this.getOperationsChain()}
-
+            <div className="row">
+              <div className="add-cert-collection collection">
+                {this.getResults()}
+              </div>
             </div>
           </div>
         </div>
@@ -127,177 +119,44 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
     );
   }
 
-  getOriginalFiles = () => {
+  getResults = () => {
     const { localize, locale } = this.context;
-    const { entitiesMap, filesMap, originalFiles, operations } = this.props;
-    const { selectedOriginalFileIndex } = this.state;
+    const { results } = this.props;
 
-    const elements = originalFiles.map((originalFile: any) => {
-      let status = "";
+    const elements = results.map((value: any) => {
       let icon = "";
-      let isValid = "";
 
-      const results = filesMap.get(originalFile.id);
-      let flag = true;
-
-      operations.map((value: boolean, operationKey: string) => {
-        if (value) {
-          if (operationKey === "signing_operation" || operationKey === "encryption_operation" || operationKey === "archivation_operation") {
-            const result = results[operationKey];
-
-            if (result) {
-              flag = flag && result.result;
-            } else {
-              flag = false;
-            }
-          }
-        }
-      });
-
-      if (flag === true) {
-        status = localize("Operations.successful", locale);
+      if (value.result) {
         icon = "status_ok_icon";
-        isValid = "valid";
       } else {
-        status = localize("Operations.failed", locale);
         icon = "status_error_icon";
-        isValid = "unvalid";
       }
 
-      const dateSigningTime = new Date();
-      dateSigningTime.setHours(dateSigningTime.getHours());
+      let inFiles = "";
 
-      const active = selectedOriginalFileIndex === originalFile.id ? "active" : "";
+      if (value.in && Array.isArray(value.in)) {
+        value.in.forEach((fileProps: any) => {
+          inFiles += `${fileProps.filename}; `;
+        });
+      } else {
+        inFiles = value.in.filename;
+      }
 
       return (
-        <div key={originalFile.id} className="row certificate-list-item col s12" id={originalFile.id}>
-          <div className={`collection-item avatar certs-collection valign-wrapper ${active}`}
-            onClick={() => this.handleSelectOriginalFile(originalFile.id)}>
-            <React.Fragment>
-              <div className="col s1" style={{ width: "15%" }}>
-                <div className={icon} />
-              </div>
-              <div className="col s11">
-                <div className="collection-title">{originalFile.filename}</div>
-
-                <div className={isValid}>{status}</div>
-
-                {/* <div className="collection-info">{localize("Sign.signingTime", locale)}: {originalFile.signingTime ? (new Date(dateSigningTime)).toLocaleString(locale, {
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                  month: "long",
-                  year: "numeric",
-                }) : "-"}
-                </div> */}
-              </div>
-            </React.Fragment>
+        <div className={"collection-item avatar certs-collection valign-wrapper"} style={{paddingTop: "5px", paddingBottom: "5px"}} >
+          <div className="col s1" style={{ width: "15%" }}>
+            <div className={icon} />
+          </div>
+          <div className="col s10">
+            <div className="collection-title">{localize(`Operations.${value.operation}`, locale)}</div>
+            <div className="collection-info">{inFiles}</div>
+            <div className="collection-info">-> {value.out ? value.out.filename : "-"}</div>
           </div>
         </div>
       );
     });
 
     return elements;
-  }
-
-  getOperationsChain = () => {
-    const { localize, locale } = this.context;
-    const { selectedOriginalFileIndex } = this.state;
-    const { entitiesMap, filesMap, originalFiles, operations } = this.props;
-    let { } = this.props;
-
-    if (selectedOriginalFileIndex) {
-      const results = filesMap.get(selectedOriginalFileIndex);
-
-      const elements: any[] = [];
-      const operationsArrSorted: any[] = [];
-      let curKeyStyle = "";
-      let curStatusStyle = "";
-      let j = 0;
-
-      operations.map((value: boolean, operationKey: string) => {
-        if (value) {
-          if (operationKey === "signing_operation") {
-            operationsArrSorted.unshift({ value, key: operationKey });
-          } else if (operationKey === "encryption_operation") {
-            operationsArrSorted.push({ value, key: operationKey });
-          } else if (operationKey === "archivation_operation") {
-            operationsArrSorted.push({ value, key: operationKey });
-          }
-        }
-      });
-
-      operationsArrSorted.forEach((operation: any) => {
-        const result = results[operation.key];
-
-        let circleStyle = "material-icons left chain_1";
-        const vertlineStyle = {
-          visibility: "visible",
-        };
-
-        if (j < 10) {
-          circleStyle = "material-icons left chain_" + (j + 1);
-        } else {
-          circleStyle = "material-icons left chain_10";
-        }
-
-        if (j === operationsArrSorted.length - 1) {
-          vertlineStyle.visibility = "hidden";
-        }
-
-        if (result && result.result) {
-          curStatusStyle = "cert_status_ok";
-        } else {
-          curStatusStyle = "cert_status_error";
-        }
-
-        if (j === 0) {
-          curKeyStyle = "";
-
-          if (curKeyStyle) {
-            curKeyStyle += "localkey";
-          }
-        }
-
-        const element = <div className={"collection-item avatar certs-collection "} >
-          <div className="row chain-item">
-            <div className="col s1">
-              <i className={circleStyle}></i>
-              <div className={"vert_line"} style={vertlineStyle}></div>
-            </div>
-            <div className="col s10">
-              <div className="r-iconbox-link">
-                <div className="collection-title">{localize(`Operations.${operation.key}`, locale)}</div>
-                <div className="collection-info">{result && result.out ? result.out.filename : "-"}</div>
-              </div>
-            </div>
-            <div className="col s1">
-              <div className="row nobottom">
-                <div className={curStatusStyle + " "} style={{ marginLeft: "-15px" }} />
-              </div>
-            </div>
-          </div>
-        </div>;
-
-        if (operation.key === "signing_operation") {
-          elements.unshift(element);
-        } else if (operation.key === "encryption_operation") {
-          elements.push(element);
-        } else {
-          elements.push(element);
-        }
-
-        j++;
-      });
-
-      return elements;
-    } else {
-      return;
-    }
-  }
-
-  handleSelectOriginalFile = (index: any) => {
-    this.setState({ selectedOriginalFileIndex: index });
   }
 
   handleClickSign = () => {
@@ -359,6 +218,7 @@ export default connect((state) => {
     filesMap: state.multiOperations.files,
     operations: state.multiOperations.operations,
     originalFiles: mapToArr(originalSelector(state)),
+    results: state.multiOperations.results,
     selectedDocs: state.multiOperations.selected,
     setting: state.settings.getIn(["entities", state.settings.default]),
     settings: state.settings.entities,

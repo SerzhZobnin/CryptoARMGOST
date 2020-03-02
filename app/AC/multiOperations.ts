@@ -96,7 +96,7 @@ export function multiDirectOperation(
           format = trusted.DataFormat.DER;
         }
 
-        files.forEach((file: IFile) => {
+        files.forEach((file: any) => {
           let newPath = "";
           const newoutfolder = archivation_operation || encryption_operation ? DEFAULT_TEMP_PATH : save_result_to_folder ? outfolder : "";
 
@@ -139,7 +139,7 @@ export function multiDirectOperation(
 
             directResult.results.push({
               in: {
-                ...file,
+                ...file.toJS(),
               },
               operation: "signing_operation",
               out: {
@@ -162,7 +162,7 @@ export function multiDirectOperation(
 
             directResult.results.push({
               in: {
-                ...file,
+                ...file.toJS(),
               },
               operation: "signing_operation",
               out: null,
@@ -178,7 +178,8 @@ export function multiDirectOperation(
           }
         });
       } else {
-        signedFiles = [...files];
+        signedFiles = [];
+        files.forEach((file: any) => signedFiles.push(file.toJS()));
       }
 
       let archiveName = "";
@@ -205,6 +206,15 @@ export function multiDirectOperation(
         archivedFiles = [getFileProps(archiveName)];
 
         const newFileProps = getFileProps(archiveName);
+
+        directResult.results.push({
+          in: filesForArchive,
+          operation: "archivation_operation",
+          out: {
+            ...newFileProps,
+          },
+          result: true,
+        });
 
         for (const signedFile of signedFiles) {
           const currentId = signedFile.originalId ? signedFile.originalId : signedFile.id;
@@ -279,6 +289,15 @@ export function multiDirectOperation(
 
             const newFileProps = getFileProps(newPath);
 
+            directResult.results.push({
+              in: { ...file },
+              operation: "encryption_operation",
+              out: {
+                ...newFileProps,
+              },
+              result: true,
+            });
+
             encryptedFiles.push(newFileProps);
 
             if (archivation_operation) {
@@ -308,6 +327,13 @@ export function multiDirectOperation(
             }
           } else {
             packageResult = false;
+
+            directResult.results.push({
+              in: { ...file },
+              operation: "encryption_operation",
+              out: null,
+              result: false,
+            });
 
             if (archivation_operation) {
               for (const signedFile of signedFiles) {
