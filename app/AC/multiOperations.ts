@@ -46,8 +46,15 @@ export function multiDirectOperation(
 
     setTimeout(async () => {
       const { operations, outfolder } = setting;
-      const { archivation_operation, encryption_operation, save_copy_to_documents,
+      const { encryption_operation, save_copy_to_documents,
         save_result_to_folder, signing_operation } = operations;
+
+      let { archivation_operation } = operations;
+
+      // Always archive files if set detached sign and encryption
+      if (signing_operation && setting.sign.detached && encryption_operation) {
+        archivation_operation = true;
+      }
 
       let signedFiles: any[] = [];
 
