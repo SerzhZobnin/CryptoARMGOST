@@ -2,7 +2,10 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { resetDocumentsFilters } from "../../AC/documentsFiltersActions";
-import { selectAllDocuments, unselectAllDocuments } from "../../AC/multiOperations";
+import {
+  selectAllDocuments, selectArchivedDocuments, selectEncryptedDocuments,
+  selectSignedDocuments, unselectAllDocuments,
+} from "../../AC/multiOperations";
 import { changeSearchValue } from "../../AC/searchActions";
 import { selectedOperationsResultsSelector } from "../../selectors/operationsResultsSelector";
 import { mapToArr } from "../../utils";
@@ -101,8 +104,11 @@ class ResultsWindow extends React.Component<any, any> {
                   <a className="btn-floated" data-activates="dropdown-btn-set-add-files">
                     <i className="file-setting-item waves-effect material-icons secondary-content">more_vert</i>
                   </a>
-                  <ul id="dropdown-btn-set-add-files" className="dropdown-content">
+                  <ul id="dropdown-btn-set-add-files" className="dropdown-content" style={{minWidth: "200px"}}>
                     <li><a onClick={this.handleSelectAllDocuments}>{localize("Documents.selected_all", locale)}</a></li>
+                    <li><a onClick={this.props.selectSignedDocuments}>{localize("Documents.selected_signed", locale)}</a></li>
+                    <li><a onClick={this.props.selectEncryptedDocuments}>{localize("Documents.selected_encrypted", locale)}</a></li>
+                    <li><a onClick={this.props.selectArchivedDocuments}>{localize("Documents.selected_archived", locale)}</a></li>
                     <li><a onClick={this.handleUnselectAllDocuments}>{localize("Documents.unselect_all", locale)}</a></li>
                   </ul>
                 </div>
@@ -214,4 +220,8 @@ export default connect((state: any) => {
     signatures,
     status: state.multiOperations.status,
   };
-}, { changeSearchValue, resetDocumentsFilters, selectAllDocuments, unselectAllDocuments })(ResultsWindow);
+}, {
+  changeSearchValue, resetDocumentsFilters, selectAllDocuments,
+  selectArchivedDocuments, selectEncryptedDocuments, selectSignedDocuments,
+  unselectAllDocuments,
+})(ResultsWindow);

@@ -1,8 +1,9 @@
 import { List, Map, OrderedMap, OrderedSet, Record } from "immutable";
 import {
   FAIL, MULTI_DIRECT_OPERATION, MULTI_REVERSE_OPERATION,
-  SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_DOCUMENT_IN_OPERAIONS_RESULT, START,
-  SUCCESS, UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
+  SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_ARCHIVED_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_DOCUMENT_IN_OPERAIONS_RESULT,
+  SELECT_ENCRYPTED_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_SIGNED_DOCUMENTS_IN_OPERAIONS_RESULT,
+  START, SUCCESS, UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
   UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT,
   VERIFY_LICENSE,
 } from "../constants";
@@ -94,6 +95,45 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
 
     case UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT:
       return lastOperationResults.set("selected", new OrderedSet([]));
+
+    case SELECT_SIGNED_DOCUMENTS_IN_OPERAIONS_RESULT:
+      lastOperationResults = lastOperationResults.set("selected", new OrderedSet([]));
+
+      const signedDocumentsId: number[] = [];
+
+      lastOperationResults.entities.map((item: any) => {
+        if (item.extension === "sig") {
+          signedDocumentsId.push(item.id);
+        }
+      });
+
+      return lastOperationResults.set("selected", new OrderedSet(signedDocumentsId));
+
+    case SELECT_ENCRYPTED_DOCUMENTS_IN_OPERAIONS_RESULT:
+      lastOperationResults = lastOperationResults.set("selected", new OrderedSet([]));
+
+      const encryptedDocumentsId: number[] = [];
+
+      lastOperationResults.entities.map((item: any) => {
+        if (item.extension === "enc") {
+          encryptedDocumentsId.push(item.id);
+        }
+      });
+
+      return lastOperationResults.set("selected", new OrderedSet(encryptedDocumentsId));
+
+    case SELECT_ARCHIVED_DOCUMENTS_IN_OPERAIONS_RESULT:
+      lastOperationResults = lastOperationResults.set("selected", new OrderedSet([]));
+
+      const archivedDocumentsId: number[] = [];
+
+      lastOperationResults.entities.map((item: any) => {
+        if (item.extension === "zip") {
+          archivedDocumentsId.push(item.id);
+        }
+      });
+
+      return lastOperationResults.set("selected", new OrderedSet(archivedDocumentsId));
   }
 
   return lastOperationResults;
@@ -104,43 +144,43 @@ const getFilesArray = (oMap: any) => {
   oMap.valueSeq().forEach((v: any) => {
     if (v.original) {
       if (!files.find((file) => file.id === v.original.id)) {
-        files.push({...v.original, operation: 4});
+        files.push({ ...v.original, operation: 4 });
       }
     }
 
     if (v.signing_operation && v.signing_operation.result && v.signing_operation.out) {
       if (!files.find((file) => file.id === v.signing_operation.out.id)) {
-        files.push({...v.signing_operation.out, operation: 3});
+        files.push({ ...v.signing_operation.out, operation: 3 });
       }
     }
 
     if (v.archivation_operation && v.archivation_operation.result && v.archivation_operation.out) {
       if (!files.find((file) => file.id === v.archivation_operation.out.id)) {
-        files.push({...v.archivation_operation.out, operation: 2});
+        files.push({ ...v.archivation_operation.out, operation: 2 });
       }
     }
 
     if (v.encryption_operation && v.encryption_operation.result && v.encryption_operation.out) {
       if (!files.find((file) => file.id === v.encryption_operation.out.id)) {
-        files.push({...v.encryption_operation.out, operation: 1});
+        files.push({ ...v.encryption_operation.out, operation: 1 });
       }
     }
 
     if (v.decryption_operation && v.decryption_operation.result && v.decryption_operation.out) {
       if (!files.find((file) => file.id === v.decryption_operation.out.id)) {
-        files.push({ ...v.decryption_operation.out, operation: 1});
+        files.push({ ...v.decryption_operation.out, operation: 1 });
       }
     }
 
     if (v.unzip_operation && v.unzip_operation.result && v.unzip_operation.out) {
       if (!files.find((file) => file.id === v.unzip_operation.out.id)) {
-        files.push({ ...v.unzip_operation.out, operation: 2});
+        files.push({ ...v.unzip_operation.out, operation: 2 });
       }
     }
 
     if (v.unsign_operation && v.unsign_operation.result && v.unsign_operation.out) {
       if (!files.find((file) => file.id === v.unsign_operation.out.id)) {
-        files.push({ ...v.unsign_operation.out, operation: 3});
+        files.push({ ...v.unsign_operation.out, operation: 3 });
       }
     }
   });
