@@ -3,17 +3,17 @@ import * as path from "path";
 import { push } from "react-router-redux";
 import * as unzipper from "unzipper";
 import {
-  BASE64, DEFAULT_DOCUMENTS_PATH, DEFAULT_TEMP_PATH, DER, GOST_28147,
-  GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
-  LOCATION_RESULTS_MULTI_OPERATIONS,
-  MULTI_DIRECT_OPERATION,
+  ARCHIVATION_OPERATION, BASE64, DEFAULT_DOCUMENTS_PATH, DEFAULT_TEMP_PATH, DER,
+  GOST_28147, GOST_R3412_2015_K, GOST_R3412_2015_M,
+  HOME_DIR,
+  LOCATION_RESULTS_MULTI_OPERATIONS, MULTI_DIRECT_OPERATION,
   MULTI_REVERSE_OPERATION,
   SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
-  SELECT_DOCUMENT_IN_OPERAIONS_RESULT,
-  START,
+  SELECT_DOCUMENT_IN_OPERAIONS_RESULT, SIGNING_OPERATION, START,
   SUCCESS,
   UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
   UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT,
+  ENCRYPTION_OPERATION,
 } from "../constants";
 import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import * as trustedEncrypts from "../trusted/encrypt";
@@ -141,7 +141,7 @@ export function multiDirectOperation(
               in: {
                 ...file.toJS(),
               },
-              operation: "signing_operation",
+              operation: SIGNING_OPERATION,
               out: {
                 ...newFileProps,
               },
@@ -164,7 +164,7 @@ export function multiDirectOperation(
               in: {
                 ...file.toJS(),
               },
-              operation: "signing_operation",
+              operation: SIGNING_OPERATION,
               out: null,
               result: false,
             });
@@ -209,7 +209,7 @@ export function multiDirectOperation(
 
         directResult.results.push({
           in: filesForArchive,
-          operation: "archivation_operation",
+          operation: ARCHIVATION_OPERATION,
           out: {
             ...newFileProps,
           },
@@ -291,7 +291,7 @@ export function multiDirectOperation(
 
             directResult.results.push({
               in: { ...file },
-              operation: "encryption_operation",
+              operation: ENCRYPTION_OPERATION,
               out: {
                 ...newFileProps,
               },
@@ -330,7 +330,7 @@ export function multiDirectOperation(
 
             directResult.results.push({
               in: { ...file },
-              operation: "encryption_operation",
+              operation: ENCRYPTION_OPERATION,
               out: null,
               result: false,
             });

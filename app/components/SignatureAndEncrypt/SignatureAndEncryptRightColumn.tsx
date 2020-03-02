@@ -23,7 +23,7 @@ import {
   ARCHIVE, DECRYPT, DSS_ACTIONS, ENCRYPT, GOST_28147, GOST_R3412_2015_K, GOST_R3412_2015_M,
   HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
-  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, UNZIPPING, USER_NAME, VERIFY,
+  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, UNZIPPING, USER_NAME, VERIFY, SIGNING_OPERATION, ARCHIVATION_OPERATION, ENCRYPTION_OPERATION,
 } from "../../constants";
 import { DEFAULT_ID, ISignParams } from "../../reducer/settings";
 import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
@@ -1632,16 +1632,16 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           operationsCount++;
           let result = false;
 
-          if (operationKey === "signing_operation") {
+          if (operationKey === SIGNING_OPERATION) {
             result = this.checkEnableOperationButton(SIGN);
-          } else if (operationKey === "encryption_operation") {
+          } else if (operationKey === ENCRYPTION_OPERATION) {
             result = this.checkEnableOperationButton(ENCRYPT);
-          } else if (operationKey === "archivation_operation") {
+          } else if (operationKey === ARCHIVATION_OPERATION) {
             result = this.checkEnableOperationButton(ARCHIVE);
           } else if (operationKey === "save_copy_to_documents") {
             result = this.checkEnableOperationButton(ARCHIVE);
           } else if (operationKey === "save_result_to_folder") {
-            result = !(!toperations.get("signing_operation") && !toperations.get("encryption_operation") && !toperations.get("archivation_operation"))
+            result = !(!toperations.get(SIGNING_OPERATION) && !toperations.get(ENCRYPTION_OPERATION) && !toperations.get(ARCHIVATION_OPERATION))
               || !!toperations.get("save_copy_to_documents");
           } else {
             result = true;
