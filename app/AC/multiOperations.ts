@@ -134,7 +134,7 @@ export function multiDirectOperation(
 
             const newFileProps = getFileProps(newPath);
 
-            signedFiles.push({ ...newFileProps, originalId: file.id });
+            signedFiles.push({ ...newFileProps, originalId: file.id, originalFullpath: file.fullpath });
 
             directFiles[file.id] = {
               ...directFiles[file.id],
@@ -225,8 +225,6 @@ export function multiDirectOperation(
           format = trusted.DataFormat.DER;
         }
 
-        const newoutfolder = save_result_to_folder ? outfolder : "";
-
         let filesForEncrypt: any[] = [];
 
         if (signing_operation && setting.sign.detached && !archivation_operation) {
@@ -236,6 +234,16 @@ export function multiDirectOperation(
         }
 
         filesForEncrypt.forEach((file) => {
+          let newoutfolder = "";
+
+          if (save_result_to_folder) {
+            newoutfolder = outfolder;
+          } else if (!archivation_operation && !setting.sign.detached && file.originalFullpath) {
+            newoutfolder = path.dirname(file.originalFullpath);
+          } else {
+            newoutfolder = "";
+          }
+
           const newPath = trustedEncrypts.encryptFile(file.fullpath, recipients, policies, encAlg, format, newoutfolder);
           const currentId = file.originalId ? file.originalId : file.id;
 
