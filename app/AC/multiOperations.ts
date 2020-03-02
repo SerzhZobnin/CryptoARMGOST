@@ -60,7 +60,7 @@ export function multiDirectOperation(
       let signedFiles: any[] = [];
 
       files.forEach((file: any) => {
-        directFiles[file.id] = { original: file.toJS() };
+        directFiles[file.id] = { original: { ...file.toJS(), operation: 4 } };
         filesId.push(file.id);
       });
 
@@ -145,6 +145,7 @@ export function multiDirectOperation(
               operation: SIGNING_OPERATION,
               out: {
                 ...newFileProps,
+                operation: 3,
               },
               result: true,
             });
@@ -154,6 +155,7 @@ export function multiDirectOperation(
               signing_operation: {
                 out: {
                   ...newFileProps,
+                  operation: 3,
                 },
                 result: true,
               },
@@ -213,6 +215,7 @@ export function multiDirectOperation(
           operation: ARCHIVATION_OPERATION,
           out: {
             ...newFileProps,
+            operation: 2,
           },
           result: true,
         });
@@ -225,6 +228,7 @@ export function multiDirectOperation(
             archivation_operation: {
               out: {
                 ...newFileProps,
+                operation: 2,
               },
               result: true,
             },
@@ -295,6 +299,7 @@ export function multiDirectOperation(
               operation: ENCRYPTION_OPERATION,
               out: {
                 ...newFileProps,
+                operation: 1,
               },
               result: true,
             });
@@ -321,6 +326,7 @@ export function multiDirectOperation(
                 encryption_operation: {
                   out: {
                     ...newFileProps,
+                    operation: 1,
                   },
                   result: true,
                 },

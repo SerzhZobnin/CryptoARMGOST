@@ -144,25 +144,25 @@ const getFilesArray = (oMap: any) => {
   oMap.valueSeq().forEach((v: any) => {
     if (v.original) {
       if (!files.find((file) => file.id === v.original.id)) {
-        files.push({ ...v.original, operation: 4 });
+        files.push(v.original);
       }
     }
 
     if (v.signing_operation && v.signing_operation.result && v.signing_operation.out) {
       if (!files.find((file) => file.id === v.signing_operation.out.id)) {
-        files.push({ ...v.signing_operation.out, operation: 3 });
+        files.push(v.signing_operation.out);
       }
     }
 
     if (v.archivation_operation && v.archivation_operation.result && v.archivation_operation.out) {
       if (!files.find((file) => file.id === v.archivation_operation.out.id)) {
-        files.push({ ...v.archivation_operation.out, operation: 2 });
+        files.push(v.archivation_operation.out);
       }
     }
 
     if (v.encryption_operation && v.encryption_operation.result && v.encryption_operation.out) {
       if (!files.find((file) => file.id === v.encryption_operation.out.id)) {
-        files.push({ ...v.encryption_operation.out, operation: 1 });
+        files.push(v.encryption_operation.out);
       }
     }
 
