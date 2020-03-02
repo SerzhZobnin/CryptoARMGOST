@@ -16,6 +16,7 @@ export const FileModel = Record({
   fullpath: null,
   id: null,
   mtime: null,
+  operation: null,
   originalId: null,
 });
 
@@ -103,43 +104,43 @@ const getFilesArray = (oMap: any) => {
   oMap.valueSeq().forEach((v: any) => {
     if (v.original) {
       if (!files.find((file) => file.id === v.original.id)) {
-        files.push(v.original);
+        files.push({...v.original, operation: 4});
       }
     }
 
     if (v.signing_operation && v.signing_operation.result && v.signing_operation.out) {
       if (!files.find((file) => file.id === v.signing_operation.out.id)) {
-        files.push(v.signing_operation.out);
+        files.push({...v.signing_operation.out, operation: 3});
       }
     }
 
     if (v.archivation_operation && v.archivation_operation.result && v.archivation_operation.out) {
       if (!files.find((file) => file.id === v.archivation_operation.out.id)) {
-        files.push(v.archivation_operation.out);
+        files.push({...v.archivation_operation.out, operation: 2});
       }
     }
 
     if (v.encryption_operation && v.encryption_operation.result && v.encryption_operation.out) {
       if (!files.find((file) => file.id === v.encryption_operation.out.id)) {
-        files.push(v.encryption_operation.out);
+        files.push({...v.encryption_operation.out, operation: 1});
       }
     }
 
     if (v.decryption_operation && v.decryption_operation.result && v.decryption_operation.out) {
       if (!files.find((file) => file.id === v.decryption_operation.out.id)) {
-        files.push(v.decryption_operation.out);
-      }
-    }
-
-    if (v.unsign_operation && v.unsign_operation.result && v.unsign_operation.out) {
-      if (!files.find((file) => file.id === v.unsign_operation.out.id)) {
-        files.push(v.unsign_operation.out);
+        files.push({ ...v.decryption_operation.out, operation: 1});
       }
     }
 
     if (v.unzip_operation && v.unzip_operation.result && v.unzip_operation.out) {
       if (!files.find((file) => file.id === v.unzip_operation.out.id)) {
-        files.push(v.unzip_operation.out);
+        files.push({ ...v.unzip_operation.out, operation: 2});
+      }
+    }
+
+    if (v.unsign_operation && v.unsign_operation.result && v.unsign_operation.out) {
+      if (!files.find((file) => file.id === v.unsign_operation.out.id)) {
+        files.push({ ...v.unsign_operation.out, operation: 3});
       }
     }
   });

@@ -58,8 +58,8 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
   constructor(props: IOperationsResultsTableProps & IOperationsResultsTableDispatch) {
     super(props);
 
-    const sortBy = "filename";
-    const sortDirection = SortDirection.DESC;
+    const sortBy = "operation";
+    const sortDirection = SortDirection.ASC;
     const sortedList = this.sortList({ sortBy, sortDirection });
 
     this.state = {
@@ -130,7 +130,7 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
                       );
                     }}
                     dataKey="extension"
-                    disableSort={false}
+                    disableSort={true}
                     headerRenderer={this.headerRenderer}
                     width={40}
                     label={localize("Documents.type", locale)}
@@ -146,14 +146,14 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
                       });
                     }}
                     dataKey="mtime"
-                    disableSort={false}
+                    disableSort={true}
                     headerRenderer={this.headerRenderer}
                     width={120}
                     label={localize("Documents.mtime", locale)}
                   />
                   <Column
                     dataKey="filename"
-                    disableSort={false}
+                    disableSort={true}
                     headerRenderer={this.headerRenderer}
                     width={width * 0.34}
                     label={localize("Documents.filename", locale)}
@@ -176,7 +176,7 @@ class OperationsResultsTable extends React.Component<IOperationsResultsTableProp
                       );
                     }}
                     dataKey="filesize"
-                    disableSort={false}
+                    disableSort={true}
                     headerRenderer={this.headerRenderer}
                     width={width * 0.31}
                     label={localize("Documents.filesize", locale)}
