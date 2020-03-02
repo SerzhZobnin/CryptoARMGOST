@@ -63,6 +63,7 @@ export function multiDirectOperation(
         filesId.push(file.id);
       });
 
+      directResult.results = [];
       directResult.operations = operations.toJS();
 
       if (save_copy_to_documents && !signing_operation && !archivation_operation && !encryption_operation) {
@@ -136,6 +137,17 @@ export function multiDirectOperation(
 
             signedFiles.push({ ...newFileProps, originalId: file.id, originalFullpath: file.fullpath });
 
+            directResult.results.push({
+              in: {
+                ...file,
+              },
+              operation: "signing_operation",
+              out: {
+                ...newFileProps,
+              },
+              result: true,
+            });
+
             directFiles[file.id] = {
               ...directFiles[file.id],
               signing_operation: {
@@ -147,6 +159,15 @@ export function multiDirectOperation(
             };
           } else {
             packageResult = false;
+
+            directResult.results.push({
+              in: {
+                ...file,
+              },
+              operation: "signing_operation",
+              out: null,
+              result: false,
+            });
 
             directFiles[file.id] = {
               ...directFiles[file.id],
