@@ -719,8 +719,12 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   handleClickPerformOperations = () => {
-    const { activeFilesArr, inactiveFilesArr, setting, signer,
+    const { activeFilesArr, inactiveFilesArr, lic_error, setting, signer,
       multiDirectOperation, multiReverseOperation, operations, recipients } = this.props;
+    const { localize, locale } = this.context;
+
+    const licenseStatus = checkLicense();
+
     let sinerCert = null;
 
     if (signer) {
@@ -728,13 +732,52 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (setting.operations.reverse_operations) {
+      for (const activeFileItem of activeFilesArr) {
+        if (activeFileItem.extension === "enc") {
+          if (licenseStatus !== true) {
+            $(".toast-jwtErrorLicense").remove();
+            Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
+
+            logger.log({
+              level: "error",
+              message: "No correct license",
+              operation: "Расшифрование",
+              operationObject: {
+                in: "License",
+                out: "Null",
+              },
+              userName: USER_NAME,
+            });
+
+            return;
+          }
+        }
+      }
       multiReverseOperation(activeFilesArr);
     } else {
+      if (setting.operations.signing_operation) {
+        if (licenseStatus !== true) {
+          $(".toast-jwtErrorLicense").remove();
+          Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
+
+          logger.log({
+            level: "error",
+            message: "No correct license",
+            operation: "Подпись",
+            operationObject: {
+              in: "License",
+              out: "Null",
+            },
+            userName: USER_NAME,
+          });
+
+          return;
+        }
+      }
+
       multiDirectOperation(activeFilesArr, setting, sinerCert, recipients);
 
       const inactiveFilesIdsForRemoveFromList = [];
-
-      console.log("inactiveFilesArr", inactiveFilesArr);
 
       for (const inactiveFile of inactiveFilesArr) {
         inactiveFilesIdsForRemoveFromList.push(inactiveFile.id);
