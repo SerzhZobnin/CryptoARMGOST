@@ -292,6 +292,14 @@ export function multiDirectOperation(
               }
             }
 
+            if (!archivation_operation && setting.encrypt.delete && file && file.originalFullpath) {
+              try {
+                fs.unlinkSync(file.originalFullpath);
+              } catch (e) {
+                console.log(e);
+              }
+            }
+
             const newFileProps = getFileProps(newPath);
 
             directResult.results.push({
@@ -319,6 +327,22 @@ export function multiDirectOperation(
                     result: true,
                   },
                 };
+
+                if (setting.encrypt.delete) {
+                  if (signedFile && signedFile.originalFullpath) {
+                    try {
+                      fs.unlinkSync(signedFile.originalFullpath);
+                    } catch (e) {
+                      console.log(e);
+                    }
+                  }
+
+                  try {
+                    fs.unlinkSync(signedFile.fullpath);
+                  } catch (e) {
+                    console.log(e);
+                  }
+                }
               }
             } else {
               directFiles[currentId] = {
@@ -381,7 +405,6 @@ export function multiDirectOperation(
     }, 0);
   };
 }
-
 
 interface IPackageResult {
   packageResult: boolean;
