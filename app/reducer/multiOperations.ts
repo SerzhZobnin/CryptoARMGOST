@@ -68,6 +68,7 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
         .set("performed", true)
         .set("status", payload.status)
         .set("files", oMapReverse)
+        .set("results", List(payload.reverseResult.results))
         .update("entities", (entities) => arrayToMap(getFilesArray(oMapReverse), FileModel).merge(entities));
 
     case MULTI_REVERSE_OPERATION + FAIL:
@@ -168,19 +169,19 @@ const getFilesArray = (oMap: any) => {
 
     if (v.decryption_operation && v.decryption_operation.result && v.decryption_operation.out) {
       if (!files.find((file) => file.id === v.decryption_operation.out.id)) {
-        files.push({ ...v.decryption_operation.out, operation: 1 });
+        files.push(v.decryption_operation.out);
       }
     }
 
     if (v.unzip_operation && v.unzip_operation.result && v.unzip_operation.out) {
       if (!files.find((file) => file.id === v.unzip_operation.out.id)) {
-        files.push({ ...v.unzip_operation.out, operation: 2 });
+        files.push(v.unzip_operation.out);
       }
     }
 
     if (v.unsign_operation && v.unsign_operation.result && v.unsign_operation.out) {
       if (!files.find((file) => file.id === v.unsign_operation.out.id)) {
-        files.push({ ...v.unsign_operation.out, operation: 3 });
+        files.push(v.unsign_operation.out);
       }
     }
   });

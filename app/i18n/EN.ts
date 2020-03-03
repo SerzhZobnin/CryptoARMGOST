@@ -599,6 +599,7 @@ export default {
   Operations: {
     Operations: "Operations",
     archivation_operation: "Archivation",
+    decryption_operation: "Decryption",
     encryption_operation: "Encryption",
     failed: "Failed",
     files_all: "All",
@@ -616,6 +617,8 @@ export default {
     signing_operation: "Signing",
     status: "Status",
     successful: "Successful",
+    unsign_operation: "Unsign",
+    unzip_operation: "Unzipping",
   },
   Problems: {
     problem_1: "There is no crypto provider CryptoPro CSP",

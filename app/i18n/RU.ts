@@ -601,6 +601,7 @@ export default {
   Operations: {
     Operations: "Операции",
     archivation_operation: "Архивирование",
+    decryption_operation: "Расшифровывание",
     encryption_operation: "Шифрование",
     failed: "Ошибка",
     files_all: "Всего",
@@ -618,6 +619,8 @@ export default {
     signing_operation: "Подпись",
     status: "Общий статус",
     successful: "Успешно",
+    unsign_operation: "Снятие подписи",
+    unzip_operation: "Разархивирование",
   },
   Problems: {
     problem_1: "Отсутствует СКЗИ КриптоПро CSP",
