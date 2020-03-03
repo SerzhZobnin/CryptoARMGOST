@@ -382,6 +382,11 @@ export function multiDirectOperation(
   };
 }
 
+
+interface IPackageResult {
+  packageResult: boolean;
+}
+
 export function multiReverseOperation(
   files: IFile[],
 ) {
@@ -390,7 +395,7 @@ export function multiReverseOperation(
       type: MULTI_REVERSE_OPERATION + START,
     });
 
-    let packageResult = true;
+    const packageResult = { packageResult: true };
     const reverseResult: any = {};
     let reverseFiles: any = {};
 
@@ -402,7 +407,7 @@ export function multiReverseOperation(
       });
 
       files.forEach((file: any) => {
-        reverseFiles = reverseOperations(file, reverseFiles);
+        reverseFiles = reverseOperations(file, reverseFiles, packageResult);
       });
 
       reverseResult.files = reverseFiles;
@@ -410,7 +415,7 @@ export function multiReverseOperation(
       dispatch(removeAllFiles());
 
       dispatch({
-        payload: { status: packageResult, reverseResult },
+        payload: { status: packageResult.packageResult, reverseResult },
         type: MULTI_REVERSE_OPERATION + SUCCESS,
       });
 
@@ -419,7 +424,7 @@ export function multiReverseOperation(
   };
 }
 
-const reverseOperations = (file: any, reverseFiles: any) => {
+const reverseOperations = (file: any, reverseFiles: any, packageResult: IPackageResult) => {
   if (file) {
     if (file.extension === "enc") {
       const newPath = trustedEncrypts.decryptFile(file.fullpath, DEFAULT_TEMP_PATH);
@@ -440,9 +445,11 @@ const reverseOperations = (file: any, reverseFiles: any) => {
         };
 
         if (newFileProps.extension === "enc" || newFileProps.extension === "sig") {
-          reverseOperations(newFileProps, reverseFiles);
+          reverseOperations(newFileProps, reverseFiles, packageResult);
         }
       } else {
+        packageResult.packageResult = false;
+
         reverseFiles[currentId] = {
           ...reverseFiles[currentId],
           decryption_operation: {
@@ -469,9 +476,11 @@ const reverseOperations = (file: any, reverseFiles: any) => {
         };
 
         if (newFileProps.extension === "enc" || newFileProps.extension === "sig") {
-          reverseOperations(newFileProps, reverseFiles);
+          reverseOperations(newFileProps, reverseFiles, packageResult);
         }
       } else {
+        packageResult.packageResult = false;
+
         reverseFiles[currentId] = {
           ...reverseFiles[currentId],
           unsign_operation: {
@@ -481,7 +490,7 @@ const reverseOperations = (file: any, reverseFiles: any) => {
       }
     } else if (file.extension === "zip") {
       setTimeout(async () => {
-        reverseFiles = await uzipAndWriteStream(file, reverseFiles);
+        reverseFiles = await uzipAndWriteStream(file, reverseFiles, packageResult);
       });
     }
 
@@ -491,7 +500,7 @@ const reverseOperations = (file: any, reverseFiles: any) => {
   }
 };
 
-async function uzipAndWriteStream(file: any, reverseFiles: any) {
+async function uzipAndWriteStream(file: any, reverseFiles: any, packageResult: IPackageResult) {
   return new Promise(function (resolve, reject) {
     const currentId = file.originalId ? file.originalId : file.id;
 
@@ -518,7 +527,7 @@ async function uzipAndWriteStream(file: any, reverseFiles: any) {
             };
 
             if (newFileProps.extension === "enc" || newFileProps.extension === "sig" || newFileProps.extension === "zip") {
-              reverseOperations(newFileProps, reverseFiles);
+              reverseOperations(newFileProps, reverseFiles, packageResult);
             }
 
             cb();

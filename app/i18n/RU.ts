@@ -614,6 +614,7 @@ export default {
     save_copy_to_documents: "Сохранить копию в Документах",
     save_result_to_folder: "Сохранить результат в каталоге",
     signing_operation: "Подпись",
+    status: "Общий статус",
     successful: "Успешно",
   },
   Problems: {

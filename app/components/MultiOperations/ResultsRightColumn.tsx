@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import {
-  changeLocation, deleteRecipient, filePackageSelect,
+  changeLocation, filePackageSelect,
 } from "../../AC";
 import {
   unselectAllDocuments,
@@ -14,9 +14,7 @@ import {
   DEFAULT_DOCUMENTS_PATH, LOCATION_MAIN, REMOVE, SIGN,
 } from "../../constants";
 import { originalSelector, selectedOperationsResultsSelector } from "../../selectors/operationsResultsSelector";
-import { bytesToSize, fileExists, mapToArr } from "../../utils";
-import FileIcon from "../Files/FileIcon";
-import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
+import { fileExists, mapToArr } from "../../utils";
 
 interface IDocumentsWindowProps {
   documents: any;
@@ -66,7 +64,8 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
 
   render() {
     const { localize, locale } = this.context;
-    const { documents, entitiesMap, fileSignatures, originalFiles, selectedDocs, showSignatureInfo } = this.props;
+    const { documents, entitiesMap, fileSignatures, isPerformed,
+      originalFiles, selectedDocs, showSignatureInfo, status } = this.props;
 
     let lastSelectDocument;
 
@@ -74,10 +73,36 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
       lastSelectDocument = entitiesMap.get(selectedDocs.last());
     }
 
+    let isValid = "";
+
+    if (status) {
+      isValid = "valid";
+    } else {
+      isValid = "unvalid";
+    }
+
     return (
       <React.Fragment>
         <div style={{ height: `calc(100vh - 180px)` }}>
           <div style={{ height: "100%", overflow: "auto" }}>
+            {
+              isPerformed ?
+                <React.Fragment>
+                  <div className="col s12">
+                    <div className="primary-text">{localize("Operations.status", locale)}</div>
+                    <hr />
+                  </div>
+
+                  <div className="col s6">
+                    <div className={isValid}>{status ? "Успех" : "Ошибка"}</div>
+                  </div>
+
+                  <div className="row halfbottom" />
+                </React.Fragment>
+                :
+                null
+            }
+
             <div className="col s12">
               <div className="primary-text">{localize("Events.operations_log", locale)}</div>
               <hr />
@@ -143,7 +168,7 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
       }
 
       return (
-        <div className={"collection-item avatar certs-collection valign-wrapper"} style={{paddingTop: "5px", paddingBottom: "5px"}} >
+        <div className={"collection-item avatar certs-collection valign-wrapper"} style={{ paddingTop: "5px", paddingBottom: "5px" }} >
           <div className="col s1" style={{ width: "15%" }}>
             <div className={icon} />
           </div>
@@ -216,6 +241,7 @@ export default connect((state) => {
     documents: selectedOperationsResultsSelector(state),
     entitiesMap: state.multiOperations.entities,
     filesMap: state.multiOperations.files,
+    isPerformed: state.multiOperations.performed,
     operations: state.multiOperations.operations,
     originalFiles: mapToArr(originalSelector(state)),
     results: state.multiOperations.results,
@@ -223,6 +249,7 @@ export default connect((state) => {
     setting: state.settings.getIn(["entities", state.settings.default]),
     settings: state.settings.entities,
     signatures,
+    status: state.multiOperations.status,
   };
 }, {
   changeLocation, filePackageSelect, unselectAllDocuments,

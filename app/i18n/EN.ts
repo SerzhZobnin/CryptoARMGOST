@@ -612,6 +612,7 @@ export default {
     save_copy_to_documents: "Save copy to documents",
     save_result_to_folder: "Save result to folder",
     signing_operation: "Signing",
+    status: "Status",
     successful: "Successful",
   },
   Problems: {
