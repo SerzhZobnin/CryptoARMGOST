@@ -398,11 +398,11 @@ export function multiReverseOperation(
       files.forEach((file: any) => {
         const jsObjFile = file.toJS();
 
-        reverseFiles[file.id] = { original: { ...jsObjFile, originalId: jsObjFile.id } };
+        reverseFiles[file.id] = { original: { ...jsObjFile, originalId: jsObjFile.id, operation: 4 } };
       });
 
       files.forEach((file: any) => {
-        reverseFiles = reverseOperations(file, reverseFiles, reverseResult);
+        reverseFiles = reverseOperations(file, reverseFiles);
       });
 
       reverseResult.files = reverseFiles;
@@ -422,7 +422,7 @@ export function multiReverseOperation(
 const reverseOperations = (file: any, reverseFiles: any) => {
   if (file) {
     if (file.extension === "enc") {
-      const newPath = trustedEncrypts.decryptFile(file.fullpath, "");
+      const newPath = trustedEncrypts.decryptFile(file.fullpath, DEFAULT_TEMP_PATH);
       const currentId = file.originalId ? file.originalId : file.id;
 
       if (newPath) {
@@ -433,6 +433,7 @@ const reverseOperations = (file: any, reverseFiles: any) => {
           decryption_operation: {
             out: {
               ...newFileProps,
+              operation: 1,
             },
             result: true,
           },
@@ -450,7 +451,7 @@ const reverseOperations = (file: any, reverseFiles: any) => {
         };
       }
     } else if (file.extension === "sig") {
-      const newPath = signs.unSign(file.fullpath, "");
+      const newPath = signs.unSign(file.fullpath, DEFAULT_TEMP_PATH);
       const currentId = file.originalId ? file.originalId : file.id;
 
       if (newPath) {
@@ -461,6 +462,7 @@ const reverseOperations = (file: any, reverseFiles: any) => {
           unsign_operation: {
             out: {
               ...newFileProps,
+              operation: 3,
             },
             result: true,
           },
@@ -509,6 +511,7 @@ async function uzipAndWriteStream(file: any, reverseFiles: any) {
               unzip_operation: {
                 out: {
                   ...newFileProps,
+                  operation: 2,
                 },
                 result: true,
               },
