@@ -23,7 +23,7 @@ import {
   ARCHIVE, DECRYPT, DSS_ACTIONS, ENCRYPT, GOST_28147, GOST_R3412_2015_K, GOST_R3412_2015_M,
   HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
-  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, UNZIPPING, USER_NAME, VERIFY, SIGNING_OPERATION, ARCHIVATION_OPERATION, ENCRYPTION_OPERATION,
+  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, UNZIPPING, USER_NAME, VERIFY, SIGNING_OPERATION, ARCHIVATION_OPERATION, ENCRYPTION_OPERATION, MULTI_REVERSE,
 } from "../../constants";
 import { DEFAULT_ID, ISignParams } from "../../reducer/settings";
 import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
@@ -1655,9 +1655,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
       return flag;
     } else {
-      return this.checkEnableOperationButton(UNSIGN) ||
-        this.checkEnableOperationButton(DECRYPT) ||
-        this.checkEnableOperationButton(UNZIPPING);
+      return this.checkEnableOperationButton(MULTI_REVERSE);
     }
   }
 
@@ -1727,6 +1725,15 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       case UNZIPPING:
         for (const document of activeFilesArr) {
           if (document.extension !== "zip") {
+            return false;
+          }
+        }
+
+        return true;
+
+      case MULTI_REVERSE:
+        for (const document of activeFilesArr) {
+          if (document.extension !== "zip" && document.extension !== "enc" && document.extension !== "sig") {
             return false;
           }
         }
