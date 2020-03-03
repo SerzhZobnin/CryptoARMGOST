@@ -609,6 +609,8 @@ export default {
     files_selected: "Выбрано документов",
     files_signed: "Подписаных",
     last_operation_result: "Результаты операций",
+    operations_failed: "При выполнении операций произошла ошибка",
+    operations_performed: "Операция успешно выполнена",
     results: "Результаты операций",
     reverse_operations: "Расшифрование, разархивирование, снятие подписи",
     save_copy_to_documents: "Сохранить копию в Документах",

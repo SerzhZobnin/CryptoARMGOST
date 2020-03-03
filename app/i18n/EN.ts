@@ -607,6 +607,8 @@ export default {
     files_selected: "Count of selected documents",
     files_signed: "Signed",
     last_operation_result: "Results of operations",
+    operations_failed: "An error has occurred",
+    operations_performed: "Operation completed successfully",
     results: "Results",
     reverse_operations: "Decryption, unzipping, unsign",
     save_copy_to_documents: "Save copy to documents",

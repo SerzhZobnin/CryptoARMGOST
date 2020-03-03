@@ -26,7 +26,9 @@ interface ISignatureAndEncryptWindowProps {
   loadingFiles: any;
   files: any;
   method: string;
+  operationsPerformed: boolean;
   operationsPerforming: boolean;
+  operationsStatus: boolean;
   packageSignResult: any;
   removeAllRemoteFiles: () => void;
   signatures: any;
@@ -68,11 +70,23 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
   }
 
   componentDidUpdate(prevProps: ISignatureAndEncryptWindowProps) {
+    const { localize, locale } = this.context;
+
     if (this.props.method === SIGN && prevProps.activeFilesArr && prevProps.activeFilesArr.length && (!this.props.activeFilesArr || !this.props.activeFilesArr.length)) {
       this.props.removeAllRemoteFiles();
       remote.getCurrentWindow().close();
 
       this.props.deleteAllTemporyLicenses();
+    }
+
+    if (prevProps.operationsPerforming && !this.props.operationsPerforming && this.props.operationsPerformed) {
+      if (this.props.operationsStatus) {
+        $(".toast-operations_performed").remove();
+        Materialize.toast(localize("Operations.operations_performed", locale), 2000, "toast-operations_performed");
+      } else {
+        $(".toast-operations_failed").remove();
+        Materialize.toast(localize("Operations.operations_failed", locale), 2000, "toast-operations_failed");
+      }
     }
   }
 
@@ -346,7 +360,9 @@ export default connect((state) => {
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     method: state.remoteFiles.method,
+    operationsPerformed: state.multiOperations.performed,
     operationsPerforming: state.multiOperations.performing,
+    operationsStatus: state.multiOperations.status,
     packageSignResult: state.signatures.packageSignResult,
     signatures,
     signedPackage: state.signatures.signedPackage,
