@@ -574,9 +574,9 @@ async function uzipAndWriteSync(file: any, reverseFiles: any, packageResult: IPa
 
       const newFileProps = { ...getFileProps(path.join(DEFAULT_TEMP_PATH, fileName)) };
 
-      unzipedFiles.push(newFileProps);
+      unzipedFiles.push({ ...newFileProps, operation: 2 });
 
-      if (newFileProps.extension === "sig") {
+      if (newFileProps.extension === "sig" || newFileProps.extension === "enc" || newFileProps.extension === "zip") {
         reverseOperations(newFileProps, reverseFiles, packageResult, reverseResult);
       }
     } catch (e) {
