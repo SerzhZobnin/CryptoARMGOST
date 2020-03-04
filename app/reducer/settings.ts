@@ -497,7 +497,8 @@ export default (settings = new DefaultReducerState(), action) => {
 
   if (type === SAVE_SETTINGS
     || type === CREATE_SETTING
-    || type === DELETE_SETTING) {
+    || type === DELETE_SETTING
+    || type === CHANGE_SETTINGS_NAME) {
     settings = settings
       .setIn(["entities", settings.active, "savetime"], new Date().getTime())
       .setIn(["entities", settings.active, "changed"], false);
