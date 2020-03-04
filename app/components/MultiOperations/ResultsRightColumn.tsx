@@ -158,6 +158,7 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
       }
 
       let inFiles = "";
+      let outFiles = "-";
 
       if (value.in && Array.isArray(value.in)) {
         value.in.forEach((fileProps: any) => {
@@ -165,6 +166,14 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
         });
       } else {
         inFiles = value.in.filename;
+      }
+
+      if (value.out && value.out.operation === 2 && value.out.unzipedFiles && Array.isArray(value.out.unzipedFiles)) {
+        value.out.unzipedFiles.forEach((fileProps: any) => {
+          outFiles += `${fileProps.filename}; `;
+        });
+      } else {
+        outFiles = value.out.filename;
       }
 
       return (
@@ -175,7 +184,7 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
           <div className="col s10">
             <div className="collection-title">{localize(`Operations.${value.operation}`, locale)}</div>
             <div className="collection-info">{inFiles}</div>
-            <div className="collection-info">-> {value.out ? value.out.filename : "-"}</div>
+            <div className="collection-info">-> {outFiles}</div>
           </div>
         </div>
       );

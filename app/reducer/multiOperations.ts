@@ -173,10 +173,12 @@ const getFilesArray = (oMap: any) => {
       }
     }
 
-    if (v.unzip_operation && v.unzip_operation.result && v.unzip_operation.out) {
-      if (!files.find((file) => file.id === v.unzip_operation.out.id)) {
-        files.push(v.unzip_operation.out);
-      }
+    if (v.unzip_operation && v.unzip_operation.result && v.unzip_operation.out && v.unzip_operation.out.unzipedFiles) {
+      v.unzip_operation.out.unzipedFiles.forEach((unzipedFile: any) => {
+        if (!files.find((file) => file.id === unzipedFile.id)) {
+          files.push(unzipedFile);
+        }
+      });
     }
 
     if (v.unsign_operation && v.unsign_operation.result && v.unsign_operation.out) {
