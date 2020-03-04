@@ -183,6 +183,8 @@ class AllSettings extends React.Component<any, {}> {
                   title={localize("Encrypt.delete_files_after", locale)} />
 
               </div>
+
+              <div className="row" />
             </React.Fragment>
             : null
         }
