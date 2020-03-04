@@ -172,7 +172,7 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
         value.out.unzipedFiles.forEach((fileProps: any) => {
           outFiles += `${fileProps.filename}; `;
         });
-      } else {
+      } else if (value.out && value.out.filename) {
         outFiles = value.out.filename;
       }
 

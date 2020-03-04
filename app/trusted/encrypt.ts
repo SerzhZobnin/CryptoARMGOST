@@ -67,7 +67,7 @@ export function encryptFile(uri: string, certs: trusted.pkistore.PkiItem[], poli
       //
     }
 
-    outURI = "";
+    return outURI = "";
   }
 
   logger.log({
