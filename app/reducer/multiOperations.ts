@@ -7,7 +7,7 @@ import {
   UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT,
   VERIFY_LICENSE,
 } from "../constants";
-import { arrayToMap } from "../utils";
+import { arrayToMap, fileExists } from "../utils";
 
 export const FileModel = Record({
   active: false,
@@ -145,25 +145,33 @@ const getFilesArray = (oMap: any) => {
   oMap.valueSeq().forEach((v: any) => {
     if (v.original) {
       if (!files.find((file) => file.id === v.original.id)) {
-        files.push(v.original);
+        if (fileExists(v.original.fullpath)) {
+          files.push(v.original);
+        }
       }
     }
 
     if (v.signing_operation && v.signing_operation.result && v.signing_operation.out) {
       if (!files.find((file) => file.id === v.signing_operation.out.id)) {
-        files.push(v.signing_operation.out);
+        if (fileExists(v.signing_operation.out.fullpath)) {
+          files.push(v.signing_operation.out);
+        }
       }
     }
 
     if (v.archivation_operation && v.archivation_operation.result && v.archivation_operation.out) {
       if (!files.find((file) => file.id === v.archivation_operation.out.id)) {
-        files.push(v.archivation_operation.out);
+        if (fileExists(v.archivation_operation.out.fullpath)) {
+          files.push(v.archivation_operation.out);
+        }
       }
     }
 
     if (v.encryption_operation && v.encryption_operation.result && v.encryption_operation.out) {
       if (!files.find((file) => file.id === v.encryption_operation.out.id)) {
-        files.push(v.encryption_operation.out);
+        if (fileExists(v.encryption_operation.out.fullpath)) {
+          files.push(v.encryption_operation.out);
+        }
       }
     }
 
