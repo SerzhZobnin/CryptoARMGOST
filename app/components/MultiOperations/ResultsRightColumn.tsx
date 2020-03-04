@@ -64,8 +64,7 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
 
   render() {
     const { localize, locale } = this.context;
-    const { documents, entitiesMap, fileSignatures, isPerformed,
-      originalFiles, selectedDocs, showSignatureInfo, status } = this.props;
+    const { entitiesMap, isPerformed, selectedDocs, status } = this.props;
 
     let lastSelectDocument;
 
@@ -177,7 +176,9 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
       }
 
       return (
-        <div className={"collection-item avatar certs-collection valign-wrapper"} style={{ paddingTop: "5px", paddingBottom: "5px" }} >
+        <div className={"collection-item avatar certs-collection valign-wrapper"}
+          style={{ paddingTop: "5px", paddingBottom: "5px" }}
+          key={value.id} >
           <div className="col s1" style={{ width: "15%" }}>
             <div className={icon} />
           </div>
@@ -252,7 +253,6 @@ export default connect((state) => {
     filesMap: state.multiOperations.files,
     isPerformed: state.multiOperations.performed,
     operations: state.multiOperations.operations,
-    originalFiles: mapToArr(originalSelector(state)),
     results: state.multiOperations.results,
     selectedDocs: state.multiOperations.selected,
     setting: state.settings.getIn(["entities", state.settings.default]),

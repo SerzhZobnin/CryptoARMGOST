@@ -139,6 +139,7 @@ export function multiDirectOperation(
             signedFiles.push({ ...newFileProps, originalId: file.id, originalFullpath: file.fullpath });
 
             directResult.results.push({
+              id: Date.now() + Math.random(),
               in: {
                 ...file.toJS(),
               },
@@ -164,6 +165,7 @@ export function multiDirectOperation(
             packageResult = false;
 
             directResult.results.push({
+              id: Date.now() + Math.random(),
               in: {
                 ...file.toJS(),
               },
@@ -211,6 +213,7 @@ export function multiDirectOperation(
         const newFileProps = getFileProps(archiveName);
 
         directResult.results.push({
+          id: Date.now() + Math.random(),
           in: filesForArchive,
           operation: ARCHIVATION_OPERATION,
           out: {
@@ -303,6 +306,7 @@ export function multiDirectOperation(
             const newFileProps = getFileProps(newPath);
 
             directResult.results.push({
+              id: Date.now() + Math.random(),
               in: { ...file },
               operation: ENCRYPTION_OPERATION,
               out: {
@@ -360,6 +364,7 @@ export function multiDirectOperation(
             packageResult = false;
 
             directResult.results.push({
+              id: Date.now() + Math.random(),
               in: { ...file },
               operation: ENCRYPTION_OPERATION,
               out: null,
@@ -488,6 +493,7 @@ const reverseOperations = async (file: any, reverseFiles: any, packageResult: IP
         packageResult.packageResult = false;
 
         reverseResult.results.push({
+          id: Date.now() + Math.random(),
           in: { ...file },
           operation: "decryption_operation",
           out: null,
@@ -509,6 +515,7 @@ const reverseOperations = async (file: any, reverseFiles: any, packageResult: IP
         const newFileProps = { ...getFileProps(newPath), originalId: file.id };
 
         reverseResult.results.push({
+          id: Date.now() + Math.random(),
           in: { ...file },
           operation: "unsign_operation",
           out: {
@@ -536,6 +543,7 @@ const reverseOperations = async (file: any, reverseFiles: any, packageResult: IP
         packageResult.packageResult = false;
 
         reverseResult.results.push({
+          id: Date.now() + Math.random(),
           in: { ...file },
           operation: "unsign_operation",
           out: null,
@@ -585,6 +593,7 @@ async function uzipAndWriteSync(file: any, reverseFiles: any, packageResult: IPa
   }
 
   reverseResult.results.push({
+    id: Date.now() + Math.random(),
     in: { ...file },
     operation: "unzip_operation",
     out: {
