@@ -28,14 +28,17 @@ interface ISignParams {
   ocspModel: IOcspModel;
 }
 
-const cleanTempDirectorySync = () => {
+const getTempDirectoryFiles = () => {
+  const files: string[] = [];
   if (dirExists(DEFAULT_TEMP_PATH)) {
     fs.readdirSync(DEFAULT_TEMP_PATH).forEach((file) => {
       const fullpath = path.join(DEFAULT_TEMP_PATH, file);
 
-      fs.unlinkSync(fullpath);
+      files.push(fullpath);
     });
   }
+
+  return files;
 };
 
 export function multiDirectOperation(
@@ -50,7 +53,7 @@ export function multiDirectOperation(
       type: MULTI_DIRECT_OPERATION + START,
     });
 
-    cleanTempDirectorySync();
+    const filesForRemoveFromTemp = getTempDirectoryFiles();
 
     let packageResult = true;
     const directResult: any = {};
@@ -415,6 +418,14 @@ export function multiDirectOperation(
 
       dispatch(filePackageDelete(filesId));
 
+      for (const fileForRemove of filesForRemoveFromTemp) {
+        try {
+          fs.unlinkSync(fileForRemove);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
       dispatch({
         payload: { status: packageResult, directResult },
         type: MULTI_DIRECT_OPERATION + SUCCESS,
@@ -437,7 +448,7 @@ export function multiReverseOperation(
       type: MULTI_REVERSE_OPERATION + START,
     });
 
-    cleanTempDirectorySync();
+    const filesForRemoveFromTemp = getTempDirectoryFiles();
 
     const packageResult = { packageResult: true };
     const reverseResult: any = {};
@@ -461,6 +472,14 @@ export function multiReverseOperation(
       reverseResult.files = reverseFiles;
 
       dispatch(removeAllFiles());
+
+      for (const fileForRemove of filesForRemoveFromTemp) {
+        try {
+          fs.unlinkSync(fileForRemove);
+        } catch (e) {
+          console.log(e);
+        }
+      }
 
       dispatch({
         payload: { status: packageResult.packageResult, reverseResult },
