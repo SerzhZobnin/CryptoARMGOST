@@ -486,8 +486,8 @@ const reverseOperations = async (file: any, reverseFiles: any, packageResult: IP
           },
         };
 
-        if (newFileProps.extension === "enc" || newFileProps.extension === "sig") {
-          reverseOperations(newFileProps, reverseFiles, packageResult, reverseResult);
+        if (newFileProps.extension === "enc" || newFileProps.extension === "sig" || newFileProps.extension === "zip") {
+          await reverseOperations(newFileProps, reverseFiles, packageResult, reverseResult);
         }
       } else {
         packageResult.packageResult = false;
@@ -536,8 +536,8 @@ const reverseOperations = async (file: any, reverseFiles: any, packageResult: IP
           },
         };
 
-        if (newFileProps.extension === "enc" || newFileProps.extension === "sig") {
-          reverseOperations(newFileProps, reverseFiles, packageResult, reverseResult);
+        if (newFileProps.extension === "enc" || newFileProps.extension === "sig" || newFileProps.extension === "zip") {
+          await reverseOperations(newFileProps, reverseFiles, packageResult, reverseResult);
         }
       } else {
         packageResult.packageResult = false;
