@@ -19,7 +19,7 @@ import {
 import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import * as trustedEncrypts from "../trusted/encrypt";
 import * as signs from "../trusted/sign";
-import { extFile, fileExists, md5 } from "../utils";
+import { dirExists, extFile, fileExists, md5 } from "../utils";
 import { filePackageDelete, IFile, removeAllFiles } from "./index";
 
 interface ISignParams {
@@ -27,6 +27,16 @@ interface ISignParams {
   tspModel: ITspModel;
   ocspModel: IOcspModel;
 }
+
+const cleanTempDirectorySync = () => {
+  if (dirExists(DEFAULT_TEMP_PATH)) {
+    fs.readdirSync(DEFAULT_TEMP_PATH).forEach((file) => {
+      const fullpath = path.join(DEFAULT_TEMP_PATH, file);
+
+      fs.unlinkSync(fullpath);
+    });
+  }
+};
 
 export function multiDirectOperation(
   files: IFile[],
@@ -39,6 +49,8 @@ export function multiDirectOperation(
       payload: { operations: setting.operations },
       type: MULTI_DIRECT_OPERATION + START,
     });
+
+    cleanTempDirectorySync();
 
     let packageResult = true;
     const directResult: any = {};
@@ -279,6 +291,8 @@ export function multiDirectOperation(
             newoutfolder = outfolder;
           } else if (!archivation_operation && !setting.sign.detached && file.originalFullpath) {
             newoutfolder = path.dirname(file.originalFullpath);
+          } else if (archivation_operation) {
+            newoutfolder = HOME_DIR;
           } else {
             newoutfolder = "";
           }
@@ -422,6 +436,8 @@ export function multiReverseOperation(
     dispatch({
       type: MULTI_REVERSE_OPERATION + START,
     });
+
+    cleanTempDirectorySync();
 
     const packageResult = { packageResult: true };
     const reverseResult: any = {};
@@ -645,6 +661,17 @@ async function archiveFiles(files: any[], folderOut: string): Promise<string> {
     } else {
       outURI = path.join(HOME_DIR, archiveName);
     }
+
+    let indexFile: number = 1;
+    let newOutUri: string = outURI;
+
+    while (fileExists(newOutUri)) {
+      const parsed = path.parse(outURI);
+      newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
+      indexFile++;
+    }
+
+    outURI = newOutUri;
 
     const output = fs.createWriteStream(outURI);
     const archive = window.archiver("zip");
