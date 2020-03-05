@@ -30,7 +30,15 @@ class RenameSettings extends React.Component<IRenameSettingsProps, ICertificateD
   }
 
   componentDidMount() {
-    Materialize.updateTextFields();
+    $(document).on("ready", function() {
+      Materialize.updateTextFields();
+    });
+
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
   }
 
   componentWillUnmount() {

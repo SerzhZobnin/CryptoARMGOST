@@ -71,7 +71,15 @@ class KeyParameters extends React.Component<IKeyParametersProps, {}> {
       $(ReactDOM.findDOMNode(this.refs.templateSelect)).on("change", this.props.handleCATemplateChange);
     }
 
-    Materialize.updateTextFields();
+    $(document).on("ready", function() {
+      Materialize.updateTextFields();
+    });
+
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
   }
 
   componentDidUpdate() {

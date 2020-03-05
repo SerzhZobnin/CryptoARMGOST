@@ -28,7 +28,15 @@ class SaveSettings extends React.Component<ISaveSettingsProps, ICertificateDelet
   }
 
   componentDidMount() {
-    Materialize.updateTextFields();
+    $(document).on("ready", function() {
+      Materialize.updateTextFields();
+    });
+
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
   }
 
   componentWillUnmount() {

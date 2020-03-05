@@ -88,6 +88,8 @@ class FilterDocuments extends React.Component<IFilterDocumentsProps, IDocumentsS
 
     $(document).ready(function () {
       $(".tooltipped").tooltip();
+
+      Materialize.updateTextFields();
     });
 
     $(document).ready(() => {
@@ -96,8 +98,6 @@ class FilterDocuments extends React.Component<IFilterDocumentsProps, IDocumentsS
 
     $(ReactDOM.findDOMNode(this.refs.sizeTypeSelectFrom)).on("change", this.handleChangeSizeTypeFrom);
     $(ReactDOM.findDOMNode(this.refs.sizeTypeSelectTo)).on("change", this.handleChangeSizeTypeTo);
-
-    Materialize.updateTextFields();
   }
 
   componentDidUpdate() {

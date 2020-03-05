@@ -72,7 +72,15 @@ class AddService extends React.Component<IAddServiceProps, IAddServiceState> {
   }
 
   componentDidMount() {
-    Materialize.updateTextFields();
+    $(document).on("ready", function() {
+      Materialize.updateTextFields();
+    });
+
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
   }
 
   componentDidUpdate() {

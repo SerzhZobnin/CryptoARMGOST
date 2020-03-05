@@ -66,7 +66,15 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
       $("select").on("change", self.handleInputChange);
     });
 
-    Materialize.updateTextFields();
+    $(document).on("ready", function() {
+      Materialize.updateTextFields();
+    });
+
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
   }
 
   componentDidUpdate(prevProps: IDSSConnectionProps) {

@@ -91,15 +91,15 @@ class FilterEvents extends React.Component<IFilterEventsProps, IEventsFilters> {
     */
     $(document).ready(() => {
       $("select").material_select();
+
+      Materialize.updateTextFields();
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
       $(".tooltipped").tooltip();
     });
 
     $(ReactDOM.findDOMNode(this.refs.operationSelect)).on("change", this.handleChangeFilterLevel);
-
-    Materialize.updateTextFields();
   }
 
   componentDidUpdate() {

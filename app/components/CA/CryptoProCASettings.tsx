@@ -24,7 +24,15 @@ class CryptoProCASettings extends React.PureComponent<ICryptoProCASettingsProps,
   };
 
   componentDidMount() {
-    Materialize.updateTextFields();
+    $(document).on("ready", function() {
+      Materialize.updateTextFields();
+    });
+
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
   }
 
   componentDidUpdate() {

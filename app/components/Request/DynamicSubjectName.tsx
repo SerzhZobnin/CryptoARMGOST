@@ -97,9 +97,9 @@ class DynamicSubjectName extends React.Component<IDynamicSubjectNameProps, IDyna
       $("select").material_select();
 
       $("select").on("change", self.handleInputChange);
-    });
 
-    Materialize.updateTextFields();
+      Materialize.updateTextFields();
+    });
   }
 
   render() {

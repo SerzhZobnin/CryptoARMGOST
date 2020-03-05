@@ -39,12 +39,18 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
     */
     $(document).ready(() => {
       $("select").material_select();
+
+      Materialize.updateTextFields();
     });
 
     $(ReactDOM.findDOMNode(this.refs.templateSelect)).on("change", this.props.handleTemplateChange);
     $(ReactDOM.findDOMNode(this.refs.countrySelect)).on("change", this.props.handleCountryChange);
 
-    Materialize.updateTextFields();
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
   }
 
   render() {

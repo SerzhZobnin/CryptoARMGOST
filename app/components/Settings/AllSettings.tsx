@@ -51,9 +51,15 @@ class AllSettings extends React.Component<any, {}> {
       outDuration: 225,
     });
 
-    $(document).on("ready", function () {
+    $(document).on("ready", function() {
       Materialize.updateTextFields();
     });
+
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
 
     const signatureStandard = settings.sign.standard;
 

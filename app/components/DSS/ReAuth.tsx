@@ -53,9 +53,15 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       $("select").material_select();
 
       $("select").on("change", self.handleInputChange);
+
+      Materialize.updateTextFields();
     });
 
-    Materialize.updateTextFields();
+    try {
+      Materialize.updateTextFields();
+    } catch (e) {
+      //
+    }
   }
 
   render() {

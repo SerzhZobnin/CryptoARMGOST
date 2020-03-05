@@ -30,7 +30,7 @@ class LoginForm extends React.PureComponent<ILoginFormProps, ILoginFormState> {
   }
 
   componentDidMount() {
-    $(document).on("ready", function () {
+    $(document).on("ready", function() {
       Materialize.updateTextFields();
     });
   }

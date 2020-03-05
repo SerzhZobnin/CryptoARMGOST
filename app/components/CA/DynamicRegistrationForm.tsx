@@ -132,9 +132,9 @@ class DynamicRegistrationForm extends React.Component<IDynamicRegistrationFormPr
       $("select").material_select();
 
       $("select").on("change", self.handleInputChange);
-    });
 
-    Materialize.updateTextFields();
+      Materialize.updateTextFields();
+    });
 
     this.geCAtuserattr();
   }
