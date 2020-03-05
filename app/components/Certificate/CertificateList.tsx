@@ -16,7 +16,6 @@ import RequestCAListItem from "../Request/RequestCAListItem";
 import CertificateListItem from "./CertificateListItem";
 import CertificateListItemBigWidth from "./CertificateListItemBigWidth";
 import CertificateTable from "./CertificateTable";
-import { CA_ENABLED } from "dist/win-unpacked/resources/app/constants";
 
 const HEIGHT_MODAL = 356;
 const HEIGHT_FULL = 432;
@@ -202,13 +201,9 @@ interface IOwnProps {
 }
 
 export default connect((state, ownProps: IOwnProps) => {
-  const filteredCertificatesArr = mapToArr(filteredCertificatesSelector(state, { operation: ownProps.operation }));
-
-  const certrequests = CA_ENABLED ? filteredRequestCASelector(state).concat(filteredCertificatesArr) : filteredCertificatesArr;
-
   return {
     certificates: mapToArr(filteredCertificatesSelector(state, { operation: ownProps.operation })),
-    certrequests,
+    certrequests: filteredRequestCASelector(state).concat(mapToArr(filteredCertificatesSelector(state, { operation: ownProps.operation }))),
     crls: filteredCrlsSelector(state),
     isLoaded: state.certificates.loaded,
     isLoading: state.certificates.loading,
