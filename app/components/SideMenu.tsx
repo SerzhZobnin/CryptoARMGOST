@@ -151,7 +151,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               <Link to={LOCATION_RESULTS_MULTI_OPERATIONS} style={{ height: "33px", padding: "0px" }}>
                 <div className="row nobottom valign-wrapper">
                   <div className="col" style={{ width: "36px" }}>
-                    <i className="material-icons left container" />
+                    <i className="material-icons left journal" />
                   </div>
                   <div className="col">
                     {localize("Operations.last_operation_result", locale)}
