@@ -1211,101 +1211,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           const newPath = trustedSign.resignFile(file.fullpath, cert, policies, signParams, format, folderOut);
 
           if (newPath) {
-            if (file.socket) {
-              const connection = connections.getIn(["entities", file.socket]);
-
-              if (connection && connection.connected && connection.socket) {
-                connection.socket.emit(SIGNED, { id: file.remoteId });
-              } else if (connectedList.length) {
-                const connectedSocket = connectedList[0].socket;
-
-                connectedSocket.emit(SIGNED, { id: file.remoteId });
-                connectedSocket.broadcast.emit(SIGNED, { id: file.remoteId });
-              }
-
-              if (uploader) {
-                let cms = trustedSign.loadSign(newPath);
-
-                if (cms.isDetached()) {
-                  if (!(cms = trustedSign.setDetachedContent(cms, newPath))) {
-                    throw new Error(("err"));
-                  }
-                }
-
-                const signatureInfo = trustedSign.getSignPropertys(cms);
-
-                const normalyzeSignatureInfo: any[] = [];
-
-                signatureInfo.forEach((info) => {
-                  const subjectCert = info.certs[info.certs.length - 1];
-                  let x509;
-
-                  if (subjectCert.object) {
-                    try {
-                      let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
-
-                      cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
-                      cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
-                      cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
-
-                      x509 = cmsContext;
-                    } catch (e) {
-                      //
-                    }
-                  }
-
-                  normalyzeSignatureInfo.push({
-                    serialNumber: subjectCert.serial,
-                    subjectFriendlyName: info.subject,
-                    issuerFriendlyName: subjectCert.issuerFriendlyName,
-                    notBefore: new Date(subjectCert.notBefore).getTime(),
-                    notAfter: new Date(subjectCert.notAfter).getTime(),
-                    digestAlgorithm: subjectCert.signatureDigestAlgorithm,
-                    organizationName: subjectCert.organizationName,
-                    signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
-                    subjectName: subjectCert.subjectName,
-                    issuerName: subjectCert.issuerName,
-                    x509,
-                  });
-                });
-
-                window.request.post({
-                  formData: {
-                    extra: JSON.stringify(file.extra),
-                    file: fs.createReadStream(newPath),
-                    id: file.remoteId,
-                    signers: JSON.stringify(normalyzeSignatureInfo),
-                  },
-                  url: uploader,
-                }, (err) => {
-                  if (err) {
-                    if (connection && connection.connected && connection.socket) {
-                      connection.socket.emit(ERROR, { id: file.remoteId, error: err });
-                    } else if (connectedList.length) {
-                      const connectedSocket = connectedList[0].socket;
-
-                      connectedSocket.emit(ERROR, { id: file.remoteId, error: err });
-                      connectedSocket.broadcast.emit(ERROR, { id: file.remoteId, error: err });
-                    }
-                  } else {
-                    if (connection && connection.connected && connection.socket) {
-                      connection.socket.emit(UPLOADED, { id: file.remoteId });
-                    } else if (connectedList.length) {
-                      const connectedSocket = connectedList[0].socket;
-
-                      connectedSocket.emit(UPLOADED, { id: file.remoteId });
-                      connectedSocket.broadcast.emit(UPLOADED, { id: file.remoteId });
-                    }
-                  }
-
-                  deleteFile(file.id);
-                },
-                );
-              }
-            } else {
-              deleteFile(file.id);
-              selectFile(newPath);
-            }
+            deleteFile(file.id);
+            selectFile(newPath);
           } else {
             res = false;
           }
@@ -1448,17 +1355,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           if (newPath) {
             activeFilesArr.forEach((file) => {
               deleteFile(file.id);
-              if (file.socket) {
-                const connection = connections.getIn(["entities", file.socket]);
-                if (connection && connection.connected && connection.socket) {
-                  connection.socket.emit(ENCRYPTED, { id: file.remoteId });
-                } else if (connectedList.length) {
-                  const connectedSocket = connectedList[0].socket;
-
-                  connectedSocket.emit(ENCRYPTED, { id: file.remoteId });
-                  connectedSocket.broadcast.emit(ENCRYPTED, { id: file.remoteId });
-                }
-              }
             });
             selectFile(newPath);
           } else {
@@ -1492,18 +1388,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           if (newPath) {
             deleteFile(file.id);
             selectFile(newPath);
-
-            if (file.socket) {
-              const connection = connections.getIn(["entities", file.socket]);
-              if (connection && connection.connected && connection.socket) {
-                connection.socket.emit(ENCRYPTED, { id: file.remoteId });
-              } else if (connectedList.length) {
-                const connectedSocket = connectedList[0].socket;
-
-                connectedSocket.emit(ENCRYPTED, { id: file.remoteId });
-                connectedSocket.broadcast.emit(ENCRYPTED, { id: file.remoteId });
-              }
-            }
           } else {
             res = false;
           }
@@ -1613,18 +1497,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           if (newPath) {
             deleteFile(file.id);
             selectFile(newPath);
-
-            if (file.socket) {
-              const connection = connections.getIn(["entities", file.socket]);
-              if (connection && connection.connected && connection.socket) {
-                connection.socket.emit(DECRYPTED, { id: file.remoteId });
-              } else if (connectedList.length) {
-                const connectedSocket = connectedList[0].socket;
-
-                connectedSocket.emit(DECRYPTED, { id: file.remoteId });
-                connectedSocket.broadcast.emit(DECRYPTED, { id: file.remoteId });
-              }
-            }
           } else {
             res = false;
           }
@@ -1805,14 +1677,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     if (loadingFiles.length) {
       return true;
-    }
-
-    if (files.length) {
-      for (const file of files) {
-        if (file.socket) {
-          return true;
-        }
-      }
     }
 
     return false;

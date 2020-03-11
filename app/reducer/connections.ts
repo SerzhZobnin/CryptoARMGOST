@@ -4,7 +4,6 @@ import { ADD_CONNECTION, ADD_LICENSE, DELETE_ALL_TEMPORY_LICENSES, REMOVE_CONNEC
 const ConnectionModel = Record({
   connected: false,
   id: null,
-  socket: null,
 });
 
 const LicenseModel = Record({
@@ -24,7 +23,6 @@ export default (connections = new DefaultReducerState(), action) => {
     case ADD_CONNECTION:
       return connections.setIn(["entities", payload.id], new ConnectionModel({
         id: payload.id,
-        socket: payload.socket,
       }));
 
     case ADD_LICENSE:

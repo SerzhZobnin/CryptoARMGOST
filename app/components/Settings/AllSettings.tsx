@@ -228,14 +228,6 @@ class AllSettings extends React.Component<any, {}> {
       return true;
     }
 
-    if (files && files.length) {
-      for (const file of files) {
-        if (file.socket) {
-          return true;
-        }
-      }
-    }
-
     return false;
   }
 

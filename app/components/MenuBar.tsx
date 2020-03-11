@@ -20,9 +20,6 @@ import AskSaveSetting from "./Settings/AskSaveSetting";
 import LocaleSelect from "./Settings/LocaleSelect";
 import SideMenu from "./SideMenu";
 
-// tslint:disable-next-line:no-var-requires
-require("../server/socketManager");
-
 const remote = window.electron.remote;
 if (remote.getGlobal("sharedObject").logcrypto) {
   window.logger = trusted.common.Logger.start(TRUSTED_CRYPTO_LOG);
@@ -197,19 +194,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
   }
 
   isFilesFromSocket = () => {
-    const { files, loadingFiles } = this.props;
-
-    if (loadingFiles.length) {
-      return true;
-    }
-
-    if (files.length) {
-      for (const file of files) {
-        if (file.socket) {
-          return true;
-        }
-      }
-    }
+    const { files } = this.props;
 
     return false;
   }
@@ -222,19 +207,6 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
     for (const file of files) {
       filePackage.push(file.id);
-
-      if (file.socket) {
-        const connection = connections.getIn(["entities", file.socket]);
-
-        if (connection && connection.connected && connection.socket) {
-          connection.socket.emit(CANCELLED, { id: file.remoteId });
-        } else if (connectedList.length) {
-          const connectedSocket = connectedList[0].socket;
-
-          connectedSocket.emit(CANCELLED, { id: file.remoteId });
-          connectedSocket.broadcast.emit(CANCELLED, { id: file.remoteId });
-        }
-      }
     }
 
     filePackageDelete(filePackage);

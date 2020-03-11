@@ -259,19 +259,6 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
       if (!filesInTransactionList.includes(file.id)) {
         filePackage.push(file.id);
       }
-
-      if (file.socket) {
-        const connection = connections.getIn(["entities", file.socket]);
-
-        if (connection && connection.connected && connection.socket) {
-          connection.socket.emit(CANCELLED, { id: file.remoteId });
-        } else if (connectedList.length) {
-          const connectedSocket = connectedList[0].socket;
-
-          connectedSocket.emit(CANCELLED, { id: file.remoteId });
-          connectedSocket.broadcast.emit(CANCELLED, { id: file.remoteId });
-        }
-      }
     }
 
     filePackageDelete(filePackage);
@@ -330,14 +317,6 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
     if (loadingFiles.length) {
       return true;
-    }
-
-    if (files.length) {
-      for (const file of files) {
-        if (file.socket) {
-          return true;
-        }
-      }
     }
 
     return false;

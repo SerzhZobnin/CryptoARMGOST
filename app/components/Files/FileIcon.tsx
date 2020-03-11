@@ -11,7 +11,6 @@ interface IFileRedux {
   fullpath: string;
   id: number;
   mtime: Date;
-  socket: string;
 }
 
 interface IFileIconProps {

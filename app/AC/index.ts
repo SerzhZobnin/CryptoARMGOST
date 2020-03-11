@@ -43,14 +43,12 @@ export interface IFile {
   active: boolean;
   extra: any;
   remoteId?: string;
-  socket?: string;
 }
 
 interface IFilePath {
   fullpath: string;
   extra?: any;
   remoteId?: string;
-  socket?: string;
 }
 
 interface INormalizedSignInfo {
@@ -98,121 +96,7 @@ export function packageSign(
         const newPath = folderOutDSS ? folderOutDSS[i] : signs.signFile(file.fullpath, cert, policies, params, format, folderOut);
         if (newPath) {
           signedFileIdPackage.push(file.id);
-          if (!file.socket) {
-            signedFilePackage.push({ fullpath: newPath });
-          }
-
-          if (file.socket) {
-            const connection = connections.getIn(["entities", file.socket]);
-            const connectedList = connectedSelector(state, { connected: true });
-
-            if (connection && connection.connected && connection.socket) {
-              connection.socket.emit(SIGNED, { id: file.remoteId });
-            } else if (connectedList.length) {
-              const connectedSocket = connectedList[0].socket;
-
-              connectedSocket.emit(SIGNED, { id: file.remoteId });
-              connectedSocket.broadcast.emit(SIGNED, { id: file.remoteId });
-            }
-
-            try {
-              fs.unlinkSync(file.fullpath);
-            } catch (e) {
-              //
-            }
-
-            if (remoteFiles.uploader) {
-              let cms = signs.loadSign(newPath);
-
-              if (cms.isDetached()) {
-                // tslint:disable-next-line:no-conditional-assignment
-                if (!(cms = signs.setDetachedContent(cms, newPath))) {
-                  throw new Error(("err"));
-                }
-              }
-
-              const signatureInfo = signs.getSignPropertys(cms);
-
-              const normalyzeSignatureInfo: INormalizedSignInfo[] = [];
-
-              signatureInfo.forEach((info: any) => {
-                const subjectCert = info.certs[info.certs.length - 1];
-
-                let x509;
-
-                if (subjectCert.object) {
-                  try {
-                    let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
-
-                    cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
-                    cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
-                    cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
-
-                    x509 = cmsContext;
-                  } catch (e) {
-                    //
-                  }
-                }
-
-                normalyzeSignatureInfo.push({
-                  serialNumber: subjectCert.serial,
-                  digestAlgorithm: subjectCert.signatureDigestAlgorithm,
-                  issuerFriendlyName: subjectCert.issuerFriendlyName,
-                  issuerName: subjectCert.issuerName,
-                  notAfter: new Date(subjectCert.notAfter).getTime(),
-                  notBefore: new Date(subjectCert.notBefore).getTime(),
-                  organizationName: subjectCert.organizationName,
-                  signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
-                  subjectFriendlyName: info.subject,
-                  subjectName: subjectCert.subjectName,
-                  x509,
-                });
-              });
-
-              window.request.post({
-                formData: {
-                  extra: JSON.stringify(file.extra),
-                  file: fs.createReadStream(newPath),
-                  id: file.remoteId,
-                  signers: JSON.stringify(normalyzeSignatureInfo),
-                },
-                url: remoteFiles.uploader,
-              }, (err: Error) => {
-                if (err) {
-                  if (connection && connection.connected && connection.socket) {
-                    connection.socket.emit(ERROR, { id: file.remoteId, error: err });
-                  } else if (connectedList.length) {
-                    const connectedSocket = connectedList[0].socket;
-
-                    connectedSocket.emit(ERROR, { id: file.remoteId, error: err });
-                    connectedSocket.broadcast.emit(ERROR, { id: file.remoteId, error: err });
-                  }
-                } else {
-                  if (connection && connection.connected && connection.socket) {
-                    connection.socket.emit(UPLOADED, { id: file.remoteId });
-                  } else if (connectedList.length) {
-                    const connectedSocket = connectedList[0].socket;
-
-                    connectedSocket.emit(UPLOADED, { id: file.remoteId });
-                    connectedSocket.broadcast.emit(UPLOADED, { id: file.remoteId });
-                  }
-
-                  dispatch({
-                    payload: { id: file.id },
-                    type: DELETE_FILE,
-                  });
-                }
-
-                try {
-                  fs.unlinkSync(newPath);
-                } catch (e) {
-                  //
-                }
-              },
-              );
-            }
-          }
-
+          signedFilePackage.push({ fullpath: newPath });
         } else {
           packageSignResult = false;
         }
@@ -256,114 +140,7 @@ export function packageReSign(
         const newPath = folderOutDSS ? folderOutDSS[i] : signs.signFile(file.fullpath, cert, policies, null, format, folderOut);
         if (newPath) {
           signedFileIdPackage.push(file.id);
-          if (!file.socket) {
-            signedFilePackage.push({ fullpath: newPath });
-          }
-
-          if (file.socket) {
-            const connection = connections.getIn(["entities", file.socket]);
-            const connectedList = connectedSelector(state, { connected: true });
-
-            if (connection && connection.connected && connection.socket) {
-              connection.socket.emit(SIGNED, { id: file.remoteId });
-            } else if (connectedList.length) {
-              const connectedSocket = connectedList[0].socket;
-
-              connectedSocket.emit(SIGNED, { id: file.remoteId });
-              connectedSocket.broadcast.emit(SIGNED, { id: file.remoteId });
-            }
-
-            if (remoteFiles.uploader) {
-              let cms = signs.loadSign(newPath);
-
-              if (cms.isDetached()) {
-                // tslint:disable-next-line:no-conditional-assignment
-                if (!(cms = signs.setDetachedContent(cms, newPath))) {
-                  throw new Error(("err"));
-                }
-              }
-
-              const signatureInfo = signs.getSignPropertys(cms);
-
-              const normalyzeSignatureInfo: INormalizedSignInfo[] = [];
-
-              signatureInfo.forEach((info: any) => {
-                const subjectCert = info.certs[info.certs.length - 1];
-
-                let x509;
-
-                if (subjectCert.object) {
-                  try {
-                    let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
-
-                    cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
-                    cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
-                    cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
-
-                    x509 = cmsContext;
-                  } catch (e) {
-                    //
-                  }
-                }
-
-                normalyzeSignatureInfo.push({
-                  serialNumber: subjectCert.serial,
-                  digestAlgorithm: subjectCert.signatureDigestAlgorithm,
-                  issuerFriendlyName: subjectCert.issuerFriendlyName,
-                  issuerName: subjectCert.issuerName,
-                  notAfter: new Date(subjectCert.notAfter).getTime(),
-                  notBefore: new Date(subjectCert.notBefore).getTime(),
-                  organizationName: subjectCert.organizationName,
-                  signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
-                  subjectFriendlyName: info.subject,
-                  subjectName: subjectCert.subjectName,
-                  x509,
-                });
-              });
-
-              window.request.post({
-                formData: {
-                  extra: JSON.stringify(file.extra),
-                  file: fs.createReadStream(newPath),
-                  id: file.remoteId,
-                  signers: JSON.stringify(normalyzeSignatureInfo),
-                },
-                url: remoteFiles.uploader,
-              }, (err: Error) => {
-                if (err) {
-                  if (connection && connection.connected && connection.socket) {
-                    connection.socket.emit(ERROR, { id: file.remoteId, error: err });
-                  } else if (connectedList.length) {
-                    const connectedSocket = connectedList[0].socket;
-
-                    connectedSocket.emit(ERROR, { id: file.remoteId, error: err });
-                    connectedSocket.broadcast.emit(ERROR, { id: file.remoteId, error: err });
-                  }
-                } else {
-                  if (connection && connection.connected && connection.socket) {
-                    connection.socket.emit(UPLOADED, { id: file.remoteId });
-                  } else if (connectedList.length) {
-                    const connectedSocket = connectedList[0].socket;
-
-                    connectedSocket.emit(UPLOADED, { id: file.remoteId });
-                    connectedSocket.broadcast.emit(UPLOADED, { id: file.remoteId });
-                  }
-
-                  dispatch({
-                    payload: { id: file.id },
-                    type: DELETE_FILE,
-                  });
-                }
-
-                try {
-                  fs.unlinkSync(newPath);
-                } catch (e) {
-                  //
-                }
-              },
-              );
-            }
-          }
+          signedFilePackage.push({ fullpath: newPath });
 
         } else {
           packageSignResult = false;
@@ -392,7 +169,7 @@ export function filePackageSelect(files: IFilePath[]) {
       const filePackage: IFile[] = [];
 
       files.forEach((file: IFilePath) => {
-        const { fullpath, extra, remoteId, socket } = file;
+        const { fullpath, extra, remoteId } = file;
         const stat = fs.statSync(fullpath);
         const extension = extFile(fullpath);
 
@@ -407,7 +184,6 @@ export function filePackageSelect(files: IFilePath[]) {
           mtime: stat.birthtime,
           remoteId,
           size: stat.size,
-          socket,
         };
 
         filePackage.push(fileProps);
@@ -613,7 +389,7 @@ export function activeContainer(container: number) {
   };
 }
 
-export function selectFile(fullpath: string, name?: string, mtime?: Date, size?: number, remoteId?: string, socket?: string) {
+export function selectFile(fullpath: string, name?: string, mtime?: Date, size?: number, remoteId?: string) {
   let stat;
 
   if (!fileExists(fullpath)) {
@@ -635,7 +411,6 @@ export function selectFile(fullpath: string, name?: string, mtime?: Date, size?:
     remoteId,
     id: md5(fullpath),
     filesize: size ? size : (stat ? stat.size : undefined),
-    socket,
   };
 
   return {
@@ -688,20 +463,6 @@ export function verifySignature(fileId: string, showOpenDialogForDetached: boole
 
       signaruteStatus = signs.verifySign(cms);
       signatureInfo = signs.getSignPropertys(cms);
-
-      if (file.socket) {
-        const connectedList = connectedSelector(state, { connected: true });
-        const connection = connections.getIn(["entities", file.socket]);
-
-        if (connection && connection.connected && connection.socket) {
-          connection.socket.emit(VERIFIED, signatureInfo);
-        } else if (connectedList.length) {
-          const connectedSocket = connectedList[0].socket;
-
-          connectedSocket.emit(VERIFIED, signatureInfo);
-          connectedSocket.broadcast.emit(VERIFIED, signatureInfo);
-        }
-      }
 
       signatureInfo = signatureInfo.map((info: any) => {
         return {
