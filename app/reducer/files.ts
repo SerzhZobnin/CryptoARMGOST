@@ -17,7 +17,6 @@ export const FileModel = Record({
   id: null,
   mtime: null,
   remoteId: null,
-  socket: null,
 });
 
 const DefaultReducerState = Record({

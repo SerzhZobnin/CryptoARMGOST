@@ -33,7 +33,7 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
     }
 
     const isResultsWindow = location.pathname === LOCATION_RESULTS_MULTI_OPERATIONS;
-    const classDisabled = file.socket || filesInTransactionList.includes(file.id) ? "disabled" : "";
+    const classDisabled = filesInTransactionList.includes(file.id) ? "disabled" : "";
 
     return (
       <div className="row nobottom" style={isResultsWindow ? { width: "120px" } : { width: "160px" }}>

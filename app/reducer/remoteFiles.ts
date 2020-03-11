@@ -7,7 +7,6 @@ export interface IRemoteFile {
   loaded: boolean;
   loading: boolean;
   name: string;
-  socketId: string;
   totalSize: number;
   url: string;
 }
@@ -18,7 +17,6 @@ const FileModel = Record({
   loaded: false,
   loading: false,
   name: null,
-  socketId: null,
   totalSize: null,
   url: null,
 });

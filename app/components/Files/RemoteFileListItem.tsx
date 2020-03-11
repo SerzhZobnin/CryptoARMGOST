@@ -7,7 +7,6 @@ interface IFileRemote {
   loaded: boolean;
   loading: boolean;
   name: string;
-  socketId: string;
   totalSize: number;
   url: string;
 }

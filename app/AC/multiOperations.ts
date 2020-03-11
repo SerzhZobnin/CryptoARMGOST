@@ -667,7 +667,6 @@ const getFileProps = (fullpath: string) => {
     mtime: stat.birthtime,
     remoteId: undefined,
     size: stat.size,
-    socket: undefined,
   };
 };
 

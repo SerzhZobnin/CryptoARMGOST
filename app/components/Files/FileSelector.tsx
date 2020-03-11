@@ -25,13 +25,11 @@ interface IFile {
   type: string;
   webkitRelativePath: string;
   remoteId?: string;
-  socket?: string;
 }
 
 interface IFilePath {
   fullpath: string;
   extra?: any;
-  socket?: string;
 }
 
 interface IFileRedux {
@@ -42,7 +40,6 @@ interface IFileRedux {
   id: number;
   mtime: Date;
   remoteId: string;
-  socket: string;
 }
 
 export interface IRemoteFile {
@@ -51,7 +48,6 @@ export interface IRemoteFile {
   loaded: boolean;
   loading: boolean;
   name: string;
-  socketId: string;
   totalSize: number;
   url: string;
 }
@@ -261,14 +257,6 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
 
     if (loadingFiles.length) {
       return true;
-    }
-
-    if (files.length) {
-      for (const file of files) {
-        if (file.socket) {
-          return true;
-        }
-      }
     }
 
     return false;

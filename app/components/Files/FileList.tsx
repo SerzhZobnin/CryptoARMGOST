@@ -20,7 +20,6 @@ interface IFileRedux {
   fullpath: string;
   id: number;
   mtime: Date;
-  socket: string;
 }
 
 export interface IRemoteFile {
@@ -29,7 +28,6 @@ export interface IRemoteFile {
   loaded: boolean;
   loading: boolean;
   name: string;
-  socketId: string;
   totalSize: number;
   url: string;
 }
@@ -168,9 +166,7 @@ class FileList extends React.Component<IFilelistProps, {}> {
   }
 
   onClick = (file: IFileRedux) => {
-    if (!file.socket) {
-      this.toggleActive(file);
-    }
+    this.toggleActive(file);
   }
 
   noGridOverflow() {

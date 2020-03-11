@@ -23,7 +23,6 @@ interface IFileRedux {
   fullpath: string;
   id: number;
   mtime: Date;
-  socket: string;
 }
 
 export interface IRemoteFile {
@@ -32,7 +31,6 @@ export interface IRemoteFile {
   loaded: boolean;
   loading: boolean;
   name: string;
-  socketId: string;
   totalSize: number;
   url: string;
 }
@@ -262,9 +260,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
   }
 
   handleOnRowClick = ({ rowData }: { rowData: any }) => {
-    if (!rowData.socket) {
-      this.props.activeFile(rowData.id, !rowData.active);
-    }
+    this.props.activeFile(rowData.id, !rowData.active);
   }
 
   handleScrollToBefore = () => {
