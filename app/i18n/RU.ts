@@ -410,7 +410,7 @@ export default {
     GOST_R3412_2015_K: "ГОСТ Р 34.12-2015 Кузнечик",
     GOST_R3412_2015_M: "ГОСТ Р 34.12-2015 Магма",
     archive_files_before: "Архивировать перед шифрованием",
-    archive_name: "encrypt_files.zip",
+    archive_name: "archived.zip",
     decrypt: "Расшифровать",
     decrypt_key_failed: "Не удалось найти ключ",
     delete_files_after: "Удалить файлы после шифрования",

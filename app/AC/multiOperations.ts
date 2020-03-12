@@ -673,7 +673,7 @@ const getFileProps = (fullpath: string) => {
 async function archiveFiles(files: any[], folderOut: string): Promise<string> {
   return new Promise((resolve, reject) => {
     let outURI: string;
-    const archiveName = files.length === 1 ? `${files[0].filename}.zip` : "encrypt_files.zip";
+    const archiveName = files.length === 1 ? `${files[0].filename}.zip` : "archived.zip";
     if (folderOut.length > 0) {
       outURI = path.join(folderOut, archiveName);
     } else {

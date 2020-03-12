@@ -410,7 +410,7 @@ export default {
     GOST_R3412_2015_K: "GOST R 34.12 2015 Kuznechik",
     GOST_R3412_2015_M: "GOST R 34.12 2015 Magma",
     archive_files_before: "Archive files before encryption",
-    archive_name: "encrypt_files.zip",
+    archive_name: "archived.zip",
     decrypt: "Decrypt",
     decrypt_key_failed: "The private key is not found",
     delete_files_after: "Delete files after encryption",
