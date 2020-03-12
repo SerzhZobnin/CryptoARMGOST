@@ -125,13 +125,13 @@
                     {
                         "Name":"keyAgreement",
                         "LocalizedName":"Согласование",
-                        "DefaultValue":true,
+                        "DefaultValue":false,
                         "ProhibitChange":true
                     },
                     {
                         "Name":"keyEncipherment",
                         "LocalizedName":"Шифрование ключа",
-                        "DefaultValue":false,
+                        "DefaultValue":true,
                         "ProhibitChange":true
                     },
                     {
@@ -325,13 +325,13 @@
                     {
                         "Name":"keyAgreement",
                         "LocalizedName":"Согласование",
-                        "DefaultValue":true,
+                        "DefaultValue":false,
                         "ProhibitChange":true
                     },
                     {
                         "Name":"keyEncipherment",
                         "LocalizedName":"Шифрование ключа",
-                        "DefaultValue":false,
+                        "DefaultValue":true,
                         "ProhibitChange":true
                     },
                     {
@@ -513,13 +513,13 @@
                     {
                         "Name":"keyAgreement",
                         "LocalizedName":"Согласование",
-                        "DefaultValue":true,
+                        "DefaultValue":false,
                         "ProhibitChange":true
                     },
                     {
                         "Name":"keyEncipherment",
                         "LocalizedName":"Шифрование ключа",
-                        "DefaultValue":false,
+                        "DefaultValue":true,
                         "ProhibitChange":true
                     },
                     {
@@ -773,13 +773,13 @@
                     {
                         "Name":"keyAgreement",
                         "LocalizedName":"Согласование",
-                        "DefaultValue":true,
+                        "DefaultValue":false,
                         "ProhibitChange":true
                     },
                     {
                         "Name":"keyEncipherment",
                         "LocalizedName":"Шифрование ключа",
-                        "DefaultValue":false,
+                        "DefaultValue":true,
                         "ProhibitChange":true
                     },
                     {
@@ -973,13 +973,13 @@
                     {
                         "Name":"keyAgreement",
                         "LocalizedName":"Согласование",
-                        "DefaultValue":true,
+                        "DefaultValue":false,
                         "ProhibitChange":true
                     },
                     {
                         "Name":"keyEncipherment",
                         "LocalizedName":"Шифрование ключа",
-                        "DefaultValue":false,
+                        "DefaultValue":true,
                         "ProhibitChange":true
                     },
                     {
@@ -1185,13 +1185,13 @@
                     {
                         "Name":"keyAgreement",
                         "LocalizedName":"Согласование",
-                        "DefaultValue":true,
+                        "DefaultValue":false,
                         "ProhibitChange":true
                     },
                     {
                         "Name":"keyEncipherment",
                         "LocalizedName":"Шифрование ключа",
-                        "DefaultValue":false,
+                        "DefaultValue":true,
                         "ProhibitChange":true
                     },
                     {
