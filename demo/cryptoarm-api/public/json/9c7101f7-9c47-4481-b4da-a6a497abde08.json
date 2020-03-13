@@ -1,0 +1,22 @@
+{
+    "jsonrpc":"2.0",
+    "method":"verify",
+    "params":{
+        "license":"",
+        "token":"",
+        "files":[
+            {
+                "name":"file1.txt.sig",
+                "url":"http://localhost:8080/public/files/file1.txt.sig",
+                "id":2,
+                "urlSign":""
+            }
+        ],
+        "extra":{
+            "token":"9c7101f7-9c47-4481-b4da-a6a497abde08",
+            "signType":"1",
+            "signStandart":"1"
+        },
+        "uploader":"http://localhost:8080/upload"
+    }
+}
