@@ -9,6 +9,7 @@ global.globalObj = {
 };
 
 const gotInstanceLock = app.requestSingleInstanceLock();
+const path = require('path');
 
 if (!gotInstanceLock) {
   app.quit();
@@ -31,7 +32,6 @@ global.sharedObject.isQuiting = false;
 
 if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
   require('electron-debug')();
-  const path = require('path');
   const p = path.join(__dirname, '..', 'app', 'node_modules');
   require('module').globalPaths.push(p);
 }
@@ -64,6 +64,21 @@ app.on('ready', async () => {
 
   app.commandLine.appendSwitch('ignore-certificate-errors');
 
+  let iconPath;
+  switch (process.platform) {
+    case "win32":
+      iconPath = 'resources/cryptoarm-gost.ico';
+      break;
+
+    case "linux":
+      iconPath = 'resources/cryptoarm-gost.png';
+      break;
+
+    case "darwin":
+      iconPath = 'resources/cryptoarm-gost.icns';
+      break;
+  }
+
   mainWindow = new BrowserWindow({
     minWidth: 900, minHeight: 700,
     width: 900, height: 700,
@@ -72,7 +87,8 @@ app.on('ready', async () => {
     show: false,
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+    icon: path.join(__dirname, iconPath)
   });
 
 
@@ -82,7 +98,8 @@ app.on('ready', async () => {
     resizable: false,
     frame: false,
     toolbar: false,
-    show: false
+    show: false,
+    icon: path.join(__dirname, iconPath)
   });
 
   mainWindow.loadURL(`file://${__dirname}/resources/index.html`);
