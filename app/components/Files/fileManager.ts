@@ -13,7 +13,20 @@ const ipcRenderer = window.electron.ipcRenderer;
 
 ipcRenderer.on("cmdArgs", (event, cmdArgs) => {
   if (cmdArgs && Array.isArray(cmdArgs) && cmdArgs.length >= 2) {
-    const openFilePath = cmdArgs[1];
+
+    var openFilePath = cmdArgs[1];
+
+    if( cmdArgs.length > 2 ) {
+      // skip switches like --allow-file-access-from-files
+      var arrLen = cmdArgs.length;
+      for(var i = 1; i < arrLen; i++) {
+        openFilePath = cmdArgs[i];
+        // Full file path can cannot start with "--" on any platform
+        if( 0 !== openFilePath.indexOf("--")) {
+          break;
+        }
+      }
+    }
 
     openFile(openFilePath);
   }
