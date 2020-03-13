@@ -2,15 +2,31 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Demo</title>
+  <title>Demo cryptoarm-api</title>
 </head>
 
 <body>
   <h1>Work with cryptoarm-api</h1>
 
-  <h3> For view events open web console in developer tools your browser</h3>
-
+  <h3>We use custom protocol: cryptoarm://</h3>
   <br />
+
+  <a>Sign one file:</a>
+  <br />
+  <a
+    href="cryptoarm://localhost:8080/json?accessToken=efac5229-0595-41e9-b1aa-7df406539b87">cryptoarm://localhost:8080/json?accessToken=efac5229-0595-41e9-b1aa-7df406539b87</a>
+  <br />
+  <br />
+  <a>Sign multi files:</a>
+  <br />
+  <a
+    href="cryptoarm://localhost:8080/json?accessToken=2c48eb32-a0a8-405c-ade9-eed130605cba">cryptoarm://localhost:8080/json?accessToken=2c48eb32-a0a8-405c-ade9-eed130605cba</a>
+  <br />
+  <br />
+  <a>Verify signature:</a>
+  <br />
+  <a
+    href="cryptoarm://localhost:8080/json?accessToken=9c7101f7-9c47-4481-b4da-a6a497abde08">cryptoarm://localhost:8080/json?accessToken=9c7101f7-9c47-4481-b4da-a6a497abde08</a>
 </body>
 
 </html>
