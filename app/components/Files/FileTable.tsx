@@ -225,7 +225,7 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
                       );
                     }}
                     dataKey="filesize"
-                    width={width * 0.2}
+                    width={width * 0.4}
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
                     label={localize("Documents.filesize", locale)}

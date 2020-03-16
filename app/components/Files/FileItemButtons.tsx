@@ -36,7 +36,7 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
     const classDisabled = filesInTransactionList.includes(file.id) ? "disabled" : "";
 
     return (
-      <div className="row nobottom" style={isResultsWindow ? { width: "120px" } : { width: "160px" }}>
+      <div className="row nobottom" style={isResultsWindow ? { width: "120px" } : { width: "180px" }}>
         {
           file.extension !== "enc" ?
             <div className="col" style={{ width: "40px" }}>
