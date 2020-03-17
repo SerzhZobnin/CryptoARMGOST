@@ -155,9 +155,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       this.handleCloseModalDssResponse();
     }
 
-    if (prevProps.setting.id !== this.props.setting.id) {
-      $(".btn-floated").dropdown();
-    }
+    $(".btn-floated").dropdown();
   }
 
   componentWillUnmount() {
