@@ -39,7 +39,7 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
 
       setTimeout(() => {
         $(".select-dropdown:eq(0)").css("border-bottom", "none");
-        $(".select-dropdown:eq(0)").css("margin", "0");
+        $(".select-dropdown:eq(0)").css("margin", "0px");
         $(".select-dropdown:eq(0)").css("height", "2rem");
       }, 0);
     });
@@ -59,7 +59,7 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
 
   changeStandard = (ev: any) => {
     this.props.handleChange(ev.target.value);
-  }
+  } 
 
   render() {
     const { localize, locale } = this.context;
@@ -68,38 +68,40 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
     const disabled = this.props.disabled || (setting.changed);
 
     return (
-      <div onClick={this.showToast} style={{ maxHeight: "46px" }}>
+      <div onClick={this.showToast} style={{ Height: "46px"}}>
         <div className={`input-field  ${disabled ? "disabled" : ""}`}
-          style={{ marginTop: "0px" }}>
-          <select
-            className="padding-end"
-            disabled={this.props.disabled}
-            id="settingsSelectRef"
-            ref="settingsSelectRef"
-            value={value}
-          >
-            {
-              settings.map((settingItem: any) => {
-                return <option key={settingItem.id} value={settingItem.id}>{settingItem.name}</option>;
-              })
-            }
-          </select>
-          <span
-            className="collection-info"
-            data-error="wrong"
-            data-success="right"
-            onClick={() => setTimeout(() => {
-              $(".select-dropdown:eq(0)").click();
-            }, 0)}
-            style={{ cursor: "pointer" }}>
-            {`Сохранено: ${setting && setting.savetime ? (new Date(setting.savetime)).toLocaleDateString(locale, {
-              day: "numeric",
-              hour: "numeric",
-              minute: "numeric",
-              month: "numeric",
-              year: "numeric",
-            }) : "-"}`}
-          </span>
+          style={{ margin: "0px" }}>
+            <select
+              className="padding-end"
+              disabled={this.props.disabled}
+              id="settingsSelectRef"
+              ref="settingsSelectRef"
+              value={value}
+            > 
+              {
+                
+                settings.map((settingItem: any) => {
+                  return <option key={settingItem.id} value={settingItem.id}>{settingItem.name}</option>;
+                })
+              }
+            </select>
+            <div
+              className="collection-info"
+              data-error="wrong"
+              data-success="right"
+              onClick={() => setTimeout(() => {
+                $(".select-dropdown:eq(0)").click();
+              }, 0)}
+              style={{ cursor: "pointer" }}>
+              {`Сохранено: ${setting && setting.savetime ? (new Date(setting.savetime)).toLocaleDateString(locale, {
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                month: "numeric",
+                year: "numeric",
+              }) : "-"}`}
+            </div>
+          
         </div>
       </div>
     );
