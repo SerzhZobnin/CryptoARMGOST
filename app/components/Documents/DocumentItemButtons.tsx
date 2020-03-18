@@ -3,6 +3,9 @@ import React from "react";
 import { TMP_DIR } from "../../constants";
 import * as signs from "../../trusted/sign";
 import { fileExists } from "../../utils";
+import { connect } from "react-redux";
+import { filesInTransactionsSelector } from "../../selectors";
+import { verifySignature } from "../../AC/index";
 
 const shell = window.electron.shell;
 const dialog = window.electron.remote.dialog;
@@ -10,6 +13,7 @@ const dialog = window.electron.remote.dialog;
 interface IDocumentItemButtonsProps {
   file: any;
   selectTempContentOfSignedFiles: (path: string) => void;
+  verifySignature: (id: string) => void;
 }
 
 class DocumentItemButtons extends React.Component<IDocumentItemButtonsProps, {}> {
@@ -26,7 +30,7 @@ class DocumentItemButtons extends React.Component<IDocumentItemButtonsProps, {}>
     }
 
     return (
-      <div className="row nobottom" style={{ width: "80px" }}>
+      <div className="row nobottom" style={{ width: "120px" }}>
         {
           file.extension !== "enc" ?
             <div className="col" style={{ width: "40px" }}>
@@ -35,6 +39,18 @@ class DocumentItemButtons extends React.Component<IDocumentItemButtonsProps, {}>
                   event.stopPropagation();
                   this.openFile(file.fullpath);
                 }}>visibility</i>
+            </div> :
+            null
+        }
+
+        {
+          file.extension === "sig" ?
+            <div className="col" style={{ width: "40px" }}>
+              <i className="file-setting-item waves-effect material-icons secondary-content"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  this.props.verifySignature(file.id);
+                }}>check_circle</i>
             </div> :
             null
         }
@@ -99,4 +115,9 @@ class DocumentItemButtons extends React.Component<IDocumentItemButtonsProps, {}>
   }
 }
 
-export default DocumentItemButtons;
+export default connect((state) => {
+  return {
+    filesInTransactionList: filesInTransactionsSelector(state),
+    location: state.router.location,
+  };
+}, { verifySignature })(DocumentItemButtons);
