@@ -21,28 +21,11 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
    * https://github.com/facebook/react/issues/3667
    */
   componentDidMount() {
-    $(document).ready(() => {
-      $("select").material_select();
-
-      setTimeout(() => {
-        $(".select-dropdown:eq(0)").css("border-bottom", "none");
-        $(".select-dropdown:eq(0)").css("margin", "0");
-        $(".select-dropdown:eq(0)").css("height", "2rem");
-      }, 0);
-    });
-    $(ReactDOM.findDOMNode(this.refs.settingsSelectRef)).on("change", this.changeStandard);
+    $(".SettingsSelector").dropdown();
   }
 
   componentDidUpdate() {
-    $(document).ready(() => {
-      $("select").material_select();
-
-      setTimeout(() => {
-        $(".select-dropdown:eq(0)").css("border-bottom", "none");
-        $(".select-dropdown:eq(0)").css("margin", "0px");
-        $(".select-dropdown:eq(0)").css("height", "2rem");
-      }, 0);
-    });
+    $(".SettingsSelector").dropdown();
   }
 
   shouldComponentUpdate(nextProps: any) {
@@ -68,43 +51,39 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
     const disabled = this.props.disabled || (setting.changed);
 
     return (
-      <div onClick={this.showToast} style={{ Height: "46px"}}>
-        <div className={`input-field  ${disabled ? "disabled" : ""}`}
-          style={{ margin: "0px" }}>
-            <select
-              className="padding-end"
-              disabled={this.props.disabled}
-              id="settingsSelectRef"
-              ref="settingsSelectRef"
-              value={value}
-            > 
-              {
-                
-                settings.map((settingItem: any) => {
-                  return <option key={settingItem.id} value={settingItem.id}>{settingItem.name}</option>;
-                })
-              }
-            </select>
-            <div
-              className="collection-info"
-              data-error="wrong"
-              data-success="right"
-              onClick={() => setTimeout(() => {
-                $(".select-dropdown:eq(0)").click();
-              }, 0)}
-              style={{ cursor: "pointer" }}>
-              {`Сохранено: ${setting && setting.savetime ? (new Date(setting.savetime)).toLocaleDateString(locale, {
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                month: "numeric",
-                year: "numeric",
-              }) : "-"}`}
-            </div>
-          
-        </div>
-      </div>
+      <div>
+      <a className="SettingsSelector" data-activates="SettingsSelector-settings" >
+      Expand me
+      </a>
+      <ul id="SettingsSelector-settings" className="dropdown-content" style= {{ }}>
+        {
+                this.getElements(settings)
+        }
+       </ul>
+    </div>
     );
+  }
+ 
+  getElements=(settingsElements: any)=>{
+    const elements: any[] = [];
+
+    settingsElements.map((settingItem: any) => {
+      elements.push( <li><div className="row">
+        <div className="col s10">
+          <div className="collection-title">{settingItem.name}</div>
+          </div>
+          <div className="col s10">
+          <div className="collection-title">{settingItem.name}</div>
+          </div>
+                 
+
+      </div>
+        </li>)
+      
+
+    });
+
+    return elements;
   }
 
   showToast = () => {
