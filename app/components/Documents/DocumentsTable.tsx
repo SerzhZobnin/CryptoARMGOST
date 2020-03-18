@@ -186,7 +186,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
                     dataKey="filesize"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.22}
+                    width={width * 0.36}
                     label={localize("Documents.filesize", locale)}
                   />
                 </Table>
