@@ -123,7 +123,7 @@ export function multiDirectOperation(
           }
 
           if (newPath) {
-            if (!archivation_operation) {
+            if (!archivation_operation && !encryption_operation) {
               if (save_copy_to_documents) {
                 const copyUri = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(newPath));
 
