@@ -126,16 +126,18 @@ app.on('ready', async () => {
     trayIcon = new Tray(__dirname + '/resources/image/tray.png');
   }
 
+  function utilShowWindow() {
+    mainWindow.show();
+
+    if (process.platform === "darwin") {
+      app.dock.show();
+    }
+  }
+
   const trayMenuTemplate = [
     {
       label: lang === 'ru' ? 'Открыть приложение' : 'Open Application',
-      click: function () {
-        mainWindow.show();
-
-        if (process.platform === "darwin") {
-          app.dock.show();
-        }
-      }
+      click: utilShowWindow
     },
     {
       label: lang === 'ru' ? 'Выйти' : 'Close',
@@ -148,6 +150,9 @@ app.on('ready', async () => {
 
   trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
   trayIcon.setContextMenu(trayMenu);
+
+  trayIcon.on('click', utilShowWindow);
+  trayIcon.on('double-click', utilShowWindow);
 
   if (process.platform === "darwin") {
     app.dock.setMenu(trayMenu);
