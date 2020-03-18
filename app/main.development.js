@@ -1,4 +1,5 @@
 const { app, BrowserWindow, Tray, Menu, protocol } = require('electron');
+const URL = require('url');
 
 let mainWindow = null;
 let preloader = null;
@@ -14,6 +15,10 @@ const path = require('path');
 if (!gotInstanceLock) {
   app.quit();
 }
+
+const __WIN32__ = process.platform === "win32";
+const protocolLauncherArg = '--protocol-launcher';
+const possibleProtocols = new Set(['cryptoarm']);
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -54,6 +59,52 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
+function handleAppURL(url) {
+  const parsedURL = URL.parse(url, true);
+
+  mainWindow.webContents.send('url-action', parsedURL);
+}
+
+function handlePossibleProtocolLauncherArgs(args) {
+  console.log(`Received possible protocol arguments: ${args.length}`);
+
+  if (__WIN32__) {
+    const matchingUrls = args.filter(arg => {
+      // sometimes `URL.parse` throws an error
+      try {
+        const url = URL.parse(arg)
+        // i think this `slice` is just removing a trailing `:`
+        return url.protocol && possibleProtocols.has(url.protocol.slice(0, -1))
+      } catch (e) {
+        console.log(`Unable to parse argument as URL: ${arg}`)
+        return false
+      }
+    })
+
+    if (args.includes(protocolLauncherArg) && matchingUrls.length === 1) {
+      handleAppURL(matchingUrls[0])
+    } else {
+      console.log(`Malformed launch arguments received: ${args}`)
+    }
+  } else if (args.length > 1) {
+    handleAppURL(args[1])
+  }
+}
+
+/**
+ * Wrapper around app.setAsDefaultProtocolClient that adds our
+ * custom prefix command line switches on Windows.
+ */
+function setAsDefaultProtocolClient(protocol) {
+  if (__WIN32__) {
+    app.setAsDefaultProtocolClient(protocol, process.execPath, [
+      protocolLauncherArg,
+    ])
+  } else {
+    app.setAsDefaultProtocolClient(protocol)
+  }
+}
+
 let trayIcon;
 let trayMenu;
 
@@ -62,7 +113,7 @@ app.on('ready', async () => {
     await installExtensions();
   }
 
-  app.commandLine.appendSwitch('ignore-certificate-errors');
+  possibleProtocols.forEach(protocol => setAsDefaultProtocolClient(protocol));
 
   let iconPath;
   switch (process.platform) {
@@ -109,7 +160,7 @@ app.on('ready', async () => {
     callback({ url: request.url, method: request.method });
   });
 
-  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true' || options.indexOf("devtools") !== -1) {
+  if (true || process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true' || options.indexOf("devtools") !== -1) {
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
   }
@@ -188,6 +239,7 @@ app.on('ready', async () => {
       mainWindow.focus();
     }
 
+    handlePossibleProtocolLauncherArgs(options);
     mainWindow.webContents.send("cmdArgs", options);
   });
 
@@ -244,6 +296,16 @@ app.on('ready', async () => {
   }
 });
 
+
+
+app.on('will-finish-launching', () => {
+  // macOS only
+  app.on('open-url', (event, url) => {
+    event.preventDefault()
+    handleAppURL(url)
+  })
+})
+
 app.on('web-contents-created', (event, win) => {
   win.on('new-window', (event, newURL, frameName, disposition,
     options, additionalFeatures) => {
@@ -255,7 +317,7 @@ app.on('web-contents-created', (event, win) => {
   })
 })
 
-app.on('second-instance', (e, argv) => {
+app.on('second-instance', (e, args) => {
   if (mainWindow) {
     if (mainWindow.isMinimized()) {
       mainWindow.restore();
@@ -264,7 +326,8 @@ app.on('second-instance', (e, argv) => {
     mainWindow.show();
     mainWindow.focus();
 
-    mainWindow.webContents.send("cmdArgs", argv);
+    handlePossibleProtocolLauncherArgs(args);
+    mainWindow.webContents.send("cmdArgs", args);
   }
 });
 
