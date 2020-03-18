@@ -1,4 +1,5 @@
 const { app, BrowserWindow, Tray, Menu, protocol } = require('electron');
+const { spawn, execSync } = require('child_process');
 const URL = require('url');
 
 let mainWindow = null;
@@ -91,6 +92,10 @@ function handlePossibleProtocolLauncherArgs(args) {
   }
 }
 
+function registerForURLSchemeLinux(scheme) {
+  execSync(`xdg-mime default CryptoARM_GOST.desktop x-scheme-handler/${scheme}`);
+};
+
 /**
  * Wrapper around app.setAsDefaultProtocolClient that adds our
  * custom prefix command line switches on Windows.
@@ -101,7 +106,11 @@ function setAsDefaultProtocolClient(protocol) {
       protocolLauncherArg,
     ])
   } else {
-    app.setAsDefaultProtocolClient(protocol)
+    if (process.platform === 'linux') {
+      registerForURLSchemeLinux(protocol);
+    } else {
+      app.setAsDefaultProtocolClient(protocol);
+    }
   }
 }
 
