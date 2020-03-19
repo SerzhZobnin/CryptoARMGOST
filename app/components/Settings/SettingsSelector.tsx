@@ -44,40 +44,65 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
     this.props.handleChange(ev.target.value);
   } 
 
-  render() {
+  render() {  
     const { localize, locale } = this.context;
     const { setting, settings, value } = this.props;
 
     const disabled = this.props.disabled || (setting.changed);
 
     return (
-      <div>
-      <a className="SettingsSelector" data-activates="SettingsSelector-settings" >
-      Expand me
-      </a>
-      <ul id="SettingsSelector-settings" className="dropdown-content" style= {{ }}>
-        {
+      <div  className="subtitle 1" >     <i className="material-icons right" style = {{ margin: "10px 0px 0px 0px" }}>arrow_drop_down</i>
+        <div className="SettingsSelector" data-activates="SettingsSelector-settings" >
+            { 
+            this.props.setting.name 
+            } 
+            <br/><span style= {{fontSize: "75%"}}>
+            {`Сохранено: ${setting && setting.savetime ? (new Date(setting.savetime)).toLocaleDateString(locale, {
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              month: "numeric",
+              year: "numeric",
+            }) : "-"}`
+            }</span>
+
+          
+        </div>
+        
+          <ul id="SettingsSelector-settings" className="dropdown-content " >
+           {
                 this.getElements(settings)
-        }
+           }
        </ul>
     </div>
+    
     );
   }
  
   getElements=(settingsElements: any)=>{
+    const { localize, locale } = this.context;
     const elements: any[] = [];
-
+    
     settingsElements.map((settingItem: any) => {
-      elements.push( <li><div className="row">
-        <div className="col s10">
-          <div className="collection-title">{settingItem.name}</div>
+      elements.push( <li   onClick={
+        ()=>this.props.handleChange(settingItem.id)} ><div className="" >
+        <div style= {{marginLeft: "20px"}}>
+          <div >{settingItem.name}</div>
           </div>
-          <div className="col s10">
-          <div className="collection-title">{settingItem.name}</div>
-          </div>
-                 
+          <div>
+          <div style= {{marginLeft: "20px", fontSize: "75%"}}>
+            { 
+           `Сохранено: ${ settingItem.savetime ? (new Date(settingItem.savetime)).toLocaleDateString(locale, {
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            month: "numeric",
+            year: "numeric",
+          }) : "-"}`
 
-      </div>
+            }</div>
+          </div>
+        </div>
         </li>)
       
 
@@ -85,6 +110,10 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
 
     return elements;
   }
+
+
+
+
 
   showToast = () => {
     const { localize, locale } = this.context;
