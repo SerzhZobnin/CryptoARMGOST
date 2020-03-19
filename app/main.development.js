@@ -169,7 +169,7 @@ app.on('ready', async () => {
     callback({ url: request.url, method: request.method });
   });
 
-  if (true || process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true' || options.indexOf("devtools") !== -1) {
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true' || options.indexOf("devtools") !== -1) {
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
   }
