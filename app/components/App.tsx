@@ -4,6 +4,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Route } from "react-router-dom";
 import { ConnectedRouter as Router, push } from "react-router-redux";
+import { dispatchURLAction } from "../AC/urlActions";
 import {
   LOCATION_ABOUT, LOCATION_ADDRESS_BOOK, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_CERTIFICATES,
@@ -36,6 +37,8 @@ ipcRenderer.on(
   "url-action",
   (event: Electron.IpcRendererEvent, { action }: { action: any }) => {
     console.log("url-action", action);
+
+    dispatchURLAction(action);
   },
 );
 
@@ -79,6 +82,8 @@ class App extends React.Component<IAppProps, {}> {
   }
 }
 
-export default connect((state) => ({
-  locale: state.settings.getIn(["entities", state.settings.default]).locale,
-}))(App);
+export default connect((state) => {
+  return {
+    locale: state.settings.getIn(["entities", state.settings.default]).locale,
+  };
+}, { dispatchURLAction })(App);

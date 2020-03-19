@@ -1,20 +1,24 @@
 import * as URL from "url";
 
 export interface ISignDocumentsFromURLAction {
-  readonly name: "sign-documents-from-url";
-
-  readonly url: string;
+  name: "sign-documents-from-url";
+  url: string;
+  command?: string;
+  accessToken?: string;
 }
 
 export interface IVerifyDocumentsFromURLAction {
-  readonly name: "verify-documents-from-url";
-
-  readonly url: string;
+  name: "verify-documents-from-url";
+  url: string;
+  command?: string;
+  accessToken?: string;
 }
 
 export interface IUnknownAction {
-  readonly name: "unknown";
-  readonly url: string;
+  name: "unknown";
+  url: string;
+  command?: string;
+  accessToken?: string;
 }
 
 export type URLActionType =
