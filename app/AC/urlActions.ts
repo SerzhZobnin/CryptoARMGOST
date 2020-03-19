@@ -1,12 +1,15 @@
-import { SIGN_DOCUMENTS_FROM_URL, VERIFY_DOCUMENTS_FROM_URL } from "../constants";
+import {
+  ADD_LICENSE, ADD_REMOTE_FILE, DOWNLOAD_REMOTE_FILE,
+  ENCRYPTED, FAIL, PACKAGE_SELECT_FILE, SET_REMOTE_FILES_PARAMS,
+  SIGN_DOCUMENTS_FROM_URL, START, SUCCESS,
+  TMP_DIR, VERIFY_DOCUMENTS_FROM_URL, VERIFY_SIGNATURE,
+} from "../constants";
 import { IUnknownAction, URLActionType } from "../parse-app-url";
 import logger from "../winstonLogger";
 
 export function dispatchURLAction(
   action: URLActionType,
 ) {
-  console.log("---- action", action);
-
   switch (action.name) {
     case SIGN_DOCUMENTS_FROM_URL:
       signDocumentsFromURL(action);
@@ -27,30 +30,41 @@ export function dispatchURLAction(
 }
 
 function signDocumentsFromURL(action: URLActionType) {
-  setTimeout(async () => {
-    let data: any;
+  return (dispatch) => {
+    dispatch({
+      type: SIGN_DOCUMENTS_FROM_URL + START,
+    });
 
-    const urlObj = new URL(action.url);
+    setTimeout(async () => {
+      try {
+        let data: any;
 
-    if (action.accessToken) {
-      urlObj.searchParams.append("accessToken", action.accessToken);
-    }
+        const urlObj = new URL(action.url);
 
-    if (action.command) {
-      urlObj.searchParams.append("command", action.command);
-    }
+        if (action.accessToken) {
+          urlObj.searchParams.append("accessToken", action.accessToken);
+        }
 
-    data = await getJsonFromURL(urlObj.toString());
+        if (action.command) {
+          urlObj.searchParams.append("command", action.command);
+        }
 
-    console.log("--- data sign", data);
+        data = await getJsonFromURL(urlObj.toString());
+        if (!data || data.status === false) {
+          throw new Error("Error get JSON or json empty");
+        }
 
-    try {
-      console.log("--- data string", data.toString());
-      console.log("--- data string", JSON.parse(data.toString()));
-    } catch (error) {
-      console.log("error", error);
-    }
-  }, 0);
+        dispatch({
+          payload: { ...action, json: data },
+          type: SIGN_DOCUMENTS_FROM_URL + SUCCESS,
+        });
+      } catch (error) {
+        dispatch({
+          type: SIGN_DOCUMENTS_FROM_URL + FAIL,
+        });
+      }
+    }, 0);
+  };
 }
 
 function verifyDocumentsFromURL(action: URLActionType) {
@@ -68,23 +82,24 @@ function verifyDocumentsFromURL(action: URLActionType) {
     }
 
     data = await getJsonFromURL(urlObj.toString());
-
-    console.log("--- data verify", data);
   }, 0);
 }
 
 function getJsonFromURL(url: string) {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
-    let data = new Buffer("");
 
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
-    curl.on("end", function (statusCode: number, response: { toString: () => string; }) {
+    curl.on("end", (statusCode: number, response: { toString: () => string; }) => {
+      let data;
+
       try {
         if (statusCode !== 200) {
           throw new Error(`Unexpected response, status code ${statusCode}`);
         }
+
+        data = JSON.parse(response.toString());
       } catch (error) {
         reject(`Cannot load data, error: ${error.message}`);
         return;
@@ -93,11 +108,6 @@ function getJsonFromURL(url: string) {
       }
 
       resolve(data);
-    });
-
-    curl.on("data", (chunk: Buffer) => {
-      data = Buffer.concat([data, chunk]);
-      return chunk.length;
     });
 
     curl.on("error", (error: { message: any; }) => {
