@@ -60,10 +60,49 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
-function handleAppURL(url) {
+// TODO: use parse-app-url.ts
+function parseAppURL(url) {
   const parsedURL = URL.parse(url, true);
+  const hostname = parsedURL.hostname;
+  const unknown = { name: "unknown", url };
+  if (!hostname) {
+    return unknown;
+  }
 
-  mainWindow.webContents.send('url-action', parsedURL);
+  const actionName = hostname.toLowerCase();
+
+  // we require something resembling a URL first
+  // - bail out if it's not defined
+  // - bail out if you only have `/`
+  const pathName = parsedURL.pathname;
+  if (!pathName || pathName.length <= 1) {
+    return unknown;
+  }
+
+  // Trim the trailing / from the URL
+  const parsedPath = pathName.substr(1);
+
+  if (actionName === "sign") {
+    return {
+      name: "sign-documents-from-url",
+      url: parsedPath,
+    };
+  }
+
+  if (actionName === "verify") {
+    return {
+      name: "verify-documents-from-url",
+      url: parsedPath,
+    };
+  }
+
+  return unknown;
+}
+
+function handleAppURL(url) {
+  const action = parseAppURL(url);
+
+  mainWindow.webContents.send('url-action', { action });
 }
 
 function handlePossibleProtocolLauncherArgs(args) {

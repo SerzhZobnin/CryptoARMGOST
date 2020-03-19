@@ -1,3 +1,4 @@
+import { ipcRenderer, remote } from "electron";
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
@@ -30,6 +31,13 @@ import SignAndEncryptWindow from "./SignatureAndEncrypt/SignatureAndEncryptWindo
 interface IAppProps {
   locale: string;
 }
+
+ipcRenderer.on(
+  "url-action",
+  (event: Electron.IpcRendererEvent, { action }: { action: any }) => {
+    console.log("url-action", action);
+  },
+);
 
 class App extends React.Component<IAppProps, {}> {
   static childContextTypes = {
