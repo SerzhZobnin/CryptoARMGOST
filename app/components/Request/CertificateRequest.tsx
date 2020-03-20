@@ -41,6 +41,7 @@ interface IExtendedKeyUsage {
 }
 
 interface ICertificateRequestState {
+  disabled: boolean;
   activeSubjectNameInfoTab: boolean;
   algorithm: string;
   cn: string;
@@ -88,6 +89,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const template = getTemplateByCertificate(props.certificateTemplate);
 
     this.state = {
+      disabled: false,
       activeSubjectNameInfoTab: true,
       algorithm: ALG_GOST12_256,
       cn: template.CN,
@@ -159,9 +161,16 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevState) {
     const self = this;
     const slider = document.getElementById("key-length-slider");
+    const { disabled } = this.state;
+
+    // console.log(this.verifyFields());
+    // if (!this.prevState.inputChanged !== true) { this.inputChanged=false;
+    //   if (!this.verifyFields()) { this.setState({ disabled: true }) }
+    // };
+
 
     if (slider && !slider.noUiSlider) {
       noUiSlider.create(slider, {
@@ -191,6 +200,8 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
   render() {
     const { localize, locale } = this.context;
+    const classDisabled = this.state.disabled ? "" : "disabled";
+
     const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, keyUsageGroup, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
 
@@ -277,7 +288,9 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
                   <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
                 </div>
                 <div style={{ display: "inline-block", margin: "10px" }}>
-                  <a className="btn btn-outlined waves-effect waves-light " onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
+                  <a
+                    className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}
+                    onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
                 </div>
               </div>
             </div>
@@ -522,7 +535,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     }
 
     try {
-      let csrFileName =  `${cn}_${algorithm}_${formatDate(new Date())}.req`;
+      let csrFileName = `${cn}_${algorithm}_${formatDate(new Date())}.req`;
 
       if (os.type() === "Windows_NT") {
         csrFileName = csrFileName.replace(/[/\\?%*:|"<>]/g, "-");
@@ -716,10 +729,13 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
   handleInputChange = (ev: any) => {
     const { localize, locale } = this.context;
     const pattern = /^[0-9a-z-.\\\s]+$/i;
-
+    const { disabled } = this.state;
     const target = ev.target;
     const name = target.name;
     const value = ev.target.value;
+
+    if (this.verifyFields() == true) { this.setState({ disabled: true }) }
+    else { this.setState({ disabled: false }) };
 
     if (name === "containerName") {
       if (pattern.test(value || !value)) {
@@ -733,6 +749,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     }
 
     this.setState({ [name]: value });
+
   }
 
   handleCountryChange = (ev: any) => {
