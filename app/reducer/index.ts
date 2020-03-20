@@ -26,7 +26,6 @@ import templates from "./templates";
 import tokens from "./tokens";
 import transactionDSS from "./transactionDSS";
 import users from "./users";
-import operation from "./operation";
 
 export default combineReducers({
   router,
@@ -56,5 +55,4 @@ export default combineReducers({
   templates,
   tokens,
   users,
-  operation,
 });
