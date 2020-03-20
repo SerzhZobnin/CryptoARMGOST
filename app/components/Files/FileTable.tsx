@@ -263,7 +263,9 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
   }
 
   handleOnRowClick = ({ rowData }: { rowData: any }) => {
-    this.props.activeFile(rowData.id, !rowData.active);
+    if (!this.props.operationIsRemote) {
+      this.props.activeFile(rowData.id, !rowData.active);
+    }
   }
 
   handleScrollToBefore = () => {
@@ -412,4 +414,5 @@ export default connect((state, ownProps: IOwnProps) => ({
   loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
   selectedFilesPackage: state.files.selectedFilesPackage,
   selectingFilesPackage: state.files.selectingFilesPackage,
+  operationIsRemote: state.urlActions.performed,
 }), { activeFile, deleteFile, selectTempContentOfSignedFiles })(FileTable);

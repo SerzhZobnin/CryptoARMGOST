@@ -4,6 +4,7 @@ import { TMP_DIR } from "../../constants";
 import * as signs from "../../trusted/sign";
 import { fileExists } from "../../utils";
 import FileIcon from "./FileIcon";
+import { connect } from "react-redux";
 
 const shell = window.electron.shell;
 const dialog = window.electron.remote.dialog;
@@ -78,8 +79,14 @@ class FileListItem extends React.Component<IFilelistItemProps, {}> {
             data-activates={"dropdown-btn-set-file-" + this.props.index} onClick={self.stopEvent}>more_vert</i>
           <ul id={"dropdown-btn-set-file-" + this.props.index} className="dropdown-content">
             <li><a onClick={function (event: any) { self.openFile(event, file.fullpath); }}>{localize("Settings.open_file", locale)}</a></li>
-            <li><a onClick={function (event: any) { self.openFileFolder(event, file.fullpath); }}>{localize("Settings.go_to_file", locale)}</a></li>
-            <li><a onClick={this.props.removeFiles}>{localize("Settings.delete_file", locale)}</a></li>
+            {
+              this.props.operationIsRemote ? null
+                :
+                <React.Fragment>
+                  <li><a onClick={function (event: any) { self.openFileFolder(event, file.fullpath); }}>{localize("Settings.go_to_file", locale)}</a></li>
+                  <li><a onClick={this.props.removeFiles}>{localize("Settings.delete_file", locale)}</a></li>
+                </React.Fragment>
+            }
           </ul>
         </div>
       </div>
@@ -146,4 +153,8 @@ class FileListItem extends React.Component<IFilelistItemProps, {}> {
   }
 }
 
-export default FileListItem;
+export default connect((state) => {
+  return {
+    operationIsRemote: state.urlActions.performed,
+  };
+}, {})(FileListItem);
