@@ -21,11 +21,11 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
    * https://github.com/facebook/react/issues/3667
    */
   componentDidMount() {
-    $(".SettingsSelector").dropdown();
+    $(".settingsSelector").dropdown();
   }
 
   componentDidUpdate() {
-    $(".SettingsSelector").dropdown();
+    $(".settingsSelector").dropdown();
   }
 
   shouldComponentUpdate(nextProps: any) {
@@ -42,21 +42,22 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
 
   changeStandard = (ev: any) => {
     this.props.handleChange(ev.target.value);
-  } 
+  }
 
-  render() {  
+  render() {
     const { localize, locale } = this.context;
     const { setting, settings, value } = this.props;
 
     const disabled = this.props.disabled || (setting.changed);
 
     return (
-      <div  className="subtitle 1" >     <i className="material-icons right" style = {{ margin: "10px 0px 0px 0px" }}>arrow_drop_down</i>
-        <div className="SettingsSelector" data-activates="SettingsSelector-settings" >
-            { 
-            this.props.setting.name 
-            } 
-            <br/><span style= {{fontSize: "75%"}}>
+      <div className="subtitle 1" >
+        <i className="material-icons right" style={{ margin: "10px 0px 0px 0px" }}>arrow_drop_down</i>
+        <div className={`settingsSelector  ${disabled ? "disabled" : ""}`} data-activates="SettingsSelector-settings" >
+          {
+            this.props.setting.name
+          }
+          <br /><span style={{ fontSize: "75%" }}>
             {`Сохранено: ${setting && setting.savetime ? (new Date(setting.savetime)).toLocaleDateString(locale, {
               day: "numeric",
               hour: "numeric",
@@ -65,55 +66,46 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
               year: "numeric",
             }) : "-"}`
             }</span>
-
-          
         </div>
-        
-          <ul id="SettingsSelector-settings" className="dropdown-content " >
-           {
-                this.getElements(settings)
-           }
-       </ul>
-    </div>
-    
+
+        <ul id="SettingsSelector-settings" className="dropdown-content " >
+          {
+            this.getElements(settings)
+          }
+        </ul>
+      </div>
     );
   }
- 
-  getElements=(settingsElements: any)=>{
+
+  getElements = (settingsElements: any) => {
     const { localize, locale } = this.context;
     const elements: any[] = [];
-    
+
     settingsElements.map((settingItem: any) => {
-      elements.push( <li   onClick={
-        ()=>this.props.handleChange(settingItem.id)} ><div className="" >
-        <div style= {{marginLeft: "20px"}}>
-          <div >{settingItem.name}</div>
+      elements.push(<li onClick={() => this.props.handleChange(settingItem.id)} >
+        <div className="">
+          <div style={{ marginLeft: "20px" }}>
+            <div >{settingItem.name}</div>
           </div>
           <div>
-          <div style= {{marginLeft: "20px", fontSize: "75%"}}>
-            { 
-           `Сохранено: ${ settingItem.savetime ? (new Date(settingItem.savetime)).toLocaleDateString(locale, {
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            month: "numeric",
-            year: "numeric",
-          }) : "-"}`
+            <div style={{ marginLeft: "20px", fontSize: "75%" }}>
+              {
+                `Сохранено: ${settingItem.savetime ? (new Date(settingItem.savetime)).toLocaleDateString(locale, {
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                  month: "numeric",
+                  year: "numeric",
+                }) : "-"}`
 
-            }</div>
+              }</div>
           </div>
         </div>
-        </li>)
-      
-
+      </li>);
     });
 
     return elements;
   }
-
-
-
-
 
   showToast = () => {
     const { localize, locale } = this.context;
