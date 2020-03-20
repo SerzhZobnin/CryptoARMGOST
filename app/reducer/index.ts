@@ -25,6 +25,7 @@ import signatures from "./signatures";
 import templates from "./templates";
 import tokens from "./tokens";
 import transactionDSS from "./transactionDSS";
+import urlActions from "./urlActions";
 import users from "./users";
 
 export default combineReducers({
@@ -54,5 +55,6 @@ export default combineReducers({
   signatures,
   templates,
   tokens,
+  urlActions,
   users,
 });

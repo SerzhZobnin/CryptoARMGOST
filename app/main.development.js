@@ -60,10 +60,70 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
-function handleAppURL(url) {
-  const parsedURL = URL.parse(url, true);
+function getQueryStringValue(query,  key) {
+  const value = query[key]
+  if (value == null) {
+    return null
+  }
 
-  mainWindow.webContents.send('url-action', parsedURL);
+  if (Array.isArray(value)) {
+    return value[0]
+  }
+
+  return value
+}
+
+// TODO: use parse-app-url.ts
+function parseAppURL(url) {
+  const parsedURL = URL.parse(url, true);
+  const hostname = parsedURL.hostname;
+  const unknown = { name: "unknown", url };
+  if (!hostname) {
+    return unknown;
+  }
+
+  const query = parsedURL.query;
+
+  const actionName = hostname.toLowerCase();
+  const command = getQueryStringValue(query, "command");
+  const accessToken = getQueryStringValue(query, "accessToken");
+
+  // we require something resembling a URL first
+  // - bail out if it's not defined
+  // - bail out if you only have `/`
+  const pathName = parsedURL.pathname;
+  if (!pathName || pathName.length <= 1) {
+    return unknown;
+  }
+
+  // Trim the trailing / from the URL
+  const parsedPath = pathName.substr(1);
+
+  if (actionName === "sign") {
+    return {
+      name: "sign-documents-from-url",
+      url: parsedPath,
+      command,
+      accessToken,
+    };
+  }
+
+  if (actionName === "verify") {
+    return {
+      name: "verify-documents-from-url",
+      url: parsedPath,
+      command,
+      accessToken,
+    };
+  }
+
+  return unknown;
+}
+
+function handleAppURL(url) {
+  const action = parseAppURL(url);
+
+  mainWindow.webContents.send('url-action', { action });
 }
 
 function handlePossibleProtocolLauncherArgs(args) {
