@@ -161,16 +161,9 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     }
   }
 
-  componentDidUpdate(prevState) {
+  componentDidUpdate() {
     const self = this;
     const slider = document.getElementById("key-length-slider");
-    const { disabled } = this.state;
-
-    // console.log(this.verifyFields());
-    // if (!this.prevState.inputChanged !== true) { this.inputChanged=false;
-    //   if (!this.verifyFields()) { this.setState({ disabled: true }) }
-    // };
-
 
     if (slider && !slider.noUiSlider) {
       noUiSlider.create(slider, {
