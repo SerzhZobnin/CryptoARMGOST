@@ -164,7 +164,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   render() {
     const { localize, locale } = this.context;
-    const { activeFiles, activeFilesArr, isDocumentsReviewed, recipients, setting, settings, signer } = this.props;
+    const { activeFiles, activeFilesArr, isDocumentsReviewed, recipients, setting, settings, signer,
+      operationIsRemote } = this.props;
     const { file, saveSettingsWithNewName } = this.state;
 
     const disabledNavigate = this.isFilesFromSocket();
@@ -229,7 +230,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   value={setting.id}
                   handleChange={this.handleChangeDefaultSettings}
                   showModalAskSaveSetting={this.handleShowModalAskSaveSetting}
-                  disabled={false}
+                  disabled={operationIsRemote}
                   setting={setting}
                   settings={settings} />
               </div>
@@ -1671,9 +1672,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   isFilesFromSocket = () => {
-    const { files, loadingFiles } = this.props;
+    const { loadingFiles, operationIsRemote } = this.props;
 
-    if (loadingFiles.length) {
+    if (operationIsRemote || loadingFiles.length) {
       return true;
     }
 
@@ -1716,6 +1717,7 @@ export default connect((state) => {
     users: state.users.entities,
     transactionDSS: mapToArr(state.transactionDSS.entities),
     policyDSS: state.policyDSS.entities,
+    operationIsRemote: state.operation.operationIsRemote,
   };
 }, {
   activeFile, activeSetting, changeDefaultSettings, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,

@@ -313,9 +313,9 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
   }
 
   isFilesFromSocket = () => {
-    const { files, loadingFiles } = this.props;
+    const { loadingFiles, operationIsRemote } = this.props;
 
-    if (loadingFiles.length) {
+    if (operationIsRemote || loadingFiles.length) {
       return true;
     }
 
@@ -345,5 +345,6 @@ export default connect((state) => {
     packageSignResult: state.signatures.packageSignResult,
     signatures,
     signedPackage: state.signatures.signedPackage,
+    operationIsRemote: state.operation.operationIsRemote,
   };
 }, { activeFile, deleteAllTemporyLicenses, filePackageSelect, filePackageDelete, removeAllRemoteFiles })(SignatureAndEncryptWindow);

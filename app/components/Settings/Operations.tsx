@@ -34,16 +34,19 @@ class Operations extends React.Component<IOperationsProps, {}> {
 
   render() {
     const { localize, locale } = this.context;
-    const { settings } = this.props;
+    const { settings, operationIsRemote } = this.props;
     const { operations } = settings;
     const { archivation_operation, encryption_operation, reverse_operations,
       save_copy_to_documents, save_result_to_folder, signing_operation } = operations;
+
+    const is_disabled = operationIsRemote;
 
     return (
       <div className="row">
         <div className="col s12">
           <CheckBoxWithLabel
             isChecked={reverse_operations}
+            disabled={is_disabled}
             elementId="reverse_operations"
             onClickCheckBox={this.handleReverseOperationsClick}
             title={localize("Operations.reverse_operations", locale)} />
@@ -51,6 +54,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
         <div className="col s12">
           <CheckBoxWithLabel
             isChecked={signing_operation}
+            disabled={is_disabled}
             elementId="sign_operation"
             onClickCheckBox={this.handleSigningOperationClick}
             title={localize("Operations.signing_operation", locale)} />
@@ -58,6 +62,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
         <div className="col s12">
           <CheckBoxWithLabel
             isChecked={archivation_operation}
+            disabled={is_disabled}
             elementId="archivation_operation"
             onClickCheckBox={this.handleArchivationOperationClick}
             title={localize("Operations.archivation_operation", locale)} />
@@ -65,6 +70,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
         <div className="col s12">
           <CheckBoxWithLabel
             isChecked={encryption_operation}
+            disabled={is_disabled}
             elementId="encryption_operation"
             onClickCheckBox={this.handleEncryptionOperationClick}
             title={localize("Operations.encryption_operation", locale)} />
@@ -72,6 +78,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
         <div className="col s12">
           <CheckBoxWithLabel
             isChecked={save_copy_to_documents}
+            disabled={is_disabled}
             elementId="save_copy_to_documents"
             onClickCheckBox={this.handleSaveCopyClick}
             title={localize("Operations.save_copy_to_documents", locale)} />
@@ -79,7 +86,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
 
         <div className="col s12" >
           <CheckBoxWithLabel
-            disabled={!signing_operation && !archivation_operation && !encryption_operation}
+            disabled={is_disabled || !signing_operation && !archivation_operation && !encryption_operation}
             onClickCheckBox={this.handleSaveResultToFolder}
             isChecked={save_result_to_folder}
             elementId="save_result_to_folder"
@@ -161,6 +168,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
 export default connect((state) => {
   return {
     settings: state.settings.getIn(["entities", state.settings.active]),
+    operationIsRemote: state.operation.operationIsRemote
   };
 }, {
   changeOutfolder, toggleArchivationOperation, toggleEncryptionOperation,

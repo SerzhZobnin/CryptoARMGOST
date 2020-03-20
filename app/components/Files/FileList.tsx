@@ -166,7 +166,9 @@ class FileList extends React.Component<IFilelistProps, {}> {
   }
 
   onClick = (file: IFileRedux) => {
-    this.toggleActive(file);
+    if (!this.props.operationIsRemote) {
+      this.toggleActive(file);
+    }
   }
 
   noGridOverflow() {
@@ -198,5 +200,6 @@ export default connect((state) => {
     loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     selectedFilesPackage: state.files.selectedFilesPackage,
     selectingFilesPackage: state.files.selectingFilesPackage,
+    operationIsRemote: state.operation.operationIsRemote,
   };
 }, { activeFile, deleteFile, selectTempContentOfSignedFiles })(FileList);

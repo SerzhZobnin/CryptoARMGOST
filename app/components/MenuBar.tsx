@@ -194,7 +194,11 @@ class MenuBar extends React.Component<any, IMenuBarState> {
   }
 
   isFilesFromSocket = () => {
-    const { files } = this.props;
+    const { operationIsRemote } = this.props;
+
+    if( operationIsRemote ) {
+      return true;
+    }
 
     return false;
   }
@@ -261,5 +265,6 @@ export default connect((state, ownProps) => {
     settings: state.settings,
     signSettings: state.settings.getIn(["entities", state.settings.default]).sign,
     tempContentOfSignedFiles: state.files.tempContentOfSignedFiles,
+    operationIsRemote: state.operation.operationIsRemote,
   };
 }, { filePackageDelete })(MenuBar);

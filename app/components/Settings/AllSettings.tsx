@@ -119,7 +119,7 @@ class AllSettings extends React.Component<any, {}> {
                   <SignatureStandardSelector
                     value={signatureStandard}
                     handleChange={this.handleSignatureStandardChange}
-                    disabled={signer && (signer.service || signer.dssUserID) || !(TSP_OCSP_ENABLED)} />
+                    disabled={disabled || (signer && (signer.service || signer.dssUserID)) || !(TSP_OCSP_ENABLED)} />
 
                   <SignatureTypeSelector
                     detached={isDetached}
@@ -222,9 +222,9 @@ class AllSettings extends React.Component<any, {}> {
   }
 
   getDisabled = () => {
-    const { files, loadingFiles } = this.props;
+    const { loadingFiles, operationIsRemote } = this.props;
 
-    if (loadingFiles && loadingFiles.length) {
+    if (operationIsRemote || loadingFiles && loadingFiles.length) {
       return true;
     }
 
@@ -310,6 +310,7 @@ export default connect((state) => {
       .filter((recipient) => recipient !== undefined),
     settings: state.settings.getIn(["entities", state.settings.active]),
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
+    operationIsRemote: state.operation.operationIsRemote,
   };
 }, {
   changeArchiveFilesBeforeEncrypt, changeEncryptionAlgorithm, changeDeleteFilesAfterEncrypt, changeEncryptEncoding, changeOutfolder,

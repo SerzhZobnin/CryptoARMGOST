@@ -33,7 +33,7 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
     }
 
     const isResultsWindow = location.pathname === LOCATION_RESULTS_MULTI_OPERATIONS;
-    const classDisabled = filesInTransactionList.includes(file.id) ? "disabled" : "";
+    const classDisabled = this.props.operationIsRemote || filesInTransactionList.includes(file.id) ? "disabled" : "";
 
     return (
       <div className="row nobottom" style={isResultsWindow ? { width: "120px" } : { width: "160px" }}>
@@ -138,5 +138,6 @@ export default connect((state) => {
   return {
     filesInTransactionList: filesInTransactionsSelector(state),
     location: state.router.location,
+    operationIsRemote: state.operation.operationIsRemote,
   };
 }, { verifySignature })(FileItemButtons);
