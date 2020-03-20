@@ -17,7 +17,12 @@ export class Store {
   _store: trusted.pkistore.PkiStore;
 
   constructor() {
-    this._store = new trusted.pkistore.PkiStore(DEFAULT_CERTSTORE_PATH + "/cash.json");
+    try {
+      this._store = new trusted.pkistore.PkiStore(DEFAULT_CERTSTORE_PATH + "/cash.json");
+    } catch (e) {
+      // tslint:disable-next-line:no-console
+      console.log(`Error init PKI store \n ${e}`);
+    }
 
     try {
       this._providerCryptopro = new trusted.pkistore.ProviderCryptopro();
@@ -29,10 +34,15 @@ export class Store {
 
     this._items = [];
 
-    this._items = this._items.concat(this._store.find({
-      provider: ["CRYPTOPRO"],
-      type: ["CERTIFICATE", "CRL"],
-    }));
+    try {
+      this._items = this._items.concat(this._store.find({
+        provider: ["CRYPTOPRO"],
+        type: ["CERTIFICATE", "CRL"],
+      }));
+    } catch (e) {
+      // tslint:disable-next-line:no-console
+      console.log(`Error init store items \n ${e}`);
+    }
   }
 
   get items(): trusted.pkistore.PkiItem[] {
