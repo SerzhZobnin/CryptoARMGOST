@@ -1,5 +1,5 @@
 import { OrderedMap, OrderedSet, Record } from "immutable";
-import { SIGN_DOCUMENTS_FROM_URL, SUCCESS } from "../constants";
+import { SIGN_DOCUMENTS_FROM_URL, SUCCESS, START, FAIL } from "../constants";
 
 export const ActionModel = Record({
   accessToken: null,
@@ -10,17 +10,32 @@ export const ActionModel = Record({
 });
 
 export const DefaultReducerState = Record({
-  entities: OrderedMap({}),
+  action: null,
+  performed: false,
+  performing: false,
 });
 
-export default (urlActions = new DefaultReducerState(), action) => {
+export default (urlAction = new DefaultReducerState(), action) => {
   const { type, payload } = action;
   switch (type) {
+    case SIGN_DOCUMENTS_FROM_URL + START:
+      return urlAction
+        .set("performed", false)
+        .set("performing", true);
+
     case SIGN_DOCUMENTS_FROM_URL + SUCCESS:
-      urlActions = urlActions
-        .setIn(["entities", payload.id], new ActionModel(payload));
+      urlAction = urlAction
+        .set("performed", true)
+        .set("performing", false)
+        .set("action", new ActionModel(payload));
       break;
+
+    case SIGN_DOCUMENTS_FROM_URL + FAIL:
+      return urlAction
+        .set("performed", true)
+        .set("performing", false);
+
   }
 
-  return urlActions;
+  return urlAction;
 };
