@@ -21,28 +21,11 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
    * https://github.com/facebook/react/issues/3667
    */
   componentDidMount() {
-    $(document).ready(() => {
-      $("select").material_select();
-
-      setTimeout(() => {
-        $(".select-dropdown:eq(0)").css("border-bottom", "none");
-        $(".select-dropdown:eq(0)").css("margin", "0");
-        $(".select-dropdown:eq(0)").css("height", "2rem");
-      }, 0);
-    });
-    $(ReactDOM.findDOMNode(this.refs.settingsSelectRef)).on("change", this.changeStandard);
+    $(".SettingsSelector").dropdown();
   }
 
   componentDidUpdate() {
-    $(document).ready(() => {
-      $("select").material_select();
-
-      setTimeout(() => {
-        $(".select-dropdown:eq(0)").css("border-bottom", "none");
-        $(".select-dropdown:eq(0)").css("margin", "0");
-        $(".select-dropdown:eq(0)").css("height", "2rem");
-      }, 0);
-    });
+    $(".SettingsSelector").dropdown();
   }
 
   shouldComponentUpdate(nextProps: any) {
@@ -59,51 +42,78 @@ class SettingsSelector extends React.Component<ISettingsSelectorProps, {}> {
 
   changeStandard = (ev: any) => {
     this.props.handleChange(ev.target.value);
-  }
+  } 
 
-  render() {
+  render() {  
     const { localize, locale } = this.context;
     const { setting, settings, value } = this.props;
 
     const disabled = this.props.disabled || (setting.changed);
 
     return (
-      <div onClick={this.showToast} style={{ maxHeight: "46px" }}>
-        <div className={`input-field  ${disabled ? "disabled" : ""}`}
-          style={{ marginTop: "0px" }}>
-          <select
-            className="padding-end"
-            disabled={this.props.disabled}
-            id="settingsSelectRef"
-            ref="settingsSelectRef"
-            value={value}
-          >
-            {
-              settings.map((settingItem: any) => {
-                return <option key={settingItem.id} value={settingItem.id}>{settingItem.name}</option>;
-              })
-            }
-          </select>
-          <span
-            className="collection-info"
-            data-error="wrong"
-            data-success="right"
-            onClick={() => setTimeout(() => {
-              $(".select-dropdown:eq(0)").click();
-            }, 0)}
-            style={{ cursor: "pointer" }}>
+      <div  className="subtitle 1" >     <i className="material-icons right" style = {{ margin: "10px 0px 0px 0px" }}>arrow_drop_down</i>
+        <div className="SettingsSelector" data-activates="SettingsSelector-settings" >
+            { 
+            this.props.setting.name 
+            } 
+            <br/><span style= {{fontSize: "75%"}}>
             {`Сохранено: ${setting && setting.savetime ? (new Date(setting.savetime)).toLocaleDateString(locale, {
               day: "numeric",
               hour: "numeric",
               minute: "numeric",
               month: "numeric",
               year: "numeric",
-            }) : "-"}`}
-          </span>
+            }) : "-"}`
+            }</span>
+
+          
         </div>
-      </div>
+        
+          <ul id="SettingsSelector-settings" className="dropdown-content " >
+           {
+                this.getElements(settings)
+           }
+       </ul>
+    </div>
+    
     );
   }
+ 
+  getElements=(settingsElements: any)=>{
+    const { localize, locale } = this.context;
+    const elements: any[] = [];
+    
+    settingsElements.map((settingItem: any) => {
+      elements.push( <li   onClick={
+        ()=>this.props.handleChange(settingItem.id)} ><div className="" >
+        <div style= {{marginLeft: "20px"}}>
+          <div >{settingItem.name}</div>
+          </div>
+          <div>
+          <div style= {{marginLeft: "20px", fontSize: "75%"}}>
+            { 
+           `Сохранено: ${ settingItem.savetime ? (new Date(settingItem.savetime)).toLocaleDateString(locale, {
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            month: "numeric",
+            year: "numeric",
+          }) : "-"}`
+
+            }</div>
+          </div>
+        </div>
+        </li>)
+      
+
+    });
+
+    return elements;
+  }
+
+
+
+
 
   showToast = () => {
     const { localize, locale } = this.context;
