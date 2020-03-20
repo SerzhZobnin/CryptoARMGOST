@@ -86,4 +86,4 @@ export default connect((state) => {
   return {
     locale: state.settings.getIn(["entities", state.settings.default]).locale,
   };
-}, { dispatchURLAction })(App);
+})(App);

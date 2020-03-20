@@ -5,25 +5,24 @@ import {
   TMP_DIR, VERIFY_DOCUMENTS_FROM_URL, VERIFY_SIGNATURE,
 } from "../constants";
 import { IUnknownAction, URLActionType } from "../parse-app-url";
+import store from "../store";
 
 export function dispatchURLAction(
   action: URLActionType,
 ) {
-  return (dispatch: (action: {}) => void) => {
-    switch (action.name) {
-      case SIGN_DOCUMENTS_FROM_URL:
-        signDocumentsFromURL(action, dispatch);
-        break;
+  switch (action.name) {
+    case SIGN_DOCUMENTS_FROM_URL:
+      signDocumentsFromURL(action);
+      break;
 
-      case VERIFY_DOCUMENTS_FROM_URL:
-        verifyDocumentsFromURL(action, dispatch);
-        break;
-    }
+    case VERIFY_DOCUMENTS_FROM_URL:
+      verifyDocumentsFromURL(action);
+      break;
   }
 }
 
-function signDocumentsFromURL(action: URLActionType, dispatch: (action: {}) => void) {
-  dispatch({
+function signDocumentsFromURL(action: URLActionType) {
+  store.dispatch({
     type: SIGN_DOCUMENTS_FROM_URL + START,
   });
 
@@ -47,12 +46,12 @@ function signDocumentsFromURL(action: URLActionType, dispatch: (action: {}) => v
         throw new Error("Error get JSON or json empty");
       }
 
-      dispatch({
+      store.dispatch({
         payload: { ...action, json: data },
         type: SIGN_DOCUMENTS_FROM_URL + SUCCESS,
       });
     } catch (error) {
-      dispatch({
+      store.dispatch({
         type: SIGN_DOCUMENTS_FROM_URL + FAIL,
       });
     }
@@ -60,7 +59,7 @@ function signDocumentsFromURL(action: URLActionType, dispatch: (action: {}) => v
   return;
 }
 
-function verifyDocumentsFromURL(action: URLActionType, dispatch: (action: {}) => void) {
+function verifyDocumentsFromURL(action: URLActionType) {
   setTimeout(async () => {
     let data: any;
 
