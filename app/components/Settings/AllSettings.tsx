@@ -304,7 +304,7 @@ class AllSettings extends React.Component<any, {}> {
 export default connect((state) => {
   return {
     files: mapToArr(state.files.entities),
-    loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
+    loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.active]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),

@@ -1701,7 +1701,7 @@ export default connect((state) => {
     isDocumentsReviewed: state.files.documentsReviewed,
     licenseStatus: state.license.status,
     lic_error: state.license.lic_error,
-    loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
+    loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     mapCertificates: state.certificates,
     method: state.remoteFiles.method,
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.default]).encrypt.recipients)

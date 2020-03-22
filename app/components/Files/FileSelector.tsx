@@ -270,7 +270,7 @@ class FileSelector extends React.Component<IFileSelectorProps, {}> {
 export default connect((state) => {
   return {
     files: mapToArr(state.files.entities),
-    loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
+    loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     selectedFilesPackage: state.files.selectedFilesPackage,
     selectingFilesPackage: state.files.selectingFilesPackage,
     operationIsRemote: state.urlActions.performed,
