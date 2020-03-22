@@ -79,7 +79,15 @@ function signDocumentsFromURL(action: URLActionType) {
 
             pathForSave = newOutUri;
 
-            await dowloadFile(file.url, pathForSave);
+            const fileUrl = new URL(file.url);
+
+            if (extra.token) {
+              fileUrl.searchParams.append("accessToken", extra.token);
+            }
+
+            store.dispatch({ type: DOWNLOAD_REMOTE_FILE + START, payload: { id: file.id } });
+
+            await dowloadFile(fileUrl.toString(), pathForSave);
 
             store.dispatch({ type: DOWNLOAD_REMOTE_FILE + SUCCESS, payload: { id: file.id } });
 
