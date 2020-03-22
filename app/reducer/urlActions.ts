@@ -1,7 +1,7 @@
 import { OrderedMap, OrderedSet, Record } from "immutable";
 import {
   FAIL, PACKAGE_SIGN, REMOVE_URL_ACTION,
-  SIGN_DOCUMENTS_FROM_URL, START, SUCCESS,
+  SIGN_DOCUMENTS_FROM_URL, START, SUCCESS, VERIFY_DOCUMENTS_FROM_URL,
 } from "../constants";
 
 export const ActionModel = Record({
@@ -22,11 +22,13 @@ export default (urlAction = new DefaultReducerState(), action) => {
   const { type, payload } = action;
   switch (type) {
     case SIGN_DOCUMENTS_FROM_URL + START:
+    case VERIFY_DOCUMENTS_FROM_URL + START:
       return urlAction
         .set("performed", false)
         .set("performing", true);
 
     case SIGN_DOCUMENTS_FROM_URL + SUCCESS:
+    case VERIFY_DOCUMENTS_FROM_URL + SUCCESS:
       urlAction = urlAction
         .set("performed", true)
         .set("performing", false)
@@ -34,6 +36,7 @@ export default (urlAction = new DefaultReducerState(), action) => {
       break;
 
     case SIGN_DOCUMENTS_FROM_URL + FAIL:
+    case VERIFY_DOCUMENTS_FROM_URL + FAIL:
       return urlAction
         .set("performed", true)
         .set("performing", false);
