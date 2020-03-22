@@ -262,6 +262,6 @@ export default connect((state, ownProps) => {
     settings: state.settings,
     signSettings: state.settings.getIn(["entities", state.settings.default]).sign,
     tempContentOfSignedFiles: state.files.tempContentOfSignedFiles,
-    operationIsRemote: state.urlActions.performed,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
   };
 }, { filePackageDelete })(MenuBar);

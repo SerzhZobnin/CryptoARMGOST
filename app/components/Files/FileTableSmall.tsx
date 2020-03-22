@@ -412,5 +412,5 @@ export default connect((state, ownProps: IOwnProps) => ({
   loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
   selectedFilesPackage: state.files.selectedFilesPackage,
   selectingFilesPackage: state.files.selectingFilesPackage,
-  operationIsRemote: state.urlActions.performed,
+  operationIsRemote: state.urlActions.performed || state.urlActions.performing,
 }), { activeFile, deleteFile, selectTempContentOfSignedFiles })(FileTableSmall);

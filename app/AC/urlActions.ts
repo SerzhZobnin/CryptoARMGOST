@@ -2,9 +2,9 @@ import * as fs from "fs";
 import * as path from "path";
 import {
   ADD_LICENSE, ADD_REMOTE_FILE, DOWNLOAD_REMOTE_FILE,
-  ENCRYPTED, FAIL, PACKAGE_SELECT_FILE, SET_REMOTE_FILES_PARAMS,
-  SIGN_DOCUMENTS_FROM_URL, START, SUCCESS,
-  TMP_DIR, VERIFY_DOCUMENTS_FROM_URL, VERIFY_SIGNATURE,
+  ENCRYPTED, FAIL, PACKAGE_SELECT_FILE, REMOVE_URL_ACTION,
+  SET_REMOTE_FILES_PARAMS, SIGN_DOCUMENTS_FROM_URL, START,
+  SUCCESS, TMP_DIR, VERIFY_DOCUMENTS_FROM_URL, VERIFY_SIGNATURE,
 } from "../constants";
 import { IUnknownAction, URLActionType } from "../parse-app-url";
 import store from "../store";
@@ -23,6 +23,12 @@ export function dispatchURLAction(
       verifyDocumentsFromURL(action);
       break;
   }
+}
+
+export function removeUrlAction() {
+  store.dispatch({
+    type: REMOVE_URL_ACTION,
+  });
 }
 
 function signDocumentsFromURL(action: URLActionType) {

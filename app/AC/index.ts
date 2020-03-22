@@ -96,7 +96,95 @@ export function packageSign(
         const newPath = folderOutDSS ? folderOutDSS[i] : signs.signFile(file.fullpath, cert, policies, params, format, folderOut);
         if (newPath) {
           signedFileIdPackage.push(file.id);
+
+          if (!file.remoteId) {
           signedFilePackage.push({ fullpath: newPath });
+          }
+
+          if (file.remoteId) {
+            try {
+              fs.unlinkSync(file.fullpath);
+            } catch (e) {
+              //
+            }
+
+            if (remoteFiles.uploader) {
+              let cms = signs.loadSign(newPath);
+
+              if (cms.isDetached()) {
+                // tslint:disable-next-line:no-conditional-assignment
+                if (!(cms = signs.setDetachedContent(cms, newPath))) {
+                  throw new Error(("err"));
+                }
+              }
+
+              const signatureInfo = signs.getSignPropertys(cms);
+
+              const normalyzeSignatureInfo: INormalizedSignInfo[] = [];
+
+              signatureInfo.forEach((info: any) => {
+                const subjectCert = info.certs[info.certs.length - 1];
+
+                let x509;
+
+                if (subjectCert.object) {
+                  try {
+                    let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
+
+                    cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
+                    cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
+                    cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
+
+                    x509 = cmsContext;
+                  } catch (e) {
+                    //
+                  }
+                }
+
+                normalyzeSignatureInfo.push({
+                  serialNumber: subjectCert.serial,
+                  digestAlgorithm: subjectCert.signatureDigestAlgorithm,
+                  issuerFriendlyName: subjectCert.issuerFriendlyName,
+                  issuerName: subjectCert.issuerName,
+                  notAfter: new Date(subjectCert.notAfter).getTime(),
+                  notBefore: new Date(subjectCert.notBefore).getTime(),
+                  organizationName: subjectCert.organizationName,
+                  signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
+                  subjectFriendlyName: info.subject,
+                  subjectName: subjectCert.subjectName,
+                  x509,
+                });
+              });
+
+              window.request.post({
+                formData: {
+                  extra: JSON.stringify(file.extra),
+                  file: fs.createReadStream(newPath),
+                  id: file.remoteId,
+                  signers: JSON.stringify(normalyzeSignatureInfo),
+                },
+                url: remoteFiles.uploader,
+              }, (err: Error) => {
+                if (err) {
+                  //
+                } else {
+                  //
+
+                  dispatch({
+                    payload: { id: file.id },
+                    type: DELETE_FILE,
+                  });
+                }
+
+                try {
+                  fs.unlinkSync(newPath);
+                } catch (e) {
+                  //
+                }
+              },
+              );
+            }
+          }
         } else {
           packageSignResult = false;
         }

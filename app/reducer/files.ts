@@ -58,7 +58,7 @@ export default (files = new DefaultReducerState(), action) => {
     case DELETE_FILE:
       const file = files.getIn(["entities", payload.fileId]);
 
-      if (file && file.socket && fileExists(file.fullpath)) {
+      if (file && file.remoteId && fileExists(file.fullpath)) {
         try {
           fs.unlinkSync(file.fullpath);
         } catch (e) {
@@ -73,7 +73,7 @@ export default (files = new DefaultReducerState(), action) => {
       payload.filePackage.forEach((id: number) => {
         const tfile = files.getIn(["entities", id]);
 
-        if (tfile && tfile.socket && fileExists(tfile.fullpath)) {
+        if (tfile && tfile.remoteId && fileExists(tfile.fullpath)) {
           try {
             fs.unlinkSync(tfile.fullpath);
           } catch (e) {
@@ -88,7 +88,7 @@ export default (files = new DefaultReducerState(), action) => {
 
     case REMOVE_ALL_FILES:
       files.entities.forEach((file: any) => {
-        if (file && file.socket && fileExists(file.fullpath)) {
+        if (file && file.remoteId && fileExists(file.fullpath)) {
           try {
             fs.unlinkSync(file.fullpath);
           } catch (e) {

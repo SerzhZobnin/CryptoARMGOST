@@ -300,6 +300,7 @@ export const RESPONSE = "_RESPONSE";
 
 export const SIGN_DOCUMENTS_FROM_URL = "sign-documents-from-url";
 export const VERIFY_DOCUMENTS_FROM_URL = "verify-documents-from-url";
+export const REMOVE_URL_ACTION = "REMOVE_URL_ACTION";
 
 export const CRYPTOPRO_DSS = "CRYPTOPRO_DSS";
 export const DSS_ACTIONS = {

@@ -273,6 +273,6 @@ export default connect((state) => {
     loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     selectedFilesPackage: state.files.selectedFilesPackage,
     selectingFilesPackage: state.files.selectingFilesPackage,
-    operationIsRemote: state.urlActions.performed,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
   };
 }, { activeFile, deleteFile, selectFile })(FileSelector);
