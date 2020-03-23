@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { push } from "react-router-redux";
 import {
-  ADD_LICENSE, ADD_REMOTE_FILE, DECRYPT,
+  ADD_LICENSE, ADD_REMOTE_FILE, CANCEL_URL_ACTION, DECRYPT,
   DOWNLOAD_REMOTE_FILE, ENCRYPT, ENCRYPTED, FAIL,
   LOCATION_MAIN, PACKAGE_SELECT_FILE, REMOVE_ALL_FILES,
   REMOVE_ALL_REMOTE_FILES, REMOVE_URL_ACTION, SET_REMOTE_FILES_PARAMS,
@@ -70,6 +70,44 @@ export function removeUrlAction() {
   store.dispatch({
     type: REMOVE_URL_ACTION,
   });
+}
+
+export function cancelUrlAction(data: ISignRequest | IEncryptRequest) {
+  const { params } = data;
+
+  if (!params) {
+    return;
+  }
+  const { extra, files, uploader } = params;
+
+  files.forEach((file) => {
+    if (extra && extra.signType === "0" || extra.signType === "1") {
+      extra.signType = parseInt(extra.signType, 10);
+    }
+
+    const formData = {
+      extra: JSON.stringify(extra),
+      file: "",
+      id: file.remoteId,
+      signers: "",
+      successful: false,
+    };
+
+    window.request.post({
+      formData,
+      url: uploader,
+    }, (err) => {
+      if (err) {
+        console.log("err", err);
+      } else {
+        store.dispatch({
+          type: CANCEL_URL_ACTION,
+        });
+      }
+    },
+    );
+  });
+
 }
 
 function signDocumentsFromURL(action: URLActionType) {

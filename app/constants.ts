@@ -298,6 +298,7 @@ export const POST_TRANSACTION_DSS = "POST_TRANSACTION_DSS";
 export const POST_PERFORM_OPERATION = "POST_PERFORM_OPERATION";
 export const RESPONSE = "_RESPONSE";
 
+export const CANCEL_URL_ACTION = "CANCEL_URL_ACTION";
 export const SIGN_DOCUMENTS_FROM_URL = "sign-documents-from-url";
 export const VERIFY_DOCUMENTS_FROM_URL = "verify-documents-from-url";
 export const REMOVE_URL_ACTION = "REMOVE_URL_ACTION";

@@ -19,7 +19,7 @@ import { multiDirectOperation, multiReverseOperation } from "../../AC/multiOpera
 import {
   activeSetting, changeDefaultSettings, deleteSetting, saveSettings,
 } from "../../AC/settingsActions";
-import { removeUrlAction } from "../../AC/urlActions";
+import { cancelUrlAction, removeUrlAction } from "../../AC/urlActions";
 import {
   ARCHIVATION_OPERATION, ARCHIVE, DECRYPT, DSS_ACTIONS, ENCRYPT, ENCRYPTION_OPERATION, GOST_28147,
   GOST_R3412_2015_K, GOST_R3412_2015_M,
@@ -430,6 +430,10 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
                   <div className="col s4 waves-effect waves-cryptoarm" onClick={() => {
                     this.props.removeAllFiles();
+                    if (this.props.operationRemoteAction) {
+                      cancelUrlAction(this.props.operationRemoteAction.json);
+                    }
+
                     removeUrlAction();
                   }}>
                     <div className="col s12 svg_icon">
@@ -456,6 +460,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
                   <div className="col s4 waves-effect waves-cryptoarm" onClick={() => {
                     this.props.removeAllFiles();
+                    if (this.props.operationRemoteAction) {
+                      cancelUrlAction(this.props.operationRemoteAction.json);
+                    }
                     removeUrlAction();
                   }}>
                     <div className="col s12 svg_icon">
