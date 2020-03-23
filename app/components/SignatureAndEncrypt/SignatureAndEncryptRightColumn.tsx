@@ -19,11 +19,14 @@ import { multiDirectOperation, multiReverseOperation } from "../../AC/multiOpera
 import {
   activeSetting, changeDefaultSettings, deleteSetting, saveSettings,
 } from "../../AC/settingsActions";
+import { cancelUrlAction, removeUrlAction } from "../../AC/urlActions";
 import {
-  ARCHIVE, DECRYPT, DSS_ACTIONS, ENCRYPT, GOST_28147, GOST_R3412_2015_K, GOST_R3412_2015_M,
-  HOME_DIR, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
-  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
-  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, REMOVE, SIGN, UNSIGN, UNZIPPING, USER_NAME, VERIFY, SIGNING_OPERATION, ARCHIVATION_OPERATION, ENCRYPTION_OPERATION, MULTI_REVERSE,
+  ARCHIVATION_OPERATION, ARCHIVE, DECRYPT, DSS_ACTIONS, ENCRYPT, ENCRYPTION_OPERATION, GOST_28147,
+  GOST_R3412_2015_K, GOST_R3412_2015_M,
+  HOME_DIR,
+  LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
+  LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, MULTI_REVERSE, REMOVE, SIGN,
+  SIGNING_OPERATION, UNSIGN, UNZIPPING, USER_NAME, VERIFY,
 } from "../../constants";
 import { DEFAULT_ID, ISignParams } from "../../reducer/settings";
 import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
@@ -425,7 +428,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                     <div className="col s12 svg_icon_text">{localize("Documents.docmenu_sign", locale)}</div>
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm" onClick={this.props.removeAllFiles}>
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => {
+                    this.props.removeAllFiles();
+                    if (this.props.operationRemoteAction) {
+                      cancelUrlAction(this.props.operationRemoteAction.json);
+                    }
+
+                    removeUrlAction();
+                  }}>
                     <div className="col s12 svg_icon">
                       <a data-position="bottom">
                         <i className="material-icons docmenu cancel" />
@@ -448,7 +458,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                     <div className="col s12 svg_icon_text">{"Проверить"}</div>
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm" onClick={this.props.removeAllFiles}>
+                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => {
+                    this.props.removeAllFiles();
+                    if (this.props.operationRemoteAction) {
+                      cancelUrlAction(this.props.operationRemoteAction.json);
+                    }
+                    removeUrlAction();
+                  }}>
                     <div className="col s12 svg_icon">
                       <a data-position="bottom">
                         <i className="material-icons docmenu cancel" />
@@ -869,7 +885,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { signer, tokensAuth, users, policyDSS } = this.props;
     let { setting } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
-    const { packageSign, createTransactionDSS, dssPerformOperation } = this.props;
+    const { packageSign, createTransactionDSS, dssPerformOperation, operationRemoteAction } = this.props;
     const { localize, locale } = this.context;
     const { pinCode } = this.state;
 
@@ -877,7 +893,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     if (isSockets) {
       setting = setting.set("outfolder", "");
-      setting = setting.setIn(["sign", "detached"], false);
+      setting = operationRemoteAction && operationRemoteAction.isDetachedSign ? setting.setIn(["sign", "detached"], true) : setting.setIn(["sign", "detached"], false);
       setting = setting.setIn(["sign", "time"], true);
     }
 
@@ -1031,7 +1047,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { connections, connectedList, signer, tokensAuth, users, uploader, policyDSS } = this.props;
     let { setting } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
-    const { deleteFile, selectFile, createTransactionDSS, packageReSign } = this.props;
+    const { deleteFile, selectFile, createTransactionDSS, packageReSign, operationRemoteAction } = this.props;
     const { localize, locale } = this.context;
     const { pinCode } = this.state;
 
@@ -1039,7 +1055,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     if (isSockets) {
       setting = setting.set("outfolder", "");
-      setting = setting.setIn(["sign", "detached"], false);
+
+      setting = operationRemoteAction && operationRemoteAction.isDetachedSign ? setting.setIn(["sign", "detached"], true) : setting.setIn(["sign", "detached"], false);
+
       setting = setting.setIn(["sign", "time"], true);
     }
 
@@ -1210,12 +1228,89 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           const newPath = trustedSign.resignFile(file.fullpath, cert, policies, signParams, format, folderOut);
 
           if (newPath) {
-            deleteFile(file.id);
-            selectFile(newPath);
+            if (file.remoteId) {
+
+              if (uploader) {
+                let cms = trustedSign.loadSign(newPath);
+
+                if (cms.isDetached()) {
+                  if (!(cms = trustedSign.setDetachedContent(cms, newPath))) {
+                    throw new Error(("err"));
+                  }
+                }
+
+                const signatureInfo = trustedSign.getSignPropertys(cms);
+
+                const normalyzeSignatureInfo: any[] = [];
+
+                signatureInfo.forEach((info) => {
+                  const subjectCert = info.certs[info.certs.length - 1];
+                  let x509;
+
+                  if (subjectCert.object) {
+                    try {
+                      let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
+
+                      cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
+                      cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
+                      cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
+
+                      x509 = cmsContext;
+                    } catch (e) {
+                      //
+                    }
+                  }
+
+                  normalyzeSignatureInfo.push({
+                    serialNumber: subjectCert.serial,
+                    subjectFriendlyName: info.subject,
+                    issuerFriendlyName: subjectCert.issuerFriendlyName,
+                    notBefore: new Date(subjectCert.notBefore).getTime(),
+                    notAfter: new Date(subjectCert.notAfter).getTime(),
+                    digestAlgorithm: subjectCert.signatureDigestAlgorithm,
+                    organizationName: subjectCert.organizationName,
+                    signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
+                    subjectName: subjectCert.subjectName,
+                    issuerName: subjectCert.issuerName,
+                    x509,
+                  });
+                });
+
+                const extra = file.extra;
+
+                if (extra && extra.signType === "0" || extra.signType === "1") {
+                  extra.signType = parseInt(extra.signType, 10);
+                }
+
+                const formData = {
+                  extra: JSON.stringify(extra),
+                  file: fs.createReadStream(newPath),
+                  id: file.remoteId,
+                  signers: JSON.stringify(normalyzeSignatureInfo),
+                };
+
+                window.request.post({
+                  formData,
+                  url: uploader,
+                }, (err) => {
+                  if (err) {
+                    console.log("err", err);
+                  }
+
+                  deleteFile(file.id);
+                },
+                );
+              }
+            } else {
+              deleteFile(file.id);
+              selectFile(newPath);
+            }
           } else {
             res = false;
           }
         });
+
+        removeUrlAction();
 
         if (res) {
           $(".toast-files_resigned").remove();
@@ -1717,7 +1812,8 @@ export default connect((state) => {
     users: state.users.entities,
     transactionDSS: mapToArr(state.transactionDSS.entities),
     policyDSS: state.policyDSS.entities,
-    operationIsRemote: state.urlActions.performed,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
+    operationRemoteAction: state.urlActions.action,
   };
 }, {
   activeFile, activeSetting, changeDefaultSettings, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,

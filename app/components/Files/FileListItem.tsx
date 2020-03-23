@@ -155,6 +155,6 @@ class FileListItem extends React.Component<IFilelistItemProps, {}> {
 
 export default connect((state) => {
   return {
-    operationIsRemote: state.urlActions.performed,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
   };
 }, {})(FileListItem);
