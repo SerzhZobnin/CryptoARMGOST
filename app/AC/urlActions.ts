@@ -15,6 +15,9 @@ import { checkLicense } from "../trusted/jwt";
 import * as signs from "../trusted/sign";
 import { extFile, fileExists, md5 } from "../utils";
 
+// tslint:disable-next-line:no-var-requires
+const request = require("request");
+
 const remote = window.electron.remote;
 
 interface IFileProperty {
@@ -159,35 +162,35 @@ function verifyDocumentsFromURL(action: URLActionType) {
 
 function getJsonFromURL(url: string) {
   return new Promise((resolve, reject) => {
-    const curl = new window.Curl();
+    try {
+      const sendReq: any = request.get(url);
 
-    curl.setOpt("URL", url);
-    curl.setOpt("FOLLOWLOCATION", true);
-    curl.on("end", (statusCode: number, response: { toString: () => string; }) => {
-      let data;
+      sendReq.on("response", (response) => {
+        switch (response.statusCode) {
+          case 200:
+            let data = new Buffer("");
 
-      try {
-        if (statusCode !== 200) {
-          throw new Error(`Unexpected response, status code ${statusCode}`);
+            response.on("data", (chunk) => {
+              data = Buffer.concat([data, chunk]);
+            }).on("end", () => {
+              data = JSON.parse(data.toString());
+              resolve(data);
+            });
+
+            break;
+          default:
+            reject(new Error("Server responded with status code" + response.statusCode));
         }
+      });
 
-        data = JSON.parse(response.toString());
-      } catch (error) {
-        reject(`Cannot load data, error: ${error.message}`);
-        return;
-      } finally {
-        curl.close();
-      }
-
-      resolve(data);
-    });
-
-    curl.on("error", (error: { message: any; }) => {
-      curl.close();
-      reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
-    });
-
-    curl.perform();
+      sendReq.on("error", (err) => {
+        reject(err);
+      });
+    } catch (e) {
+      // tslint:disable-next-line:no-console
+      console.log("--- Error dowloadFile", e);
+      reject();
+    }
   });
 }
 
@@ -307,42 +310,43 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
 function dowloadFile(url: string, fileOutPath: string) {
   return new Promise((resolve, reject) => {
     try {
-      const curl = new window.Curl();
-      // tslint:disable-next-line:no-bitwise
-      curl.enable(window.CurlFeature.Raw | window.CurlFeature.NoStorage);
+      const sendReq: any = request.get(url);
 
-      if (fs.existsSync(fileOutPath)) {
-        reject(new Error(`File exists ${fileOutPath}`));
-      }
+      sendReq.on("response", (response) => {
+        switch (response.statusCode) {
+          case 200:
+            let indexFile: number = 1;
+            let newOutUri: string = fileOutPath;
+            while (fileExists(newOutUri)) {
+              const parsed = path.parse(fileOutPath);
 
-      curl.setOpt("URL", url);
-      curl.setOpt(window.Curl.option.WRITEFUNCTION, chunk => {
-        fs.appendFileSync(fileOutPath, chunk);
+              newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
+              indexFile++;
+            }
 
-        return chunk.length;
-      });
+            fileOutPath = newOutUri;
 
-      curl.on("end", (statusCode: number, response: { toString: () => string; }, headers: any) => {
-        try {
-          if (statusCode !== 200) {
-            throw new Error(`Unexpected response, status code ${statusCode}`);
-          }
-        } catch (error) {
-          reject(`Cannot load data, error: ${error.message}`);
-          return;
-        } finally {
-          curl.close();
+            const stream = fs.createWriteStream(fileOutPath);
+
+            response.on("data", (chunk) => {
+              stream.write(chunk);
+            }).on("end", () => {
+              stream.on("close", () => {
+                resolve();
+              });
+              stream.end();
+            });
+
+            break;
+          default:
+            reject(new Error("Server responded with status code" + response.statusCode));
         }
-
-        resolve();
       });
 
-      curl.on("error", (error: { message: any; }) => {
-        curl.close();
-        reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
+      sendReq.on("error", (err) => {
+        fs.unlinkSync(fileOutPath);
+        reject(err);
       });
-
-      curl.perform();
     } catch (e) {
       // tslint:disable-next-line:no-console
       console.log("--- Error dowloadFile", e);
