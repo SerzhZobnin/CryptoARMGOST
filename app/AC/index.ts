@@ -89,7 +89,7 @@ export function packageSign(
       const signedFilePackage: IFilePath[] = [];
       const signedFileIdPackage: string[] = [];
       const state = getState();
-      const { connections, remoteFiles } = state;
+      const { urlActions, remoteFiles } = state;
       let i: number = 0;
 
       files.forEach((file) => {
@@ -103,7 +103,9 @@ export function packageSign(
 
           if (file.remoteId) {
             try {
-              fs.unlinkSync(file.fullpath);
+              if (!(urlActions && urlActions.action && urlActions.action.isDetachedSign)) {
+                fs.unlinkSync(file.fullpath);
+              }
             } catch (e) {
               //
             }
@@ -186,6 +188,11 @@ export function packageSign(
 
                 try {
                   fs.unlinkSync(newPath);
+
+                  if (urlActions && urlActions.action && urlActions.action.isDetachedSign) {
+                    fs.unlinkSync(file.fullpath);
+                    fs.unlinkSync(newPath.substring(0, newPath.lastIndexOf(".")));
+                  }
                 } catch (e) {
                   //
                 }

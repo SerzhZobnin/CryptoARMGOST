@@ -7,6 +7,7 @@ import {
 export const ActionModel = Record({
   accessToken: null,
   command: null,
+  isDetachedSign: null,
   json: null,
   name: null,
   url: null,
@@ -33,6 +34,12 @@ export default (urlAction = new DefaultReducerState(), action) => {
         .set("performed", true)
         .set("performing", false)
         .set("action", new ActionModel(payload));
+
+      if (payload.json && payload.json.params && payload.json.params.extra && payload.json.params.extra.signType == 1) {
+        urlAction = urlAction.setIn(["action", "isDetachedSign"], true);
+      } else {
+        urlAction = urlAction.setIn(["action", "isDetachedSign"], false);
+      }
       break;
 
     case SIGN_DOCUMENTS_FROM_URL + FAIL:

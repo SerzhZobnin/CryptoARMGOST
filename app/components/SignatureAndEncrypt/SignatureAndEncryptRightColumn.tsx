@@ -878,7 +878,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { signer, tokensAuth, users, policyDSS } = this.props;
     let { setting } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
-    const { packageSign, createTransactionDSS, dssPerformOperation } = this.props;
+    const { packageSign, createTransactionDSS, dssPerformOperation, operationRemoteAction } = this.props;
     const { localize, locale } = this.context;
     const { pinCode } = this.state;
 
@@ -886,7 +886,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     if (isSockets) {
       setting = setting.set("outfolder", "");
-      setting = setting.setIn(["sign", "detached"], false);
+      setting = operationRemoteAction && operationRemoteAction.isDetachedSign ? setting.setIn(["sign", "detached"], true) : setting.setIn(["sign", "detached"], false);
       setting = setting.setIn(["sign", "time"], true);
     }
 
@@ -1040,7 +1040,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { connections, connectedList, signer, tokensAuth, users, uploader, policyDSS } = this.props;
     let { setting } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
-    const { deleteFile, selectFile, createTransactionDSS, packageReSign } = this.props;
+    const { deleteFile, selectFile, createTransactionDSS, packageReSign, operationRemoteAction } = this.props;
     const { localize, locale } = this.context;
     const { pinCode } = this.state;
 
@@ -1048,7 +1048,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     if (isSockets) {
       setting = setting.set("outfolder", "");
-      setting = setting.setIn(["sign", "detached"], false);
+
+      setting = operationRemoteAction && operationRemoteAction.isDetachedSign ? setting.setIn(["sign", "detached"], true) : setting.setIn(["sign", "detached"], false);
+
       setting = setting.setIn(["sign", "time"], true);
     }
 
@@ -1804,6 +1806,7 @@ export default connect((state) => {
     transactionDSS: mapToArr(state.transactionDSS.entities),
     policyDSS: state.policyDSS.entities,
     operationIsRemote: state.urlActions.performed || state.urlActions.performing,
+    operationRemoteAction: state.urlActions.action,
   };
 }, {
   activeFile, activeSetting, changeDefaultSettings, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,

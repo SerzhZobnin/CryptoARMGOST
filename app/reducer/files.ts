@@ -61,6 +61,7 @@ export default (files = new DefaultReducerState(), action) => {
       if (file && file.remoteId && fileExists(file.fullpath)) {
         try {
           fs.unlinkSync(file.fullpath);
+          fs.unlinkSync(file.fullpath.substring(0, file.fullpath.lastIndexOf(".")));
         } catch (e) {
           //
         }
@@ -76,6 +77,7 @@ export default (files = new DefaultReducerState(), action) => {
         if (tfile && tfile.remoteId && fileExists(tfile.fullpath)) {
           try {
             fs.unlinkSync(tfile.fullpath);
+            fs.unlinkSync(tfile.fullpath.substring(0, tfile.fullpath.lastIndexOf(".")));
           } catch (e) {
             //
           }

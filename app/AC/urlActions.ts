@@ -228,7 +228,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
 
       pathForSave = newOutUri;
 
-      const fileUrl = new URL(file.url);
+      const fileUrl = file.urlDetached ? new URL(file.urlDetached) : new URL(file.url);
 
       if (extra && extra.token) {
         fileUrl.searchParams.append("accessToken", extra.token);
@@ -239,6 +239,16 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
       await dowloadFile(fileUrl.toString(), pathForSave);
 
       store.dispatch({ type: DOWNLOAD_REMOTE_FILE + SUCCESS, payload: { id: file.id } });
+
+      if (file.urlDetached && file.url && extFile(pathForSave) === "sig") {
+        const fileUrlContent = new URL(file.url);
+
+        if (extra && extra.token) {
+          fileUrlContent.searchParams.append("accessToken", extra.token);
+        }
+
+        await dowloadFile(fileUrlContent.toString(), pathForSave.substring(0, pathForSave.lastIndexOf(".")));
+      }
 
       store.dispatch({
         type: PACKAGE_SELECT_FILE + START,
