@@ -77,7 +77,7 @@ export function packageSign(
   format: trusted.DataFormat,
   folderOut: string,
   folderOutDSS?: string[],
-  ) {
+) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     dispatch({
       type: PACKAGE_SIGN + START,
@@ -98,7 +98,7 @@ export function packageSign(
           signedFileIdPackage.push(file.id);
 
           if (!file.remoteId) {
-          signedFilePackage.push({ fullpath: newPath });
+            signedFilePackage.push({ fullpath: newPath });
           }
 
           if (file.remoteId) {
@@ -156,13 +156,21 @@ export function packageSign(
                 });
               });
 
+              const extra = file.extra;
+
+              if (extra && extra.signType === "0" || extra.signType === "1") {
+                extra.signType = parseInt(extra.signType, 10);
+              }
+
+              const formData = {
+                extra: JSON.stringify(extra),
+                file: fs.createReadStream(newPath),
+                id: file.remoteId,
+                signers: JSON.stringify(normalyzeSignatureInfo),
+              };
+
               window.request.post({
-                formData: {
-                  extra: JSON.stringify(file.extra),
-                  file: fs.createReadStream(newPath),
-                  id: file.remoteId,
-                  signers: JSON.stringify(normalyzeSignatureInfo),
-                },
+                formData,
                 url: remoteFiles.uploader,
               }, (err: Error) => {
                 if (err) {
@@ -209,7 +217,7 @@ export function packageReSign(
   format: trusted.DataFormat,
   folderOut: string,
   folderOutDSS?: string[],
-  ) {
+) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     dispatch({
       type: PACKAGE_SIGN + START,

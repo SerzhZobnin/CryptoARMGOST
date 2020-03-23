@@ -1267,13 +1267,21 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   });
                 });
 
+                const extra = file.extra;
+
+                if (extra && extra.signType === "0" || extra.signType === "1") {
+                  extra.signType = parseInt(extra.signType, 10);
+                }
+
+                const formData = {
+                  extra: JSON.stringify(extra),
+                  file: fs.createReadStream(newPath),
+                  id: file.remoteId,
+                  signers: JSON.stringify(normalyzeSignatureInfo),
+                };
+
                 window.request.post({
-                  formData: {
-                    extra: JSON.stringify(file.extra),
-                    file: fs.createReadStream(newPath),
-                    id: file.remoteId,
-                    signers: JSON.stringify(normalyzeSignatureInfo),
-                  },
+                  formData,
                   url: uploader,
                 }, (err) => {
                   if (err) {
