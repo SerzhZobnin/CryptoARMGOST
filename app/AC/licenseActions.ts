@@ -69,41 +69,45 @@ export function loadLicense(license?: string) {
       data = data.replace(/(\r\n|\n|\r)/gm, "");
       data = data.trim();
 
-      if (data && data.length) {
-        const status = JSON.parse(LicenseManager.checkLicense(data));
+      try {
+        if (data && data.length) {
+          const status = JSON.parse(LicenseManager.checkLicense(data));
 
-        if (status.verify) {
-          lic_format = status.type;
-          lic.exp = status.attribute ? status.attribute.ExpirationTime : status.payload ? JSON.parse(status.payload).exp : null;
-          lic.iat = 0;
-          licenseStatus = true;
-          lic_error = 900; // CTLICENSE_R_NO_ERROR
-          dispatch({ payload: { data, lic, lic_format, licenseStatus, lic_error }, type: LOAD_LICENSE + SUCCESS });
+          if (status.verify) {
+            lic_format = status.type;
+            lic.exp = status.attribute ? status.attribute.ExpirationTime : status.payload ? JSON.parse(status.payload).exp : null;
+            lic.iat = 0;
+            licenseStatus = true;
+            lic_error = 900; // CTLICENSE_R_NO_ERROR
+            dispatch({ payload: { data, lic, lic_format, licenseStatus, lic_error }, type: LOAD_LICENSE + SUCCESS });
+          } else {
+            lic_format = status.type;
+            licenseStatus = false;
+            lic_error = status.error; // CTLICENSE_R_ERROR_NO_LICENSE_IN_STORE
+            dispatch({ payload: { data, lic_format, licenseStatus, lic_error }, type: LOAD_LICENSE + FAIL });
+          }
         } else {
-          lic_format = status.type;
-          licenseStatus = false;
-          lic_error = status.error; // CTLICENSE_R_ERROR_NO_LICENSE_IN_STORE
-          dispatch({ payload: { data, lic_format, licenseStatus, lic_error }, type: LOAD_LICENSE + FAIL });
+          const status = JSON.parse(LicenseManager.checkTrialLicense());
+          // // Проверка на наличие и истечение временной лицензии
+          if (status.verify) {
+            const expirationTimeTrial = status.attribute.ExpirationTime;
+            lic_format = "TRIAL";
+            lic.exp = expirationTimeTrial;
+            lic.iat = expirationTimeTrial - 14 * 86400;
+            data = "";
+            licenseStatus = true;
+            lic_error = 900;
+            dispatch({ payload: { data, lic, lic_format, licenseStatus, lic_error }, type: LOAD_LICENSE + SUCCESS });
+          } else {
+            lic_format = "NONE"; // Лицензия отсутствует, т.к. триальная истекла
+            licenseStatus = false; // Статуст лицензии: 0 - не действует
+            data = "";
+            lic_error = 911; // CTLICENSE_R_ERROR_NO_LICENSE_IN_STORE
+            dispatch({ payload: { data, lic_format, licenseStatus, lic_error }, type: LOAD_LICENSE + FAIL });
+          }
         }
-      } else {
-        const status = JSON.parse(LicenseManager.checkTrialLicense());
-        // // Проверка на наличие и истечение временной лицензии
-        if (status.verify) {
-          const expirationTimeTrial = status.attribute.ExpirationTime;
-          lic_format = "TRIAL";
-          lic.exp = expirationTimeTrial;
-          lic.iat = expirationTimeTrial - 14 * 86400;
-          data = "";
-          licenseStatus = true;
-          lic_error = 900;
-          dispatch({ payload: { data, lic, lic_format, licenseStatus, lic_error }, type: LOAD_LICENSE + SUCCESS });
-        } else {
-          lic_format = "NONE"; // Лицензия отсутствует, т.к. триальная истекла
-          licenseStatus = false; // Статуст лицензии: 0 - не действует
-          data = "";
-          lic_error = 911; // CTLICENSE_R_ERROR_NO_LICENSE_IN_STORE
-          dispatch({ payload: { data, lic_format, licenseStatus, lic_error }, type: LOAD_LICENSE + FAIL });
-        }
+      } catch (e) {
+        console.log("error", e);
       }
     }, 0);
   };

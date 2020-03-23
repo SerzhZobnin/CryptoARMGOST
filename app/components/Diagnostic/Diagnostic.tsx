@@ -8,8 +8,8 @@ import { LOCATION_ABOUT, TSP_OCSP_ENABLED } from "../../constants";
 import {
   BUG, ERROR_CHECK_CSP_LICENSE, ERROR_CHECK_CSP_PARAMS,
   ERROR_LOAD_TRUSTED_CRYPTO, ERROR_LOAD_TRUSTED_CURL, NO_CORRECT_CRYPTOARM_LICENSE,
-  NO_CRYPTOARM_LICENSE, NO_GOST_2001, NO_HAVE_CERTIFICATES_WITH_KEY, NO_TSP_OCSP_ENABLED,
-  NOT_INSTALLED_CSP, WARNING,
+  NO_CRYPTOARM_LICENSE, NO_GOST_2001, NO_GOST_2012, NO_HAVE_CERTIFICATES_WITH_KEY,
+  NO_TSP_OCSP_ENABLED, NOT_INSTALLED_CSP, WARNING,
 } from "../../errors";
 import { filteredCertificatesSelector } from "../../selectors";
 import DiagnosticModal from "../Diagnostic/DiagnosticModal";
@@ -50,14 +50,14 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
     const { localize, locale } = this.context;
 
     try {
-      if (!trusted.utils.Csp.isGost2001CSPAvailable()) {
-        $(".toast-noProvider2001").remove();
-        Materialize.toast(localize("Csp.noProvider2001", locale), 5000, "toast-noProvider2001");
+      if (!trusted.utils.Csp.isGost2012_256CSPAvailable()) {
+        $(".toast-noProvider2012").remove();
+        Materialize.toast(localize("Csp.noProvider2012", locale), 5000, "toast-noProvider2012");
 
         this.setState({
           errors: [...this.state.errors, {
             important: WARNING,
-            type: NO_GOST_2001,
+            type: NO_GOST_2012,
           }],
         });
 
@@ -250,7 +250,7 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
 
     const cspErrors: IError[] = [];
     for (const error of errors) {
-      if (error.type === NO_GOST_2001 ||
+      if (error.type === NO_GOST_2012 ||
         error.type === ERROR_CHECK_CSP_PARAMS) {
         cspErrors.push(error);
       }
