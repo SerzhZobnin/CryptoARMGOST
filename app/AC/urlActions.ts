@@ -73,40 +73,39 @@ export function removeUrlAction() {
 }
 
 export function cancelUrlAction(data: ISignRequest | IEncryptRequest) {
-  const { params } = data;
+  // TODO надо испарвить
+  // const { params } = data;
 
-  if (!params) {
-    return;
-  }
-  const { extra, files, uploader } = params;
+  // if (!params) {
+  //   return;
+  // }
+  // const { extra, files, uploader } = params;
 
-  files.forEach((file) => {
-    if (extra && extra.signType === "0" || extra.signType === "1") {
-      extra.signType = parseInt(extra.signType, 10);
-    }
+  // files.forEach((file) => {
+  //   if (extra && extra.signType === "0" || extra.signType === "1") {
+  //     extra.signType = parseInt(extra.signType, 10);
+  //   }
 
-    const formData = {
-      extra: JSON.stringify(extra),
-      file: "",
-      id: file.remoteId,
-      signers: "",
-      successful: false,
-    };
+  //   const formData = {
+  //     extra: JSON.stringify(extra),
+  //     id: file.remoteId,
+  //     successful: false,
+  //   };
 
-    window.request.post({
-      formData,
-      url: uploader,
-    }, (err) => {
-      if (err) {
-        console.log("err", err);
-      } else {
-        store.dispatch({
-          type: CANCEL_URL_ACTION,
-        });
-      }
-    },
-    );
-  });
+  //   window.request.post({
+  //     formData,
+  //     url: uploader,
+  //   }, (err) => {
+  //     if (err) {
+  //       console.log("err", err);
+  //     } else {
+  //       store.dispatch({
+  //         type: CANCEL_URL_ACTION,
+  //       });
+  //     }
+  //   },
+  //   );
+  // });
 
 }
 
@@ -374,15 +373,13 @@ function dowloadFile(url: string, fileOutPath: string) {
 
             fileOutPath = newOutUri;
 
-            const stream = fs.createWriteStream(fileOutPath);
+            let data = new Buffer("");
 
             response.on("data", (chunk) => {
-              stream.write(chunk);
+              data = Buffer.concat([data, chunk]);
             }).on("end", () => {
-              stream.on("close", () => {
-                resolve();
-              });
-              stream.end();
+              fs.writeFileSync(fileOutPath, data);
+              resolve();
             });
 
             break;
