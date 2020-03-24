@@ -840,6 +840,7 @@ i.material-icons.choosefolder {
 .tabs {
   height: 35px;
   overflow-x: hidden;
+
 }
 
 .tabs .tab a{
@@ -1560,7 +1561,7 @@ p.label {
 }
 
 p.label-csr {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #334294;
 }
 
@@ -2763,7 +2764,7 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
 }
 
 .header-tab {
-  font-size: 55%;
+  font-size: .8rem;
   color: gray;
 }
 
