@@ -1,5 +1,5 @@
 import { OrderedMap, Record } from "immutable";
-import { ADD_REMOTE_FILE, DOWNLOAD_REMOTE_FILE, REMOVE_ALL_REMOTE_FILES, SET_REMOTE_FILES_PARAMS, START, SUCCESS, UPLOAD_FILE } from "../constants";
+import { ADD_REMOTE_FILE, DOWNLOAD_REMOTE_FILE, REMOVE_ALL_REMOTE_FILES, SET_REMOTE_FILES_PARAMS, START, SUCCESS, UPLOAD_FILE, DOWNLOAD_REMOTE } from "../constants";
 
 export interface IRemoteFile {
   extra: any;

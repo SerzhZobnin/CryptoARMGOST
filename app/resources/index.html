@@ -68,9 +68,11 @@
     }
 
     var Curl;
+    var CurlFeature;
 
     try {
       Curl = require("trusted-curl").Curl;
+      CurlFeature = require("trusted-curl").CurlFeature;
     } catch (err) {
       console.log("Error load trusted-curl", err);
       window.curlerr = err;

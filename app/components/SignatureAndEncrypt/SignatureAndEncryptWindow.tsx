@@ -337,7 +337,7 @@ export default connect((state) => {
     files: mapToArr(state.files.entities),
     filesInTransactionList: filesInTransactionsSelector(state),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
-    loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
+    loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     method: state.remoteFiles.method,
     operationsPerformed: state.multiOperations.performed,
     operationsPerforming: state.multiOperations.performing,
@@ -345,6 +345,6 @@ export default connect((state) => {
     packageSignResult: state.signatures.packageSignResult,
     signatures,
     signedPackage: state.signatures.signedPackage,
-    operationIsRemote: state.urlActions.performed,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
   };
 }, { activeFile, deleteAllTemporyLicenses, filePackageSelect, filePackageDelete, removeAllRemoteFiles })(SignatureAndEncryptWindow);

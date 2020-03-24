@@ -151,6 +151,6 @@ export default connect((state) => {
   return {
     filesInTransactionList: filesInTransactionsSelector(state),
     location: state.router.location,
-    operationIsRemote: state.urlActions.performed,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
   };
 }, { verifySignature })(FileItemButtons);

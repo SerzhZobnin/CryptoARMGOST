@@ -6,7 +6,7 @@ import Media from "react-media";
 import { connect } from "react-redux";
 import { AutoSizer, Column, Table } from "react-virtualized";
 import { activeFile, deleteFile, selectTempContentOfSignedFiles } from "../../AC";
-import { activeFilesSelector, filteredFilesSelector, loadingRemoteFilesSelector, filteredCertificatesSelector } from "../../selectors";
+import { activeFilesSelector, filteredCertificatesSelector, filteredFilesSelector } from "../../selectors";
 import "../../table.global.css";
 import { bytesToSize, mapToArr } from "../../utils";
 import ProgressBars from "../ProgressBars";

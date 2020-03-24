@@ -125,7 +125,7 @@ export const connectedSelector = createSelector(connectionsGetter, connectedGett
 });
 
 export const loadingRemoteFilesSelector = createSelector(remoteFilesGetter, loadingGetter, (files, loading) => {
-  return mapToArr(files).filter((file) => {
+  return files.filter((file) => {
     return file.loading === loading;
   });
 });

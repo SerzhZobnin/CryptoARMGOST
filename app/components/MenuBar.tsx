@@ -11,7 +11,6 @@ import {
   LOCATION_SERVICES, LOCATION_SETTINGS, LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT,
   SETTINGS_JSON, TRUSTED_CRYPTO_LOG,
 } from "../constants";
-import { connectedSelector, loadingRemoteFilesSelector } from "../selectors";
 import { CANCELLED } from "../server/constants";
 import { fileExists, mapToArr } from "../utils";
 import Diagnostic from "./Diagnostic/Diagnostic";
@@ -205,7 +204,7 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
   removeAllFiles = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { connections, connectedList, filePackageDelete, files } = this.props;
+    const { connections, filePackageDelete, files } = this.props;
 
     const filePackage: number[] = [];
 
@@ -252,19 +251,17 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 export default connect((state, ownProps) => {
   return {
     cloudCSPSettings: state.settings.getIn(["entities", state.settings.default]).cloudCSP,
-    connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
     encSettings: state.settings.getIn(["entities", state.settings.default]).encrypt,
     eventsDateFrom: state.events.dateFrom,
     eventsDateTo: state.events.dateTo,
     files: mapToArr(state.files.entities),
     isArchiveLog: state.events.isArchive,
-    loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
     location: ownProps.location,
     settingsName: state.settings.getIn(["entities", state.settings.default]).name,
     settings: state.settings,
     signSettings: state.settings.getIn(["entities", state.settings.default]).sign,
     tempContentOfSignedFiles: state.files.tempContentOfSignedFiles,
-    operationIsRemote: state.urlActions.performed,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
   };
 }, { filePackageDelete })(MenuBar);

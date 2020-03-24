@@ -304,13 +304,13 @@ class AllSettings extends React.Component<any, {}> {
 export default connect((state) => {
   return {
     files: mapToArr(state.files.entities),
-    loadingFiles: loadingRemoteFilesSelector(state, { loading: true }),
+    loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.active]).encrypt.recipients)
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
     settings: state.settings.getIn(["entities", state.settings.active]),
     signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
-    operationIsRemote: state.urlActions.performed,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
   };
 }, {
   changeArchiveFilesBeforeEncrypt, changeEncryptionAlgorithm, changeDeleteFilesAfterEncrypt, changeEncryptEncoding, changeOutfolder,
