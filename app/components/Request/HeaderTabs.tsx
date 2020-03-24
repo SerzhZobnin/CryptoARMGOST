@@ -22,10 +22,10 @@ class HeaderTabs extends React.Component<IHeaderTabsProps, {}> {
     const { activeSubjectNameInfoTab } = this.props;
 
     return (
-      <div className="row halfbottom ">
+      <div className="row halfbottom">
         <ul id="tabs-swipe-demo" className="tabs">
-          <li className="tab col s10  ">
-            <a className="header-tab active h2" onClick={() => activeSubjectNameInfoTab(true)}>
+          <li className="tab col s6">
+            <a className="header-tab active" onClick={() => activeSubjectNameInfoTab(true)}>
               {localize("CSR.subject_params", locale)}
             </a>
           </li>
