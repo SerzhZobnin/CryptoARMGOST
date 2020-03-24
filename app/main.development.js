@@ -319,6 +319,7 @@ app.on('ready', async () => {
 
   mainWindow.on('close', function (event) {
     if (!global.sharedObject.isQuiting) {
+      
       event.preventDefault();
       mainWindow.hide();
 

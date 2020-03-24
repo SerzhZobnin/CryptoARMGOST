@@ -3,10 +3,12 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { verifySignature } from "../../AC/index";
-import { LOCATION_RESULTS_MULTI_OPERATIONS, TMP_DIR } from "../../constants";
+import { LOCATION_RESULTS_MULTI_OPERATIONS, TMP_DIR, DEFAULT_TEMP_PATH } from "../../constants";
 import { filesInTransactionsSelector } from "../../selectors";
 import * as signs from "../../trusted/sign";
 import { fileExists } from "../../utils";
+import * as trustedEncrypts from "../../trusted/encrypt";
+
 
 const shell = window.electron.shell;
 const dialog = window.electron.remote.dialog;
@@ -48,7 +50,17 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
             </div> :
             null
         }
-
+        {
+          file.extension === "enc" ?
+            <div className="col" style={{ width: "40px" }}>
+              <i className="file-setting-item waves-effect material-icons secondary-content"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  this.openFile(trustedEncrypts.decryptFile(file.fullpath, TMP_DIR));
+                }}>visibility</i>
+            </div> :
+            null
+        }
         {
           file.extension === "sig" ?
             <div className="col" style={{ width: "40px" }}>
@@ -83,6 +95,7 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
       </div>
     );
   }
+
 
   openFile = (file: string) => {
     if (file.split(".").pop() === "sig") {
