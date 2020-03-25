@@ -95,13 +95,6 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
     );
   }
 
-  openEncFile = (file: string) => {
-    const newPath = trustedEncrypts.decryptFile(file, TMP_DIR);
-
-    this.props.selectTempContentOfSignedFiles(newPath);
-    shell.openItem(newPath);
-  }
-
   openFile = (file: string) => {
 
     if (file.split(".").pop() === "sig") {
