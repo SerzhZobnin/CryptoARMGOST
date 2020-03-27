@@ -53,7 +53,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
         </div>
         <div className="col s12">
           <CheckBoxWithLabel
-            isChecked={signing_operation}
+            isChecked={signing_operation || operationIsRemote}
             disabled={is_disabled}
             elementId="sign_operation"
             onClickCheckBox={this.handleSigningOperationClick}

@@ -89,7 +89,7 @@ class AllSettings extends React.Component<any, {}> {
   render() {
     const { localize, locale } = this.context;
     const { recipients, signer } = this.props;
-    const { settings } = this.props;
+    const { settings, operationIsRemote } = this.props;
 
     const disabled = this.getDisabled();
 
@@ -107,7 +107,7 @@ class AllSettings extends React.Component<any, {}> {
         <div className="row" />
 
         {
-          settings.operations.signing_operation ?
+          settings.operations.signing_operation || operationIsRemote ?
             <React.Fragment>
               <div className="row">
                 <div className="subtitle">
