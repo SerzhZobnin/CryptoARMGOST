@@ -198,7 +198,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     return (
       <React.Fragment>
-        <div style={{ height: `calc(100vh - ${activeFiles && activeFiles.size && setting.operations.signing_operation && !setting.operations.reverse_operations ? "170px" : "130px"})` }}>
+        <div style={{ height: `calc(100vh - ${activeFiles && activeFiles.size && setting.operations.signing_operation && !setting.operations.reverse_operations ? "170px" : "160px"})` }}>
           <div style={{ height: "100%", overflow: "auto" }}>
             <div className="col s10">
               <div className="subtitle">Параметры операций</div>
@@ -279,7 +279,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 </React.Fragment> :
                 <React.Fragment>
                   {
-                    setting.operations.signing_operation ?
+                    setting.operations.signing_operation || operationIsRemote ?
                       <React.Fragment>
                         <div className="col s10">
                           <div className="subtitle">{localize("Sign.signer_cert", locale)}</div>
@@ -395,7 +395,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
         <div className="row fixed-bottom-rightcolumn center-align" style={{ bottom: "20px" }}>
           {
-            activeFiles && activeFiles.size && setting.operations.signing_operation && !setting.operations.reverse_operations ?
+            activeFiles && activeFiles.size && setting.operations.signing_operation || operationIsRemote && !setting.operations.reverse_operations ?
               <div className="col s12">
                 <div className="input-checkbox">
                   <input
