@@ -80,12 +80,12 @@ export const postApi = async (url: string, postfields: string, headerfields: str
         reject(`Ошибка загрузки данных: ${error.message}`);
         return;
       } finally {
-        curl.close.bind(curl);
+        curl.close();
       }
       resolve(data);
     });
     curl.on("error", (error: { message: any; }) => {
-      curl.close.bind(curl);
+      curl.close();
       reject(new Error(`Ошибка загрузки данных по URL ${url}, ошибка: ${error.message}`));
     });
     curl.perform();
@@ -114,12 +114,12 @@ export const getApi = async (url: string, headerfields: string[]) => {
         reject(`Ошибка загрузки данных: ${error.message}`);
         return;
       } finally {
-        curl.close.bind(curl);
+        curl.close();
       }
       resolve(data);
     });
     curl.on("error", (error: { message: any; }) => {
-      curl.close.bind(curl);
+      curl.close();
       reject(new Error(`Ошибка загрузки данных по URL ${url}, ошибка: ${error.message}`));
     });
     curl.perform();

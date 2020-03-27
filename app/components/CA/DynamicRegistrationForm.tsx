@@ -91,7 +91,7 @@ export async function requestApi(url: string) {
         reject(`Cannot load data, error: ${error.message}`);
         return;
       } finally {
-        curl.close.bind(curl);
+        curl.close();
       }
 
       resolve(data);
@@ -100,7 +100,7 @@ export async function requestApi(url: string) {
     curl.on("error", (error: { message: any; }) => {
       console.log("error: ", error);
 
-      curl.close.bind(curl);
+      curl.close();
       reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
     });
 

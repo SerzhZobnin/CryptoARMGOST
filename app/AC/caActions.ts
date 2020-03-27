@@ -31,14 +31,14 @@ export async function postApi(url: string, postfields: any, headerfields: string
         reject(`Cannot load data, error: ${error.message}`);
         return;
       } finally {
-        curl.close.bind(curl);
+        curl.close();
       }
 
       resolve(data);
     });
 
     curl.on("error", (error: { message: any; }) => {
-      curl.close.bind(curl);
+      curl.close();
       reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
     });
 
@@ -74,14 +74,14 @@ export async function postApiAuthCert(url: string, postfields: any, headerfields
         reject(`Cannot load data, error: ${error.message}`);
         return;
       } finally {
-        curl.close.bind(curl);
+        curl.close();
       }
 
       resolve(data);
     });
 
     curl.on("error", (error: { message: any; }) => {
-      curl.close.bind(curl);
+      curl.close();
       reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
     });
 
@@ -109,14 +109,14 @@ export async function getApi(url: string, headerfields: string[]) {
         reject(`Cannot load data, error: ${error.message}`);
         return;
       } finally {
-        curl.close.bind(curl);
+        curl.close();
       }
 
       resolve(data);
     });
 
     curl.on("error", (error: { message: any; }) => {
-      curl.close.bind(curl);
+      curl.close();
       reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
     });
 
@@ -148,7 +148,7 @@ export async function getApiAuthCert(url: string, headerfields: string[], thumbp
         reject(`Cannot load data, error: ${error.message}`);
         return;
       } finally {
-        curl.close.bind(curl);
+        curl.close();
       }
 
       data = JSON.parse(response.toString());
@@ -157,7 +157,7 @@ export async function getApiAuthCert(url: string, headerfields: string[], thumbp
     });
 
     curl.on("error", (error: { message: any; }) => {
-      curl.close.bind(curl);
+      curl.close();
       reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
     });
 
@@ -182,7 +182,7 @@ export async function getCertApi(url: string, headerfields: string[]) {
         reject(`Cannot load data, error: ${error.message}`);
         return;
       } finally {
-        curl.close.bind(curl);
+        curl.close();
       }
 
       const cert = new trusted.pki.Certificate();
@@ -196,7 +196,7 @@ export async function getCertApi(url: string, headerfields: string[]) {
     });
 
     curl.on("error", (error: { message: any; }) => {
-      curl.close.bind(curl);
+      curl.close();
       reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
     });
 
@@ -227,7 +227,7 @@ export async function getCertApiAuthCert(url: string, headerfields: string[], th
         reject(`Cannot load data, error: ${error.message}`);
         return;
       } finally {
-        curl.close.bind(curl);
+        curl.close();
       }
 
       try {
@@ -245,7 +245,7 @@ export async function getCertApiAuthCert(url: string, headerfields: string[], th
     });
 
     curl.on("error", (error: { message: any; }) => {
-      curl.close.bind(curl);
+      curl.close();
       reject(new Error(`Cannot load data by url ${url}, error: ${error.message}`));
     });
 
