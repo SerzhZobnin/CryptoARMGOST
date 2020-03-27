@@ -3,12 +3,11 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { verifySignature } from "../../AC/index";
-import { LOCATION_RESULTS_MULTI_OPERATIONS, TMP_DIR, DEFAULT_TEMP_PATH } from "../../constants";
+import { DEFAULT_TEMP_PATH, LOCATION_RESULTS_MULTI_OPERATIONS, TMP_DIR } from "../../constants";
 import { filesInTransactionsSelector } from "../../selectors";
+import * as trustedEncrypts from "../../trusted/encrypt";
 import * as signs from "../../trusted/sign";
 import { fileExists } from "../../utils";
-import * as trustedEncrypts from "../../trusted/encrypt";
-
 
 const shell = window.electron.shell;
 const dialog = window.electron.remote.dialog;
@@ -56,7 +55,7 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
               <i className="file-setting-item waves-effect material-icons secondary-content"
                 onClick={(event) => {
                   event.stopPropagation();
-                  this.openFile(trustedEncrypts.decryptFile(file.fullpath, TMP_DIR));
+                  this.openFile(file.fullpath);
                 }}>visibility</i>
             </div> :
             null
@@ -96,8 +95,8 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
     );
   }
 
-
   openFile = (file: string) => {
+
     if (file.split(".").pop() === "sig") {
       const cms: trusted.cms.SignedData | undefined = signs.loadSign(file);
 
@@ -113,9 +112,20 @@ class FileItemButtons extends React.Component<IFileItemButtonsProps, {}> {
           }
         }
       }
+    } else if (file.split(".").pop() === "enc") {
+      const newPath = trustedEncrypts.decryptFile(file, TMP_DIR);
+
+      if (newPath) {
+        if (shell.openItem(newPath)) {
+          this.props.selectTempContentOfSignedFiles(newPath);
+        }
+      }
+
     } else {
       shell.openItem(file);
+
     }
+
   }
 
   openDetachedContent = (file: string) => {
