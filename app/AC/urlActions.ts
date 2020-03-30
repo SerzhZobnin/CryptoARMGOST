@@ -73,39 +73,39 @@ export function removeUrlAction() {
 }
 
 export function cancelUrlAction(data: ISignRequest | IEncryptRequest) {
-  // TODO надо испарвить
-  // const { params } = data;
 
-  // if (!params) {
-  //   return;
-  // }
-  // const { extra, files, uploader } = params;
+  const { params } = data;
 
-  // files.forEach((file) => {
-  //   if (extra && extra.signType === "0" || extra.signType === "1") {
-  //     extra.signType = parseInt(extra.signType, 10);
-  //   }
+  if (!params) {
+    return;
+  }
+  const { extra, files, uploader } = params;
 
-  //   const formData = {
-  //     extra: JSON.stringify(extra),
-  //     id: file.remoteId,
-  //     successful: false,
-  //   };
+  files.forEach((file) => {
+    if (extra && extra.signType === "0" || extra.signType === "1") {
+      extra.signType = parseInt(extra.signType, 10);
+    }
 
-  //   window.request.post({
-  //     formData,
-  //     url: uploader,
-  //   }, (err) => {
-  //     if (err) {
-  //       console.log("err", err);
-  //     } else {
-  //       store.dispatch({
-  //         type: CANCEL_URL_ACTION,
-  //       });
-  //     }
-  //   },
-  //   );
-  // });
+    const formData = {
+
+      id: file.id,
+      success: 0,
+    };
+
+    window.request.post({
+      formData,
+      url: uploader,
+    }, (err) => {
+      if (err) {
+        console.log("err", err);
+      } else {
+          store.dispatch({
+          type: CANCEL_URL_ACTION,
+        });
+      }
+    },
+    );
+  });
 
 }
 
