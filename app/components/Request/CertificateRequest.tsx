@@ -727,8 +727,11 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const name = target.name;
     const value = ev.target.value;
 
-    if (this.verifyFields() == true) { this.setState({ disabled: true }) }
-    else { this.setState({ disabled: false }) };
+    if (this.verifyFields() === true) {
+      this.setState({ disabled: true });
+    } else {
+      this.setState({ disabled: false });
+    }
 
     if (name === "containerName") {
       if (pattern.test(value || !value)) {
