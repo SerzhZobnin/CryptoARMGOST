@@ -82,12 +82,8 @@ export function cancelUrlAction(data: ISignRequest | IEncryptRequest) {
   const { extra, files, uploader } = params;
 
   files.forEach((file) => {
-    if (extra && extra.signType === "0" || extra.signType === "1") {
-      extra.signType = parseInt(extra.signType, 10);
-    }
 
     const formData = {
-
       id: file.id,
       success: 0,
     };
@@ -99,7 +95,7 @@ export function cancelUrlAction(data: ISignRequest | IEncryptRequest) {
       if (err) {
         console.log("err", err);
       } else {
-          store.dispatch({
+        store.dispatch({
           type: CANCEL_URL_ACTION,
         });
       }
