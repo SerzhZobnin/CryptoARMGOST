@@ -206,7 +206,8 @@ app.on('ready', async () => {
     toolbar: false,
     show: false,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      webviewTag: true
     },
     icon: path.join(__dirname, iconPath)
   });
@@ -319,7 +320,6 @@ app.on('ready', async () => {
 
   mainWindow.on('close', function (event) {
     if (!global.sharedObject.isQuiting) {
-      
       event.preventDefault();
       mainWindow.hide();
 
