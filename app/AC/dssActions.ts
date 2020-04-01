@@ -164,7 +164,7 @@ export function dssAuthIssue(user: IUserDSS) {
     let headerfield: string[];
     let body: any;
     headerfield = [
-      "Content-Type: application/x-www-form-urlencoded",
+      "Content-Type: application/json; charset=utf-8",
       `Authorization: Basic ${Buffer.from(user.user + ":" + user.password).toString("base64")}`,
     ];
     body = {
