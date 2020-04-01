@@ -163,9 +163,10 @@ export function dssAuthIssue(user: IUserDSS) {
     });
     let headerfield: string[];
     let body: any;
+    const password_value = (user.password && user.password.length) ? user.password : " ";
     headerfield = [
       "Content-Type: application/json; charset=utf-8",
-      `Authorization: Basic ${Buffer.from(user.user + ":" + user.password).toString("base64")}`,
+      `Authorization: Basic ${Buffer.from(user.user + ":" + password_value).toString("base64")}`,
     ];
     body = {
       Resource: "urn:cryptopro:dss:signserver:signserver",
