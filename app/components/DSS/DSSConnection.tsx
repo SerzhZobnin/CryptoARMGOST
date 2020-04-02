@@ -37,6 +37,7 @@ interface IDSSConnectionState {
   isRememberPassword: boolean;
   dssUserID: string;
   dssResponse: any;
+  isPasswordRequired: boolean;
 }
 
 class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionState> {
@@ -54,6 +55,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
       isRememberPassword: false,
       dssUserID: "",
       dssResponse: null,
+      isPasswordRequired: false,
     });
   }
 
@@ -85,7 +87,11 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
     const { isLoaded, isLoading, handleReloadCertificates } = this.props;
 
     if (!isLoading && prevProps.isLoading) {
-      this.handleCancel();
+      if (this.state.isPasswordRequired || this.props.tokensAuth.get(dssUserID)) {
+        this.handleCancel();
+      } else {
+        this.setState({isPasswordRequired: true});
+      }
     }
 
     const token = this.props.tokensAuth.get(dssUserID);
@@ -111,16 +117,135 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
 
   render() {
     const { localize, locale } = this.context;
-    const { dssResponse, field_value, isTestDSS, isRememberPassword } = this.state;
+    const { dssResponse, field_value, isTestDSS, isRememberPassword, isPasswordRequired } = this.state;
     const { isLoaded, isLoading } = this.props;
 
     if (isLoading) {
       return dssResponse ? this.getDssResponseLabel(dssResponse) : <ProgressBars />;
     }
 
+    var login_fields = null;
     let disabled = "disabled";
-    if (field_value[url_oath] && field_value[url_sign] && field_value[login_dss] && field_value[password_dss]) {
-      disabled = " ";
+    if (isPasswordRequired) {
+      if (field_value[password_dss]) {
+        disabled = " ";
+      }
+
+      login_fields = (
+        <React.Fragment>
+          <div className="row halfbottom">
+            <div key={password_dss} className="input-field input-field-csr col s12">
+              <input
+                // disabled={field.ProhibitChange}
+                id={password_dss}
+                type="password"
+                // className={this.validateOidValue(field)}
+                // maxLength={field.Length}
+                name={password_dss}
+                value={field_value[password_dss] ? field_value[password_dss] : ""}
+                onChange={this.handleInputChange}
+                placeholder={localize("DSS.enter_your_password", locale)}
+              />
+              <label htmlFor={password_dss}>{localize("DSS.password_dss", locale)}</label>
+            </div>
+          </div>
+
+          <div className="row halfbottom">
+            <div style={{ float: "left" }}>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <input
+                  name="isRememberPassword"
+                  className="filled-in"
+                  type="checkbox"
+                  id="isRememberPassword"
+                  checked={isRememberPassword}
+                  onChange={this.toggleIsRememberPassword}
+                />
+                <label htmlFor="isRememberPassword">
+                  {localize("DSS.remember_password", locale)}
+                </label>
+              </div>
+            </div>
+          </div>
+        </React.Fragment>
+      );
+    } else {
+      if (field_value[url_oath] && field_value[url_sign] && field_value[login_dss]) {
+        disabled = " ";
+      }
+
+      login_fields = (
+        <React.Fragment>
+          <div className="row">
+            <div key={url_oath} className="input-field input-field-csr col s12">
+              <input
+                // disabled={field.ProhibitChange}
+                id={url_oath}
+                type="text"
+                // className={this.validateOidValue(field)}
+                // maxLength={field.Length}
+                name={url_oath}
+                value={field_value[url_oath] ? field_value[url_oath] : ""}
+                onChange={this.handleInputChange}
+                placeholder={`https://`}
+              />
+              <label htmlFor={url_oath}>{localize("DSS.DSS_authorization_server_address", locale)}</label>
+            </div>
+          </div>
+
+          <div className="row halfbottom">
+            <div key={url_sign} className="input-field input-field-csr col s12">
+              <input
+                // disabled={field.ProhibitChange}
+                id={url_sign}
+                type="text"
+                // className={this.validateOidValue(field)}
+                // maxLength={field.Length}
+                name={url_sign}
+                value={field_value[url_sign] ? field_value[url_sign] : ""}
+                onChange={this.handleInputChange}
+                placeholder={`https://`}
+              />
+              <label htmlFor={url_sign}>{localize("DSS.DSS_server_address", locale)}</label>
+            </div>
+          </div>
+
+          <div className="row">
+            <div style={{ float: "left" }}>
+              <div style={{ display: "inline-block", margin: "10px" }}>
+                <input
+                  name="isTestDSS"
+                  className="filled-in"
+                  type="checkbox"
+                  id="isTestDSS"
+                  checked={isTestDSS}
+                  onChange={this.toggleIsTestDSS}
+                />
+                <label htmlFor="isTestDSS">
+                  {localize("DSS.use_cryptopro_dss_test_service", locale)}
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="row">
+            <div key={login_dss} className="input-field input-field-csr col s12">
+              <input
+                // disabled={field.ProhibitChange}
+                id={login_dss}
+                type="text"
+                // className={this.validateOidValue(field)}
+                // maxLength={field.Length}
+                name={login_dss}
+                value={field_value[login_dss] ? field_value[login_dss] : ""}
+                onChange={this.handleInputChange}
+                placeholder={localize("DSS.enter_your_login", locale)}
+              />
+              <label htmlFor={login_dss}>{localize("DSS.login_dss", locale)}</label>
+            </div>
+          </div>
+        </React.Fragment>
+      );
     }
 
     return (
@@ -133,110 +258,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
               <div className="content-item-relative">
                 <div className="row">
                   <div className="row" />
-                  <div className="row">
-                    <div key={url_oath} className="input-field input-field-csr col s12">
-                      <input
-                        // disabled={field.ProhibitChange}
-                        id={url_oath}
-                        type="text"
-                        // className={this.validateOidValue(field)}
-                        // maxLength={field.Length}
-                        name={url_oath}
-                        value={field_value[url_oath] ? field_value[url_oath] : ""}
-                        onChange={this.handleInputChange}
-                        placeholder={`https://`}
-                      />
-                      <label htmlFor={url_oath}>{localize("DSS.DSS_authorization_server_address", locale)}</label>
-                    </div>
-                  </div>
-
-                  <div className="row halfbottom">
-                    <div key={url_sign} className="input-field input-field-csr col s12">
-                      <input
-                        // disabled={field.ProhibitChange}
-                        id={url_sign}
-                        type="text"
-                        // className={this.validateOidValue(field)}
-                        // maxLength={field.Length}
-                        name={url_sign}
-                        value={field_value[url_sign] ? field_value[url_sign] : ""}
-                        onChange={this.handleInputChange}
-                        placeholder={`https://`}
-                      />
-                      <label htmlFor={url_sign}>{localize("DSS.DSS_server_address", locale)}</label>
-                    </div>
-                  </div>
-
-                  <div className="row">
-                    <div style={{ float: "left" }}>
-                      <div style={{ display: "inline-block", margin: "10px" }}>
-                        <input
-                          name="isTestDSS"
-                          className="filled-in"
-                          type="checkbox"
-                          id="isTestDSS"
-                          checked={isTestDSS}
-                          onChange={this.toggleIsTestDSS}
-                        />
-                        <label htmlFor="isTestDSS">
-                          {localize("DSS.use_cryptopro_dss_test_service", locale)}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="row">
-                    <div key={login_dss} className="input-field input-field-csr col s12">
-                      <input
-                        // disabled={field.ProhibitChange}
-                        id={login_dss}
-                        type="text"
-                        // className={this.validateOidValue(field)}
-                        // maxLength={field.Length}
-                        name={login_dss}
-                        value={field_value[login_dss] ? field_value[login_dss] : ""}
-                        onChange={this.handleInputChange}
-                        placeholder={localize("DSS.enter_your_login", locale)}
-                      />
-                      <label htmlFor={login_dss}>{localize("DSS.login_dss", locale)}</label>
-                    </div>
-                  </div>
-
-                  <div className="row halfbottom">
-                    <div key={password_dss} className="input-field input-field-csr col s12">
-                      <input
-                        // disabled={field.ProhibitChange}
-                        id={password_dss}
-                        type="password"
-                        // className={this.validateOidValue(field)}
-                        // maxLength={field.Length}
-                        name={password_dss}
-                        value={field_value[password_dss] ? field_value[password_dss] : ""}
-                        onChange={this.handleInputChange}
-                        placeholder={localize("DSS.enter_your_password", locale)}
-                      />
-                      <label htmlFor={password_dss}>{localize("DSS.password_dss", locale)}</label>
-                    </div>
-                  </div>
-
-                  <div className="row halfbottom">
-                    <div style={{ float: "left" }}>
-                      <div style={{ display: "inline-block", margin: "10px" }}>
-                        <input
-                          name="isRememberPassword"
-                          className="filled-in"
-                          type="checkbox"
-                          id="isRememberPassword"
-                          checked={isRememberPassword}
-                          onChange={this.toggleIsRememberPassword}
-                        />
-                        <label htmlFor="isRememberPassword">
-                          {localize("DSS.remember_password", locale)}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
+                  {login_fields}
                 </div>
               </div>
             </div>
@@ -321,7 +343,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
 
   handleReady = () => {
     const { localize, locale } = this.context;
-    const { field_value, isRememberPassword } = this.state;
+    const { field_value, isRememberPassword, isPasswordRequired } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { dssAuthIssue, getPolicyDSS, rememberPasswordDSS, deletePasswordDSS, passwordDSS } = this.props;
 
@@ -334,7 +356,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
       authUrl: field_value.url_oath,
       dssUrl: field_value.url_sign,
       id: dssUserID,
-      password: field_value.password_dss,
+      password: (field_value.password_dss && field_value.password_dss.length) ? field_value.password_dss : " ",
       user: field_value.login_dss,
     };
 
@@ -357,11 +379,13 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
         });
       },
       (reject: any) => {
-        $(".toast-authorization_failed").remove();
-        Materialize.toast(localize("DSS.authorization_failed", locale), 3000, "toast-authorization_failed");
+        if (isPasswordRequired) {
+          $(".toast-authorization_failed").remove();
+          Materialize.toast(localize("DSS.authorization_failed", locale), 3000, "toast-authorization_failed");
 
-        $(".toast-dssAuthIssue_failed").remove();
-        Materialize.toast(reject, 3000, "toast-dssAuthIssue_failed");
+          $(".toast-dssAuthIssue_failed").remove();
+          Materialize.toast(reject, 3000, "toast-dssAuthIssue_failed");
+        }
       },
     );
   }
