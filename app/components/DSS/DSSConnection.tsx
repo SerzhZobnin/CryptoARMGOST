@@ -360,7 +360,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
       authUrl: field_value.url_oath,
       dssUrl: field_value.url_sign,
       id: dssUserID,
-      password: (field_value.password_dss && field_value.password_dss.length) ? field_value.password_dss : " ",
+      password: field_value.password_dss ? field_value.password_dss : "",
       user: field_value.login_dss,
     };
 
