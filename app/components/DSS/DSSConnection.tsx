@@ -87,7 +87,7 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
     const { isLoaded, isLoading, handleReloadCertificates } = this.props;
 
     if (!isLoading && prevProps.isLoading) {
-      if (this.state.isPasswordRequired) {
+      if (this.state.isPasswordRequired || this.props.tokensAuth.get(dssUserID)) {
         this.handleCancel();
       } else {
         this.setState({isPasswordRequired: true});
