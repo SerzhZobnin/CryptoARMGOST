@@ -163,7 +163,7 @@ export function dssAuthIssue(user: IUserDSS) {
     });
     let headerfield: string[];
     let body: any;
-    const password_value = (user.password && user.password.length) ? user.password : " ";
+    const password_value = user.password ? user.password : "";
     headerfield = [
       "Content-Type: application/json; charset=utf-8",
       `Authorization: Basic ${Buffer.from(user.user + ":" + password_value).toString("base64")}`,
