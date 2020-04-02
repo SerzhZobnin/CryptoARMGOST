@@ -81,13 +81,17 @@ class DSSConnection extends React.Component<IDSSConnectionProps, IDSSConnectionS
 
   componentDidUpdate(prevProps: IDSSConnectionProps) {
     const { localize, locale } = this.context;
-    const { dssUserID, field_value } = this.state;
+    const { dssUserID, field_value, isPasswordRequired } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { getCertificatesDSS } = this.props;
     const { isLoaded, isLoading, handleReloadCertificates } = this.props;
 
+    if (isPasswordRequired) {
+      Materialize.updateTextFields();
+    }
+
     if (!isLoading && prevProps.isLoading) {
-      if (this.state.isPasswordRequired || this.props.tokensAuth.get(dssUserID)) {
+      if (isPasswordRequired || this.props.tokensAuth.get(dssUserID)) {
         this.handleCancel();
       } else {
         this.setState({isPasswordRequired: true});
