@@ -58,12 +58,61 @@ const setCodeVerifier = (): string => {
   return codeVerifier;
 };
 
-const getCode = (title: string) => {
-  try {
-    const url = new URL(title);
-    return url.searchParams.get("code");
+const getCode = () => {
+try {
+    const webview = document.getElementById("webview");
+
+    if (webview) {
+      const url = new URL(webview.getTitle());
+      return url.searchParams.get("code");
+    }
   } catch (error) {
     return null;
+  }
+};
+
+const getAccessTokenByCode = async (): Promise<void> => {
+  const codeVerifier = window.localStorage.getItem("codeVerifier");
+
+  if (!codeVerifier) {
+    return;
+  }
+
+  const codeVerifierBase64 = btoaRFC7636(str2ab(codeVerifier));
+
+  const code = getCode();
+  if (!code) {
+    // tslint:disable-next-line: no-console
+    console.error("No code");
+    return;
+  }
+
+  const body = [
+    "grant_type=authorization_code",
+    "redirect_uri=" + encodeURIComponent(HOST + "/code"),
+    "client_id=" + CLIENT_ID,
+    "code_verifier=" + codeVerifierBase64,
+    "scope=userprofile",
+  ].join("&");
+  const headers = new Headers();
+  headers.set("Content-Type", "application/x-www-form-urlencoded");
+  try {
+    const response = await fetch(
+      "https://id.trusted.plus/idp/sso/oauth/token",
+      { method: "POST", headers, body },
+    );
+    const json = (await response.json());
+    const {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      expires_in: expiresIn,
+    } = json;
+    // tslint:disable-next-line: no-console
+    console.log("json", json);
+  } catch (error) {
+    // tslint:disable-next-line: no-console
+    console.error(error);
+    return;
   }
 };
 
@@ -133,11 +182,7 @@ class AuthWebView extends React.PureComponent<IAuthWebViewProps, IAuthWebViewSta
   }
 
   loadStop = () => {
-    const webview = document.getElementById("webview");
-
-    if (webview) {
-      const code = getCode(webview.getTitle());
-    }
+    getAccessTokenByCode();
 
     this.setState({ isLoading: false });
   }
