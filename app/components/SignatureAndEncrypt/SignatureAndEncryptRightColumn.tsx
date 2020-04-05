@@ -173,6 +173,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     const disabledNavigate = this.isFilesFromSocket();
     const classDisabled = disabledNavigate ? "disabled" : "";
+    const isCertFromDSS = (signer && (signer.service || signer.dssUserID)) ? true : false;
 
     let countAllFiles = 0;
     let countSignedFiles = 0;
@@ -316,7 +317,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   }
 
                   {
-                    setting.operations.encryption_operation ?
+                    setting.operations.encryption_operation && !isCertFromDSS ?
                       <React.Fragment>
                         <div className="col s10">
                           <div className="subtitle">Сертификаты шифрования</div>

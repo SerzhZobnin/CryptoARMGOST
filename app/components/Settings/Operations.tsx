@@ -34,10 +34,12 @@ class Operations extends React.Component<IOperationsProps, {}> {
 
   render() {
     const { localize, locale } = this.context;
-    const { settings, operationIsRemote } = this.props;
+    const { settings, operationIsRemote, signerCert } = this.props;
     const { operations } = settings;
     const { archivation_operation, encryption_operation, reverse_operations,
       save_copy_to_documents, save_result_to_folder, signing_operation } = operations;
+
+    const isDssCert = (signerCert && (signerCert.service || signerCert.dssUserID)) ? true : false;
 
     const is_disabled = operationIsRemote;
 
@@ -61,16 +63,16 @@ class Operations extends React.Component<IOperationsProps, {}> {
         </div>
         <div className="col s12">
           <CheckBoxWithLabel
-            isChecked={archivation_operation}
-            disabled={is_disabled}
+            isChecked={archivation_operation && !isDssCert}
+            disabled={is_disabled || isDssCert}
             elementId="archivation_operation"
             onClickCheckBox={this.handleArchivationOperationClick}
             title={localize("Operations.archivation_operation", locale)} />
         </div>
         <div className="col s12">
           <CheckBoxWithLabel
-            isChecked={encryption_operation}
-            disabled={is_disabled}
+            isChecked={encryption_operation && !isDssCert}
+            disabled={is_disabled || isDssCert}
             elementId="encryption_operation"
             onClickCheckBox={this.handleEncryptionOperationClick}
             title={localize("Operations.encryption_operation", locale)} />
@@ -168,7 +170,8 @@ class Operations extends React.Component<IOperationsProps, {}> {
 export default connect((state) => {
   return {
     settings: state.settings.getIn(["entities", state.settings.active]),
-    operationIsRemote: state.urlActions.performed
+    operationIsRemote: state.urlActions.performed,
+    signerCert: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.active]).sign.signer]),
   };
 }, {
   changeOutfolder, toggleArchivationOperation, toggleEncryptionOperation,
