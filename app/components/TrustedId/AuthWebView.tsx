@@ -63,7 +63,7 @@ try {
     const webview = document.getElementById("webview");
 
     if (webview) {
-      const url = new URL(webview.getTitle());
+      const url = new URL(webview.getURL());
       return url.searchParams.get("code");
     }
   } catch (error) {
@@ -91,6 +91,7 @@ const getAccessTokenByCode = async (): Promise<void> => {
     "grant_type=authorization_code",
     "redirect_uri=" + encodeURIComponent(HOST + "/code"),
     "client_id=" + CLIENT_ID,
+    "code=" + code,
     "code_verifier=" + codeVerifierBase64,
     "scope=userprofile",
   ].join("&");
@@ -149,7 +150,9 @@ class AuthWebView extends React.PureComponent<IAuthWebViewProps, IAuthWebViewSta
         "&code_challenge=" +
         codeChallenge +
         "&code_challenge_method=" +
-        "S256",
+        "S256" +
+        "&response_type=" +
+        "code",
     });
   }
 
