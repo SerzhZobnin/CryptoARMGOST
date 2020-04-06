@@ -147,7 +147,6 @@ class MenuBar extends React.Component<any, IMenuBarState> {
 
   render() {
     const pathname = this.props.location.pathname;
-    const disabledNavigate = this.isFilesFromSocket();
 
     return (
       <React.Fragment>
@@ -180,8 +179,8 @@ class MenuBar extends React.Component<any, IMenuBarState> {
               </li>
             </ul>
           </div>
-          <ul id="slide-out" className={`side-nav fixed ${disabledNavigate ? "disabled" : ""}`} style={{ width: "50px", left: "2px", overflow: "visible", backgroundColor: "rgba(242,245,245,0.8)" }}>
-            <SideMenu pathname={pathname} showModalAskSaveSetting={this.handleShowModalAskSaveSetting} />
+          <ul id="slide-out" className={`side-nav fixed`} style={{ width: "50px", left: "2px", overflow: "visible", backgroundColor: "rgba(242,245,245,0.8)" }}>
+            <SideMenu removeAllFiles={this.removeAllFiles} pathname={pathname} showModalAskSaveSetting={this.handleShowModalAskSaveSetting} />
           </ul>
 
         </nav>

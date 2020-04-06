@@ -1105,6 +1105,9 @@ nav .cert-seacrh label i {
 .certificate-list-item {
   margin-bottom: 0px;
 }
+.disabledIcon{
+  opacity: 0.3;
+}
 
 .disabled{
   box-shadow: none;
