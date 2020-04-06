@@ -303,6 +303,12 @@ export const SIGN_DOCUMENTS_FROM_URL = "sign-documents-from-url";
 export const VERIFY_DOCUMENTS_FROM_URL = "verify-documents-from-url";
 export const REMOVE_URL_ACTION = "REMOVE_URL_ACTION";
 
+export const SERVICE_URL = "https://id.trusted.plus";
+export const SERVICE_TRUSTEDAPP = SERVICE_URL + "/trustedapp";
+export const SERVICE_APP = SERVICE_TRUSTEDAPP + "/app";
+export const SERVICE_REST = SERVICE_TRUSTEDAPP + "/rest";
+export const SERVICE_STORAGE = SERVICE_APP + "/storage";
+
 export const CRYPTOPRO_DSS = "CRYPTOPRO_DSS";
 export const DSS_ACTIONS = {
   Issue: 1, // Подтверждение входа пользователя

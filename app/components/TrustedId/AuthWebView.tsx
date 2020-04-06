@@ -1,5 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { getApplicationsFetch } from "../../AC/trustedIdActions";
+import { SERVICE_REST } from "../../constants";
 import ProgressBars from "../ProgressBars";
 
 interface IAuthWebViewProps {
@@ -110,6 +112,8 @@ const getAccessTokenByCode = async (): Promise<void> => {
     } = json;
     // tslint:disable-next-line: no-console
     console.log("json", json);
+    window.localStorage.setItem("access_token", json.access_token);
+    getApplicationsFetch();
   } catch (error) {
     // tslint:disable-next-line: no-console
     console.error(error);
