@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { cancelUrlAction, removeUrlAction } from "../AC/urlActions";
 import {
   ADDRESS_BOOK, CA, LOCATION_ABOUT,
   LOCATION_ADDRESS_BOOK, LOCATION_CERTIFICATES, LOCATION_CONTAINERS,
@@ -18,7 +19,8 @@ interface ISideMenuProps {
   crls: any;
   pathname: string;
   setting: any;
-}
+  removeAllFiles: () => void;
+ }
 
 class SideMenu extends React.Component<ISideMenuProps, {}> {
   static contextTypes = {
@@ -40,33 +42,35 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
   }
 
   render() {
+    const { operationIsRemote } = this.props;
+    const disabledNavigate = operationIsRemote ;
     const { localize, locale } = this.context;
     const { pathname } = this.props;
 
     return (
       <React.Fragment>
-        <div className="menu-logo center-align" style={{ height: "37px" }}>
+        <div className="menu-logo center-align " style={{ height: "37px" }}>
           <Link to="/" href="/" style={{ height: "37px" }}>
             <i className="material-icons left logo-trusted" />
           </Link>
         </div>
 
         <div className="row">
-          <div className="row nobottom">
+          <div className={`row nobottom ${ disabledNavigate ? "disabled" : ""}`}>
             {LOCATION_MAIN === pathname ? < div className="side-nav-rectangle" /> : null}
             <Link id="sign_encrypt" to={LOCATION_MAIN} data-activates="dropdown-sign_and_encrypt" data-hover="hover" style={{ padding: "0 10px" }}>
-              <i className="material-icons sidevan sign_and_encrypt"></i>
+              <i className={`material-icons sidevan sign_and_encrypt ${disabledNavigate ? "disabledIcon" : ""}`}></i>
             </Link>
           </div>
 
-          <div className="row nobottom">
+          <div className={`row nobottom ${ disabledNavigate ? "disabled" : ""}`}>
             {LOCATION_DOCUMENTS === pathname ? < div className="side-nav-rectangle" /> : null}
             <Link id="document_stores" to={LOCATION_DOCUMENTS} data-activates="dropdown-documents-stores" data-hover="hover" style={{ padding: "0 10px" }}>
-              <i className="material-icons sidevan document"></i>
+              <i className={`material-icons sidevan document ${disabledNavigate ? "disabledIcon" : ""}`}></i>
             </Link>
           </div>
 
-          <div className="row nobottom">
+          <div className={`row nobottom ${disabledNavigate ? "disabled" : ""}`}>
             {LOCATION_CERTIFICATES === pathname || LOCATION_CONTAINERS === pathname ? < div className="side-nav-rectangle" /> : null}
             <Link
               id="certs"
@@ -75,11 +79,11 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               data-hover="hover"
               style={{ padding: "0 10px" }}
             >
-              <i className="material-icons sidevan cert"></i>
+              <i className={`material-icons sidevan cert ${disabledNavigate ? "disabledIcon" : ""}`}></i>
             </Link>
           </div>
 
-          <div className="row nobottom">
+          <div className={`row nobottom ${disabledNavigate ? "disabled" : ""}`}>
             {LOCATION_ADDRESS_BOOK === pathname ? < div className="side-nav-rectangle" /> : null}
             <Link
               id="address-book"
@@ -87,17 +91,17 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               data-activates="dropdown-address-book"
               data-hover="hover"
               style={{ padding: "0 10px" }}>
-              <i className="material-icons sidevan address_book"></i>
+              <i className={`material-icons sidevan address_book  ${disabledNavigate ? "disabledIcon" : ""}`}></i>
             </Link>
           </div>
         </div>
         <div className="row">
           <div className="menu-elements">
             <div className="row nobottom">
-              <div className="row nobottom">
+              <div className={`row nobottom ${disabledNavigate ? "disabled" : ""}`}>
                 {LOCATION_ABOUT === pathname || LOCATION_EVENTS === pathname ? < div className="side-nav-rectangle" /> : null}
                 <Link id="dropdown-about" to={LOCATION_ABOUT} data-activates="dropdown-about-pages" data-hover="hover" style={{ padding: "0 10px" }}>
-                  <i className="material-icons sidevan about" style={{ padding: "0 10px" }}>about</i>
+                  <i className={`material-icons sidevan about ${disabledNavigate ? "disabledIcon" : ""}`} style={{ padding: "0 10px" }}>about</i>
                 </Link>
               </div>
               <Link
@@ -122,7 +126,6 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
       </React.Fragment>
     );
   }
-
   getSignAndEncryptMenu = () => {
     const { localize, locale } = this.context;
 
@@ -326,7 +329,7 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
               </div>
             </Link>
           </li>
-          <li onClick={() => $("#dropdown-about").dropdown("close")}>
+          <li onClick={() => $("#dropdown-about").dropdown("close")} >
             <a style={{ height: "33px", padding: "0px" }} onClick={() => window.electron.shell.openExternal(localize("Help.link_user_guide", locale))}>
               <div className="row nobottom valign-wrapper">
                 <div className="col" style={{ width: "36px" }}>
@@ -363,17 +366,26 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
   onExit = () => {
     const { setting } = this.props;
 
+    if (this.props.operationRemoteAction) {
+      cancelUrlAction(this.props.operationRemoteAction.json);
+    }
+    this.props.removeAllFiles();
+    removeUrlAction();
+
     if (setting && setting.changed) {
       this.props.showModalAskSaveSetting();
     } else {
       remote.getGlobal("sharedObject").isQuiting = true;
       remote.getCurrentWindow().close();
+
     }
   }
 }
 
 export default connect((state) => {
   return {
+    operationRemoteAction: state.urlActions.action,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
     certificates: state.certificates.entities,
     certrequests: state.certrequests.entities,
     crls: mapToArr(state.crls.entities),
