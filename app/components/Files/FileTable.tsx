@@ -263,7 +263,7 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
   }
 
   handleOnRowClick = ({ rowData }: { rowData: any }) => {
-    if (!this.props.operationIsRemote) {
+    if (this.props.operationIsRemote) {
       this.props.activeFile(rowData.id, !rowData.active);
     }
   }
