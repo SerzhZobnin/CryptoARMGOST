@@ -261,7 +261,7 @@ class FileTableSmall extends React.Component<IFileTableSmallProps & IFileTableSm
   }
 
   handleOnRowClick = ({ rowData }: { rowData: any }) => {
-    if (!this.props.operationIsRemote && !this.props.operationIsRemoteTypeVerify) {
+    if (this.props.operationIsRemoteTypeVerify || !this.props.operationIsRemote) {
       this.props.activeFile(rowData.id, !rowData.active);
     }
   }
