@@ -5,6 +5,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { AutoSizer, Column, Table } from "react-virtualized";
 import { activeFile, deleteFile, selectTempContentOfSignedFiles } from "../../AC";
+import { VERIFY_DOCUMENTS_FROM_URL } from "../../constants";
 import { activeFilesSelector, filteredFilesSelector, loadingRemoteFilesSelector } from "../../selectors";
 import "../../table.global.css";
 import { bytesToSize, mapToArr } from "../../utils";
@@ -263,7 +264,7 @@ class FileTable extends React.Component<IFileTableProps & IFileTableDispatch, IF
   }
 
   handleOnRowClick = ({ rowData }: { rowData: any }) => {
-    if (this.props.operationIsRemote) {
+    if (this.props.operationIsRemoteTypeVerify || !this.props.operationIsRemote) {
       this.props.activeFile(rowData.id, !rowData.active);
     }
   }
@@ -415,4 +416,5 @@ export default connect((state, ownProps: IOwnProps) => ({
   selectedFilesPackage: state.files.selectedFilesPackage,
   selectingFilesPackage: state.files.selectingFilesPackage,
   operationIsRemote: state.urlActions.performed || state.urlActions.performing,
+  operationIsRemoteTypeVerify: state.urlActions.action && state.urlActions.action.name === VERIFY_DOCUMENTS_FROM_URL,
 }), { activeFile, deleteFile, selectTempContentOfSignedFiles })(FileTable);
