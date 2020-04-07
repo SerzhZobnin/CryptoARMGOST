@@ -20,6 +20,7 @@ import {
   TOGGLE_SAVE_TO_DOCUMENTS,
   VERIFY_CERTIFICATE,
   VERIFY_SIGNATURE,
+  MULTI_DIRECT_OPERATION, LOCATION_RESULTS_MULTI_OPERATIONS,
 } from "../constants";
 import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import { connectedSelector } from "../selectors";
@@ -77,6 +78,7 @@ export function packageSign(
   format: trusted.DataFormat,
   folderOut: string,
   folderOutDSS?: string[],
+  multiResult?: any = null,
 ) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     dispatch({
@@ -211,8 +213,17 @@ export function packageSign(
         type: PACKAGE_SIGN + SUCCESS,
       });
 
-      dispatch(filePackageSelect(signedFilePackage));
-      dispatch(filePackageDelete(signedFileIdPackage));
+      if (multiResult) {
+        dispatch({
+          payload: { status: true, directResult: multiResult },
+          type: MULTI_DIRECT_OPERATION + SUCCESS,
+        });
+        dispatch(filePackageDelete(signedFileIdPackage));
+        dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
+      } else {
+        dispatch(filePackageSelect(signedFilePackage));
+        dispatch(filePackageDelete(signedFileIdPackage));
+      }
     }, 0);
   };
 }
@@ -224,6 +235,7 @@ export function packageReSign(
   format: trusted.DataFormat,
   folderOut: string,
   folderOutDSS?: string[],
+  multiResult?: any = null,
 ) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     dispatch({
@@ -256,8 +268,17 @@ export function packageReSign(
         type: PACKAGE_SIGN + SUCCESS,
       });
 
-      dispatch(filePackageSelect(signedFilePackage));
-      dispatch(filePackageDelete(signedFileIdPackage));
+      if (multiResult) {
+        dispatch({
+          payload: { status: true, directResult: multiResult },
+          type: MULTI_DIRECT_OPERATION + SUCCESS,
+        });
+        dispatch(filePackageDelete(signedFileIdPackage));
+        dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
+      } else {
+        dispatch(filePackageSelect(signedFilePackage));
+        dispatch(filePackageDelete(signedFileIdPackage));
+      }
     }, 0);
   };
 }

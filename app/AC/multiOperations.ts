@@ -41,6 +41,17 @@ const getTempDirectoryFiles = () => {
   return files;
 };
 
+export function multiOperationStart(
+  operationsToStart: any
+) {
+  return (dispatch: (action: {}) => void, getState: () => any) => {
+    dispatch({
+      payload: { operations: operationsToStart },
+      type: MULTI_DIRECT_OPERATION + START,
+    });
+  };
+}
+
 export function multiDirectOperation(
   files: IFile[],
   setting: any,
