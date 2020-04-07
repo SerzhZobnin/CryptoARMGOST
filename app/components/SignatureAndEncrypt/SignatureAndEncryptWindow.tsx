@@ -130,13 +130,13 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
   render() {
     const { localize, locale } = this.context;
     const { fileSignatures, file, showSignatureInfo } = this.state;
-    const { isDefaultFilters, operationsPerforming } = this.props;
+    const { isDefaultFilters, operationsPerforming, signer } = this.props;
 
     const classDefaultFilters = isDefaultFilters ? "filter_off" : "filter_on";
     const disabledNavigate = this.isFilesFromSocket();
     const classDisabled = disabledNavigate ? "disabled" : "";
 
-    if (operationsPerforming) {
+    if (operationsPerforming && !signer.dssUserID) {
       return <ProgressBars />;
     }
 
@@ -339,12 +339,13 @@ export default connect((state) => {
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     method: state.remoteFiles.method,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
     operationsPerformed: state.multiOperations.performed,
     operationsPerforming: state.multiOperations.performing,
     operationsStatus: state.multiOperations.status,
     packageSignResult: state.signatures.packageSignResult,
     signatures,
     signedPackage: state.signatures.signedPackage,
-    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
+    signer: state.certificates.getIn(["entities", state.settings.getIn(["entities", state.settings.default]).sign.signer]),
   };
 }, { activeFile, deleteAllTemporyLicenses, filePackageSelect, filePackageDelete, removeAllRemoteFiles })(SignatureAndEncryptWindow);

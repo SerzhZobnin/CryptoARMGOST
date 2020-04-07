@@ -15,7 +15,7 @@ import {
 import { IFile } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import { createTransactionDSS, dssOperationConfirmation, dssPerformOperation } from "../../AC/dssActions";
-import { multiDirectOperation, multiReverseOperation } from "../../AC/multiOperations";
+import { multiDirectOperation, multiReverseOperation, multiOperationStart } from "../../AC/multiOperations";
 import {
   activeSetting, changeDefaultSettings, deleteSetting, saveSettings,
 } from "../../AC/settingsActions";
@@ -26,7 +26,7 @@ import {
   HOME_DIR,
   LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
   LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, MULTI_REVERSE, REMOVE, SIGN,
-  SIGNING_OPERATION, UNSIGN, UNZIPPING, USER_NAME, VERIFY,
+  SIGNING_OPERATION, UNSIGN, UNZIPPING, USER_NAME, VERIFY, LOCATION_RESULTS_MULTI_OPERATIONS, MULTI_DIRECT_OPERATION, SUCCESS,
 } from "../../constants";
 import { DEFAULT_ID, ISignParams } from "../../reducer/settings";
 import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
@@ -37,7 +37,7 @@ import { checkLicense } from "../../trusted/jwt";
 import * as signs from "../../trusted/sign";
 import * as trustedSign from "../../trusted/sign";
 import { bytesToSize, dirExists, fileCoding, fileNameForResign, fileNameForSign, mapToArr } from "../../utils";
-import { fileExists } from "../../utils";
+import { fileExists, extFile, md5 } from "../../utils";
 import { buildDocumentDSS, buildDocumentPackageDSS, buildTransaction } from "../../utils/dss/helpers";
 import logger from "../../winstonLogger";
 import CheckBoxWithLabel from "../CheckBoxWithLabel";
@@ -53,6 +53,8 @@ import RenameSettings from "../Settings/RenameSettings";
 import SaveSettings from "../Settings/SaveSettings";
 import SettingsSelector from "../Settings/SettingsSelector";
 import SignerInfo from "../Signature/SignerInfo";
+import store from "../../store";
+import { push } from "react-router-redux";
 
 const dialog = window.electron.remote.dialog;
 
@@ -480,7 +482,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               <React.Fragment>
                 <div className="col s12">
                   <a className={`btn btn-outlined waves-effect waves-light ${this.checkEnableMultiOperations() ? "" : "disabled"}`}
-                    onClick={this.handleClickPerformOperations}
+                    onClick={isCertFromDSS ? this.handleClickSign : this.handleClickPerformOperations}
                     style={{ width: "100%" }}>
                     {localize("Common.perform", locale)}
                   </a>
@@ -805,7 +807,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   handleClickSign = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { activeFilesArr, signer, lic_error } = this.props;
+    const { activeFilesArr, signer, lic_error, multiOperationStart } = this.props;
     const { localize, locale } = this.context;
     const { pinCode } = this.state;
 
@@ -868,6 +870,10 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         } else {
           filesForSign.push(file);
         }
+      }
+
+      if (signer.dssUserID) {
+        multiOperationStart(this.props.setting.operations);
       }
 
       if (filesForSign && filesForSign.length) {
@@ -962,6 +968,15 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                           (dataCMS: any) => {
                             let i: number = 0;
                             let outURIList: string[] = [];
+
+                            const directResult: any = {};
+                            directResult.results = [];
+                            directResult.operations = setting.operations.toJS();
+                            const directFiles: any = {};
+                            files.forEach((file: any) => {
+                              directFiles[file.id] = { original: { ...file.toJS(), operation: 4 } };
+                            });
+
                             files.forEach((file) => {
                               const outURI = fileNameForSign(folderOut, file);
                               const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
@@ -970,21 +985,53 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                               tcms.save(outURI, format);
                               outURIList.push(outURI);
                               i++;
+
+                              const newFileProps = this.getFileProps(outURI);
+                              directResult.results.push({
+                                id: Date.now() + Math.random(),
+                                in: {
+                                  ...file.toJS(),
+                                },
+                                operation: SIGNING_OPERATION,
+                                out: {
+                                  ...newFileProps,
+                                  operation: 3,
+                                },
+                                result: true,
+                              });
+
+                              directFiles[file.id] = {
+                                ...directFiles[file.id],
+                                signing_operation: {
+                                  out: {
+                                    ...newFileProps,
+                                    operation: 3,
+                                  },
+                                  result: true,
+                                },
+                              };
                             });
-                            packageSign(files, cert, policies, null, format, folderOut, outURIList);
+                            directResult.files = directFiles;
+                            packageSign(files, cert, policies, null, format, folderOut, outURIList, directResult);
                           },
                           (error) => {
+                            this.dispatchSignInDssFail(files, setting.operations.toJS());
+
                             $(".toast-dssPerformOperation_failed").remove();
                             Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
                           },
                         );
                     },
                     (error) => {
+                      this.dispatchSignInDssFail(files, setting.operations.toJS());
+
                       $(".toast-dssOperationConfirmation_failed").remove();
                       Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
                     },
                   )
                   .catch((error) => {
+                    this.dispatchSignInDssFail(files, setting.operations.toJS());
+
                     $(".toast-dssOperationConfirmation_failed").remove();
                     Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
                   });
@@ -1007,6 +1054,15 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               (dataCMS) => {
                 let i: number = 0;
                 let outURIList: string[] = [];
+
+                const directResult: any = {};
+                directResult.results = [];
+                directResult.operations = setting.operations.toJS();
+                const directFiles: any = {};
+                files.forEach((file: any) => {
+                  directFiles[file.id] = { original: { ...file.toJS(), operation: 4 } };
+                });
+
                 files.forEach((file) => {
                   const outURI = fileNameForSign(folderOut, file);
                   const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
@@ -1015,10 +1071,38 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   tcms.save(outURI, format);
                   outURIList.push(outURI);
                   i++;
+
+                  const newFileProps = this.getFileProps(outURI);
+                  directResult.results.push({
+                    id: Date.now() + Math.random(),
+                    in: {
+                      ...file.toJS(),
+                    },
+                    operation: SIGNING_OPERATION,
+                    out: {
+                      ...newFileProps,
+                      operation: 3,
+                    },
+                    result: true,
+                  });
+
+                  directFiles[file.id] = {
+                    ...directFiles[file.id],
+                    signing_operation: {
+                      out: {
+                        ...newFileProps,
+                        operation: 3,
+                      },
+                      result: true,
+                    },
+                  };
                 });
-                packageSign(files, cert, policies, null, format, folderOut, outURIList);
+                directResult.files = directFiles;
+                packageSign(files, cert, policies, null, format, folderOut, outURIList, directResult);
               },
               (error) => {
+                this.dispatchSignInDssFail(files, setting.operations.toJS());
+
                 $(".toast-dssPerformOperation_failed").remove();
                 Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
               },
@@ -1042,6 +1126,58 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         packageSign(files, cert, policies, signParams, format, folderOut);
       }
     }
+  }
+
+  dispatchSignInDssFail = (files: IFile[], operations: any) => {
+    const directResult: any = {};
+    directResult.results = [];
+    directResult.operations = operations;
+    const directFiles: any = {};
+
+    files.forEach((file) => {
+      directResult.results.push({
+        id: Date.now() + Math.random(),
+        in: {
+          ...file.toJS(),
+        },
+        operation: SIGNING_OPERATION,
+        out: null,
+        result: false,
+      });
+
+      directFiles[file.id] = {
+        ...directFiles[file.id],
+        signing_operation: {
+          result: false,
+        },
+      };
+    });
+
+    directResult.files = directFiles;
+
+    store.dispatch({
+      payload: { status: false, directResult },
+      type: MULTI_DIRECT_OPERATION + SUCCESS,
+    });
+    store.dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
+  }
+
+  getFileProps = (fullpath: string) => {
+    const stat = fs.statSync(fullpath);
+    const extension = extFile(fullpath);
+
+    return {
+      active: false,
+      extension,
+      extra: undefined,
+      filename: path.basename(fullpath),
+      filesize: stat.size,
+      fullpath,
+      id: md5(fullpath),
+      mtime: stat.birthtime,
+      remoteId: undefined,
+      size: stat.size,
+    };
   }
 
   resign = (files: IFile[], cert: any) => {
@@ -1152,6 +1288,15 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                           (dataCMS: any) => {
                             let i: number = 0;
                             let outURIList: string[] = [];
+
+                            const directResult: any = {};
+                            directResult.results = [];
+                            directResult.operations = setting.operations.toJS();
+                            const directFiles: any = {};
+                            files.forEach((file: any) => {
+                              directFiles[file.id] = { original: { ...file.toJS(), operation: 4 } };
+                            });
+
                             files.forEach((file) => {
                               const outURI = fileNameForResign(folderOut, file);
                               const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
@@ -1160,26 +1305,60 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                               tcms.save(outURI, format);
                               outURIList.push(outURI);
                               i++;
+
+                              const newFileProps = this.getFileProps(outURI);
+                              directResult.results.push({
+                                id: Date.now() + Math.random(),
+                                in: {
+                                  ...file.toJS(),
+                                },
+                                operation: SIGNING_OPERATION,
+                                out: {
+                                  ...newFileProps,
+                                  operation: 3,
+                                },
+                                result: true,
+                              });
+
+                              directFiles[file.id] = {
+                                ...directFiles[file.id],
+                                signing_operation: {
+                                  out: {
+                                    ...newFileProps,
+                                    operation: 3,
+                                  },
+                                  result: true,
+                                },
+                              };
                             });
-                            packageReSign(files, cert, policies, format, folderOut, outURIList);
+                            directResult.files = directFiles;
+                            packageReSign(files, cert, policies, format, folderOut, outURIList, directResult);
                           },
                           (error) => {
+                            this.dispatchSignInDssFail(files, setting.operations.toJS());
+
                             $(".toast-dssPerformOperation_failed").remove();
                             Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
                           },
                         );
                     },
                     (error) => {
+                      this.dispatchSignInDssFail(files, setting.operations.toJS());
+
                       $(".toast-dssOperationConfirmation_failed").remove();
                       Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
                     },
                   )
                   .catch((error) => {
+                    this.dispatchSignInDssFail(files, setting.operations.toJS());
+
                     $(".toast-dssOperationConfirmation_failed").remove();
                     Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
                   });
               },
               (error) => {
+                this.dispatchSignInDssFail(files, setting.operations.toJS());
+
                 $(".toast-transaction_created_failed").remove();
                 Materialize.toast(localize("DSS.transaction_created_failed", locale), 3000, "toast-transaction_created_failed");
 
@@ -1197,6 +1376,15 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               (dataCMS: any) => {
                 let i: number = 0;
                 let outURIList: string[] = [];
+
+                const directResult: any = {};
+                directResult.results = [];
+                directResult.operations = setting.operations.toJS();
+                const directFiles: any = {};
+                files.forEach((file: any) => {
+                  directFiles[file.id] = { original: { ...file.toJS(), operation: 4 } };
+                });
+
                 files.forEach((file) => {
                   const outURI = fileNameForResign(folderOut, file);
                   const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
@@ -1205,10 +1393,38 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   tcms.save(outURI, format);
                   outURIList.push(outURI);
                   i++;
+
+                  const newFileProps = this.getFileProps(outURI);
+                  directResult.results.push({
+                    id: Date.now() + Math.random(),
+                    in: {
+                      ...file.toJS(),
+                    },
+                    operation: SIGNING_OPERATION,
+                    out: {
+                      ...newFileProps,
+                      operation: 3,
+                    },
+                    result: true,
+                  });
+
+                  directFiles[file.id] = {
+                    ...directFiles[file.id],
+                    signing_operation: {
+                      out: {
+                        ...newFileProps,
+                        operation: 3,
+                      },
+                      result: true,
+                    },
+                  };
                 });
-                packageReSign(files, cert, policies, format, folderOut, outURIList);
+                directResult.files = directFiles;
+                packageReSign(files, cert, policies, format, folderOut, outURIList, directResult);
               },
               (error) => {
+                this.dispatchSignInDssFail(files, setting.operations.toJS());
+
                 $(".toast-dssPerformOperation_failed").remove();
                 Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
               },
@@ -1822,5 +2038,5 @@ export default connect((state) => {
   filePackageSelect, filePackageDelete, multiDirectOperation,
   multiReverseOperation,
   packageSign, packageReSign, saveSettings, selectFile,
-  verifyCertificate, selectSignerCertificate, verifySignature,
+  verifyCertificate, selectSignerCertificate, verifySignature, multiOperationStart,
 })(SignatureAndEncryptRightColumnSettings);
