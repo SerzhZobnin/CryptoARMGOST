@@ -78,7 +78,9 @@
     "asar": false,
     "protocols": {
       "name": "cryptoarm-gost",
-      "schemes": ["cryptoarm"]
+      "schemes": [
+        "cryptoarm"
+      ]
     }
   },
   "homepage": "https://cryptoarm.ru/cryptoarm-gost/",
