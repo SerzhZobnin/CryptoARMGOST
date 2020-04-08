@@ -205,14 +205,11 @@ function getJsonFromURL(url: string) {
       sendReq.on("response", (response) => {
         switch (response.statusCode) {
           case 200:
-            let data = new Buffer("");
 
-            response.on("data", (chunk) => {
-              data = Buffer.concat([data, chunk]);
-            }).on("end", () => {
-              data = JSON.parse(data.toString());
-              resolve(data);
-            });
+            const newOutUri = TMP_DIR;
+            const fileStream = fs.createWriteStream(newOutUri);
+            sendReq.pipe (fileStream)
+                    .on('close', resolve());
 
             break;
           default:
@@ -254,7 +251,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
 
       store.dispatch({ type: ADD_REMOTE_FILE, payload: { id: file.id, file: { ...file } } });
 
-      let indexFile: number = 1;
+      let indexFile: number = 0;
       let newOutUri: string = pathForSave;
       while (fileExists(newOutUri)) {
         const parsed = path.parse(pathForSave);
@@ -362,7 +359,7 @@ function dowloadFile(url: string, fileOutPath: string) {
       sendReq.on("response", (response) => {
         switch (response.statusCode) {
           case 200:
-            let indexFile: number = 1;
+            let indexFile: number = 0;
             let newOutUri: string = fileOutPath;
             while (fileExists(newOutUri)) {
               const parsed = path.parse(fileOutPath);
@@ -373,14 +370,9 @@ function dowloadFile(url: string, fileOutPath: string) {
 
             fileOutPath = newOutUri;
 
-            let data = new Buffer("");
-
-            response.on("data", (chunk) => {
-              data = Buffer.concat([data, chunk]);
-            }).on("end", () => {
-              fs.writeFileSync(fileOutPath, data);
-              resolve();
-            });
+            const fileStream = fs.createWriteStream(newOutUri);
+            sendReq.pipe (fileStream)
+                    .on('close', resolve());
 
             break;
           default:
