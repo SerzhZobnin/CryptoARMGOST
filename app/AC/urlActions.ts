@@ -350,12 +350,38 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
 function dowloadFile(url: string, fileOutPath: string) {
   return new Promise((resolve, reject) => {
     try {
-      fetch( url )
-       .then(res => {
-        const dest = fs.createWriteStream(fileOutPath);
-        res.body.pipe(dest);
-        resolve (dest);
-    });
+      const sendReq: any = request.get(url);
+
+      sendReq.on("response", (response) => {
+        switch (response.statusCode) {
+          case 200:
+            let indexFile: number = 1;
+            let newOutUri: string = fileOutPath;
+            while (fileExists(newOutUri)) {
+              const parsed = path.parse(fileOutPath);
+
+              newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
+              indexFile++;
+            }
+
+            fileOutPath = newOutUri;
+
+            fetch( url )
+            .then(res => {
+             const dest = fs.createWriteStream(fileOutPath);
+             res.body.pipe(dest);
+             resolve (dest);
+
+            break;
+          default:
+            reject(new Error("Server responded with status code" + response.statusCode));
+        }
+      });
+
+      sendReq.on("error", (err) => {
+        fs.unlinkSync(fileOutPath);
+        reject(err);
+      });
     } catch (e) {
       // tslint:disable-next-line:no-console
       console.log("--- Error dowloadFile", e);
@@ -363,6 +389,7 @@ function dowloadFile(url: string, fileOutPath: string) {
     }
   });
 }
+
 
 const getFileProperty = (filepath: string) => {
   const stat = fs.statSync(filepath);
