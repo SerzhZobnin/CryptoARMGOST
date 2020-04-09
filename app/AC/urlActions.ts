@@ -258,7 +258,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
           fileUrlContent.searchParams.append("accessToken", extra.token);
         }
 
-       await downloadFile(fileUrlContent.toString(), pathForSave.substring(0, pathForSave.lastIndexOf(".")));
+        await downloadFile(fileUrlContent.toString(), pathForSave.substring(0, pathForSave.lastIndexOf(".")));
       }
 
       store.dispatch({
@@ -350,59 +350,6 @@ async function downloadFile(url: string, fileOutPath: string) {
     });
   });
 }
-// function dowloadFile(url: string, fileOutPath: string) {
-//   return new Promise((resolve, reject) => {
-//     try {
-//       const sendReq: any = request.get(url);
-//       fetch( url );
-//       sendReq.on("response", (response) => {
-//         switch (response.statusCode) {
-//           case 200:
-//             let indexFile: number = 1;
-//             let newOutUri: string = fileOutPath;
-//             while (fileExists(newOutUri)) {
-//               const parsed = path.parse(fileOutPath);
-
-//               newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
-//               indexFile++;
-//             }
-
-//             fileOutPath = newOutUri;
-
-//             // fetch( url )
-//             // .then(res => {
-//             //     const dest = fs.createWriteStream(fileOutPath);
-//             //     res.body.pipe(dest);
-//             //     resolve (dest);
-//             // });
-//             const fileStream = fs.createWriteStream(fileOutPath);
-//             res.body.pipe(fileStream);
-//             res.body.on("error", (err) => {
-//               reject(err);
-//             });
-//             fileStream.on("finish", function() {
-//               resolve();
-//             });
-
-// }
-
-//             break;
-//           default:
-//             reject(new Error("Server responded with status code" + response.statusCode));
-//         }
-//       });
-
-//       sendReq.on("error", (err) => {
-//         fs.unlinkSync(fileOutPath);
-//         reject(err);
-//       });
-//     } catch (e) {
-//       // tslint:disable-next-line:no-console
-//       console.log("--- Error dowloadFile", e);
-//       reject();
-//     }
-//   });
-// }
 
 const getFileProperty = (filepath: string) => {
   const stat = fs.statSync(filepath);
