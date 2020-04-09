@@ -368,16 +368,9 @@ function dowloadFile(url: string, fileOutPath: string) {
             }
 
             fileOutPath = newOutUri;
-
-            let data = new Buffer("");
-
-            response.on("data", (chunk) => {
-              data = Buffer.concat([data, chunk]);
-            }).on("end", () => {
-              fs.writeFileSync(fileOutPath, data);
-              resolve();
-            });
-
+            const fileStream = fs.createWriteStream(fileOutPath);
+            request.get (url).pipe (fileStream)
+                             .on('close', resolve(fileOutPath));
             break;
           default:
             reject(new Error("Server responded with status code" + response.statusCode));
