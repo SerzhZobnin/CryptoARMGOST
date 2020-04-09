@@ -118,7 +118,7 @@ function signDocumentsFromURL(action: URLActionType) {
       let data: any;
 
       const urlObj = new URL(action.url);
-      console.log (urlObj);
+
       if (action.accessToken) {
         urlObj.searchParams.append("accessToken", action.accessToken);
       }
@@ -247,7 +247,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
 
       store.dispatch({ type: DOWNLOAD_REMOTE_FILE + START, payload: { id: file.id } });
 
-      await dowloadFile(fileUrl.toString(), pathForSave);
+      downloadFile(fileUrl.toString(), pathForSave);
 
       store.dispatch({ type: DOWNLOAD_REMOTE_FILE + SUCCESS, payload: { id: file.id } });
 
@@ -258,7 +258,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
           fileUrlContent.searchParams.append("accessToken", extra.token);
         }
 
-        await dowloadFile(fileUrlContent.toString(), pathForSave.substring(0, pathForSave.lastIndexOf(".")));
+        downloadFile(fileUrlContent.toString(), pathForSave.substring(0, pathForSave.lastIndexOf(".")));
       }
 
       store.dispatch({
@@ -327,50 +327,82 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
     }
   }
 };
-
-function dowloadFile(url: string, fileOutPath: string) {
-  return new Promise((resolve, reject) => {
-    try {
-      const sendReq: any = request.get(url);
-
-      sendReq.on("response", (response) => {
-        switch (response.statusCode) {
-          case 200:
-            let indexFile: number = 1;
-            let newOutUri: string = fileOutPath;
-            while (fileExists(newOutUri)) {
+async function downloadFile(url: string, fileOutPath: string) {
+  const res = await fetch(url);
+  let indexFile: number = 1;
+  let newOutUri: string = fileOutPath;
+  while (fileExists(newOutUri)) {
               const parsed = path.parse(fileOutPath);
 
               newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
               indexFile++;
             }
 
-            fileOutPath = newOutUri;
-
-            fetch( url )
-            .then(res => {
-                const dest = fs.createWriteStream(fileOutPath);
-                res.body.pipe(dest);
-                resolve (dest);
-            });
-
-            break;
-          default:
-            reject(new Error("Server responded with status code" + response.statusCode));
-        }
-      });
-
-      sendReq.on("error", (err) => {
-        fs.unlinkSync(fileOutPath);
-        reject(err);
-      });
-    } catch (e) {
-      // tslint:disable-next-line:no-console
-      console.log("--- Error dowloadFile", e);
-      reject();
-    }
+  fileOutPath = newOutUri;
+  await new Promise((resolve, reject) => {
+    const fileStream = fs.createWriteStream(fileOutPath);
+    res.body.pipe(fileStream);
+    res.body.on("error", (err) => {
+      reject(err);
+    });
+    fileStream.on("finish", function() {
+      resolve();
+    });
   });
 }
+// function dowloadFile(url: string, fileOutPath: string) {
+//   return new Promise((resolve, reject) => {
+//     try {
+//       const sendReq: any = request.get(url);
+//       fetch( url );
+//       sendReq.on("response", (response) => {
+//         switch (response.statusCode) {
+//           case 200:
+//             let indexFile: number = 1;
+//             let newOutUri: string = fileOutPath;
+//             while (fileExists(newOutUri)) {
+//               const parsed = path.parse(fileOutPath);
+
+//               newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
+//               indexFile++;
+//             }
+
+//             fileOutPath = newOutUri;
+
+//             // fetch( url )
+//             // .then(res => {
+//             //     const dest = fs.createWriteStream(fileOutPath);
+//             //     res.body.pipe(dest);
+//             //     resolve (dest);
+//             // });
+//             const fileStream = fs.createWriteStream(fileOutPath);
+//             res.body.pipe(fileStream);
+//             res.body.on("error", (err) => {
+//               reject(err);
+//             });
+//             fileStream.on("finish", function() {
+//               resolve();
+//             });
+
+// }
+
+//             break;
+//           default:
+//             reject(new Error("Server responded with status code" + response.statusCode));
+//         }
+//       });
+
+//       sendReq.on("error", (err) => {
+//         fs.unlinkSync(fileOutPath);
+//         reject(err);
+//       });
+//     } catch (e) {
+//       // tslint:disable-next-line:no-console
+//       console.log("--- Error dowloadFile", e);
+//       reject();
+//     }
+//   });
+// }
 
 const getFileProperty = (filepath: string) => {
   const stat = fs.statSync(filepath);
