@@ -350,36 +350,12 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
 function dowloadFile(url: string, fileOutPath: string) {
   return new Promise((resolve, reject) => {
     try {
-      const sendReq: any = request.get(url);
-
-      sendReq.on("response", (response) => {
-        switch (response.statusCode) {
-          case 200:
-            let indexFile: number = 0;
-            let newOutUri: string = fileOutPath;
-            while (fileExists(newOutUri)) {
-              const parsed = path.parse(fileOutPath);
-
-              newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
-              indexFile++;
-            }
-
-            fileOutPath = newOutUri;
-
-            const fileStream = fs.createWriteStream(fileOutPath);
-            sendReq.pipe (fileStream)
-                    .on('close', resolve(fileOutPath));
-
-            break;
-          default:
-            reject(new Error("Server responded with status code" + response.statusCode));
-        }
-      });
-
-      sendReq.on("error", (err) => {
-        fs.unlinkSync(fileOutPath);
-        reject(err);
-      });
+      fetch( url )
+       .then(res => {
+        const dest = fs.createWriteStream(fileOutPath);
+        res.body.pipe(dest);
+        resolve (dest);
+    });
     } catch (e) {
       // tslint:disable-next-line:no-console
       console.log("--- Error dowloadFile", e);
