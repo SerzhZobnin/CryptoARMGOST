@@ -288,7 +288,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
       });
 
       const fileProps = getFileProperty(pathForSave);
-
+r
       const fileId = fileProps.id;
 
       setTimeout(() => {
@@ -353,6 +353,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
 function dowloadFile(url: string, fileOutPath: string) {
   return new Promise((resolve, reject) => {
     try {
+
       const sendReq: any = request.get(url);
 
       sendReq.on("response", (response) => {
@@ -369,8 +370,9 @@ function dowloadFile(url: string, fileOutPath: string) {
 
             fileOutPath = newOutUri;
             const fileStream = fs.createWriteStream(fileOutPath);
-            request.get (url).pipe (fileStream)
+            sendReq.pipe (fileStream)
                              .on('close', resolve(fileOutPath));
+
             break;
           default:
             reject(new Error("Server responded with status code" + response.statusCode));
