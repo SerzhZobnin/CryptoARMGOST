@@ -205,7 +205,7 @@ function getJsonFromURL(url: string) {
             const newOutUri = TMP_DIR;
             const fileStream = fs.createWriteStream(newOutUri);
             sendReq.pipe (fileStream)
-                    .on('close', resolve());
+                    .on('close', resolve(newOutUri));
 
             break;
           default:
@@ -366,9 +366,9 @@ function dowloadFile(url: string, fileOutPath: string) {
 
             fileOutPath = newOutUri;
 
-            const fileStream = fs.createWriteStream(newOutUri);
+            const fileStream = fs.createWriteStream(fileOutPath);
             sendReq.pipe (fileStream)
-                    .on('close', resolve());
+                    .on('close', resolve(fileOutPath));
 
             break;
           default:
