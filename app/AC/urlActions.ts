@@ -247,7 +247,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
 
       store.dispatch({ type: DOWNLOAD_REMOTE_FILE + START, payload: { id: file.id } });
 
-      downloadFile(fileUrl.toString(), pathForSave);
+      await downloadFile(fileUrl.toString(), pathForSave);
 
       store.dispatch({ type: DOWNLOAD_REMOTE_FILE + SUCCESS, payload: { id: file.id } });
 
@@ -258,7 +258,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
           fileUrlContent.searchParams.append("accessToken", extra.token);
         }
 
-        downloadFile(fileUrlContent.toString(), pathForSave.substring(0, pathForSave.lastIndexOf(".")));
+       await downloadFile(fileUrlContent.toString(), pathForSave.substring(0, pathForSave.lastIndexOf(".")));
       }
 
       store.dispatch({
