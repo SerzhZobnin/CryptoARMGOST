@@ -17,7 +17,7 @@ import { extFile, fileExists, md5 } from "../utils";
 
 // tslint:disable-next-line:no-var-requires
 const request = require("request");
-
+const fetch = require("node-fetch");
 const remote = window.electron.remote;
 
 interface IFileProperty {
@@ -118,7 +118,7 @@ function signDocumentsFromURL(action: URLActionType) {
       let data: any;
 
       const urlObj = new URL(action.url);
-
+      console.log (urlObj);
       if (action.accessToken) {
         urlObj.searchParams.append("accessToken", action.accessToken);
       }
@@ -173,7 +173,7 @@ function verifyDocumentsFromURL(action: URLActionType) {
         urlObj.searchParams.append("command", action.command);
       }
 
-      data = await getJsonFromURL(urlObj.toString());
+      data = getJsonFromURL(urlObj.toString());
 
       if (data && data.params && data.params.files) {
         await downloadFiles(data);
@@ -193,36 +193,17 @@ function verifyDocumentsFromURL(action: URLActionType) {
   }, 0);
 }
 
-function getJsonFromURL(url: string) {
-  return new Promise((resolve, reject) => {
-    try {
-      const sendReq: any = request.get(url);
+const getJsonFromURL = async (url: string): Promise<void> => {
+  const response = await fetch(url, { method: "GET" });
 
-      sendReq.on("response", (response) => {
-        switch (response.statusCode) {
-          case 200:
+  if (response.ok) {
+    const json = await response.json();
 
-            const newOutUri = TMP_DIR;
-            const fileStream = fs.createWriteStream(newOutUri);
-            sendReq.pipe (fileStream)
-                    .on('close', resolve(newOutUri));
-
-            break;
-          default:
-            reject(new Error("Server responded with status code" + response.statusCode));
-        }
-      });
-
-      sendReq.on("error", (err) => {
-        reject(err);
-      });
-    } catch (e) {
-      // tslint:disable-next-line:no-console
-      console.log("--- Error dowloadFile", e);
-      reject();
-    }
-  });
-}
+    return json;
+  } else {
+    return;
+  }
+};
 
 const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
   const { params } = data;
@@ -247,7 +228,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
 
       store.dispatch({ type: ADD_REMOTE_FILE, payload: { id: file.id, file: { ...file } } });
 
-      let indexFile: number = 0;
+      let indexFile: number = 1;
       let newOutUri: string = pathForSave;
       while (fileExists(newOutUri)) {
         const parsed = path.parse(pathForSave);
@@ -368,9 +349,10 @@ function dowloadFile(url: string, fileOutPath: string) {
 
             fetch( url )
             .then(res => {
-             const dest = fs.createWriteStream(fileOutPath);
-             res.body.pipe(dest);
-             resolve (dest);
+                const dest = fs.createWriteStream(fileOutPath);
+                res.body.pipe(dest);
+                resolve (dest);
+            });
 
             break;
           default:
@@ -389,7 +371,6 @@ function dowloadFile(url: string, fileOutPath: string) {
     }
   });
 }
-
 
 const getFileProperty = (filepath: string) => {
   const stat = fs.statSync(filepath);
