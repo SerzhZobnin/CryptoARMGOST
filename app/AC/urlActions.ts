@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import fetch from "node-fetch";
 import * as path from "path";
 import { push } from "react-router-redux";
 import {
@@ -14,9 +15,6 @@ import store from "../store";
 import { checkLicense } from "../trusted/jwt";
 import * as signs from "../trusted/sign";
 import { extFile, fileExists, md5 } from "../utils";
-
-// tslint:disable-next-line:no-var-requires
-const request = require("request");
 
 const remote = window.electron.remote;
 
@@ -193,39 +191,17 @@ function verifyDocumentsFromURL(action: URLActionType) {
   }, 0);
 }
 
-function getJsonFromURL(url: string) {
-  return new Promise((resolve, reject) => {
-    try {
-      const sendReq: any = request.get(url);
+const getJsonFromURL = async (url: string): Promise<void> => {
+  const response = await fetch(url, { method: "GET" });
 
-      sendReq.on("response", (response) => {
-        switch (response.statusCode) {
-          case 200:
-            let data = new Buffer("");
+  if (response.ok) {
+    const json = await response.json();
 
-            response.on("data", (chunk) => {
-              data = Buffer.concat([data, chunk]);
-            }).on("end", () => {
-              data = JSON.parse(data.toString());
-              resolve(data);
-            });
-
-            break;
-          default:
-            reject(new Error("Server responded with status code" + response.statusCode));
-        }
-      });
-
-      sendReq.on("error", (err) => {
-        reject(err);
-      });
-    } catch (e) {
-      // tslint:disable-next-line:no-console
-      console.log("--- Error dowloadFile", e);
-      reject();
-    }
-  });
-}
+    return json;
+  } else {
+    return;
+  }
+};
 
 const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
   const { params } = data;
@@ -269,7 +245,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
 
       store.dispatch({ type: DOWNLOAD_REMOTE_FILE + START, payload: { id: file.id } });
 
-      await dowloadFile(fileUrl.toString(), pathForSave);
+      await downloadFile(fileUrl.toString(), pathForSave);
 
       store.dispatch({ type: DOWNLOAD_REMOTE_FILE + SUCCESS, payload: { id: file.id } });
 
@@ -280,7 +256,7 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
           fileUrlContent.searchParams.append("accessToken", extra.token);
         }
 
-        await dowloadFile(fileUrlContent.toString(), pathForSave.substring(0, pathForSave.lastIndexOf(".")));
+        await downloadFile(fileUrlContent.toString(), pathForSave.substring(0, pathForSave.lastIndexOf(".")));
       }
 
       store.dispatch({
@@ -350,49 +326,28 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
   }
 };
 
-function dowloadFile(url: string, fileOutPath: string) {
-  return new Promise((resolve, reject) => {
-    try {
-      const sendReq: any = request.get(url);
+async function downloadFile(url: string, fileOutPath: string) {
+  const res = await fetch(url);
+  let indexFile: number = 1;
+  let newOutUri: string = fileOutPath;
+  while (fileExists(newOutUri)) {
+    const parsed = path.parse(fileOutPath);
 
-      sendReq.on("response", (response) => {
-        switch (response.statusCode) {
-          case 200:
-            let indexFile: number = 1;
-            let newOutUri: string = fileOutPath;
-            while (fileExists(newOutUri)) {
-              const parsed = path.parse(fileOutPath);
+    newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
+    indexFile++;
+  }
 
-              newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
-              indexFile++;
-            }
+  fileOutPath = newOutUri;
 
-            fileOutPath = newOutUri;
-
-            let data = new Buffer("");
-
-            response.on("data", (chunk) => {
-              data = Buffer.concat([data, chunk]);
-            }).on("end", () => {
-              fs.writeFileSync(fileOutPath, data);
-              resolve();
-            });
-
-            break;
-          default:
-            reject(new Error("Server responded with status code" + response.statusCode));
-        }
-      });
-
-      sendReq.on("error", (err) => {
-        fs.unlinkSync(fileOutPath);
-        reject(err);
-      });
-    } catch (e) {
-      // tslint:disable-next-line:no-console
-      console.log("--- Error dowloadFile", e);
-      reject();
-    }
+  await new Promise((resolve, reject) => {
+    const fileStream = fs.createWriteStream(fileOutPath);
+    res.body.pipe(fileStream);
+    res.body.on("error", (err) => {
+      reject(err);
+    });
+    fileStream.on("finish", function () {
+      resolve();
+    });
   });
 }
 
