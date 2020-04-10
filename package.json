@@ -78,7 +78,9 @@
     "asar": false,
     "protocols": {
       "name": "cryptoarm-gost",
-      "schemes": ["cryptoarm"]
+      "schemes": [
+        "cryptoarm"
+      ]
     }
   },
   "homepage": "https://cryptoarm.ru/cryptoarm-gost/",
@@ -94,6 +96,7 @@
     "@types/material-ui": "^0.17.2",
     "@types/materialize-css": "^0.98.0",
     "@types/node": "^10.17.2",
+    "@types/node-fetch": "^2.5.5",
     "@types/nouislider": "^9.0.1",
     "@types/orchestrator": "0.0.30",
     "@types/prop-types": "^15.5.4",
