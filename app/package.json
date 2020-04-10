@@ -9,6 +9,7 @@
     "archiver": "^3.0.0",
     "history": "^4.6.3",
     "immutable": "^3.8.1",
+    "node-fetch": "^2.6.0",
     "request": "^2.88.0",
     "reselect": "^3.0.1",
     "sudo-prompt": "^8.2.3",

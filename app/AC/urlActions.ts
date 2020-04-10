@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import fetch from "node-fetch";
 import * as path from "path";
 import { push } from "react-router-redux";
 import {
@@ -15,9 +16,6 @@ import { checkLicense } from "../trusted/jwt";
 import * as signs from "../trusted/sign";
 import { extFile, fileExists, md5 } from "../utils";
 
-// tslint:disable-next-line:no-var-requires
-const request = require("request");
-const fetch = require("node-fetch");
 const remote = window.electron.remote;
 
 interface IFileProperty {
@@ -173,7 +171,7 @@ function verifyDocumentsFromURL(action: URLActionType) {
         urlObj.searchParams.append("command", action.command);
       }
 
-      data = getJsonFromURL(urlObj.toString());
+      data = await getJsonFromURL(urlObj.toString());
 
       if (data && data.params && data.params.files) {
         await downloadFiles(data);
@@ -327,25 +325,27 @@ const downloadFiles = async (data: ISignRequest | IEncryptRequest) => {
     }
   }
 };
+
 async function downloadFile(url: string, fileOutPath: string) {
   const res = await fetch(url);
   let indexFile: number = 1;
   let newOutUri: string = fileOutPath;
   while (fileExists(newOutUri)) {
-              const parsed = path.parse(fileOutPath);
+    const parsed = path.parse(fileOutPath);
 
-              newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
-              indexFile++;
-            }
+    newOutUri = path.join(parsed.dir, parsed.name + "_(" + indexFile + ")" + parsed.ext);
+    indexFile++;
+  }
 
   fileOutPath = newOutUri;
+
   await new Promise((resolve, reject) => {
     const fileStream = fs.createWriteStream(fileOutPath);
     res.body.pipe(fileStream);
     res.body.on("error", (err) => {
       reject(err);
     });
-    fileStream.on("finish", function() {
+    fileStream.on("finish", function () {
       resolve();
     });
   });
