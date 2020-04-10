@@ -186,8 +186,8 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
                       onChange={handleInputChange}
                     />
 
-                    <div className={!ogrnip || !ogrnip.length ? "anim_none" : validateInn(ogrnip) ? "valid" : "anim_block"} id="anim">
-                      <span class="tooltip" data-tooltip={err_ogrnip}>!</span>
+                    <div className={!ogrnip || !ogrnip.length ? "anim_none" : validateOgrnip(ogrnip) ? "valid" : "anim_block"} id="anim">
+                    { validateOgrnip( ogrnip ) ? "" :  <span className="tooltip" data-tooltip={err_ogrnip}>!</span> }
                     </div>
                     <label htmlFor="ogrnip">
                       {localize("CSR.ogrnip", locale)}
@@ -212,8 +212,8 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
 
               />
 
-              <div className={!snils || !snils.length ? "anim_none" : validateInn(snils) ? "valid" : "anim_block"} id="anim">
-                <span class="tooltip" data-tooltip={err_snils}>!</span>
+              <div className={!snils || !snils.length ? "anim_none" : validateSnils(snils) ? "valid" : "anim_block"} id="anim">
+              { validateSnils( snils ) ? "" :  <span className="tooltip" data-tooltip={err_snils}>!</span> }
               </div>
               <label htmlFor="snils">
                 {localize("CSR.snils", locale)}
@@ -233,7 +233,7 @@ class CertificateRequest extends React.Component<ISubjectNameInfoProps, {}> {
 
               <label htmlFor="inn">{localize("CSR.inn", locale)}</label>
               <div className={!inn || !inn.length ? "anim_none" : validateInn(inn) ? "valid" : "anim_block"} id="anim">
-                <span class="tooltip" data-tooltip={err_inn}>!</span>
+              { validateInn( inn ) ? "" :  <span className="tooltip" data-tooltip={err_inn}>!</span> }
               </div>
             </div>
           </div>
