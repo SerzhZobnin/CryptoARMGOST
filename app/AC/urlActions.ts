@@ -70,37 +70,29 @@ export function removeUrlAction() {
   });
 }
 
-export function cancelUrlAction(data: ISignRequest | IEncryptRequest) {
+export async function  cancelUrlAction(data: ISignRequest | IEncryptRequest) {
 
   const { params } = data;
-
+  
   if (!params) {
     return;
   }
   const { extra, files, uploader } = params;
+  
+  const form = new FormData();
+ 
+ for (let file of files)
+  {
+    form.append ( "id", file.id);
+    form.append ( "success" , "0" );
+    
+  await fetch(uploader, {method: 'POST', body: form})
+      .then(res => console.log ( res ));
 
-  files.forEach((file) => {
-
-    const formData = {
-      id: file.id,
-      success: 0,
-    };
-
-    window.request.post({
-      formData,
-      url: uploader,
-    }, (err) => {
-      if (err) {
-        console.log("err", err);
-      } else {
-        store.dispatch({
-          type: CANCEL_URL_ACTION,
-        });
-      }
-    },
-    );
+  }
+  store.dispatch({
+    type: CANCEL_URL_ACTION,
   });
-
 }
 
 function signDocumentsFromURL(action: URLActionType) {
