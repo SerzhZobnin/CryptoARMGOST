@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import fetch from "node-fetch";
 import * as path from "path";
+import FormData from "form-data";
 import { push } from "react-router-redux";
 import {
   ADD_LICENSE, ADD_REMOTE_FILE, CANCEL_URL_ACTION, DECRYPT,
@@ -70,24 +71,28 @@ export function removeUrlAction() {
   });
 }
 
-export async function  cancelUrlAction(data: ISignRequest | IEncryptRequest) {
+export async function cancelUrlAction(data: ISignRequest | IEncryptRequest) {
 
   const { params } = data;
-  
+
   if (!params) {
     return;
   }
   const { extra, files, uploader } = params;
-  
-  const form = new FormData();
- 
- for (let file of files)
-  {
-    form.append ( "id", file.id);
-    form.append ( "success" , "0" );
-    
-  await fetch(uploader, {method: 'POST', body: form})
-      .then(res => console.log ( res ));
+
+
+
+  for (const file of files) {
+
+    const form = new FormData();
+
+    form.append("id", file.id);
+    form.append("success", "0");
+
+   await window.fetch(uploader,
+       { method: 'POST',
+        body: form })
+      .then(res => console.log(res));
 
   }
   store.dispatch({
