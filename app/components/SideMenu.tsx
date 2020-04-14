@@ -363,11 +363,11 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
     );
   }
 
-  onExit = () => {
+   onExit = async () => {
     const { setting } = this.props;
 
     if (this.props.operationRemoteAction) {
-      cancelUrlAction(this.props.operationRemoteAction.json);
+     await cancelUrlAction(this.props.operationRemoteAction.json);
     }
     this.props.removeAllFiles();
     removeUrlAction();

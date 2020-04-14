@@ -1,3 +1,4 @@
+import FormData from "form-data";
 import * as fs from "fs";
 import fetch from "node-fetch";
 import * as path from "path";
@@ -70,7 +71,7 @@ export function removeUrlAction() {
   });
 }
 
-export function cancelUrlAction(data: ISignRequest | IEncryptRequest) {
+export async function cancelUrlAction(data: ISignRequest | IEncryptRequest) {
 
   const { params } = data;
 
@@ -79,28 +80,24 @@ export function cancelUrlAction(data: ISignRequest | IEncryptRequest) {
   }
   const { extra, files, uploader } = params;
 
-  files.forEach((file) => {
+  for (const file of files) {
 
-    const formData = {
-      id: file.id,
-      success: 0,
-    };
+    const form = new FormData();
 
-    window.request.post({
-      formData,
-      url: uploader,
-    }, (err) => {
-      if (err) {
-        console.log("err", err);
-      } else {
-        store.dispatch({
-          type: CANCEL_URL_ACTION,
-        });
-      }
-    },
-    );
+    form.append("id", file.id);
+    form.append("success", "0");
+
+    await window.fetch(uploader,
+      {
+        method: "POST",
+        body: form,
+      });
+
+  }
+
+  store.dispatch({
+    type: CANCEL_URL_ACTION,
   });
-
 }
 
 function signDocumentsFromURL(action: URLActionType) {
