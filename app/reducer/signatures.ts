@@ -1,7 +1,7 @@
 import { OrderedMap, Record } from "immutable";
 import {
   DELETE_FILE, PACKAGE_DELETE_FILE, PACKAGE_SIGN,
-  START, SUCCESS, VERIFY_SIGNATURE,
+  START, SUCCESS, INTERRUPT, VERIFY_SIGNATURE,
 } from "../constants";
 import { arrayToMap } from "../utils";
 
@@ -73,6 +73,12 @@ export default (signatures = new DefaultReducerState(), action) => {
         .set("signedPackage", true)
         .set("signingPackage", false)
         .set("packageSignResult", payload.packageSignResult);
+
+    case PACKAGE_SIGN + INTERRUPT:
+      return signatures
+        .set("signedPackage", false)
+        .set("signingPackage", false)
+        .set("packageSignResult", false);
 
     case VERIFY_SIGNATURE + SUCCESS:
       return signatures.setIn(["entities", payload.fileId], arrayToMap(payload.signatureInfo, SignatureModel));

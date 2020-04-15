@@ -27,6 +27,7 @@ import {
   LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
   LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, MULTI_REVERSE, REMOVE, SIGN,
   SIGNING_OPERATION, UNSIGN, UNZIPPING, USER_NAME, VERIFY, LOCATION_RESULTS_MULTI_OPERATIONS, MULTI_DIRECT_OPERATION, SUCCESS,
+  PACKAGE_SIGN, INTERRUPT,
 } from "../../constants";
 import { DEFAULT_ID, ISignParams } from "../../reducer/settings";
 import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
@@ -93,6 +94,8 @@ interface ISignatureAndEncryptRightColumnSettingsState {
   showModalReAuth: boolean;
   showModalRenameParams: boolean;
   showModalSaveParams: boolean;
+  signingPackage: boolean;
+  packageSignResult: boolean;
 }
 
 class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureAndEncryptRightColumnSettingsProps, ISignatureAndEncryptRightColumnSettingsState> {
@@ -147,6 +150,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   componentDidUpdate(prevProps: ISignatureAndEncryptRightColumnSettingsProps, prevState: ISignatureAndEncryptRightColumnSettingsState) {
+    const { localize, locale } = this.context;
+
     if (!prevProps.dssResponses.size && this.props.dssResponses.size) {
       this.handleCloseModalReAuth();
       this.handleShowModalDssResponse();
@@ -158,6 +163,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     if (prevProps.dssResponses.size && !this.props.dssResponses.size) {
       this.handleCloseModalDssResponse();
+    }
+
+    if(prevProps.signingPackage && !this.props.signingPackage && !this.props.packageSignResult) {
+      $(".toast-files_signed_failed").remove();
+      Materialize.toast(localize("Sign.files_signed_failed", locale), 7000, "toast-files_signed_failed");
     }
 
     $(".btn-floated").dropdown();
@@ -807,7 +817,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
   handleClickSign = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { activeFilesArr, signer, lic_error, multiOperationStart } = this.props;
+    const { activeFilesArr, signer, lic_error, multiOperationStart, setting } = this.props;
     const { localize, locale } = this.context;
     const { pinCode } = this.state;
 
@@ -828,6 +838,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         userName: USER_NAME,
       });
 
+      return;
+    }
+
+    if ((setting.sign.timestamp_on_data || setting.sign.timestamp_on_sign)
+    && setting.tsp.url === "") {
+      $(".toast-Sign_failed_TSP_misconfigured").remove();
+      Materialize.toast(localize("Tsp.failed_tsp_url", locale), 3000, "toast-Sign_failed-TSP_misconfigured");
       return;
     }
 
@@ -892,7 +909,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { signer, tokensAuth, users, policyDSS } = this.props;
     let { setting } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
-    const { packageSign, createTransactionDSS, dssPerformOperation, operationRemoteAction } = this.props;
+    const { packageSign, createTransactionDSS, dssPerformOperation, operationRemoteAction, uploader } = this.props;
     const { localize, locale } = this.context;
     const { pinCode } = this.state;
 
@@ -1015,7 +1032,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                             packageSign(files, cert, policies, null, format, folderOut, outURIList, directResult);
                           },
                           (error) => {
-                            this.dispatchSignInDssFail(files, setting.operations.toJS());
+                            if (uploader) {
+                              this.dispatchSignInterrupt();
+                            } else {
+                              this.dispatchSignInDssFail(files, setting.operations.toJS());
+                            }
 
                             $(".toast-dssPerformOperation_failed").remove();
                             Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
@@ -1023,14 +1044,22 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                         );
                     },
                     (error) => {
-                      this.dispatchSignInDssFail(files, setting.operations.toJS());
+                      if (uploader) {
+                        this.dispatchSignInterrupt();
+                      } else {
+                        this.dispatchSignInDssFail(files, setting.operations.toJS());
+                      }
 
                       $(".toast-dssOperationConfirmation_failed").remove();
                       Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
                     },
                   )
                   .catch((error) => {
-                    this.dispatchSignInDssFail(files, setting.operations.toJS());
+                    if (uploader) {
+                      this.dispatchSignInterrupt();
+                    } else {
+                      this.dispatchSignInDssFail(files, setting.operations.toJS());
+                    }
 
                     $(".toast-dssOperationConfirmation_failed").remove();
                     Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
@@ -1101,7 +1130,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 packageSign(files, cert, policies, null, format, folderOut, outURIList, directResult);
               },
               (error) => {
-                this.dispatchSignInDssFail(files, setting.operations.toJS());
+                if (uploader) {
+                  this.dispatchSignInterrupt();
+                } else {
+                  this.dispatchSignInDssFail(files, setting.operations.toJS());
+                }
 
                 $(".toast-dssPerformOperation_failed").remove();
                 Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
@@ -1160,6 +1193,12 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       type: MULTI_DIRECT_OPERATION + SUCCESS,
     });
     store.dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
+  }
+
+  dispatchSignInterrupt = () => {
+    store.dispatch({
+      type: PACKAGE_SIGN + INTERRUPT,
+    });
   }
 
   getFileProps = (fullpath: string) => {
@@ -1335,7 +1374,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                             packageReSign(files, cert, policies, format, folderOut, outURIList, directResult);
                           },
                           (error) => {
-                            this.dispatchSignInDssFail(files, setting.operations.toJS());
+                            if (uploader) {
+                              this.dispatchSignInterrupt();
+                            } else {
+                              this.dispatchSignInDssFail(files, setting.operations.toJS());
+                            }
 
                             $(".toast-dssPerformOperation_failed").remove();
                             Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
@@ -1343,21 +1386,33 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                         );
                     },
                     (error) => {
-                      this.dispatchSignInDssFail(files, setting.operations.toJS());
+                      if (uploader) {
+                        this.dispatchSignInterrupt();
+                      } else {
+                        this.dispatchSignInDssFail(files, setting.operations.toJS());
+                      }
 
                       $(".toast-dssOperationConfirmation_failed").remove();
                       Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
                     },
                   )
                   .catch((error) => {
-                    this.dispatchSignInDssFail(files, setting.operations.toJS());
+                    if (uploader) {
+                      this.dispatchSignInterrupt();
+                    } else {
+                      this.dispatchSignInDssFail(files, setting.operations.toJS());
+                    }
 
                     $(".toast-dssOperationConfirmation_failed").remove();
                     Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
                   });
               },
               (error) => {
-                this.dispatchSignInDssFail(files, setting.operations.toJS());
+                if (uploader) {
+                  this.dispatchSignInterrupt();
+                } else {
+                  this.dispatchSignInDssFail(files, setting.operations.toJS());
+                }
 
                 $(".toast-transaction_created_failed").remove();
                 Materialize.toast(localize("DSS.transaction_created_failed", locale), 3000, "toast-transaction_created_failed");
@@ -1441,7 +1496,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           ocspModel: setting.ocsp.toJS(),
         };
 
-        files.forEach((file) => {
+        let remoteFilesToUpload: any[] = [];
+
+        files.every((file) => {
           const newPath = trustedSign.resignFile(file.fullpath, cert, policies, signParams, format, folderOut);
 
           if (newPath) {
@@ -1499,24 +1556,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   extra.signType = parseInt(extra.signType, 10);
                 }
 
-                const formData = {
-                  extra: JSON.stringify(extra),
-                  file: fs.createReadStream(newPath),
-                  id: file.remoteId,
-                  signers: JSON.stringify(normalyzeSignatureInfo),
-                };
-
-                window.request.post({
-                  formData,
-                  url: uploader,
-                }, (err) => {
-                  if (err) {
-                    console.log("err", err);
-                  }
-
-                  deleteFile(file.id);
-                },
-                );
+                remoteFilesToUpload.push({
+                  file: file,
+                  newPath: newPath,
+                  normalyzeSignatureInfo: normalyzeSignatureInfo
+                });
               }
             } else {
               deleteFile(file.id);
@@ -1524,8 +1568,45 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             }
           } else {
             res = false;
+
+            if (file.remoteId) {
+              return false;
+            }
           }
+
+          return true;
         });
+
+        if (uploader) {
+          if (!res) {
+            this.dispatchSignInterrupt();
+            $(".toast-files_signed_failed").remove();
+            Materialize.toast(localize("Sign.files_signed_failed", locale), 7000, "toast-files_signed_failed");
+
+            return;
+          } else {
+            remoteFilesToUpload.forEach((uploadData: any) => {
+              const formData = {
+                extra: JSON.stringify(uploadData.file.extra),
+                file: fs.createReadStream(uploadData.newPath),
+                id: uploadData.file.remoteId,
+                signers: JSON.stringify(uploadData.normalyzeSignatureInfo),
+              };
+
+              window.request.post({
+                formData,
+                url: uploader,
+              }, (err) => {
+                if (err) {
+                  console.log("err", err);
+                }
+
+                deleteFile(uploadData.file.id);
+              }
+              );
+            });
+          }
+        }
 
         removeUrlAction();
 
@@ -2031,6 +2112,8 @@ export default connect((state) => {
     policyDSS: state.policyDSS.entities,
     operationIsRemote: state.urlActions.performed || state.urlActions.performing,
     operationRemoteAction: state.urlActions.action,
+    signingPackage: state.signatures.signingPackage,
+    packageSignResult: state.signatures.packageSignResult,
   };
 }, {
   activeFile, activeSetting, changeDefaultSettings, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
