@@ -64,6 +64,7 @@ export const SignModel = Record({
   time: true,
   timestamp_on_data: false,
   timestamp_on_sign: false,
+  checked: true,
 });
 
 export const EncryptModel = Record({
