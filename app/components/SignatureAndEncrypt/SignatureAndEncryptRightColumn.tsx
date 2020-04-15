@@ -1478,7 +1478,11 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                 packageReSign(files, cert, policies, format, folderOut, outURIList, directResult);
               },
               (error) => {
-                this.dispatchSignInDssFail(files, setting.operations.toJS());
+                if (uploader) {
+                  this.dispatchSignInterrupt();
+                } else {
+                  this.dispatchSignInDssFail(files, setting.operations.toJS());
+                }
 
                 $(".toast-dssPerformOperation_failed").remove();
                 Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
