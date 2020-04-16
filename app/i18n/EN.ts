@@ -824,5 +824,6 @@ export default {
     tsp_properties: "Time-stamp properties",
     tsp_sign_fail: "Time-stamp is not valid",
     tsp_sign_ok: "Time-stamp is valid",
+    failed_tsp_url: "Time stamp service address not specified",
   },
 };
