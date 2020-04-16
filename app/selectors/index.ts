@@ -25,13 +25,13 @@ export const filteredCertificatesSelector = createSelector(certificatesGetter, f
   const search = searchValue.toLowerCase();
   let сertificatesByOperations = certificates;
 
-  if (store) {
+  if (store && (operation !== "personal_certs")) {
     сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {
       return item.category === store;
     });
   }
 
-  if (operation === "sign") {
+  if (operation === "sign" || operation === "personal_certs") {
     сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {
       return item.category === "MY" && item.key.length > 0;
     });

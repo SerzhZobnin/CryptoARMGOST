@@ -345,7 +345,7 @@ class Diagnostic extends React.Component<any, IDiagnosticState> {
 
 export default connect((state) => {
   return {
-    certificates: filteredCertificatesSelector(state, { operation: "sign" }),
+    certificates: filteredCertificatesSelector(state, { operation: "personal_certs" }),
     certificatesLoaded: state.certificates.loaded,
     certificatesLoading: state.certificates.loading,
     dataLicense: state.license.data,
