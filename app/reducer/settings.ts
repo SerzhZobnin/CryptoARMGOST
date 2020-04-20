@@ -62,8 +62,8 @@ export const SignModel = Record({
   signer: "",
   standard: "CMS",
   time: true,
-  timestamp_on_data: false,
-  timestamp_on_sign: false,
+  timestamp_on_data: true,
+  timestamp_on_sign: true,
 });
 
 export const EncryptModel = Record({
@@ -98,7 +98,7 @@ export const OperationsModel = Record({
   reverse_operations: false,
   save_copy_to_documents: false,
   save_result_to_folder: false,
-  signing_operation: false,
+  signing_operation: true,
 });
 
 export const DEFAULT_ID = "DEFAULT_ID";

@@ -1431,9 +1431,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             );
         }
       } else {
-        if (setting.sign.time) {
-          policies.splice(0, 1);
-        }
+        // if (setting.sign.time) {
+        //   policies.splice(0, 1);
+        // }
 
         const signParams: ISignParams = {
           signModel: setting.sign.toJS(),
