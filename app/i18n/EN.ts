@@ -41,9 +41,9 @@ export default {
     send: "Send",
     support: "Support",
     username: "Name",
-    version: "2.4.0",
+    version: "2.4.1",
     version_app: "Application version",
-    version_full: "Version: 2.4.0",
+    version_full: "Version: 2.4.1",
   },
   AddressBook: {
     address_book: "Address book",
@@ -824,5 +824,6 @@ export default {
     tsp_properties: "Time-stamp properties",
     tsp_sign_fail: "Time-stamp is not valid",
     tsp_sign_ok: "Time-stamp is valid",
+    failed_tsp_url: "Time stamp service address not specified",
   },
 };

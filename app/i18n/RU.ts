@@ -41,9 +41,9 @@ export default {
     send: "Отправить",
     support: "Техническая поддержка",
     username: "Имя",
-    version: "2.4.0",
+    version: "2.4.1",
     version_app: "Версия приложения",
-    version_full: "Версия продукта: 2.4.0",
+    version_full: "Версия продукта: 2.4.1",
   },
   AddressBook: {
     address_book: "Контакты",
@@ -826,5 +826,6 @@ export default {
     tsp_properties: "Свойства штампа времени",
     tsp_sign_fail: "Штамп времени недействителен",
     tsp_sign_ok: "Штамп времени действителен",
+    failed_tsp_url: "Для штампа времени не задан адрес службы TSP",
   },
 };

@@ -16,7 +16,7 @@ import {
   REMOVE_ALL_CERTIFICATES, REMOVE_ALL_CONTAINERS,
   REMOVE_ALL_FILES, REMOVE_ALL_REMOTE_FILES, SELECT_FILE,
   SELECT_SIGNER_CERTIFICATE, SELECT_TEMP_CONTENT_OF_SIGNED_FILES, START,
-  SUCCESS,
+  SUCCESS, INTERRUPT,
   TOGGLE_SAVE_TO_DOCUMENTS,
   VERIFY_CERTIFICATE,
   VERIFY_SIGNATURE,
@@ -93,8 +93,9 @@ export function packageSign(
       const state = getState();
       const { urlActions, remoteFiles } = state;
       let i: number = 0;
+      let remoteFilesToUpload: any[] = [];
 
-      files.forEach((file) => {
+      files.every((file) => {
         const newPath = folderOutDSS ? folderOutDSS[i] : signs.signFile(file.fullpath, cert, policies, params, format, folderOut);
         if (newPath) {
           signedFileIdPackage.push(file.id);
@@ -166,47 +167,68 @@ export function packageSign(
                 extra.signType = parseInt(extra.signType, 10);
               }
 
-              const formData = {
-                extra: JSON.stringify(extra),
-                file: fs.createReadStream(newPath),
-                id: file.remoteId,
-                signers: JSON.stringify(normalyzeSignatureInfo),
-              };
-
-              window.request.post({
-                formData,
-                url: remoteFiles.uploader,
-              }, (err: Error) => {
-                if (err) {
-                  //
-                } else {
-                  //
-
-                  dispatch({
-                    payload: { id: file.id },
-                    type: DELETE_FILE,
-                  });
-                }
-
-                try {
-                  fs.unlinkSync(newPath);
-
-                  if (urlActions && urlActions.action && urlActions.action.isDetachedSign) {
-                    fs.unlinkSync(file.fullpath);
-                    fs.unlinkSync(newPath.substring(0, newPath.lastIndexOf(".")));
-                  }
-                } catch (e) {
-                  //
-                }
-              },
-              );
+              remoteFilesToUpload.push({
+                file: file,
+                newPath: newPath,
+                normalyzeSignatureInfo: normalyzeSignatureInfo
+              });
             }
           }
         } else {
           packageSignResult = false;
+          if (file.remoteId) {
+            return false;
+          }
         }
         i++;
+        return true;
       });
+
+      if (remoteFiles.uploader) {
+        if (!packageSignResult) {
+          dispatch({
+            type: PACKAGE_SIGN + INTERRUPT,
+          });
+          return;
+        } else {
+          remoteFilesToUpload.forEach((uploadData: any) => {
+            const formData = {
+              extra: JSON.stringify(uploadData.file.extra),
+              file: fs.createReadStream(uploadData.newPath),
+              id: uploadData.file.remoteId,
+              signers: JSON.stringify(uploadData.normalyzeSignatureInfo),
+            };
+
+            window.request.post({
+              formData,
+              url: remoteFiles.uploader,
+            }, (err: Error) => {
+              if (err) {
+                //
+              } else {
+                //
+
+                dispatch({
+                  payload: { id: uploadData.file.id },
+                  type: DELETE_FILE,
+                });
+              }
+
+              try {
+                fs.unlinkSync(uploadData.newPath);
+
+                if (urlActions && urlActions.action && urlActions.action.isDetachedSign) {
+                  fs.unlinkSync(uploadData.file.fullpath);
+                  fs.unlinkSync(uploadData.newPath.substring(0, uploadData.newPath.lastIndexOf(".")));
+                }
+              } catch (e) {
+                //
+              }
+            },
+            );
+          });
+        }
+      }
 
       dispatch({
         payload: { packageSignResult },
@@ -262,6 +284,13 @@ export function packageReSign(
         }
         i++;
       });
+
+      if (remoteFiles.uploader && !packageSignResult) {
+        dispatch({
+          type: PACKAGE_SIGN + INTERRUPT,
+        });
+        return;
+      }
 
       dispatch({
         payload: { packageSignResult },

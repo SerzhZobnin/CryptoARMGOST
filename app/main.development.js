@@ -5,6 +5,8 @@ const URL = require('url');
 let mainWindow = null;
 let preloader = null;
 
+let delayedUrl = "";
+
 global.globalObj = {
   id: 123,
   launch: null,
@@ -314,6 +316,12 @@ app.on('ready', async () => {
       mainWindow.focus();
     }
 
+    if (delayedUrl.length !== "") {
+      const urlToProcess = delayedUrl;
+      handleAppURL(urlToProcess);
+      delayedUrl = "";
+    }
+
     handlePossibleProtocolLauncherArgs(options);
     mainWindow.webContents.send("cmdArgs", options);
   });
@@ -377,7 +385,12 @@ app.on('will-finish-launching', () => {
   // macOS only
   app.on('open-url', (event, url) => {
     event.preventDefault()
-    handleAppURL(url)
+
+    if (mainWindow) {
+      handleAppURL(url)
+    } else {
+      delayedUrl = url;
+    }
   })
 })
 
