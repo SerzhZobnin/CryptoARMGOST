@@ -104,12 +104,11 @@ export function multiDirectOperation(
       }
 
       if (signing_operation) {
+
         const policies = ["noAttributes"];
+        policies.splice(0, 1);
         if (setting.sign.detached) {
           policies.push("detached");
-        }
-        if (setting.sign.time) {
-          policies.splice(0, 1);
         }
 
         const params: ISignParams | null = {
