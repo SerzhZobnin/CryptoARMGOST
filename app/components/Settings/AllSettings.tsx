@@ -65,7 +65,7 @@ class AllSettings extends React.Component<any, {}> {
 
     if (signatureStandard === SignatureStandard.CADES) {
       changeSignatureTime(true);
-      changeSignatureTimestamp(false);
+      changeSignatureTimestamp(true);
       changeSignatureTimestampOnSign(true);
     }
 
@@ -137,7 +137,7 @@ class AllSettings extends React.Component<any, {}> {
                   <CheckBoxWithLabel
                     disabled={ true }
                     // onClickCheckBox={this.handleTimeClick}
-                    // isChecked={settings.sign.time}
+                    isChecked={settings.sign.time}
                     elementId="sign_time"
                     title={localize("Sign.sign_time", locale)} />
 
