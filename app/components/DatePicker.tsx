@@ -105,6 +105,10 @@ class DatePicker extends React.Component<IDatePickerProps, {}> {
     if (this.picker && selected) {
       this.picker.set("select", selected);
     }
+
+    $("#" + id).on("mousedown", function(event) {
+      event.preventDefault();
+    });
   }
 
   render() {
