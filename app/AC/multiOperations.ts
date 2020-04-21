@@ -105,8 +105,8 @@ export function multiDirectOperation(
 
       if (signing_operation) {
 
-        const policies = ["noAttributes"];
-        policies.splice(0, 1);
+        const policies = [];
+
         if (setting.sign.detached) {
           policies.push("detached");
         }

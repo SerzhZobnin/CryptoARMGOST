@@ -1147,7 +1147,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         }
 
         if (setting.sign.time) {
-          policies.splice(0, 1);
+          const policies = [];
         }
 
         const signParams: ISignParams = {
@@ -1491,7 +1491,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         }
       } else {
         if (setting.sign.time) {
-          policies.splice(0, 1);
+          const policies = [];
         }
 
         const signParams: ISignParams = {

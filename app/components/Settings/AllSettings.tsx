@@ -65,7 +65,7 @@ class AllSettings extends React.Component<any, {}> {
 
     if (signatureStandard === SignatureStandard.CADES) {
       changeSignatureTime(true);
-      changeSignatureTimestamp(true);
+      changeSignatureTimestamp(false);
       changeSignatureTimestampOnSign(true);
     }
 
@@ -278,7 +278,7 @@ class AllSettings extends React.Component<any, {}> {
 
     if (value === SignatureStandard.CADES) {
       changeSignatureTime(true);
-      changeSignatureTimestamp(false);
+      changeSignatureTimestamp(true);
       changeSignatureTimestampOnSign(true);
     }
   }
