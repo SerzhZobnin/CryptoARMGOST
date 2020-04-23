@@ -301,9 +301,11 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
   }
 
   handleOnRowClick = ({ rowData }: { rowData: any }) => {
-    const { activeCert, toggleOpenItem } = this.props;
+    const { activeCert, certificatesMap, toggleOpenItem } = this.props;
 
-    activeCert(rowData);
+    const cert = certificatesMap.get(rowData.id);
+
+    activeCert(cert ? cert : rowData);
     toggleOpenItem(rowData.id.toString());
   }
 
