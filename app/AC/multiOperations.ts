@@ -620,11 +620,14 @@ async function uzipAndWriteSync(file: any, reverseFiles: any, packageResult: IPa
   const unzipedFiles = [];
 
   for (const fileInZip of directory.files) {
-    const content = await fileInZip.buffer();
     const fileName = fileInZip.path;
 
     try {
-      fs.writeFileSync(path.join(DEFAULT_TEMP_PATH, fileName), content);
+      await new Promise((resolve, reject) => fileInZip.stream()
+        .pipe(fs.createWriteStream(path.join(DEFAULT_TEMP_PATH, fileName)))
+        .on("error", reject)
+        .on("finish", resolve),
+      );
 
       const newFileProps = { ...getFileProps(path.join(DEFAULT_TEMP_PATH, fileName)) };
 
