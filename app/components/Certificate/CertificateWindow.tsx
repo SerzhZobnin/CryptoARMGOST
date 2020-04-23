@@ -1341,7 +1341,7 @@ class CertWindow extends React.Component<any, any> {
   }
 
   render() {
-    const { certificates, crls, isLoading, isLoadingFromDSS, searchValue } = this.props;
+    const { certrequests, certificates, crls, isLoading, isLoadingFromDSS, searchValue } = this.props;
     const { certificate, crl, requestCA } = this.state;
     const { localize, locale } = this.context;
 
@@ -1349,7 +1349,7 @@ class CertWindow extends React.Component<any, any> {
       return <ProgressBars />;
     }
 
-    const VIEW = certificates.size < 1 && crls.size < 1 ? "not-active" : "";
+    const VIEW = certrequests.size < 1 && certificates.size < 1 && crls.size < 1 ? "not-active" : "";
 
     return (
       <div className="content-noflex">
@@ -1378,7 +1378,7 @@ class CertWindow extends React.Component<any, any> {
             <div className={"collection " + VIEW}>
               <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
                 {
-                  certificates.size < 1 && crls.size < 1 ?
+                  certrequests.size < 1 && certificates.size < 1 && crls.size < 1 ?
                     <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
                     <CertificateList
                       selectedCert={this.state.certificate}
