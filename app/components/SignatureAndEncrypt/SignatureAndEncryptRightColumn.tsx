@@ -922,7 +922,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (files.length > 0) {
-      const policies = ["noAttributes"];
+      const policies = [""];
 
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
@@ -1236,7 +1236,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (files.length > 0) {
-      const policies = ["noAttributes"];
+      const policies = [""];
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
       if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
