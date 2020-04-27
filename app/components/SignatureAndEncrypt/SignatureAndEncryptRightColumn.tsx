@@ -1234,7 +1234,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (files.length > 0) {
-      const policies = [""];
+      const policies: string [] = [];
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
       if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
@@ -1486,9 +1486,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             );
         }
       } else {
-        if (setting.sign.time) {
-          const policies = [];
-        }
+
 
         const signParams: ISignParams = {
           signModel: setting.sign.toJS(),
