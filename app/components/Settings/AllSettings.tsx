@@ -135,9 +135,9 @@ class AllSettings extends React.Component<any, {}> {
 
                 <div className="col s12">
                   <CheckBoxWithLabel
-                    disabled={disabled || signatureStandard === SignatureStandard.CADES || isCertFromDSS }
-                    onClickCheckBox={this.handleTimeClick}
-                    isChecked={signatureStandard === SignatureStandard.CADES ? true : settings.sign.time}
+                    disabled={ true }
+                    // onClickCheckBox={this.handleTimeClick}
+                    isChecked={true}
                     elementId="sign_time"
                     title={localize("Sign.sign_time", locale)} />
 
