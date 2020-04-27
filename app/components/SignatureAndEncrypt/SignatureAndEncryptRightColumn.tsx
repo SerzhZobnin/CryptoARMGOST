@@ -922,7 +922,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (files.length > 0) {
-      const policies = [""];
+      const policies: string [] = [];
 
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
@@ -1145,9 +1145,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         if (setting.sign.detached) {
           policies.push("detached");
         }
-        if (setting.sign.time) {
-          const policies = [];
-        }
+
         const signParams: ISignParams = {
           signModel: setting.sign.toJS(),
           tspModel: setting.tsp.toJS(),
