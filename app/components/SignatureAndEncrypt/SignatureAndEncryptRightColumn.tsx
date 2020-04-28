@@ -1301,7 +1301,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           createTransactionDSS(user.dssUrl,
             tokenAuth.access_token,
             buildTransaction(
-              documents, signer.dssCertID, setting.sign.detached,
+              documents, signer.dssCertID, isSignPackage ? setting.sign.detached : (originalData !== ""),
               isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "cosign", originalData, pinCode),
             documentsId)
             .then(
@@ -1422,7 +1422,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
             isSignPackage ? buildDocumentPackageDSS(documents, signer.dssCertID, setting.sign.detached, "cosign", pinCode) :
-              buildDocumentDSS(files[0].fullpath, signer.dssCertID, setting.sign.detached, "cosign", originalData, pinCode))
+              buildDocumentDSS(files[0].fullpath, signer.dssCertID, originalData !== "", "Cosign", originalData, pinCode))
             .then(
               (dataCMS: any) => {
                 let i: number = 0;
