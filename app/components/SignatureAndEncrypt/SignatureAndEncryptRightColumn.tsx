@@ -1440,9 +1440,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   const outURI = fileNameForResign(folderOut, file);
                   const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
                   const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
-                  tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
-                  tcms.save(outURI, format);
-                  outURIList.push(outURI);
+                  const signResult = (contextCMS !== null);
+                  if (signResult) {
+                    console.log("Sign is successfull");
+                    tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                    tcms.save(outURI, format);
+                    outURIList.push(outURI);
+                  }
                   i++;
 
                   const newFileProps = this.getFileProps(outURI);
@@ -1456,7 +1460,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                       ...newFileProps,
                       operation: 3,
                     },
-                    result: true,
+                    result: signResult,
                   });
 
                   directFiles[file.id] = {
@@ -1466,7 +1470,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                         ...newFileProps,
                         operation: 3,
                       },
-                      result: true,
+                      result: signResult,
                     },
                   };
                 });
