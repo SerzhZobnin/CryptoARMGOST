@@ -7,14 +7,16 @@
   "license": "Apache-2.0",
   "dependencies": {
     "archiver": "^3.0.0",
+    "chardet": "^1.0.0",
     "history": "^4.6.3",
+    "iconv-lite": "^0.5.1",
     "immutable": "^3.8.1",
     "node-fetch": "^2.6.0",
     "request": "^2.88.0",
     "reselect": "^3.0.1",
     "sudo-prompt": "^8.2.3",
     "tslib": "^1.10.0",
-    "unzipper": "^0.10.8",
+    "unzipper": "^0.10.11",
     "winston": "^3.0.0"
   }
 }
