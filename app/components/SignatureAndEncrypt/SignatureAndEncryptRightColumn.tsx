@@ -185,7 +185,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     const disabledNavigate = this.isFilesFromSocket();
     const classDisabled = disabledNavigate ? "disabled" : "";
-    const isCertFromDSS = (signer && (signer.service || signer.dssUserID)) ? true : false;
+    const isSignCertFromDSS = (signer && (signer.service || signer.dssUserID)) ? true : false;
 
     let countAllFiles = 0;
     let countSignedFiles = 0;
@@ -329,7 +329,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   }
 
                   {
-                    setting.operations.encryption_operation && !isCertFromDSS ?
+                    setting.operations.encryption_operation && !isSignCertFromDSS ?
                       <React.Fragment>
                         <div className="col s10">
                           <div className="subtitle">Сертификаты шифрования</div>
@@ -492,7 +492,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               <React.Fragment>
                 <div className="col s12">
                   <a className={`btn btn-outlined waves-effect waves-light ${this.checkEnableMultiOperations() ? "" : "disabled"}`}
-                    onClick={isCertFromDSS ? this.handleClickSign : this.handleClickPerformOperations}
+                    onClick={setting.operations.signing_operation && isSignCertFromDSS ? this.handleClickSign : this.handleClickPerformOperations}
                     style={{ width: "100%" }}>
                     {localize("Common.perform", locale)}
                   </a>
