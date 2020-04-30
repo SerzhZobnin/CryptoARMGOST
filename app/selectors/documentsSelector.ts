@@ -2,7 +2,6 @@ import { createSelector } from "reselect";
 import {
   ALL, ENCRYPTED, SIGNED,
 } from "../constants";
-import documents from "app/reducer/documents";
 
 export const documentsGetter = (state) => state.documents.entities;
 export const filtersGetter = (state) => state.filters;
@@ -33,9 +32,5 @@ export const selectedDocumentsSelector = createSelector(entitiesSelector, select
   selection.map((uid: any) => entities.get(uid)),
 );
 export const selectedFiltredDocumentsSelector = createSelector (
-  selectedDocumentsSelector,
-  filteredDocumentsSelector ,
-
-    (selected, entities) =>
-    result:     ); 
-)
+  filteredDocumentsSelector, selectedDocumentsSelector,
+  (filters, selection) => selection.map((uid: any) => filters.get(selection)));
