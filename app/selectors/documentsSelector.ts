@@ -32,5 +32,6 @@ export const selectedDocumentsSelector = createSelector(entitiesSelector, select
   selection.map((uid: any) => entities.get(uid)),
 );
 export const selectedFiltredDocumentsSelector = createSelector (
-  filteredDocumentsSelector, selectedDocumentsSelector,
-  (filters, selection) => selection.map((uid: any) => filters.get(selection)));
+  filteredDocumentsSelector, selectionSelector, (filter, selection) =>
+   selection.filter((uid: any) => filter.get(uid) !== undefined)) ;
+

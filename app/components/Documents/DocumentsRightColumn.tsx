@@ -10,10 +10,11 @@ import {
 import {
   LOCATION_MAIN, REMOVE, SIGN,
 } from "../../constants";
-import { selectedDocumentsSelector, selectedFiltredDocumentsSelector, filteredDocumentsSelector } from "../../selectors/documentsSelector";
+import { selectedDocumentsSelector, selectedFiltredDocumentsSelector, filteredDocumentsSelector} from "../../selectors/documentsSelector";
 import { bytesToSize, mapToArr } from "../../utils";
 import FileIcon from "../Files/FileIcon";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
+
 
 interface IDocumentsWindowProps {
   documents: any;
@@ -209,12 +210,12 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
 
   handleClickSign = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { changeLocation, documents, filePackageSelect, my, filter } = this.props;
-    // filePackageSelect(selectedFiltredDocumentsSelector);
-    // changeLocation(LOCATION_MAIN);
-    console.log ("my", my);
-    console.log ("filtred", filter , typeof filter.mapToArr);
-    console.log ("docs", documents , typeof documents);
+    const { changeLocation, filtered, documents, filePackageSelect, activeDocumentsArr, my, filter } = this.props;
+    filePackageSelect(my);
+    changeLocation(LOCATION_MAIN);
+    console.log ("my", my, typeof my);
+    console.log (activeDocumentsArr, typeof activeDocumentsArr);
+    console.log (filtered, typeof filtered);
   }
 
   checkEnableOperationButton = (operation: string) => {
@@ -252,7 +253,7 @@ export default connect((state) => {
   });
 
   return {
-    filter: filteredDocumentsSelector (state),
+    filtered: filteredDocumentsSelector (state),
     my: selectedFiltredDocumentsSelector (state),
     activeDocumentsArr: selectedDocumentsSelector(state),
     documents: selectedDocumentsSelector(state),
