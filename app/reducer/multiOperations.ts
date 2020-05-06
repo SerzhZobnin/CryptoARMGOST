@@ -54,7 +54,7 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
 
       return lastOperationResults
         .update("files", (files) => files.merge(oMapPart))
-        .update("results", (results) => results.merge(List(payload.directResult.results)))
+        .update("results", (results) => results.concat(List(payload.directResult.results)))
         .update("entities", (entities) => arrayToMap(getFilesArray(oMapPart), FileModel).merge(entities));
 
     case MULTI_DIRECT_OPERATION + SUCCESS:
@@ -65,7 +65,7 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
         .set("performed", true)
         .set("status", payload.status)
         .update("files", (files) => files.merge(oMap))
-        .update("results", (results) => results.merge(List(payload.directResult.results)))
+        .update("results", (results) => results.concat(List(payload.directResult.results)))
         .update("entities", (entities) => arrayToMap(getFilesArray(oMap), FileModel).merge(entities));
 
     case MULTI_REVERSE_OPERATION + SUCCESS:
