@@ -1,4 +1,6 @@
+import * as chardet from "chardet";
 import * as fs from "fs";
+import * as il from "iconv-lite";
 import * as path from "path";
 import { push } from "react-router-redux";
 import * as unzipper from "unzipper";
@@ -104,12 +106,10 @@ export function multiDirectOperation(
       }
 
       if (signing_operation) {
-        const policies = ["noAttributes"];
+        const policies: string [] = [];
+
         if (setting.sign.detached) {
           policies.push("detached");
-        }
-        if (setting.sign.time) {
-          policies.splice(0, 1);
         }
 
         const params: ISignParams | null = {
@@ -620,7 +620,13 @@ async function uzipAndWriteSync(file: any, reverseFiles: any, packageResult: IPa
   const unzipedFiles = [];
 
   for (const fileInZip of directory.files) {
-    const fileName = fileInZip.path;
+    // if some legacy zip tool follow ZIP spec then this flag will be set
+    const isUnicode = fileInZip.isUnicode;
+
+    const encoding = chardet.detect(fileInZip.pathBuffer);
+
+    // decode "non-unicode" filename from OEM Cyrillic character set
+    const fileName = isUnicode ? fileInZip.path : il.decode(fileInZip.pathBuffer, encoding && encoding === "UTF-8" ? encoding : "cp866");
 
     try {
       await new Promise((resolve, reject) => fileInZip.stream()

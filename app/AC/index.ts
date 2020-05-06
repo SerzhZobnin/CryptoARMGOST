@@ -70,6 +70,124 @@ interface ISignParams {
   ocspModel: IOcspModel;
 }
 
+function gatherRemoteFileInfo(
+  file: IFile,
+  newPath: string,
+  urlActions: any,
+  upload: boolean
+) {
+  try {
+    if (!(urlActions && urlActions.action && urlActions.action.isDetachedSign) && !upload) {
+      fs.unlinkSync(file.fullpath);
+    }
+  } catch (e) {
+    //
+  }
+
+  if (upload) {
+    let cms = signs.loadSign(newPath);
+    if (cms.isDetached()) {
+      // tslint:disable-next-line:no-conditional-assignment
+      if (!(cms = signs.setDetachedContent(cms, newPath))) {
+        throw new Error(("err"));
+      }
+    }
+
+    const signatureInfo = signs.getSignPropertys(cms);
+
+    const normalyzeSignatureInfo: INormalizedSignInfo[] = [];
+
+    signatureInfo.forEach((info: any) => {
+      const subjectCert = info.certs[info.certs.length - 1];
+
+      let x509;
+
+      if (subjectCert.object) {
+        try {
+          let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
+
+          cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
+          cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
+          cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
+
+          x509 = cmsContext;
+        } catch (e) {
+          //
+        }
+      }
+
+      normalyzeSignatureInfo.push({
+        serialNumber: subjectCert.serial,
+        digestAlgorithm: subjectCert.signatureDigestAlgorithm,
+        issuerFriendlyName: subjectCert.issuerFriendlyName,
+        issuerName: subjectCert.issuerName,
+        notAfter: new Date(subjectCert.notAfter).getTime(),
+        notBefore: new Date(subjectCert.notBefore).getTime(),
+        organizationName: subjectCert.organizationName,
+        signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
+        subjectFriendlyName: info.subject,
+        subjectName: subjectCert.subjectName,
+        x509,
+      });
+    });
+
+    const extra = file.extra;
+
+    if (extra && extra.signType === "0" || extra.signType === "1") {
+      extra.signType = parseInt(extra.signType, 10);
+    }
+
+    return {
+      file: file,
+      newPath: newPath,
+      normalyzeSignatureInfo: normalyzeSignatureInfo
+    };
+  }
+}
+
+function uploadFiles(
+  remoteFilesToUpload: any[],
+  uploader: any,
+  urlActions: any
+) {
+  remoteFilesToUpload.forEach((uploadData: any) => {
+    const formData = {
+      extra: JSON.stringify(uploadData.file.extra),
+      file: fs.createReadStream(uploadData.newPath),
+      id: uploadData.file.remoteId,
+      signers: JSON.stringify(uploadData.normalyzeSignatureInfo),
+    };
+
+    window.request.post({
+      formData,
+      url: uploader,
+    }, (err: Error) => {
+      if (err) {
+        //
+      } else {
+        //
+
+        dispatch({
+          payload: { id: uploadData.file.id },
+          type: DELETE_FILE,
+        });
+      }
+
+      try {
+        fs.unlinkSync(uploadData.newPath);
+
+        if (urlActions && urlActions.action && urlActions.action.isDetachedSign) {
+          fs.unlinkSync(uploadData.file.fullpath);
+          fs.unlinkSync(uploadData.newPath.substring(0, uploadData.newPath.lastIndexOf(".")));
+        }
+      } catch (e) {
+        //
+      }
+    },
+    );
+  });
+}
+
 export function packageSign(
   files: IFile[],
   cert: trusted.pki.Certificate,
@@ -105,73 +223,9 @@ export function packageSign(
           }
 
           if (file.remoteId) {
-            try {
-              if (!(urlActions && urlActions.action && urlActions.action.isDetachedSign)) {
-                fs.unlinkSync(file.fullpath);
-              }
-            } catch (e) {
-              //
-            }
-
-            if (remoteFiles.uploader) {
-              let cms = signs.loadSign(newPath);
-
-              if (cms.isDetached()) {
-                // tslint:disable-next-line:no-conditional-assignment
-                if (!(cms = signs.setDetachedContent(cms, newPath))) {
-                  throw new Error(("err"));
-                }
-              }
-
-              const signatureInfo = signs.getSignPropertys(cms);
-
-              const normalyzeSignatureInfo: INormalizedSignInfo[] = [];
-
-              signatureInfo.forEach((info: any) => {
-                const subjectCert = info.certs[info.certs.length - 1];
-
-                let x509;
-
-                if (subjectCert.object) {
-                  try {
-                    let cmsContext = subjectCert.object.export(trusted.DataFormat.PEM).toString();
-
-                    cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
-                    cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
-                    cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
-
-                    x509 = cmsContext;
-                  } catch (e) {
-                    //
-                  }
-                }
-
-                normalyzeSignatureInfo.push({
-                  serialNumber: subjectCert.serial,
-                  digestAlgorithm: subjectCert.signatureDigestAlgorithm,
-                  issuerFriendlyName: subjectCert.issuerFriendlyName,
-                  issuerName: subjectCert.issuerName,
-                  notAfter: new Date(subjectCert.notAfter).getTime(),
-                  notBefore: new Date(subjectCert.notBefore).getTime(),
-                  organizationName: subjectCert.organizationName,
-                  signingTime: info.signingTime ? new Date(info.signingTime).getTime() : undefined,
-                  subjectFriendlyName: info.subject,
-                  subjectName: subjectCert.subjectName,
-                  x509,
-                });
-              });
-
-              const extra = file.extra;
-
-              if (extra && extra.signType === "0" || extra.signType === "1") {
-                extra.signType = parseInt(extra.signType, 10);
-              }
-
-              remoteFilesToUpload.push({
-                file: file,
-                newPath: newPath,
-                normalyzeSignatureInfo: normalyzeSignatureInfo
-              });
+            var result = gatherRemoteFileInfo(file, newPath, urlActions, remoteFiles.uploader !== null);
+            if (result) {
+              remoteFilesToUpload.push( result );
             }
           }
         } else {
@@ -191,42 +245,7 @@ export function packageSign(
           });
           return;
         } else {
-          remoteFilesToUpload.forEach((uploadData: any) => {
-            const formData = {
-              extra: JSON.stringify(uploadData.file.extra),
-              file: fs.createReadStream(uploadData.newPath),
-              id: uploadData.file.remoteId,
-              signers: JSON.stringify(uploadData.normalyzeSignatureInfo),
-            };
-
-            window.request.post({
-              formData,
-              url: remoteFiles.uploader,
-            }, (err: Error) => {
-              if (err) {
-                //
-              } else {
-                //
-
-                dispatch({
-                  payload: { id: uploadData.file.id },
-                  type: DELETE_FILE,
-                });
-              }
-
-              try {
-                fs.unlinkSync(uploadData.newPath);
-
-                if (urlActions && urlActions.action && urlActions.action.isDetachedSign) {
-                  fs.unlinkSync(uploadData.file.fullpath);
-                  fs.unlinkSync(uploadData.newPath.substring(0, uploadData.newPath.lastIndexOf(".")));
-                }
-              } catch (e) {
-                //
-              }
-            },
-            );
-          });
+          uploadFiles(remoteFilesToUpload, remoteFiles.uploader, urlActions);
         }
       }
 
@@ -241,7 +260,9 @@ export function packageSign(
           type: MULTI_DIRECT_OPERATION + SUCCESS,
         });
         dispatch(filePackageDelete(signedFileIdPackage));
-        dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
+        if (!remoteFiles.uploader) {
+          dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
+        }
       } else {
         dispatch(filePackageSelect(signedFilePackage));
         dispatch(filePackageDelete(signedFileIdPackage));
@@ -265,31 +286,42 @@ export function packageReSign(
     });
 
     let packageSignResult = true;
+    let remoteFilesToUpload: any[] = [];
 
     setTimeout(() => {
       const signedFilePackage: IFilePath[] = [];
       const signedFileIdPackage: string[] = [];
       const state = getState();
-      const { connections, remoteFiles } = state;
+      const { connections, remoteFiles, urlActions } = state;
       let i: number = 0;
 
       files.forEach((file) => {
         const newPath = folderOutDSS ? folderOutDSS[i] : signs.signFile(file.fullpath, cert, policies, null, format, folderOut);
         if (newPath) {
           signedFileIdPackage.push(file.id);
-          signedFilePackage.push({ fullpath: newPath });
-
+          if (!file.remoteId) {
+            signedFilePackage.push({ fullpath: newPath });
+          } else {
+            var result = gatherRemoteFileInfo(file, newPath, urlActions, remoteFiles.uploader !== null);
+            if (result) {
+              remoteFilesToUpload.push( result );
+            }
+          }
         } else {
           packageSignResult = false;
         }
         i++;
       });
 
-      if (remoteFiles.uploader && !packageSignResult) {
-        dispatch({
-          type: PACKAGE_SIGN + INTERRUPT,
-        });
-        return;
+      if (remoteFiles.uploader) {
+        if (!packageSignResult) {
+          dispatch({
+            type: PACKAGE_SIGN + INTERRUPT,
+          });
+          return;
+        } else {
+          uploadFiles(remoteFilesToUpload, remoteFiles.uploader, urlActions);
+        }
       }
 
       dispatch({
@@ -303,7 +335,9 @@ export function packageReSign(
           type: MULTI_DIRECT_OPERATION + SUCCESS,
         });
         dispatch(filePackageDelete(signedFileIdPackage));
-        dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
+        if (!remoteFiles.uploader) {
+          dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
+        }
       } else {
         dispatch(filePackageSelect(signedFilePackage));
         dispatch(filePackageDelete(signedFileIdPackage));

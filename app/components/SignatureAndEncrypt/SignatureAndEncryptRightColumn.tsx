@@ -185,7 +185,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     const disabledNavigate = this.isFilesFromSocket();
     const classDisabled = disabledNavigate ? "disabled" : "";
-    const isCertFromDSS = (signer && (signer.service || signer.dssUserID)) ? true : false;
+    const isSignCertFromDSS = (signer && (signer.service || signer.dssUserID)) ? true : false;
 
     let countAllFiles = 0;
     let countSignedFiles = 0;
@@ -329,7 +329,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   }
 
                   {
-                    setting.operations.encryption_operation && !isCertFromDSS ?
+                    setting.operations.encryption_operation && !isSignCertFromDSS ?
                       <React.Fragment>
                         <div className="col s10">
                           <div className="subtitle">Сертификаты шифрования</div>
@@ -492,7 +492,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               <React.Fragment>
                 <div className="col s12">
                   <a className={`btn btn-outlined waves-effect waves-light ${this.checkEnableMultiOperations() ? "" : "disabled"}`}
-                    onClick={isCertFromDSS ? this.handleClickSign : this.handleClickPerformOperations}
+                    onClick={setting.operations.signing_operation && isSignCertFromDSS ? this.handleClickSign : this.handleClickPerformOperations}
                     style={{ width: "100%" }}>
                     {localize("Common.perform", locale)}
                   </a>
@@ -922,7 +922,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (files.length > 0) {
-      const policies = ["noAttributes"];
+      const policies: string [] = [];
 
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
@@ -1146,10 +1146,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           policies.push("detached");
         }
 
-        if (setting.sign.time) {
-          policies.splice(0, 1);
-        }
-
         const signParams: ISignParams = {
           signModel: setting.sign.toJS(),
           tspModel: setting.tsp.toJS(),
@@ -1238,7 +1234,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (files.length > 0) {
-      const policies = ["noAttributes"];
+      const policies: string [] = [];
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
       if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
@@ -1490,9 +1486,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             );
         }
       } else {
-        if (setting.sign.time) {
-          policies.splice(0, 1);
-        }
+
 
         const signParams: ISignParams = {
           signModel: setting.sign.toJS(),
