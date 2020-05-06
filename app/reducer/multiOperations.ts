@@ -3,7 +3,7 @@ import {
   FAIL, MULTI_DIRECT_OPERATION, MULTI_REVERSE_OPERATION,
   SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_ARCHIVED_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_DOCUMENT_IN_OPERAIONS_RESULT,
   SELECT_ENCRYPTED_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_SIGNED_DOCUMENTS_IN_OPERAIONS_RESULT,
-  START, SUCCESS, UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
+  START, SUCCESS, PART_SUCCESS, UNSELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT,
   UNSELECT_DOCUMENT_IN_OPERAIONS_RESULT,
   VERIFY_LICENSE,
 } from "../constants";
@@ -48,6 +48,14 @@ export default (lastOperationResults = new DefaultReducerState(), action) => {
         .set("performing", true)
         .set("performed", false)
         .set("operations", OrderedMap(payload.operations));
+
+    case MULTI_DIRECT_OPERATION + PART_SUCCESS:
+      const oMapPart = OrderedMap(payload.directResult.files);
+
+      return lastOperationResults
+        .update("files", (files) => files.merge(oMapPart))
+        .update("results", (results) => results.merge(List(payload.directResult.results)))
+        .update("entities", (entities) => arrayToMap(getFilesArray(oMapPart), FileModel).merge(entities));
 
     case MULTI_DIRECT_OPERATION + SUCCESS:
       const oMap = OrderedMap(payload.directResult.files);

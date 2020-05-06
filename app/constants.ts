@@ -156,6 +156,7 @@ export const SUCCESS = "_SUCCESS";
 export const FAIL = "_FAIL";
 export const START = "_START";
 export const INTERRUPT = "_INTERRUPT";
+export const PART_SUCCESS = "_PART_SUCCESS";
 
 export const DER = "DER";
 export const BASE64 = "BASE-64";

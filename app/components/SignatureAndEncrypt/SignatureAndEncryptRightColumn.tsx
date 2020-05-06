@@ -893,15 +893,20 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         multiOperationStart(this.props.setting.operations);
       }
 
-      if (filesForSign && filesForSign.length) {
-        this.sign(filesForSign, cert);
-      }
+      if (filesForSign && filesForSign.length
+        && filesForResign && filesForResign.length) {
+        this.signAndCosignInDss(filesForSign, filesForResign, cert);
+      } else {
+        if (filesForSign && filesForSign.length) {
+          this.sign(filesForSign, cert);
+        }
 
-      if (filesForResign && filesForResign.length) {
-        this.resign(filesForResign, cert);
-      }
+        if (filesForResign && filesForResign.length) {
+          this.resign(filesForResign, cert);
+        }
 
-      this.setState({ pinCode: "" });
+        this.setState({ pinCode: "" });
+      }
     }
   }
 
@@ -1215,7 +1220,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     };
   }
 
-  resign = (files: IFile[], cert: any) => {
+  resign = (files: IFile[], cert: any, multipackage?: boolean = false) => {
     const { connections, connectedList, signer, tokensAuth, users, uploader, policyDSS } = this.props;
     let { setting } = this.props;
     // tslint:disable-next-line:no-shadowed-variable
@@ -1367,7 +1372,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                               };
                             });
                             directResult.files = directFiles;
-                            packageReSign(files, cert, policies, format, folderOut, outURIList, directResult);
+                            packageReSign(files, cert, policies, format, folderOut, outURIList, directResult, multipackage);
                           },
                           (error) => {
                             if (uploader) {
@@ -1471,7 +1476,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   };
                 });
                 directResult.files = directFiles;
-                packageReSign(files, cert, policies, format, folderOut, outURIList, directResult);
+                packageReSign(files, cert, policies, format, folderOut, outURIList, directResult, multipackage);
               },
               (error) => {
                 if (uploader) {
@@ -2070,6 +2075,295 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     return false;
+  }
+
+  signAndCosignInDss = (filesSign: IFile[], filesReSign: IFile[], cert: any) => {
+    const { signer, tokensAuth, users, policyDSS } = this.props;
+    let { setting } = this.props;
+    // tslint:disable-next-line:no-shadowed-variable
+    const { packageSign, createTransactionDSS, dssPerformOperation, operationRemoteAction, uploader } = this.props;
+    const { localize, locale } = this.context;
+    const { pinCode } = this.state;
+
+    const isSockets = this.isFilesFromSocket();
+
+    if (isSockets) {
+      setting = setting.set("outfolder", "");
+      setting = operationRemoteAction && operationRemoteAction.isDetachedSign ? setting.setIn(["sign", "detached"], true) : setting.setIn(["sign", "detached"], false);
+      setting = setting.setIn(["sign", "time"], true);
+    }
+
+    if (filesSign.length > 0) {
+      const policies: string [] = [];
+
+      const folderOut = setting.outfolder;
+      let format = trusted.DataFormat.PEM;
+      if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
+        format = trusted.DataFormat.DER;
+      }
+
+      if (folderOut.length > 0) {
+        if (!dirExists(folderOut)) {
+          $(".toast-failed_find_directory").remove();
+          Materialize.toast(localize("Settings.failed_find_directory", locale), 2000, "toast-failed_find_directory");
+
+          return;
+        }
+      }
+
+      if (signer.dssUserID) {
+        const user = users.get(signer.dssUserID);
+        const tokenAuth = tokensAuth.get(signer.dssUserID);
+        const isSignPackage = filesSign.length > 1;
+        const isReSignPackage = filesReSign.length > 1;
+        const policy = policyDSS.getIn([signer.dssUserID, "policy"]).filter(
+          (item: any) => item.Action === (isSignPackage ? "SignDocuments" : "SignDocument"));
+        const mfaRequired = policy[0].MfaRequired;
+
+        const documents: IDocumentContent[] = [];
+        const documentsId: string[] = [];
+        let originalData = "";
+        let OriginalContent: string;
+        const documentsResign: IDocumentContent[] = [];
+        const documentsResignId: string[] = [];
+
+        filesSign.forEach((file) => {
+          const Content = fs.readFileSync(file.fullpath, "base64");
+          const documentContent: IDocumentContent = {
+            Content,
+            Name: path.basename(file.fullpath),
+          };
+          documents.push(documentContent);
+          documentsId.push(file.id);
+        });
+
+        filesReSign.forEach((file) => {
+          const uri = file.fullpath;
+          let tempURI: string = "";
+          const sd: trusted.cms.SignedData = signs.loadSign(uri);
+          if (sd.isDetached()) {
+            tempURI = uri.substring(0, uri.lastIndexOf("."));
+            if (!fileExists(tempURI)) {
+              tempURI = dialog.showOpenDialogSync(null,
+                { title: localize("Sign.sign_content_file", window.locale) + path.basename(uri), properties: ["openFile"] });
+              if (tempURI) {
+                tempURI = tempURI[0];
+              }
+              if (!tempURI || !fileExists(tempURI)) {
+                $(".toast-verify_get_content_failed").remove();
+                Materialize.toast(localize("Sign.verify_get_content_failed", window.locale), 2000, "toast-verify_get_content_failed");
+                return;
+              }
+            }
+            if (tempURI && isSignPackage) {
+              OriginalContent = fs.readFileSync(tempURI, "base64");
+            } else {
+              originalData = fs.readFileSync(tempURI, "base64");
+            }
+          }
+          const Content = fs.readFileSync(uri, "base64");
+          const documentContent: IDocumentContent = {
+            Content,
+            Name: path.basename(file.fullpath),
+            OriginalContent,
+          };
+          documentsResign.push(documentContent);
+          documentsResignId.push(file.id);
+        });
+
+        if (mfaRequired) {
+          createTransactionDSS(user.dssUrl,
+            tokenAuth.access_token,
+            buildTransaction(documents, signer.dssCertID, setting.sign.detached,
+              isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument,
+              "sign", undefined, pinCode),
+            documentsId)
+            .then(
+              (data: any) => {
+                $(".toast-transaction_created_successful").remove();
+                Materialize.toast(localize("DSS.transaction_created_successful", locale), 3000, "toast-transaction_created_successful");
+
+                this.props.dssOperationConfirmation(
+                  user.authUrl.replace("/oauth", "/confirmation"),
+                  tokenAuth.access_token,
+                  data,
+                  user.id)
+                  .then(
+                    (data2) => {
+                      this.props.dssPerformOperation(
+                        user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
+                        data2.AccessToken, pinCode ? { "Signature": { "PinCode": pinCode } } : undefined)
+                        .then(
+                          (dataCMS: any) => {
+                            let i: number = 0;
+                            let outURIList: string[] = [];
+
+                            const directResult: any = {};
+                            directResult.results = [];
+                            directResult.operations = setting.operations.toJS();
+                            const directFiles: any = {};
+                            filesSign.forEach((file: any) => {
+                              directFiles[file.id] = { original: { ...file.toJS(), operation: 4 } };
+                            });
+
+                            filesSign.forEach((file) => {
+                              const outURI = fileNameForSign(folderOut, file);
+                              const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                              const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                              tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                              tcms.save(outURI, format);
+                              outURIList.push(outURI);
+                              i++;
+
+                              const newFileProps = this.getFileProps(outURI);
+                              directResult.results.push({
+                                id: Date.now() + Math.random(),
+                                in: {
+                                  ...file.toJS(),
+                                },
+                                operation: SIGNING_OPERATION,
+                                out: {
+                                  ...newFileProps,
+                                  operation: 3,
+                                },
+                                result: true,
+                              });
+
+                              directFiles[file.id] = {
+                                ...directFiles[file.id],
+                                signing_operation: {
+                                  out: {
+                                    ...newFileProps,
+                                    operation: 3,
+                                  },
+                                  result: true,
+                                },
+                              };
+                            });
+                            directResult.files = directFiles;
+                            packageSign(filesSign, cert, policies, null, format, folderOut, outURIList, directResult, true);
+                            this.resign(filesReSign, cert, true);
+                            this.setState({ pinCode: "" });
+                          },
+                          (error) => {
+                            if (uploader) {
+                              this.dispatchSignInterrupt();
+                            } else {
+                              this.dispatchSignInDssFail(filesSign, setting.operations.toJS());
+                            }
+
+                            $(".toast-dssPerformOperation_failed").remove();
+                            Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
+                            this.setState({ pinCode: "" });
+                          },
+                        );
+                    },
+                    (error) => {
+                      if (uploader) {
+                        this.dispatchSignInterrupt();
+                      } else {
+                        this.dispatchSignInDssFail(filesSign, setting.operations.toJS());
+                      }
+
+                      $(".toast-dssOperationConfirmation_failed").remove();
+                      Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
+                      this.setState({ pinCode: "" });
+                    },
+                  )
+                  .catch((error) => {
+                    if (uploader) {
+                      this.dispatchSignInterrupt();
+                    } else {
+                      this.dispatchSignInDssFail(filesSign, setting.operations.toJS());
+                    }
+
+                    $(".toast-dssOperationConfirmation_failed").remove();
+                    Materialize.toast(error, 3000, "toast-dssOperationConfirmation_failed");
+                    this.setState({ pinCode: "" });
+                  });
+              },
+              (error) => {
+                $(".toast-transaction_created_failed").remove();
+                Materialize.toast(localize("DSS.transaction_created_failed", locale), 3000, "toast-transaction_created_failed");
+
+                $(".toast-createTransactionDSS_failed").remove();
+                Materialize.toast(error, 3000, "toast-createTransactionDSS_failed");
+                this.setState({ pinCode: "" });
+              },
+            );
+        } else {
+          dssPerformOperation(
+            user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
+            tokenAuth.access_token,
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.dssCertID, setting.sign.detached, "sign", pinCode) :
+              buildDocumentDSS(filesSign[0].fullpath, signer.dssCertID, setting.sign.detached, "sign", undefined, pinCode))
+            .then(
+              (dataCMS) => {
+                let i: number = 0;
+                let outURIList: string[] = [];
+
+                const directResult: any = {};
+                directResult.results = [];
+                directResult.operations = setting.operations.toJS();
+                const directFiles: any = {};
+                filesSign.forEach((file: any) => {
+                  directFiles[file.id] = { original: { ...file.toJS(), operation: 4 } };
+                });
+
+                filesSign.forEach((file) => {
+                  const outURI = fileNameForSign(folderOut, file);
+                  const tcms: trusted.cms.SignedData = new trusted.cms.SignedData();
+                  const contextCMS = isSignPackage ? dataCMS.Results[i] : dataCMS;
+                  tcms.import(Buffer.from("-----BEGIN CMS-----" + "\n" + contextCMS + "\n" + "-----END CMS-----"), trusted.DataFormat.PEM);
+                  tcms.save(outURI, format);
+                  outURIList.push(outURI);
+                  i++;
+
+                  const newFileProps = this.getFileProps(outURI);
+                  directResult.results.push({
+                    id: Date.now() + Math.random(),
+                    in: {
+                      ...file.toJS(),
+                    },
+                    operation: SIGNING_OPERATION,
+                    out: {
+                      ...newFileProps,
+                      operation: 3,
+                    },
+                    result: true,
+                  });
+
+                  directFiles[file.id] = {
+                    ...directFiles[file.id],
+                    signing_operation: {
+                      out: {
+                        ...newFileProps,
+                        operation: 3,
+                      },
+                      result: true,
+                    },
+                  };
+                });
+                directResult.files = directFiles;
+                packageSign(filesSign, cert, policies, null, format, folderOut, outURIList, directResult, true);
+                this.resign(filesReSign, cert, true);
+                this.setState({ pinCode: "" });
+              },
+              (error) => {
+                if (uploader) {
+                  this.dispatchSignInterrupt();
+                } else {
+                  this.dispatchSignInDssFail(filesSign, setting.operations.toJS());
+                }
+
+                $(".toast-dssPerformOperation_failed").remove();
+                Materialize.toast(error, 3000, "toast-dssPerformOperation_failed");
+                this.setState({ pinCode: "" });
+              },
+            );
+        }
+      }
+    }
   }
 }
 

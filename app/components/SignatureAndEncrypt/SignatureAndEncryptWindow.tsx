@@ -92,10 +92,10 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   componentWillReceiveProps(nextProps: ISignatureAndEncryptWindowProps) {
     const { localize, locale } = this.context;
-    const { activeFilesArr, signatures } = this.props;
+    const { activeFilesArr, signatures, operationsPerforming } = this.props;
 
     if (activeFilesArr.length !== nextProps.activeFilesArr.length || signatures.length !== nextProps.signatures.length) {
-      if (nextProps.activeFilesArr && nextProps.activeFilesArr.length === 1) {
+      if (nextProps.activeFilesArr && nextProps.activeFilesArr.length === 1 && !nextProps.operationsPerforming) {
         if (nextProps.signatures && nextProps.signatures.length) {
           const file = nextProps.activeFilesArr[0];
 
