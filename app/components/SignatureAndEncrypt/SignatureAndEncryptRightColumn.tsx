@@ -2115,17 +2115,12 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         const user = users.get(signer.dssUserID);
         const tokenAuth = tokensAuth.get(signer.dssUserID);
         const isSignPackage = filesSign.length > 1;
-        const isReSignPackage = filesReSign.length > 1;
         const policy = policyDSS.getIn([signer.dssUserID, "policy"]).filter(
           (item: any) => item.Action === (isSignPackage ? "SignDocuments" : "SignDocument"));
         const mfaRequired = policy[0].MfaRequired;
 
         const documents: IDocumentContent[] = [];
         const documentsId: string[] = [];
-        let originalData = "";
-        let OriginalContent: string;
-        const documentsResign: IDocumentContent[] = [];
-        const documentsResignId: string[] = [];
 
         filesSign.forEach((file) => {
           const Content = fs.readFileSync(file.fullpath, "base64");
@@ -2135,40 +2130,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           };
           documents.push(documentContent);
           documentsId.push(file.id);
-        });
-
-        filesReSign.forEach((file) => {
-          const uri = file.fullpath;
-          let tempURI: string = "";
-          const sd: trusted.cms.SignedData = signs.loadSign(uri);
-          if (sd.isDetached()) {
-            tempURI = uri.substring(0, uri.lastIndexOf("."));
-            if (!fileExists(tempURI)) {
-              tempURI = dialog.showOpenDialogSync(null,
-                { title: localize("Sign.sign_content_file", window.locale) + path.basename(uri), properties: ["openFile"] });
-              if (tempURI) {
-                tempURI = tempURI[0];
-              }
-              if (!tempURI || !fileExists(tempURI)) {
-                $(".toast-verify_get_content_failed").remove();
-                Materialize.toast(localize("Sign.verify_get_content_failed", window.locale), 2000, "toast-verify_get_content_failed");
-                return;
-              }
-            }
-            if (tempURI && isSignPackage) {
-              OriginalContent = fs.readFileSync(tempURI, "base64");
-            } else {
-              originalData = fs.readFileSync(tempURI, "base64");
-            }
-          }
-          const Content = fs.readFileSync(uri, "base64");
-          const documentContent: IDocumentContent = {
-            Content,
-            Name: path.basename(file.fullpath),
-            OriginalContent,
-          };
-          documentsResign.push(documentContent);
-          documentsResignId.push(file.id);
         });
 
         if (mfaRequired) {
