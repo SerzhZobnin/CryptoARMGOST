@@ -210,12 +210,10 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
 
   handleClickSign = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { changeLocation, filtered, documents, filePackageSelect, activeDocumentsArr, my, filter } = this.props;
-    filePackageSelect(my);
+    const { changeLocation, filtredDocuments, filePackageSelect, my } = this.props;
+    const filtred = filtredDocuments.filter  (e => e !== undefined);
+    filePackageSelect(filtred);
     changeLocation(LOCATION_MAIN);
-    console.log ("my", my, typeof my);
-    console.log (activeDocumentsArr, typeof activeDocumentsArr);
-    console.log (filtered, typeof filtered);
   }
 
   checkEnableOperationButton = (operation: string) => {
@@ -253,8 +251,7 @@ export default connect((state) => {
   });
 
   return {
-    filtered: filteredDocumentsSelector (state),
-    my: selectedFiltredDocumentsSelector (state),
+    filtredDocuments: selectedFiltredDocumentsSelector (state),
     activeDocumentsArr: selectedDocumentsSelector(state),
     documents: selectedDocumentsSelector(state),
     documentsMap: state.documents.entities,
