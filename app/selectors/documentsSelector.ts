@@ -1,3 +1,4 @@
+import { notEqual } from "assert";
 import { createSelector } from "reselect";
 import {
   ALL, ENCRYPTED, SIGNED,
@@ -33,5 +34,4 @@ export const selectedDocumentsSelector = createSelector(entitiesSelector, select
 );
 export const selectedFiltredDocumentsSelector = createSelector (
   filteredDocumentsSelector, selectionSelector, (filter, selection) =>
-   selection.map((uid: any) => filter.get(uid)),
-   ) ;
+  filter.filter ((uid: any) => selection.indexOf (uid)));
