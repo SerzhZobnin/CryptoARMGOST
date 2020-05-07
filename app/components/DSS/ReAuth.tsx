@@ -25,6 +25,7 @@ interface IReAuthState {
   user: any;
   passwordUserDSS: any;
   isRememberPassword: boolean;
+  tryAuthWithoutPasswordEntering: boolean;
 }
 
 class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
@@ -42,6 +43,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       isRememberPassword: false,
       passwordUserDSS,
       user: props.users.get(props.dssUserID),
+      tryAuthWithoutPasswordEntering: true,
     });
   }
 
@@ -62,6 +64,8 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
     } catch (e) {
       //
     }
+
+    this.handleReady();
   }
 
   render() {
@@ -186,7 +190,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
 
   handleReady = () => {
     const { localize, locale } = this.context;
-    const { field_value, user, isRememberPassword, passwordUserDSS } = this.state;
+    const { field_value, user, isRememberPassword, passwordUserDSS, tryAuthWithoutPasswordEntering } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { dssAuthIssue, getPolicyDSS, onGetTokenAndPolicy, passwordDSS, rememberPasswordDSS, deletePasswordDSS } = this.props;
 
@@ -197,6 +201,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       password: field_value.password_dss,
       user: user.login,
     };
+
     dssAuthIssue(userDSS).then(
       (result: any) => {
         $(".toast-authorization_successful").remove();
@@ -224,13 +229,19 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
         );
       },
       (error) => {
-        $(".toast-authorization_failed").remove();
-        Materialize.toast(localize("DSS.authorization_failed", locale), 3000, "toast-authorization_failed");
+        if (tryAuthWithoutPasswordEntering) {
+          this.setState({
+            tryAuthWithoutPasswordEntering: false,
+          });
+        } else {
+          $(".toast-authorization_failed").remove();
+          Materialize.toast(localize("DSS.authorization_failed", locale), 3000, "toast-authorization_failed");
 
-        $(".toast-dssAuthIssue_failed").remove();
-        Materialize.toast(error.message, 2000, "toast-dssAuthIssue_failed");
+          $(".toast-dssAuthIssue_failed").remove();
+          Materialize.toast(error.message, 2000, "toast-dssAuthIssue_failed");
 
-        this.handleCancel();
+          this.handleCancel();
+        }
       },
     );
   }
