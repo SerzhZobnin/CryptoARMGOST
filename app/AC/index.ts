@@ -16,7 +16,7 @@ import {
   REMOVE_ALL_CERTIFICATES, REMOVE_ALL_CONTAINERS,
   REMOVE_ALL_FILES, REMOVE_ALL_REMOTE_FILES, SELECT_FILE,
   SELECT_SIGNER_CERTIFICATE, SELECT_TEMP_CONTENT_OF_SIGNED_FILES, START,
-  SUCCESS, INTERRUPT,
+  SUCCESS, INTERRUPT, PART_SUCCESS,
   TOGGLE_SAVE_TO_DOCUMENTS,
   VERIFY_CERTIFICATE,
   VERIFY_SIGNATURE,
@@ -197,6 +197,7 @@ export function packageSign(
   folderOut: string,
   folderOutDSS?: string[],
   multiResult?: any = null,
+  multipackage?: boolean = false,
 ) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     dispatch({
@@ -257,10 +258,11 @@ export function packageSign(
       if (multiResult) {
         dispatch({
           payload: { status: true, directResult: multiResult },
-          type: MULTI_DIRECT_OPERATION + SUCCESS,
+          type: MULTI_DIRECT_OPERATION + (multipackage ? PART_SUCCESS : SUCCESS),
         });
         dispatch(filePackageDelete(signedFileIdPackage));
-        if (!remoteFiles.uploader) {
+        console.log("multipackage: " + multipackage);
+        if (!remoteFiles.uploader && !multipackage) {
           dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
         }
       } else {
@@ -279,11 +281,14 @@ export function packageReSign(
   folderOut: string,
   folderOutDSS?: string[],
   multiResult?: any = null,
+  multipackage?: boolean = false,
 ) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
-    dispatch({
-      type: PACKAGE_SIGN + START,
-    });
+    if (!multipackage) {
+      dispatch({
+        type: PACKAGE_SIGN + START,
+      });
+    }
 
     let packageSignResult = true;
     let remoteFilesToUpload: any[] = [];
