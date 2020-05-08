@@ -36,8 +36,8 @@ export const selectedFiltredDocumentsSelector = createSelector (
   filteredDocumentsSelector, selectionSelector, (filter, selection) =>
   filter.filter ((entries: any) => {
     console.log (selection);
-    return selection.some ((selection) => {
-      return entries.id === selection;
+    return selection.some ((selectionFilter: any) => {
+      return entries.id === selectionFilter;
     });
    }));
     // var item = selection.item ;
