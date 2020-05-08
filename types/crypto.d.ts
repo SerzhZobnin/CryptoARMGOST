@@ -87,6 +87,8 @@ declare namespace native {
             getVersion(): number;
             getType(): number;
             getKeyUsage(): number;
+            getKeyUsageString(): string[];
+            getEnhancedKeyUsage(): string[];
             getSignatureAlgorithm(): string;
             getSignatureDigestAlgorithm(): string;
             getPublicKeyAlgorithm(): string;
@@ -104,6 +106,7 @@ declare namespace native {
             equals(cert: Certificate): boolean;
             duplicate(): Certificate;
             hash(digestName: string): Buffer;
+            view(): void;
         }
         class CertificateCollection {
             items(index: number): Certificate;
@@ -1234,16 +1237,6 @@ declare namespace trusted.utils {
 }
 declare namespace trusted.utils {
     /**
-     * Download file
-     *
-     * @param {string} url Url to remote file
-     * @param {string} path Path for save in local system
-     * @param {Function} done callback function
-     */
-    function download(url: string, path: string, done: (err: Error, url?: string, path?: string) => void): void;
-}
-declare namespace trusted.utils {
-    /**
      * JSON Web Token (JWT)
      * Uses only with CTGOSTCP
      *
@@ -1747,17 +1740,6 @@ declare namespace trusted.pki {
          */
         static import(buffer: Buffer, format?: DataFormat): Certificate;
         /**
-         * Download certificate
-         *
-         * @static
-         * @param {string[]} urls
-         * @param {string} pathForSave File path
-         * @param {Function} done callback
-         *
-         * @memberOf Certificate
-         */
-        static download(urls: string[], pathForSave: string, done: (err: Error, certificate: Certificate) => void): void;
-        /**
          * Creates an instance of Certificate.
          * @param {native.PKI.Certificate | native.PKI.CertificationRequest} [param]
          *
@@ -1788,13 +1770,29 @@ declare namespace trusted.pki {
         */
         serialNumber: string;
         /**
-         * Return KeyUsageFlags collection
+         * Return KeyUsageFlags bit mask
          *
          * @readonly
          * @type {number}
          * @memberOf Certificate
          */
         readonly keyUsage: number;
+        /**
+         * Return Key Usage Flags array
+         *
+         * @readonly
+         * @type {string[]}
+         * @memberOf Certificate
+         */
+        readonly keyUsageString: string[];
+        /**
+         * Return enhanced Key Usage values array
+         *
+         * @readonly
+         * @type {string[]}
+         * @memberOf Certificate
+         */
+        readonly enhancedKeyUsage: string[];
         /**
          * Return CN from issuer name
          *
@@ -2002,6 +2000,12 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         save(filename: string, format?: DataFormat): void;
+        /**
+         * Display certificate properties in native Windows dialog. Windows only.
+         *
+         * @memberOf Certificate
+         */
+        view(): void;
     }
 }
 declare namespace trusted.pki {
