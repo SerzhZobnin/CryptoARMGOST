@@ -34,4 +34,14 @@ export const selectedDocumentsSelector = createSelector(entitiesSelector, select
 );
 export const selectedFiltredDocumentsSelector = createSelector (
   filteredDocumentsSelector, selectionSelector, (filter, selection) =>
-  filter.filter ((uid: any) => selection.indexOf (uid)));
+  filter.filter ((entries: any) => {
+    console.log (selection);
+    return selection.some ((selection) => {
+      return entries.id === selection;
+    });
+   }));
+    // var item = selection.item ;
+    // console.log (selection.indexOf (entries)); console.log (selection.uid);
+    // console.log ("select", selection);
+    // for (item of selection){console.log (item); }
+    // return console.log ("df"); } ));
