@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { localizeAlgorithm } from "../../i18n/localize";
+import NameInfo from "./NameInfo";
 
 export interface IX509Certificate {
   format: string;
@@ -46,7 +47,7 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
       <div className="collection cert-info-list">
         <div className="collection-item certs-collection certificate-info">
           <div className="caption-text">{localize("Certificate.subject", locale)}</div>
-          <div className="collection-title selectable-text">{certificate.subjectFriendlyName}</div>
+          <NameInfo name={certificate.subjectName} />
         </div>
         <div className="collection-item certs-collection certificate-info">
           <div className="caption-text">{localize("Certificate.issuer_name", locale)}</div>
