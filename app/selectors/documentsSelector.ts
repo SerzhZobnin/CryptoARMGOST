@@ -35,7 +35,6 @@ export const selectedDocumentsSelector = createSelector(entitiesSelector, select
 export const selectedFiltredDocumentsSelector = createSelector (
   filteredDocumentsSelector, selectionSelector, (filter, selection) =>
   filter.filter ((entries: any) => {
-    console.log (selection);
     return selection.some ((selectionFilter: any) => {
       return entries.id === selectionFilter;
     });
