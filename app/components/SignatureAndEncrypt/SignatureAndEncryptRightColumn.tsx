@@ -1262,6 +1262,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         const policy = policyDSS.getIn([signer.dssUserID, "policy"]).filter(
           (item: any) => item.Action === (isSignPackage ? "SignDocuments" : "SignDocument"));
         const mfaRequired = policy[0].MfaRequired;
+        let signsIsDetached = false;
 
         let originalData = "";
         let OriginalContent: string;
@@ -1273,6 +1274,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           let tempURI: string = "";
           const sd: trusted.cms.SignedData = signs.loadSign(uri);
           if (sd.isDetached()) {
+            signsIsDetached = true;
             tempURI = uri.substring(0, uri.lastIndexOf("."));
             if (!fileExists(tempURI)) {
               tempURI = dialog.showOpenDialogSync(null,
@@ -1306,7 +1308,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           createTransactionDSS(user.dssUrl,
             tokenAuth.access_token,
             buildTransaction(
-              documents, signer.dssCertID, isSignPackage ? setting.sign.detached : (originalData !== ""),
+              documents, signer.dssCertID, isSignPackage ? signsIsDetached : (originalData !== ""),
               isSignPackage ? DSS_ACTIONS.SignDocuments : DSS_ACTIONS.SignDocument, "cosign", originalData, pinCode),
             documentsId)
             .then(
@@ -1426,7 +1428,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           this.props.dssPerformOperation(
             user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
             tokenAuth.access_token,
-            isSignPackage ? buildDocumentPackageDSS(documents, signer.dssCertID, setting.sign.detached, "cosign", pinCode) :
+            isSignPackage ? buildDocumentPackageDSS(documents, signer.dssCertID, signsIsDetached, "cosign", pinCode) :
               buildDocumentDSS(files[0].fullpath, signer.dssCertID, originalData !== "", "Cosign", originalData, pinCode))
             .then(
               (dataCMS: any) => {
