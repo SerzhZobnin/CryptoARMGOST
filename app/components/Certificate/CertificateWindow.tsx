@@ -1424,14 +1424,18 @@ class CertWindow extends React.Component<any, any> {
                     <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
                   </div>
 
-                  <div className="col s4 waves-effect waves-cryptoarm" onClick={this.viewCertificate}>
-                    <div className="col s12 svg_icon">
-                      <a data-position="bottom">
-                        <i className="material-icons certificate remove" />
-                      </a>
-                    </div>
-                    <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
-                  </div>
+                  {
+                    OS_TYPE === "Windows_NT" && certificate && certificate.category !== REQUEST ?
+                      <div className="col s4 waves-effect waves-cryptoarm" onClick={this.viewCertificate}>
+                        <div className="col s12 svg_icon">
+                          <a data-position="bottom">
+                            <i className="material-icons certificate import" />
+                          </a>
+                        </div>
+                        <div className="col s12 svg_icon_text">{localize("Common.open", locale)}</div>
+                      </div>
+                      : null
+                  }
 
                   {
                     certificate && certificate.category === REQUEST ?
@@ -1507,14 +1511,18 @@ class CertWindow extends React.Component<any, any> {
   }
 
   viewCertificate = async () => {
-    const { certificate} = this.state;
+    const { certificate } = this.state;
 
     if (certificate) {
-      const cert: trusted.pki.Certificate = window.PKISTORE.getPkiObject(certificate);
+      const x509: trusted.pki.Certificate = window.PKISTORE.getPkiObject(certificate);
 
-      cert.view();
+      if (x509) {
+        return new Promise((resolve, reject) => {
+          x509.view();
+          resolve();
+        });
+      }
     }
-
   }
 
   handleDeleteRequestCA = (requestId: string) => {
