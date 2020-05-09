@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { localizeAlgorithm } from "../../i18n/localize";
 import CertificateChainInfo from "../Certificate/CertificateChainInfo";
+import NameInfo from "../Certificate/NameInfo";
 import OcspInfo from "./OcspInfo";
 import { SignatureStandard } from "./SignatureStandardSelector";
 import TimestampInfo from "./TimestampInfo";
@@ -105,7 +106,7 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
               <div className="col s12">
                 <div className="collection">
                   <div className="collection-item certs-collection certificate-info">
-                    <div className="collection-title">{signerCert.subjectFriendlyName}</div>
+                    <NameInfo name={signerCert.subjectName} />
                     <div className="collection-info">{localize("Certificate.subject", locale)}</div>
                   </div>
 
