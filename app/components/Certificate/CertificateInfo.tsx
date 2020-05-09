@@ -54,10 +54,6 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
           <div className="collection-title selectable-text">{certificate.issuerFriendlyName}</div>
         </div>
         <div className="collection-item certs-collection certificate-info">
-          <div className="caption-text">{localize("Certificate.organization", locale)}</div>
-          <div className="collection-title selectable-text">{certificate.organizationName}</div>
-        </div>
-        <div className="collection-item certs-collection certificate-info">
           <div className="caption-text">{localize("Certificate.cert_valid", locale)}</div>
           <div className="collection-title selectable-text">{(new Date(certificate.notAfter)).toLocaleDateString(locale, {
             day: "numeric",
@@ -87,11 +83,36 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
           <div className="caption-text">{localize("Certificate.thumbprint", locale)}</div>
           <div className="collection-title selectable-text">{certificate.hash}</div>
         </div>
+        {this.getKeyUsage()}
         <div className="collection-item certs-collection certificate-info">
           <div className="caption-text">{localize("Certificate.priv_key", locale)}</div>
           <div className="collection-title selectable-text">{PRIV_KEY}</div>
         </div>
       </div>
     );
+  }
+
+  getKeyUsage = () => {
+    const { localize, locale } = this.context;
+    const { certificate } = this.props;
+
+    const x509: trusted.pki.Certificate = window.PKISTORE.getPkiObject(certificate);
+
+    if (x509) {
+      const keyUsageString = x509.keyUsageString;
+
+      if (keyUsageString && keyUsageString.length) {
+        return (
+          <div className="collection-item certs-collection certificate-info">
+            <div className="caption-text">{localize("Certificate.key_usage", locale)}</div>
+            <div className="collection-title selectable-text">{x509.keyUsageString.join(", ")}</div>
+          </div>
+        );
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 }
