@@ -26,6 +26,7 @@ import Modal from "../Modal";
 import ProgressBars from "../ProgressBars";
 
 const dialog = window.electron.remote.dialog;
+const OS_TYPE = os.type();
 
 class AddressBookWindow extends React.Component<any, any> {
   static contextTypes = {
@@ -142,6 +143,19 @@ class AddressBookWindow extends React.Component<any, any> {
                     </div>
                     <div className="col s12 svg_icon_text">{localize("Documents.docmenu_remove", locale)}</div>
                   </div>
+
+                  {
+                    OS_TYPE === "Windows_NT" && certificate && certificate.category !== REQUEST ?
+                      <div className="col s4 waves-effect waves-cryptoarm" onClick={this.viewCertificate}>
+                        <div className="col s12 svg_icon">
+                          <a data-position="bottom">
+                            <i className="material-icons certificate import" />
+                          </a>
+                        </div>
+                        <div className="col s12 svg_icon_text">{localize("Common.open", locale)}</div>
+                      </div>
+                      : null
+                  }
 
                   {
                     certificate && certificate.category === REQUEST ?
@@ -455,6 +469,21 @@ class AddressBookWindow extends React.Component<any, any> {
           onFail={() => this.handleCloseModalByType(MODAL_EXPORT_CERTIFICATE)} />
       </Modal>
     );
+  }
+
+  viewCertificate = async () => {
+    const { certificate } = this.state;
+
+    if (certificate) {
+      const x509: trusted.pki.Certificate = window.PKISTORE.getPkiObject(certificate);
+
+      if (x509) {
+        return new Promise((resolve, reject) => {
+          x509.view();
+          resolve();
+        });
+      }
+    }
   }
 
   handleSearchValueChange = (ev: any) => {

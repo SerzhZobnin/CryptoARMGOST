@@ -1425,6 +1425,19 @@ class CertWindow extends React.Component<any, any> {
                   </div>
 
                   {
+                    OS_TYPE === "Windows_NT" && certificate && certificate.category !== REQUEST ?
+                      <div className="col s4 waves-effect waves-cryptoarm" onClick={this.viewCertificate}>
+                        <div className="col s12 svg_icon">
+                          <a data-position="bottom">
+                            <i className="material-icons certificate import" />
+                          </a>
+                        </div>
+                        <div className="col s12 svg_icon_text">{localize("Common.open", locale)}</div>
+                      </div>
+                      : null
+                  }
+
+                  {
                     certificate && certificate.category === REQUEST ?
                       <div className="col s4 waves-effect waves-cryptoarm" onClick={this.handleOpenCSRFolder}>
                         <div className="col s12 svg_icon">
@@ -1495,6 +1508,21 @@ class CertWindow extends React.Component<any, any> {
         </div>
       </div>
     );
+  }
+
+  viewCertificate = async () => {
+    const { certificate } = this.state;
+
+    if (certificate) {
+      const x509: trusted.pki.Certificate = window.PKISTORE.getPkiObject(certificate);
+
+      if (x509) {
+        return new Promise((resolve, reject) => {
+          x509.view();
+          resolve();
+        });
+      }
+    }
   }
 
   handleDeleteRequestCA = (requestId: string) => {

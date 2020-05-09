@@ -17,6 +17,7 @@ export const CertificateModel = Record({
   issuerFriendlyName: null,
   issuerName: null,
   key: null,
+  keyUsageString: null,
   notAfter: null,
   notBefore: null,
   organizationName: null,
