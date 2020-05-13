@@ -84,17 +84,18 @@ export default (documents = new DefaultReducerState(), action) => {
 
     case UNSELECT_DOCUMENT:
       return documents.update("selected", (selected) => selected.remove(payload.uid));
-    case SELECT_ALL_DOCUMENTS:
-      const allDocumentsId: number[] = [];
 
-      documents.entities.map((item: any) => allDocumentsId.push(item.id));
+      case SELECT_ALL_DOCUMENTS:
+        const allDocumentsId: number[] = [];
 
-      return documents.set("selected", new OrderedSet(allDocumentsId));
+        documents.entities.map((item: any) => allDocumentsId.push(item.id));
 
-    case UNSELECT_ALL_DOCUMENTS:
-      return documents.set("selected", new OrderedSet([]));
+        return documents.set("selected", new OrderedSet(allDocumentsId));
 
-  }
+      case UNSELECT_ALL_DOCUMENTS:
+        return documents.set("selected", new OrderedSet([]));
 
-  return documents;
-};
+    }
+
+    return documents;
+  };
