@@ -6,7 +6,7 @@ import {
   activeFile, filePackageDelete, filePackageSelect, removeAllRemoteFiles,
 } from "../../AC";
 import { deleteAllTemporyLicenses } from "../../AC/licenseActions";
-import { activeFilesSelector, connectedSelector, filesInTransactionsSelector,filteredFilesSelector,  loadingRemoteFilesSelector } from "../../selectors";
+import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector, filteredFilesSelector } from "../../selectors";
 import { CANCELLED, ERROR, SIGN, SIGNED, UPLOADED } from "../../server/constants";
 import { mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
@@ -25,7 +25,6 @@ interface ISignatureAndEncryptWindowProps {
   deleteAllTemporyLicenses: () => void;
   loadingFiles: any;
   files: any;
-  filesMap: any;
   method: string;
   operationsPerformed: boolean;
   operationsPerforming: boolean;
@@ -234,10 +233,9 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   selectedAll = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { activeFile, filesMap } = this.props;
-    console.log (filesMap);
+    const { filesMap, activeFile } = this.props;
+
     for (const file of filesMap) {
-      console.log (file);
       activeFile(file);
     }
   }
