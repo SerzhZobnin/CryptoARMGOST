@@ -337,7 +337,7 @@ export function packageReSign(
       if (multiResult) {
         dispatch({
           payload: { status: true, directResult: multiResult },
-          type: MULTI_DIRECT_OPERATION + SUCCESS,
+          type: MULTI_DIRECT_OPERATION + (doNotFinalizeOperation ? PART_SUCCESS : SUCCESS),
         });
         dispatch(filePackageDelete(signedFileIdPackage));
         if (!remoteFiles.uploader && !doNotFinalizeOperation) {
