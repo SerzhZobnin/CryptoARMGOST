@@ -282,7 +282,8 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
   handleSelectAllDocuments = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { selectAllDocuments, documentsPackageSelect } = this.props;
-    documentsPackageSelect();
+    console.log ("tut SELECT_ALL_DOCUMENTS");
+    selectAllDocuments();
   }
 
   handleUnselectAllDocuments = () => {

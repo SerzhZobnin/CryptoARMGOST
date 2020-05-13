@@ -235,8 +235,9 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
   selectedAll = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { activeFile, filesMap } = this.props;
-
+    console.log (filesMap);
     for (const file of filesMap) {
+      console.log (file);
       activeFile(file);
     }
   }

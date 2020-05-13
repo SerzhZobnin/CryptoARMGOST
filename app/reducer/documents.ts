@@ -64,12 +64,18 @@ export default (documents = new DefaultReducerState(), action) => {
     case ARHIVE_DOCUMENTS:
       return documents = new DefaultReducerState();
 
-    case DOCUMENTS_PACKAGE_SELECT:
-        return documents.update("selected", (selected) => selected.has(payload.uid)
-          ? selected.remove(payload.uid)
-          : selected.add(payload.uid),
-        );
-        
+      case DOCUMENTS_PACKAGE_SELECT + START:
+        return files
+          .set("selectedFilesPackage", false)
+          .set("selectingFilesPackage", true)
+          .set("documentsReviewed", false);
+
+      case DOCUMENTS_PACKAGE_SELECT + SUCCESS:
+        return files
+          .update("entities", (entities) => arrayToMap(payload.filePackage, FileModel).merge(entities))
+          .set("selectedFilesPackage", true)
+          .set("selectingFilesPackage", false);
+
     case SELECT_DOCUMENT:
       return documents.update("selected", (selected) => selected.has(payload.uid)
         ? selected.remove(payload.uid)
@@ -78,7 +84,7 @@ export default (documents = new DefaultReducerState(), action) => {
 
     case UNSELECT_DOCUMENT:
       return documents.update("selected", (selected) => selected.remove(payload.uid));
-
+    case SELECT_ALL_DOCUMENTS:
       const allDocumentsId: number[] = [];
 
       documents.entities.map((item: any) => allDocumentsId.push(item.id));

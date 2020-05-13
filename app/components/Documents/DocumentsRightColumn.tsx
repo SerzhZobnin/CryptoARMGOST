@@ -210,7 +210,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
   handleClickSign = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { changeLocation, filtredDocuments} = this.props;
-    documentsPackageSelect(filtredDocuments);
+    console.log (filtredDocuments);
+    filePackageSelect(filtredDocuments);
     changeLocation(LOCATION_MAIN);
   }
 
