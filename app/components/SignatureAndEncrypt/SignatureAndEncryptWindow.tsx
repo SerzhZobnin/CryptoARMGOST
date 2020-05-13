@@ -6,7 +6,7 @@ import {
   activeFile, filePackageDelete, filePackageSelect, removeAllRemoteFiles,
 } from "../../AC";
 import { deleteAllTemporyLicenses } from "../../AC/licenseActions";
-import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
+import { activeFilesSelector, connectedSelector, filesInTransactionsSelector,filteredFilesSelector,  loadingRemoteFilesSelector } from "../../selectors";
 import { CANCELLED, ERROR, SIGN, SIGNED, UPLOADED } from "../../server/constants";
 import { mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
@@ -25,6 +25,7 @@ interface ISignatureAndEncryptWindowProps {
   deleteAllTemporyLicenses: () => void;
   loadingFiles: any;
   files: any;
+  filesMap: any;
   method: string;
   operationsPerformed: boolean;
   operationsPerforming: boolean;
@@ -233,10 +234,10 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   selectedAll = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { files, activeFile } = this.props;
+    const { activeFile, filesMap } = this.props;
 
-    for (const file of files) {
-      activeFile(file.id);
+    for (const file of filesMap) {
+      activeFile(file);
     }
   }
 
@@ -336,6 +337,7 @@ export default connect((state) => {
     connections: state.connections,
     files: mapToArr(state.files.entities),
     filesInTransactionList: filesInTransactionsSelector(state),
+    filesMap: filteredFilesSelector (state),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     method: state.remoteFiles.method,
