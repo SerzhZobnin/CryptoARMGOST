@@ -212,7 +212,7 @@ export function documentsPackageSelect(files: IFilePath[]) {
 
         dispatch({
           payload: { filePackage },
-          type: PACKAGE_SELECT_FILE + SUCCESS,
+          type: DOCUMENTS_PACKAGE_SELECT + SUCCESS,
         });
       }, 0);
     };

@@ -69,6 +69,7 @@ export default (documents = new DefaultReducerState(), action) => {
           ? selected.remove(payload.uid)
           : selected.add(payload.uid),
         );
+        
     case SELECT_DOCUMENT:
       return documents.update("selected", (selected) => selected.has(payload.uid)
         ? selected.remove(payload.uid)
