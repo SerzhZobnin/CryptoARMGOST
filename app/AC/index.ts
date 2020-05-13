@@ -261,7 +261,6 @@ export function packageSign(
           type: MULTI_DIRECT_OPERATION + (multipackage ? PART_SUCCESS : SUCCESS),
         });
         dispatch(filePackageDelete(signedFileIdPackage));
-        console.log("multipackage: " + multipackage);
         if (!remoteFiles.uploader && !multipackage) {
           dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
         }
@@ -282,6 +281,7 @@ export function packageReSign(
   folderOutDSS?: string[],
   multiResult?: any = null,
   multipackage?: boolean = false,
+  doNotFinalizeOperation?: boolean = false,
 ) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     if (!multipackage) {
@@ -337,10 +337,10 @@ export function packageReSign(
       if (multiResult) {
         dispatch({
           payload: { status: true, directResult: multiResult },
-          type: MULTI_DIRECT_OPERATION + SUCCESS,
+          type: MULTI_DIRECT_OPERATION + (doNotFinalizeOperation ? PART_SUCCESS : SUCCESS),
         });
         dispatch(filePackageDelete(signedFileIdPackage));
-        if (!remoteFiles.uploader) {
+        if (!remoteFiles.uploader && !doNotFinalizeOperation) {
           dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
         }
       } else {
