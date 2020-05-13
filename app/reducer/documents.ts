@@ -3,7 +3,7 @@ import { OrderedMap, OrderedSet, Record } from "immutable";
 import {
   ADD_DOCUMENTS, ARHIVE_DOCUMENTS, LOAD_ALL_DOCUMENTS, PACKAGE_DELETE_DOCUMENTS,
   REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS, SELECT_ALL_DOCUMENTS,
-  SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, UNSELECT_DOCUMENT,
+  SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, UNSELECT_DOCUMENT, DOCUMENTS_PACKAGE_SELECT,
 } from "../constants";
 import { arrayToMap, fileExists } from "../utils";
 
@@ -64,6 +64,11 @@ export default (documents = new DefaultReducerState(), action) => {
     case ARHIVE_DOCUMENTS:
       return documents = new DefaultReducerState();
 
+    case DOCUMENTS_PACKAGE_SELECT:
+        return documents.update("selected", (selected) => selected.has(payload.uid)
+          ? selected.remove(payload.uid)
+          : selected.add(payload.uid),
+        );
     case SELECT_DOCUMENT:
       return documents.update("selected", (selected) => selected.has(payload.uid)
         ? selected.remove(payload.uid)
@@ -73,7 +78,6 @@ export default (documents = new DefaultReducerState(), action) => {
     case UNSELECT_DOCUMENT:
       return documents.update("selected", (selected) => selected.remove(payload.uid));
 
-    case SELECT_ALL_DOCUMENTS:
       const allDocumentsId: number[] = [];
 
       documents.entities.map((item: any) => allDocumentsId.push(item.id));
