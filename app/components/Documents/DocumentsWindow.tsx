@@ -6,7 +6,7 @@ import {
 } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import {
-  arhiveDocuments, loadAllDocuments, removeAllDocuments,
+  arhiveDocuments, documentsPackageSelect, loadAllDocuments, removeAllDocuments,
   removeDocuments, selectAllDocuments, unselectAllDocuments,
 } from "../../AC/documentsActions";
 import {
@@ -281,9 +281,9 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
   handleSelectAllDocuments = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { selectAllDocuments } = this.props;
-
-    selectAllDocuments();
+    const { selectAllDocuments, documentsPackageSelect } = this.props;
+    console.log (" tut vizoxv selecta");
+    documentsPackageSelect();
   }
 
   handleUnselectAllDocuments = () => {
@@ -318,7 +318,7 @@ export default connect((state) => {
     signedPackage: state.signatures.signedPackage,
   };
 }, {
-  arhiveDocuments, deleteRecipient, documentsReviewed,
+  arhiveDocuments, deleteRecipient, documentsPackageSelect, documentsReviewed,
   packageSign, loadAllDocuments,
   removeAllDocuments, removeDocuments,
   selectAllDocuments, selectSignerCertificate, unselectAllDocuments,

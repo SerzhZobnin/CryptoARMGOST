@@ -5,7 +5,7 @@ import {
   changeLocation, deleteRecipient, filePackageSelect, selectSignerCertificate,
 } from "../../AC";
 import {
-  unselectAllDocuments,
+  unselectAllDocuments, documentsPackageSelect,
 } from "../../AC/documentsActions";
 import {
   LOCATION_MAIN, REMOVE, SIGN,
@@ -210,7 +210,7 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
   handleClickSign = () => {
     // tslint:disable-next-line:no-shadowed-variable
     const { changeLocation, filtredDocuments, filePackageSelect } = this.props;
-    filePackageSelect(filtredDocuments);
+    documentsPackageSelect(filtredDocuments);
     changeLocation(LOCATION_MAIN);
   }
 

@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import {
-  ADD_DOCUMENTS, ARHIVE_DOCUMENTS, DEFAULT_DOCUMENTS_PATH, DOCUMENTS_REVIEWED,
+  ADD_DOCUMENTS, ARHIVE_DOCUMENTS, DEFAULT_DOCUMENTS_PATH, DOCUMENTS_REVIEWED, DOCUMENTS_PACKAGE_SELECT,
   FAIL, LOAD_ALL_DOCUMENTS,
   REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS, SELECT_ALL_DOCUMENTS,
   SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, UNSELECT_DOCUMENT, VERIFY_SIGNATURE,
@@ -179,3 +179,41 @@ export function documentsReviewed(reviewed: boolean) {
     type: DOCUMENTS_REVIEWED,
   };
 }
+
+export function documentsPackageSelect(files: IFilePath[]) {
+    return (dispatch: (action: {}) => void) => {
+      dispatch({
+        type: DOCUMENTS_PACKAGE_SELECT + START,
+      });
+
+      setTimeout(() => {
+        const filePackage: IFile[] = [];
+
+        files.forEach((file: IFilePath) => {
+          const { fullpath, extra, remoteId } = file;
+          const stat = fs.statSync(fullpath);
+          const extension = extFile(fullpath);
+
+          const fileProps = {
+            active: true,
+            extension,
+            extra,
+            filename: path.basename(fullpath),
+            filesize: stat.size,
+            fullpath,
+            id: md5(fullpath),
+            mtime: stat.birthtime,
+            remoteId,
+            size: stat.size,
+          };
+
+          filePackage.push(fileProps);
+        });
+
+        dispatch({
+          payload: { filePackage },
+          type: PACKAGE_SELECT_FILE + SUCCESS,
+        });
+      }, 0);
+    };
+  }
