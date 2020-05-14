@@ -51,6 +51,7 @@ interface ICertificateRequestState {
   exportableKey: boolean;
   extKeyUsage: IExtendedKeyUsage;
   formVerified: boolean;
+  filedChanged: boolean;
   inn?: string;
   keyLength: number;
   keyUsage: IKeyUsage;
@@ -104,6 +105,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
         "1.3.6.1.5.5.7.3.4": true,
       },
       formVerified: false,
+      filedChanged: false,
       inn: template.inn,
       keyLength: 1024,
       keyUsage: {
@@ -135,6 +137,12 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const self = this;
     const slider = document.getElementById("key-length-slider");
 
+    if (this.verifyFields() === true) {
+      this.setState({ disabled: true });
+    } else {
+      this.setState({ disabled: false });
+    }
+
     if (slider) {
       if (slider.noUiSlider) {
         slider.noUiSlider.destroy();
@@ -165,6 +173,16 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const self = this;
     const slider = document.getElementById("key-length-slider");
 
+    if  (this.state.filedChanged) {
+      if (this.verifyFields() === true) {
+        this.setState({ disabled: true });
+        this.setState ( {filedChanged: false});
+      } else {
+        this.setState({ disabled: false });
+        this.setState ( {filedChanged: false});
+      }
+    }
+
     if (slider && !slider.noUiSlider) {
       noUiSlider.create(slider, {
         format: wNumb({
@@ -193,7 +211,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
   render() {
     const { localize, locale } = this.context;
-    const classDisabled = this.verifyFields() ? "" : "disabled";
+    const classDisabled = this.state.disabled ? "" : "disabled";
 
     const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, keyUsageGroup, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
@@ -349,7 +367,6 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
     const { licenseStatus, lic_error } = this.props;
-
 
     const exts =
       new trusted.pki.ExtensionCollection();
@@ -713,6 +730,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
   handleTemplateChange = (ev: any) => {
     this.setState({ template: ev.target.value });
+    this.setState({filedChanged: true });
   }
 
   handleAlgorithmChange = (ev: any) => {
@@ -727,12 +745,6 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const name = target.name;
     const value = ev.target.value;
 
-    if (this.verifyFields() === true) {
-      this.setState({ disabled: true });
-    } else {
-      this.setState({ disabled: false });
-    }
-
     if (name === "containerName") {
       if (pattern.test(value || !value)) {
         this.setState({ [name]: value });
@@ -743,7 +755,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
       return;
     }
-
+    this.setState ({filedChanged: true});
     this.setState({ [name]: value });
 
   }
