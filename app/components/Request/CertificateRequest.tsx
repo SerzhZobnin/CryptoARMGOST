@@ -193,7 +193,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
 
   render() {
     const { localize, locale } = this.context;
-    const classDisabled = this.state.disabled ? "" : "disabled";
+    const classDisabled = this.verifyFields() ? "" : "disabled";
 
     const { activeSubjectNameInfoTab, algorithm, cn, containerName, country, formVerified, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, keyUsageGroup, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;

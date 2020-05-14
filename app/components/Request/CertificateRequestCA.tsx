@@ -54,6 +54,7 @@ interface ICertificateRequestCAState {
   caTemplate: any;
   caTemplatesArray: any[];
   containerName: string;
+  disabled: boolean;
   exportableKey: boolean;
   extKeyUsage: IExtendedKeyUsage;
   formVerified: boolean;
@@ -100,6 +101,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       addService: false,
       caTemplate: "",
       caTemplatesArray: [],
+      disabled: false,
       OpenButton: false,
       activeSubjectNameInfoTab: true,
       algorithm: ALG_GOST12_256,
@@ -169,6 +171,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       exportableKey, extKeyUsage, keyLength, keyUsage, keyUsageGroup,
       template, templateName, activeService, OpenButton, RDNsubject } = this.state;
     const { certificates, certrequests, regrequests, services, servicesMap, templates } = this.props;
+    const classDisabled = this.verifyFields() ? "" : "disabled";
 
     let regRequest;
     let certrequest;
@@ -355,7 +358,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                 <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
               </div>
               <div style={{ display: "inline-block", margin: "10px" }}>
-                <a className={`btn btn-outlined waves-effect waves-light ${disabled} `} onClick={() => { this.funcOpenButton() }}>{localize("Common.ready", locale)}</a>
+                <a className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}onClick={() => { this.funcOpenButton()}}>{localize("Common.ready", locale)}</a>
               </div>
             </div>
           </div>
