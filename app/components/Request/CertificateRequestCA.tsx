@@ -54,8 +54,10 @@ interface ICertificateRequestCAState {
   caTemplate: any;
   caTemplatesArray: any[];
   containerName: string;
+  disabled: boolean;
   exportableKey: boolean;
   extKeyUsage: IExtendedKeyUsage;
+  filedChanged: boolean;
   formVerified: boolean;
   keyLength: number;
   keyUsage: IKeyUsage;
@@ -100,6 +102,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       addService: false,
       caTemplate: "",
       caTemplatesArray: [],
+      disabled: true,
       OpenButton: false,
       activeSubjectNameInfoTab: true,
       algorithm: ALG_GOST12_256,
@@ -112,6 +115,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
         "1.3.6.1.5.5.7.3.4": true,
       },
       formVerified: false,
+      filedChanged: false,
       keyLength: 1024,
       keyUsage: {
         cRLSign: false,
@@ -151,7 +155,17 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     $(ReactDOM.findDOMNode(this.refs.templateSelect)).on("change", this.handleTemplateChange);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
+
+    if  ( !prevState.filedChanged && this.state.filedChanged) {
+      if (this.verifyFields() === true) {
+        this.setState({ disabled: true });
+      } else {
+        this.setState({ disabled: false });
+      }
+      this.setState ( {filedChanged: false});
+    }
+
     $(document).ready(() => {
       $("select").material_select();
     });
@@ -169,6 +183,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       exportableKey, extKeyUsage, keyLength, keyUsage, keyUsageGroup,
       template, templateName, activeService, OpenButton, RDNsubject } = this.state;
     const { certificates, certrequests, regrequests, services, servicesMap, templates } = this.props;
+    const classDisabled = this.state.disabled ? "" : "disabled";
 
     let regRequest;
     let certrequest;
@@ -202,6 +217,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
     if (OpenButton === true) {
       return (
+
         <React.Fragment>
           <div className="modal-body">
             <div className="row nobottom">
@@ -258,7 +274,9 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                     <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
                   </div>
                   <div style={{ display: "inline-block", margin: "10px" }}>
-                    <a className="btn btn-outlined waves-effect waves-light " onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
+                  <a
+                    className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}
+                    onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
                   </div>
                 </div>
               </div>
@@ -355,7 +373,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                 <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
               </div>
               <div style={{ display: "inline-block", margin: "10px" }}>
-                <a className={`btn btn-outlined waves-effect waves-light ${disabled} `} onClick={() => { this.funcOpenButton() }}>{localize("Common.ready", locale)}</a>
+                <a className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}onClick={() => { this.funcOpenButton()}}>{localize("Common.ready", locale)}</a>
               </div>
             </div>
           </div>
@@ -366,7 +384,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   onSubjectChange = (model: any) => {
-    this.setState({ RDNsubject: { ...model } });
+    this.setState({ RDNsubject: { ...model }, filedChanged: true });
   }
 
   activeItemChose = (service: any) => {
@@ -712,7 +730,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const { templates } = this.props;
     const name = ev.target.value;
 
-    this.setState({ templateName: name, template: templates.find((item: any) => item.FriendlyName === name) });
+    this.setState({ filedChanged: true, templateName: name, template: templates.find((item: any) => item.FriendlyName === name) });
   }
 
   handleAlgorithmChange = (ev: any) => {
@@ -720,7 +738,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   handleCATemplateChange = (ev: any) => {
-    this.setState({ caTemplate: ev.target.value });
+    this.setState({ caTemplate: ev.target.value, filedChanged: true});
   }
 
   handleInputChange = (ev: any) => {
@@ -741,8 +759,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
       return;
     }
-
-    this.setState({ [name]: value });
+    this.setState({ [name]: value, filedChanged: true });
   }
 
   handleKeyUsageChange = (ev: any) => {
