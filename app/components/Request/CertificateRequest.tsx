@@ -169,11 +169,11 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps , prevState) {
     const self = this;
     const slider = document.getElementById("key-length-slider");
 
-    if  (prevState.filedChanged !== this.state.filedChanged) {
+    if  (!prevState.filedChanged && this.state.filedChanged) {
       if (this.verifyFields() === true) {
         this.setState({ disabled: true });
       } else {

@@ -115,7 +115,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
         "1.3.6.1.5.5.7.3.4": true,
       },
       formVerified: false,
-      filedChanged: true,
+      filedChanged: false,
       keyLength: 1024,
       keyUsage: {
         cRLSign: false,
@@ -155,9 +155,9 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     $(ReactDOM.findDOMNode(this.refs.templateSelect)).on("change", this.handleTemplateChange);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
 
-    if  ( this.state.filedChanged === true) {
+    if  ( !prevState.filedChanged && this.state.filedChanged) {
       if (this.verifyFields() === true) {
         this.setState({ disabled: true });
       } else {
@@ -486,7 +486,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   handleChangeActiveTab = (activeSubjectNameInfoTab: boolean) => {
-    this.setState({ activeSubjectNameInfoTab, filedChanged: true });
+    this.setState({ activeSubjectNameInfoTab });
   }
 
   handelReady = () => {
@@ -759,8 +759,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
       return;
     }
-    this.setState ({filedChanged: true});
-    this.setState({ [name]: value });
+    this.setState({ [name]: value, filedChanged: true });
   }
 
   handleKeyUsageChange = (ev: any) => {
