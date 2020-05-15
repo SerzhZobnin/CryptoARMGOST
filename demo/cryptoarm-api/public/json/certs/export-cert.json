@@ -1,0 +1,11 @@
+{
+    "jsonrpc":"2.0",
+    "result": {
+        "operation": "export",
+        "props": {
+            "store": ["MY"],
+            "multy": false
+        }
+    },
+    "id": "70505a39-3267-4c0f-99a9-02d43165f4f3"
+}
