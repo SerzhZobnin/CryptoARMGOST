@@ -57,6 +57,7 @@ interface ICertificateRequestCAState {
   disabled: boolean;
   exportableKey: boolean;
   extKeyUsage: IExtendedKeyUsage;
+  filedChanged: boolean;
   formVerified: boolean;
   keyLength: number;
   keyUsage: IKeyUsage;
@@ -153,7 +154,17 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     $(ReactDOM.findDOMNode(this.refs.templateSelect)).on("change", this.handleTemplateChange);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
+
+    if  (prevState.filedChanged !== this.state.filedChanged) {
+      if (this.verifyFields() === true) {
+        this.setState({ disabled: true });
+      } else {
+        this.setState({ disabled: false });
+      }
+      this.setState ( {filedChanged: false});
+    }
+
     $(document).ready(() => {
       $("select").material_select();
     });
@@ -171,7 +182,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       exportableKey, extKeyUsage, keyLength, keyUsage, keyUsageGroup,
       template, templateName, activeService, OpenButton, RDNsubject } = this.state;
     const { certificates, certrequests, regrequests, services, servicesMap, templates } = this.props;
-    const classDisabled = this.verifyFields() ? "" : "disabled";
+    const classDisabled = this.state.disabled ? "" : "disabled";
 
     let regRequest;
     let certrequest;
@@ -205,6 +216,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
     if (OpenButton === true) {
       return (
+
         <React.Fragment>
           <div className="modal-body">
             <div className="row nobottom">
@@ -261,7 +273,9 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
                     <a className="btn btn-text waves-effect waves-light modal-close" onClick={this.handelCancel}>{localize("Common.cancel", locale)}</a>
                   </div>
                   <div style={{ display: "inline-block", margin: "10px" }}>
-                    <a className="btn btn-outlined waves-effect waves-light " onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
+                  <a
+                    className={`btn btn-outlined waves-effect waves-light ${classDisabled}`}
+                    onClick={this.handelReady}>{localize("Common.ready", locale)}</a>
                   </div>
                 </div>
               </div>
@@ -715,7 +729,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const { templates } = this.props;
     const name = ev.target.value;
 
-    this.setState({ templateName: name, template: templates.find((item: any) => item.FriendlyName === name) });
+    this.setState({ filedChanged: true, templateName: name, template: templates.find((item: any) => item.FriendlyName === name) });
   }
 
   handleAlgorithmChange = (ev: any) => {
@@ -723,7 +737,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   handleCATemplateChange = (ev: any) => {
-    this.setState({ caTemplate: ev.target.value });
+    this.setState({ caTemplate: ev.target.value, filedChanged: true});
   }
 
   handleInputChange = (ev: any) => {
@@ -744,7 +758,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
       return;
     }
-
+    this.setState ({filedChanged: true});
     this.setState({ [name]: value });
   }
 

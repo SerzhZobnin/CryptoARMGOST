@@ -169,18 +169,17 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     const self = this;
     const slider = document.getElementById("key-length-slider");
 
-    if  (this.state.filedChanged) {
+    if  (prevState.filedChanged !== this.state.filedChanged) {
       if (this.verifyFields() === true) {
         this.setState({ disabled: true });
-        this.setState ( {filedChanged: false});
       } else {
         this.setState({ disabled: false });
-        this.setState ( {filedChanged: false});
       }
+      this.setState ( {filedChanged: false});
     }
 
     if (slider && !slider.noUiSlider) {
@@ -729,8 +728,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
   }
 
   handleTemplateChange = (ev: any) => {
-    this.setState({ template: ev.target.value });
-    this.setState({filedChanged: true });
+    this.setState({ template: ev.target.value, filedChanged: true });
   }
 
   handleAlgorithmChange = (ev: any) => {
