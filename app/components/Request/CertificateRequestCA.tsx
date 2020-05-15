@@ -102,7 +102,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       addService: false,
       caTemplate: "",
       caTemplatesArray: [],
-      disabled: false,
+      disabled: true,
       OpenButton: false,
       activeSubjectNameInfoTab: true,
       algorithm: ALG_GOST12_256,
@@ -115,6 +115,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
         "1.3.6.1.5.5.7.3.4": true,
       },
       formVerified: false,
+      filedChanged: true,
       keyLength: 1024,
       keyUsage: {
         cRLSign: false,
@@ -154,9 +155,9 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     $(ReactDOM.findDOMNode(this.refs.templateSelect)).on("change", this.handleTemplateChange);
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
 
-    if  (prevState.filedChanged !== this.state.filedChanged) {
+    if  ( this.state.filedChanged === true) {
       if (this.verifyFields() === true) {
         this.setState({ disabled: true });
       } else {
@@ -383,7 +384,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   onSubjectChange = (model: any) => {
-    this.setState({ RDNsubject: { ...model } });
+    this.setState({ RDNsubject: { ...model }, filedChanged: true });
   }
 
   activeItemChose = (service: any) => {
@@ -485,7 +486,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   handleChangeActiveTab = (activeSubjectNameInfoTab: boolean) => {
-    this.setState({ activeSubjectNameInfoTab });
+    this.setState({ activeSubjectNameInfoTab, filedChanged: true });
   }
 
   handelReady = () => {
