@@ -76,8 +76,6 @@ export default (documents = new DefaultReducerState(), action) => {
       documents.entities.map((item: any) => allSelectDocumentsId.push(item.id));
       return documents.set("selected", new OrderedSet(allSelectDocumentsId));
 
-
-
     case SELECT_ALL_DOCUMENTS:
       const allDocumentsId: number[] = [];
 

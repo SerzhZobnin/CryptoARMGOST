@@ -32,15 +32,10 @@ export const selectionSelector = createSelector(stateSelector, (state) => state.
 export const selectedDocumentsSelector = createSelector(entitiesSelector, selectionSelector, (entities, selection) =>
   selection.map((uid: any) => entities.get(uid)),
 );
-export const selectedFiltredDocumentsSelector = createSelector (
+export const selectedFiltredDocumentsSelector = createSelector(
   filteredDocumentsSelector, selectionSelector, (filter, selection) =>
-  filter.filter ((entries: any) => {
-    return selection.some ((selectionFilter: any) => {
+  filter.filter((entries: any) => {
+    return selection.some((selectionFilter: any) => {
       return entries.id === selectionFilter;
     });
-   }));
-    // var item = selection.item ;
-    // console.log (selection.indexOf (entries)); console.log (selection.uid);
-    // console.log ("select", selection);
-    // for (item of selection){console.log (item); }
-    // return console.log ("df"); } ));
+  }));
