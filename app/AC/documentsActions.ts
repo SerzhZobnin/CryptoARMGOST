@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import {
-  ADD_DOCUMENTS, ARHIVE_DOCUMENTS, DEFAULT_DOCUMENTS_PATH, DOCUMENTS_REVIEWED,
-  FAIL, LOAD_ALL_DOCUMENTS,
-  REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS, SELECT_ALL_DOCUMENTS,
-  SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, UNSELECT_DOCUMENT, VERIFY_SIGNATURE,
+  ADD_DOCUMENTS, ARHIVE_DOCUMENTS, DEFAULT_DOCUMENTS_PATH, DOCUMENTS_REVIEWED, FAIL,
+  LOAD_ALL_DOCUMENTS,
+  PACKAGE_SELECT_DOCUMENT, REMOVE_ALL_DOCUMENTS, REMOVE_DOCUMENTS,
+  SELECT_ALL_DOCUMENTS, SELECT_DOCUMENT, START, SUCCESS, UNSELECT_ALL_DOCUMENTS, UNSELECT_DOCUMENT, VERIFY_SIGNATURE,
 } from "../constants";
 import { dirExists, extFile, fileExists, md5 } from "../utils";
 
@@ -177,5 +177,12 @@ export function documentsReviewed(reviewed: boolean) {
   return {
     payload: { reviewed },
     type: DOCUMENTS_REVIEWED,
+  };
+}
+
+export function documentsPackageSelect(documents: any) {
+  return {
+    payload: { documents },
+    type: PACKAGE_SELECT_DOCUMENT,
   };
 }
