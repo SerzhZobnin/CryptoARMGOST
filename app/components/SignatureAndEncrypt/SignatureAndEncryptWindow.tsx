@@ -6,7 +6,7 @@ import {
   activeFile, filePackageDelete, filePackageSelect, removeAllRemoteFiles,
 } from "../../AC";
 import { deleteAllTemporyLicenses } from "../../AC/licenseActions";
-import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector, filteredFilesSelector } from "../../selectors";
+import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, filteredFilesSelector, loadingRemoteFilesSelector } from "../../selectors";
 import { CANCELLED, ERROR, SIGN, SIGNED, UPLOADED } from "../../server/constants";
 import { mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
@@ -93,10 +93,10 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   componentWillReceiveProps(nextProps: ISignatureAndEncryptWindowProps) {
     const { localize, locale } = this.context;
-    const { activeFilesArr, signatures } = this.props;
+    const { activeFilesArr, signatures, operationsPerforming } = this.props;
 
     if (activeFilesArr.length !== nextProps.activeFilesArr.length || signatures.length !== nextProps.signatures.length) {
-      if (nextProps.activeFilesArr && nextProps.activeFilesArr.length === 1) {
+      if (nextProps.activeFilesArr && nextProps.activeFilesArr.length === 1 && !nextProps.operationsPerforming) {
         if (nextProps.signatures && nextProps.signatures.length) {
           const file = nextProps.activeFilesArr[0];
 
@@ -234,9 +234,9 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   selectedAll = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const {filesMap, activeFile } = this.props;
+    const {filesFilteredArr, activeFile } = this.props;
 
-    for (const file of filesMap) {
+    for (const file of filesFilteredArr) {
       activeFile(file.id);
     }
   }
@@ -252,14 +252,13 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   removeAllFiles = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { connections, connectedList, filesInTransactionList, filePackageDelete, files } = this.props;
+    const { filePackageDelete, filesMap } = this.props;
 
     const filePackage: number[] = [];
+    const filesToRemove = filesMap.toJS();
 
-    for (const file of files) {
-      if (!filesInTransactionList.includes(file.id)) {
-        filePackage.push(file.id);
-      }
+    for (const file in filesToRemove) {
+        filePackage.push(file);
     }
 
     filePackageDelete(filePackage);
@@ -336,8 +335,9 @@ export default connect((state) => {
     connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
     files: mapToArr(state.files.entities),
+    filesFilteredArr: mapToArr(filteredFilesSelector(state)),
     filesInTransactionList: filesInTransactionsSelector(state),
-    filesMap: mapToArr(filteredFilesSelector (state)),
+    filesMap: filteredFilesSelector(state),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     method: state.remoteFiles.method,
