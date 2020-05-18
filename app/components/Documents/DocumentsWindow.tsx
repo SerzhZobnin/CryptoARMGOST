@@ -12,7 +12,7 @@ import {
 import {
   DEFAULT_DOCUMENTS_PATH,
 } from "../../constants";
-import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
+import { selectedDocumentsSelector, selectedFiltredDocumentsSelector } from "../../selectors/documentsSelector";
 import { mapToArr } from "../../utils";
 import Modal from "../Modal";
 import DeleteDocuments from "./DeleteDocuments";
@@ -23,10 +23,11 @@ import FilterDocuments from "./FilterDocuments";
 interface IDocumentsWindowProps {
   documents: any;
   documentsLoading: boolean;
+  filtredDocuments: any;
   isDefaultFilters: boolean;
-  documentsPackageSelect: () => void;
   loadAllDocuments: () => void;
   removeAllDocuments: () => void;
+  documentsPackageSelect: () => void;
   selectAllDocuments: () => void;
   removeDocuments: (documents: any) => void;
   arhiveDocuments: (documents: any, arhiveName: string) => void;
@@ -282,12 +283,12 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
   handleSelectAllDocuments = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { selectAllDocuments, documentsPackageSelect, isDefaultFilters } = this.props;
+    const { selectAllDocuments, filtredDocuments, documentsPackageSelect, isDefaultFilters } = this.props;
+
     if (isDefaultFilters) {
       selectAllDocuments();
-    }
-    else {
-      documentsPackageSelect ();
+    } else {
+      documentsPackageSelect( filtredDocuments );
     }
   }
 
@@ -312,6 +313,7 @@ export default connect((state) => {
 
   return {
     documents: selectedDocumentsSelector(state),
+    filtredDocuments: selectedFiltredDocumentsSelector (state),
     documentsLoading: state.events.loading,
     documentsMap: state.documents.entities,
     isDefaultFilters: state.filters.documents.isDefaultFilters,
@@ -326,5 +328,5 @@ export default connect((state) => {
   arhiveDocuments, deleteRecipient, documentsReviewed,
   packageSign, loadAllDocuments, documentsPackageSelect,
   removeAllDocuments, removeDocuments,
-  selectAllDocuments, selectSignerCertificate, documentsPackageSelect, unselectAllDocuments,
+  selectAllDocuments, selectSignerCertificate,  unselectAllDocuments,
 })(DocumentsWindow);

@@ -74,10 +74,9 @@ export default (documents = new DefaultReducerState(), action) => {
       const allSelectDocumentsId: number[] = [];
 
       documents.entities.map((item: any) => allSelectDocumentsId.push(item.id));
-      return documents.set("selected", new OrderedSet(allDocumentsId));
+      return documents.set("selected", new OrderedSet(allSelectDocumentsId));
 
-    case UNSELECT_DOCUMENT:
-      return documents.update("selected", (selected) => selected.remove(payload.uid));
+
 
     case SELECT_ALL_DOCUMENTS:
       const allDocumentsId: number[] = [];

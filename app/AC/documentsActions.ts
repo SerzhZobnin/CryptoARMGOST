@@ -180,8 +180,9 @@ export function documentsReviewed(reviewed: boolean) {
   };
 }
 
-export function documentsPackageSelect(files: IFilePath[]) {
-  return (dispatch: (action: {}) => void) => {
-    dispatch({
-      type: PACKAGE_SELECT_DOCUMENT,
-    }); }; }
+export function documentsPackageSelect(documents: any) {
+  return {
+    payload: { documents },
+    type: PACKAGE_SELECT_DOCUMENT,
+  };
+}
