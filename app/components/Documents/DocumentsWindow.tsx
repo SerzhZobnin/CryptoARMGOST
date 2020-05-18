@@ -6,8 +6,8 @@ import {
 } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import {
-  arhiveDocuments, loadAllDocuments, removeAllDocuments,
-  removeDocuments, selectAllDocuments, unselectAllDocuments,
+  arhiveDocuments, documentsPackageSelect, loadAllDocuments,
+  removeAllDocuments, removeDocuments, selectAllDocuments, unselectAllDocuments,
 } from "../../AC/documentsActions";
 import {
   DEFAULT_DOCUMENTS_PATH,
@@ -24,6 +24,7 @@ interface IDocumentsWindowProps {
   documents: any;
   documentsLoading: boolean;
   isDefaultFilters: boolean;
+  documentsPackageSelect: () => void;
   loadAllDocuments: () => void;
   removeAllDocuments: () => void;
   selectAllDocuments: () => void;
@@ -281,9 +282,13 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
   handleSelectAllDocuments = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { selectAllDocuments } = this.props;
-
-    selectAllDocuments();
+    const { selectAllDocuments, documentsPackageSelect, isDefaultFilters } = this.props;
+    if (isDefaultFilters) {
+      selectAllDocuments();
+    }
+    else {
+      documentsPackageSelect ();
+    }
   }
 
   handleUnselectAllDocuments = () => {
@@ -319,7 +324,7 @@ export default connect((state) => {
   };
 }, {
   arhiveDocuments, deleteRecipient, documentsReviewed,
-  packageSign, loadAllDocuments,
+  packageSign, loadAllDocuments, documentsPackageSelect,
   removeAllDocuments, removeDocuments,
-  selectAllDocuments, selectSignerCertificate, unselectAllDocuments,
+  selectAllDocuments, selectSignerCertificate, documentsPackageSelect, unselectAllDocuments,
 })(DocumentsWindow);

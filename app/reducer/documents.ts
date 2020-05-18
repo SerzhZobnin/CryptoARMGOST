@@ -70,17 +70,11 @@ export default (documents = new DefaultReducerState(), action) => {
         : selected.add(payload.uid),
       );
 
-    case PACKAGE_SELECT_DOCUMENT + START:
-      return documents
-        .set("selectedDocumentsPackage", false)
-        .set("selectingDocumentsPackage", true)
-        .set("documentsReviewed", false);
+    case PACKAGE_SELECT_DOCUMENT:
+      const allSelectDocumentsId: number[] = [];
 
-    case PACKAGE_SELECT_DOCUMENT + SUCCESS:
-      return documents
-        .update("entities", (entities) => arrayToMap(payload.documentPackage, DocumentModel).merge(entities))
-        .set("selectedDocumentsPackage", true)
-        .set("selectingDocumentsPackage", false);
+      documents.entities.map((item: any) => allSelectDocumentsId.push(item.id));
+      return documents.set("selected", new OrderedSet(allDocumentsId));
 
     case UNSELECT_DOCUMENT:
       return documents.update("selected", (selected) => selected.remove(payload.uid));
