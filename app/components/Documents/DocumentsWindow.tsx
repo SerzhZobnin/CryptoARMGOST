@@ -27,7 +27,7 @@ interface IDocumentsWindowProps {
   isDefaultFilters: boolean;
   loadAllDocuments: () => void;
   removeAllDocuments: () => void;
-  documentsPackageSelect: () => void;
+  documentsPackageSelect: (documents: any) => void;
   selectAllDocuments: () => void;
   removeDocuments: (documents: any) => void;
   arhiveDocuments: (documents: any, arhiveName: string) => void;

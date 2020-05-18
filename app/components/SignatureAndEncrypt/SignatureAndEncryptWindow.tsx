@@ -25,6 +25,7 @@ interface ISignatureAndEncryptWindowProps {
   deleteAllTemporyLicenses: () => void;
   loadingFiles: any;
   files: any;
+  filesMap: any;
   method: string;
   operationsPerformed: boolean;
   operationsPerforming: boolean;
@@ -233,10 +234,10 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   selectedAll = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { filesMap, activeFile } = this.props;
+    const {filesMap, activeFile } = this.props;
 
     for (const file of filesMap) {
-      activeFile(file);
+      activeFile(file.id);
     }
   }
 
@@ -336,7 +337,7 @@ export default connect((state) => {
     connections: state.connections,
     files: mapToArr(state.files.entities),
     filesInTransactionList: filesInTransactionsSelector(state),
-    filesMap: filteredFilesSelector (state),
+    filesMap: mapToArr(filteredFilesSelector (state)),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     method: state.remoteFiles.method,
