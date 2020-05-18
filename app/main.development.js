@@ -60,7 +60,7 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
-function handleAppURL(url: string) {
+function handleAppURL(url) {
   const action = parseAppURL(url);
 
   mainWindow.webContents.send('url-action', { action });
