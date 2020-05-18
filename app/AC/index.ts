@@ -16,7 +16,7 @@ import {
   REMOVE_ALL_CERTIFICATES, REMOVE_ALL_CONTAINERS,
   REMOVE_ALL_FILES, REMOVE_ALL_REMOTE_FILES, SELECT_FILE,
   SELECT_SIGNER_CERTIFICATE, SELECT_TEMP_CONTENT_OF_SIGNED_FILES, START,
-  SUCCESS, INTERRUPT, PART_SUCCESS,
+  SUCCESS, INTERRUPT, PART_SUCCESS, UNSELECT_ALL_FILES,
   TOGGLE_SAVE_TO_DOCUMENTS,
   VERIFY_CERTIFICATE,
   VERIFY_SIGNATURE,
@@ -399,6 +399,12 @@ export function filePackageDelete(filePackage: string[]) {
 export function removeAllFiles() {
   return {
     type: REMOVE_ALL_FILES,
+  };
+}
+
+export function unselectAllFiles() {
+  return {
+    type: UNSELECT_ALL_FILES,
   };
 }
 

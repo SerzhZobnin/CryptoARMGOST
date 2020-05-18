@@ -7,6 +7,8 @@ import {
   ALL, ENCRYPTED, SIGNED,
 } from "../../constants";
 import DatePicker from "../DatePicker";
+import {unselectAllFiles} from "../../AC";
+import {unselectAllDocuments} from "../../AC/documentsActions";
 
 interface IFilterDocumentsProps {
   applyDocumentsFilters: (filters: IDocumentsFilters) => void;
@@ -18,6 +20,8 @@ interface IFilterDocumentsProps {
   sizeTo: number | undefined;
   types: any;
   resetDocumentsFilters: () => void;
+  unselectAllFiles: () => void;
+  unselectAllDocuments: () => void;
 }
 
 interface IDocumentsFilters {
@@ -384,12 +388,15 @@ class FilterDocuments extends React.Component<IFilterDocumentsProps, IDocumentsS
       sizeFrom: this.state.filters.sizeFrom ? this.state.filters.sizeFrom * this.state.sizeTypeFrom : undefined,
       sizeTo: this.state.filters.sizeTo ? this.state.filters.sizeTo * this.state.sizeTypeTo : undefined,
     });
-
+    this.props.unselectAllFiles();
+    this.props.unselectAllDocuments();
     this.handelCancel();
   }
 
   handleResetFilters = () => {
     this.setState({ filters: { ...initialState } });
+    this.props.unselectAllFiles();
+    this.props.unselectAllDocuments();
     this.props.resetDocumentsFilters();
   }
 }
@@ -402,5 +409,5 @@ export default connect((state) => ({
   sizeTo: state.filters.documents.sizeTo,
   types: state.filters.documents.types,
 }), {
-    applyDocumentsFilters, resetDocumentsFilters,
-  })(FilterDocuments);
+  applyDocumentsFilters, resetDocumentsFilters, unselectAllDocuments, unselectAllFiles,
+})(FilterDocuments);

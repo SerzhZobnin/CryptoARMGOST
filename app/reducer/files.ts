@@ -3,7 +3,7 @@ import { OrderedMap, Record } from "immutable";
 import {
   ACTIVE_FILE, DELETE_FILE, DOCUMENTS_REVIEWED, PACKAGE_DELETE_FILE,
   PACKAGE_SELECT_FILE, REMOVE_ALL_FILES, SELECT_FILE,
-  SELECT_TEMP_CONTENT_OF_SIGNED_FILES, START, SUCCESS,
+  SELECT_TEMP_CONTENT_OF_SIGNED_FILES, START, SUCCESS, UNSELECT_ALL_FILES,
 } from "../constants";
 import { arrayToMap, fileExists } from "../utils";
 
@@ -87,6 +87,13 @@ export default (files = new DefaultReducerState(), action) => {
       });
 
       return newFiles;
+
+    case UNSELECT_ALL_FILES:
+      return files.update("entities", (entities: any) => {
+        return entities.map((file: any) => {
+          return file.setIn(["active"], false)
+        })
+      });
 
     case REMOVE_ALL_FILES:
       files.entities.forEach((file: any) => {
