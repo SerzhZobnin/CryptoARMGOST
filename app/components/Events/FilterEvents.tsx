@@ -139,7 +139,7 @@ class FilterEvents extends React.Component<IFilterEventsProps, IEventsFilters> {
                 </div>
                 <div className="row">
                   <div className="input-field input-field-csr col s12">
-                    <select className="select" ref="operationSelect" defaultValue={this.props.level} onChange={this.handleChangeFilterLevel} >
+                    <select className="select" value= {this.props.level} ref="operationSelect" defaultValue={this.props.level} onChange={this.handleChangeFilterLevel} >
                       <option value={"all"}>{localize("EventsFilters.level_all", locale)}</option>
                       <option value={"info"}>{localize("EventsFilters.level_info", locale)}</option>
                       <option value={"error"}>{localize("EventsFilters.level_error", locale)}</option>
@@ -501,6 +501,7 @@ class FilterEvents extends React.Component<IFilterEventsProps, IEventsFilters> {
   handleResetFilters = () => {
     this.setState({ ...initialState });
     this.props.resetEventsFilters();
+    $("select").material_select();
   }
 }
 
