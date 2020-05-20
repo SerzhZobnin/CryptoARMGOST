@@ -2,8 +2,9 @@ import PropTypes from "prop-types";
 import React from "react";
 import {
   ADDRESS_BOOK, CA, MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST,
-  MODAL_CERTIFICATE_REQUEST_CA, MY, REQUEST, ROOT,
+  MODAL_CERTIFICATE_REQUEST_CA, MY, REQUEST, ROOT, INTERRUPT, URL_CMD_CERTIFICATES_IMPORT,
 } from "../../constants";
+import store from "../../store";
 
 interface IBestStoreProps {
   autoImport: () => void;
@@ -11,6 +12,7 @@ interface IBestStoreProps {
   currentStore: string;
   importToCurrent: () => void;
   onCancel: () => void;
+  isImportFromUrlCmd: boolean;
 }
 
 interface IBestStoreState {
@@ -27,17 +29,17 @@ class BestStore extends React.Component<IBestStoreProps, IBestStoreState> {
     super(props);
 
     this.state = ({
-      autoChooseStore: true,
+      autoChooseStore: !props.isImportFromUrlCmd,
     });
   }
 
   componentWillUnmount() {
-    this.handelCancel();
+    this.handelCancel(false);
   }
 
   render() {
     const { localize, locale } = this.context;
-    const { bestStore, currentStore } = this.props;
+    const { bestStore, currentStore, isImportFromUrlCmd } = this.props;
 
     return (
       <React.Fragment>
@@ -53,6 +55,7 @@ class BestStore extends React.Component<IBestStoreProps, IBestStoreState> {
                   <form action="#">
                     <p>
                       <input name="autoChooseStore" type="radio" id="isAutoChooseStore"
+                        disabled={isImportFromUrlCmd}
                         checked={this.state.autoChooseStore}
                         onClick={() => this.handleAutoChooseStore(true)} />
                       <label htmlFor="isAutoChooseStore" className="secondary-text" >
@@ -103,11 +106,15 @@ class BestStore extends React.Component<IBestStoreProps, IBestStoreState> {
       this.props.importToCurrent();
     }
 
-    this.handelCancel();
+    this.handelCancel(false);
   }
 
-  handelCancel = () => {
-    const { onCancel } = this.props;
+  handelCancel = (interruptUrlCmd: boolean = true) => {
+    const { onCancel, isImportFromUrlCmd } = this.props;
+
+    if (interruptUrlCmd && isImportFromUrlCmd) {
+      store.dispatch({type: URL_CMD_CERTIFICATES_IMPORT + INTERRUPT});
+    }
 
     if (onCancel) {
       onCancel();

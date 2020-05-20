@@ -844,4 +844,12 @@ export default {
     tsp_sign_ok: "Штамп времени действителен",
     failed_tsp_url: "Для штампа времени не задан адрес службы TSP",
   },
+  UrlCommand: {
+    cert_import_sucess: "Сертификат успешно импортирован",
+    cert_import_fail: "Ошибка при импорте сертификата",
+    cert_export_sucess: "Сертификат успешно экспортирован",
+    cert_export_fail: "Ошибка при экспорте сертификата",
+    certs_export_success: "Сертификаты успешно экспортированы",
+    certs_export_fail: "Ошибка при экспорте сертификатов",
+  },
 };

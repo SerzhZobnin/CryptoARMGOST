@@ -16,6 +16,8 @@ import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
+import { URL_CMD_CERTIFICATES_EXPORT } from "../../constants";
+import { urlCmdSendCerts, urlCmdCertExportFail } from "../../AC/urlCmdCertificates";
 
 class CertificateSelectionForEncrypt extends React.Component<any, any> {
   static contextTypes = {
@@ -152,7 +154,7 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
                 </div> :
                 <React.Fragment>
                   <div className="col s6 offset-s1">
-                    <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
+                    <a className="btn btn-text waves-effect waves-light" onClick={this.handleCancel}>
                       ОТМЕНА
                       </a>
                   </div>
@@ -287,14 +289,34 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
     // tslint:disable-next-line:no-shadowed-variable
     const { addRecipientCertificate } = this.props;
     const { selectedRecipients } = this.state;
+    const { urlCmdProps } = this.props;
 
-    this.handleCleanRecipientsList();
+    if (urlCmdProps && !urlCmdProps.done
+      && (urlCmdProps.operation == URL_CMD_CERTIFICATES_EXPORT)
+    ) {
+      urlCmdSendCerts(selectedRecipients, urlCmdProps.id, urlCmdProps.url);
+    } else {
+      this.handleCleanRecipientsList();
 
-    for (const recipient of selectedRecipients) {
-      addRecipientCertificate(recipient.id);
+      for (const recipient of selectedRecipients) {
+        addRecipientCertificate(recipient.id);
+      }
+
+      this.setState({ modalCertList: false });
     }
 
-    this.setState({ modalCertList: false });
+    this.props.history.goBack();
+  }
+
+  handleCancel = () => {
+    const { urlCmdProps } = this.props;
+
+    if (urlCmdProps && !urlCmdProps.done
+      && (urlCmdProps.operation == URL_CMD_CERTIFICATES_EXPORT)
+    ) {
+      urlCmdCertExportFail();
+    }
+
     this.props.history.goBack();
   }
 
@@ -327,6 +349,7 @@ export default connect((state) => {
       .map((recipient) => state.certificates.getIn(["entities", recipient.certId]))
       .filter((recipient) => recipient !== undefined),
     searchValue: state.filters.searchValue,
+    urlCmdProps: state.urlCmdCertificates,
   };
 }, {
   addRecipientCertificate, changeSearchValue, deleteRecipient,

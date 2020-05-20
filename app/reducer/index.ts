@@ -28,6 +28,7 @@ import transactionDSS from "./transactionDSS";
 import trustedId from "./trustedId";
 import urlActions from "./urlActions";
 import users from "./users";
+import urlCmdCertificates from "./urlCmdCertificates";
 
 export default combineReducers({
   router,
@@ -59,4 +60,5 @@ export default combineReducers({
   trustedId,
   urlActions,
   users,
+  urlCmdCertificates,
 });

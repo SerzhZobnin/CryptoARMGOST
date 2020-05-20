@@ -311,6 +311,9 @@ export const SERVICE_APP = SERVICE_TRUSTEDAPP + "/app";
 export const SERVICE_REST = SERVICE_TRUSTEDAPP + "/rest";
 export const SERVICE_STORAGE = SERVICE_APP + "/storage";
 
+export const URL_CMD_CERTIFICATES_IMPORT = "URL_CMD_CERTIFICATES_IMPORT";
+export const URL_CMD_CERTIFICATES_EXPORT = "URL_CMD_CERTIFICATES_EXPORT";
+
 export const CRYPTOPRO_DSS = "CRYPTOPRO_DSS";
 export const DSS_ACTIONS = {
   Issue: 1, // Подтверждение входа пользователя

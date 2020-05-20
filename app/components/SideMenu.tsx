@@ -385,7 +385,8 @@ class SideMenu extends React.Component<ISideMenuProps, {}> {
 export default connect((state) => {
   return {
     operationRemoteAction: state.urlActions.action,
-    operationIsRemote: state.urlActions.performed || state.urlActions.performing,
+    operationIsRemote: state.urlActions.performed || state.urlActions.performing
+      || (!state.urlCmdCertificates.done && (state.urlCmdCertificates.operation!=="")),
     certificates: state.certificates.entities,
     certrequests: state.certrequests.entities,
     crls: mapToArr(state.crls.entities),

@@ -842,4 +842,12 @@ export default {
     tsp_sign_ok: "Time-stamp is valid",
     failed_tsp_url: "Time stamp service address not specified",
   },
+  UrlCommand: {
+    cert_import_sucess: "Certificate successfully imported",
+    cert_import_fail: "Certificate import failed",
+    cert_export_sucess: "Certificate successfully exported",
+    cert_export_fail: "Certificate export failed",
+    certs_export_success: "Certificates successfully exported",
+    certs_export_fail: "Certificates export failed",
+  },
 };

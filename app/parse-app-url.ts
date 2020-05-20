@@ -1,6 +1,6 @@
 import * as URL from "url";
 import { execSync } from "child_process";
-import { app } from "electron";
+import { app } from 'electron';
 
 export interface ISignDocumentsFromURLAction {
   name: "sign-documents-from-url";
@@ -27,6 +27,12 @@ export type URLActionType =
   | ISignDocumentsFromURLAction
   | IVerifyDocumentsFromURLAction
   | IUnknownAction;
+
+export interface IUrlCommandApiV4Type {
+  command: string;
+  url: string;
+  id: string;
+}
 
 const __WIN32__ = process.platform === "win32";
 const protocolLauncherArg = '--protocol-launcher';
@@ -147,4 +153,34 @@ export function setAsDefaultProtocolClient(protocol: string) {
       app.setAsDefaultProtocolClient(protocol);
     }
   }
+}
+
+export function parseUrlCommandApiV4(urlWithCommand: string): IUrlCommandApiV4Type {
+  var result: IUrlCommandApiV4Type = {
+    command: "not supported",
+    url: "",
+    id: ""
+  };
+
+  const parsedURL = URL.parse(urlWithCommand, true);
+  const recievedCommand = parsedURL.hostname;
+
+  switch (recievedCommand) {
+    case "certificates":
+      break;
+    default:
+      console.log("Warning! Command \"" + recievedCommand + "\" is not supported")
+      return result;
+  }
+
+  result.command = recievedCommand;
+  result.id = getQueryStringValue(parsedURL.query, "id");
+
+  const path = parsedURL.pathname;
+  if (path) {
+    const urlIndex = urlWithCommand.indexOf(path) + 1;
+    result.url = urlWithCommand.substring(urlIndex);
+  }
+
+  return result;
 }
