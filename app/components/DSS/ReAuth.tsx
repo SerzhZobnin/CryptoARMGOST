@@ -210,9 +210,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
         if (isRememberPassword) {
           rememberPasswordDSS(user.id, field_value.password_dss);
         } else {
-          if (passwordUserDSS && passwordUserDSS.password) {
             deletePasswordDSS(user.id);
-          }
         }
 
         getPolicyDSS(user.dssUrl, user.id, result.AccessToken).then(
