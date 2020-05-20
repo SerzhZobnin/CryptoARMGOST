@@ -27,6 +27,7 @@ export interface IX509Certificate {
   privateKey: boolean;
   active: boolean;
   key: string;
+  object?: trusted.pki.Certificate;
 }
 
 interface ICertificateInfoProps {
@@ -42,6 +43,11 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
   render() {
     const { localize, locale } = this.context;
     const { certificate } = this.props;
+
+    if (!certificate) {
+      return null;
+    }
+
     const PRIV_KEY = certificate.key && certificate.key.length > 0 ? localize("Certificate.present", locale) : localize("Certificate.absent", locale);
     return (
       <div className="collection cert-info-list">
@@ -96,7 +102,13 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
     const { localize, locale } = this.context;
     const { certificate } = this.props;
 
-    const x509: trusted.pki.Certificate = window.PKISTORE.getPkiObject(certificate);
+    if (!certificate) {
+      return null;
+    }
+
+    const x509: trusted.pki.Certificate = certificate.object &&
+     certificate.object instanceof trusted.pki.Certificate ?
+      certificate.object : window.PKISTORE.getPkiObject(certificate);
 
     if (x509) {
       const keyUsageString = x509.keyUsageString;
