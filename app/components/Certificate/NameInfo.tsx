@@ -18,13 +18,19 @@ export default class NameInfo extends React.Component<INameInfoProps, INameInfoS
   constructor(props: INameInfoProps) {
     super(props);
 
-    this.state = ({
-      properties: props.name.split("\r\n").reverse(),
-    });
+    if (props && props.name) {
+      this.state = ({
+        properties: props.name.split("\r\n").reverse(),
+      });
+    } else {
+      this.state = ({
+        properties: [],
+      });
+    }
   }
 
   componentDidUpdate(prevProps: INameInfoProps) {
-    if (this.props.name !== prevProps.name) {
+    if (this.props.name && this.props.name !== prevProps.name) {
       this.setState({
         properties: this.props.name.split("\r\n").reverse(),
       });
