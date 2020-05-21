@@ -1,26 +1,25 @@
 import * as fs from "fs";
 import { Record } from "immutable";
 import {
-  FAIL, START, SUCCESS, URL_CMD_CERTIFICATES_IMPORT,
-  URL_CMD_CERTIFICATES_EXPORT, INTERRUPT
+  FAIL, INTERRUPT, START, SUCCESS,
+  URL_CMD_CERTIFICATES_EXPORT,
+  URL_CMD_CERTIFICATES_IMPORT,
 } from "../constants";
 import { fileExists } from "../utils";
 
 export const DefaultReducerState = Record({
-  operation: "",
-  impProps: null,
-  expProps: null,
   certPath: "",
-  id: "",
-  url: "",
   done: false,
+  expProps: null,
+  id: "",
+  impProps: null,
+  operation: "",
   result: false,
+  url: "",
 });
 
 export default (urlCmdCerts = new DefaultReducerState(), action) => {
   const { type, payload } = action;
-  console.log("redicer - urlCmdCertificates");
-  console.log("type: " + type);
   switch (type) {
     case URL_CMD_CERTIFICATES_IMPORT + START:
       urlCmdCerts = DefaultReducerState()
@@ -85,10 +84,6 @@ export default (urlCmdCerts = new DefaultReducerState(), action) => {
 function cleanTmpCertFile(reducerState: any) {
   const filePathToClean = reducerState.get("certPath");
   if (filePathToClean && fileExists(filePathToClean)) {
-    try {
-      fs.unlinkSync(filePathToClean);
-    } catch (e) {
-      //
-    }
+    fs.unlink(filePathToClean, (err) => {/**/});
   }
 }
