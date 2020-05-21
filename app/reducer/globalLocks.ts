@@ -19,7 +19,7 @@ export default (globalLocks = new DefaultReducerState(), action) => {
 
     case GLOBAL_LOCKS_NAVIGATION_UNLOCK:
       globalLocks = DefaultReducerState()
-          .set("lockNavigation", true);
+          .set("lockNavigation", false);
       break;
 
     default:
