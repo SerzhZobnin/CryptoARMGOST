@@ -65,7 +65,7 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
   }
 
   render() {
-    const { certificates, isLoading, isLoadingFromDSS, searchValue } = this.props;
+    const { certificates, isLoading, isLoadingFromDSS, searchValue, exportCommmand } = this.props;
     const { certificate, selectedRecipients } = this.state;
     const { localize, locale } = this.context;
 
@@ -111,7 +111,7 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
                             <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
                             <CertificateList
                               activeCert={this.handleAddRecipient}
-                              operation="encrypt" />
+                              operation={exportCommmand ? "export_certs" : "encrypt"} />
                         }
                       </div>
                     </div>
@@ -342,7 +342,11 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
 
 export default connect((state) => {
   return {
-    certificates: filteredCertificatesSelector(state, { operation: "encrypt" }),
+    certificates: filteredCertificatesSelector(state,
+      (state.urlCmdCertificates && !state.urlCmdCertificates.done
+        && (state.urlCmdCertificates.operation === URL_CMD_CERTIFICATES_EXPORT))
+        ? { operation: "export_certs" } : { operation: "encrypt" }),
+    exportCommmand: state.urlCmdCertificates && !state.urlCmdCertificates.done,
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.active]).encrypt.recipients)

@@ -50,7 +50,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
   }
 
   render() {
-    const { certificates, isLoading, isLoadingFromDSS, searchValue } = this.props;
+    const { certificates, isLoading, isLoadingFromDSS, searchValue, exportCommmand } = this.props;
     const { certificate } = this.state;
     const { localize, locale } = this.context;
 
@@ -96,7 +96,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
                             <CertificateList
                               selectedCert={this.state.certificate}
                               activeCert={this.handleActiveCert}
-                              operation="sign" />
+                              operation={exportCommmand ? "export_certs" : "sign"} />
                         }
                       </div>
                     </div>
@@ -259,7 +259,11 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
 
 export default connect((state) => {
   return {
-    certificates: filteredCertificatesSelector(state, { operation: "sign" }),
+    certificates: filteredCertificatesSelector(state,
+      (state.urlCmdCertificates && !state.urlCmdCertificates.done
+        && (state.urlCmdCertificates.operation === URL_CMD_CERTIFICATES_EXPORT))
+        ? { operation: "export_certs" } : { operation: "sign" }),
+    exportCommmand: state.urlCmdCertificates && !state.urlCmdCertificates.done,
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
     searchValue: state.filters.searchValue,

@@ -1,7 +1,7 @@
 import { List, OrderedMap } from "immutable";
 import { createSelector } from "reselect";
 import {
-  ALL, ENCRYPTED, SIGNED,
+  ALL, ENCRYPTED, SIGNED, MY,
 } from "../constants";
 import { mapToArr } from "../utils";
 
@@ -18,14 +18,17 @@ export const locationStateGetter = (state) => state.router.location.state;
 const activeGetter = (state, props) => props.active;
 const loadingGetter = (state, props) => props.loading;
 const connectedGetter = (state, props) => props.connected;
+export const storesGetter = (state) => state.urlCmdCertificates.expProps ?
+  state.urlCmdCertificates.expProps.store : [MY];
 
-export const filteredCertificatesSelector = createSelector(certificatesGetter, filtersGetter, operationGetter, locationStateGetter, (certificates, filters, operation, locationState) => {
+export const filteredCertificatesSelector = createSelector(certificatesGetter, filtersGetter, operationGetter, locationStateGetter, storesGetter, (certificates, filters, operation, locationState, stores) => {
   const store = locationState ? locationState.store : undefined;
   const { searchValue } = filters;
   const search = searchValue.toLowerCase();
   let сertificatesByOperations = certificates;
+  const storesFilter = stores ? stores : [MY];
 
-  if (store && (operation !== "personal_certs")) {
+  if (store && (operation !== "personal_certs") && (operation !== "export_certs")) {
     сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {
       return item.category === store;
     });
@@ -42,6 +45,10 @@ export const filteredCertificatesSelector = createSelector(certificatesGetter, f
   } else if (operation === "address_book") {
     сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {
       return (item.category === "AddressBook");
+    });
+  } else if (operation === "export_certs") {
+    сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {
+      return storesFilter.includes(item.category);
     });
   }
 
