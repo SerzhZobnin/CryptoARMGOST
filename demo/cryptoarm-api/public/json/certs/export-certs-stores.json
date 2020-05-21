@@ -1,0 +1,11 @@
+{
+    "jsonrpc":"2.0",
+    "result": {
+        "operation": "export",
+        "props": {
+            "store": ["AddressBook", "ROOT"],
+            "multy": true
+        }
+    },
+    "id": "9b5e6a0b-489d-4812-8866-0b9afce648e1"
+}

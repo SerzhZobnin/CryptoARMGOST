@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Tray, Menu, protocol } = require('electron');
-const { spawn, execSync } = require('child_process');
-const URL = require('url');
+const { parseAppURL, handlePossibleProtocolLauncherArgs,
+  setAsDefaultProtocolClient, parseUrlCommandApiV4 } = require('./parse-app-url.ts');
 
 let mainWindow = null;
 let preloader = null;
@@ -19,8 +19,6 @@ if (!gotInstanceLock) {
   app.quit();
 }
 
-const __WIN32__ = process.platform === "win32";
-const protocolLauncherArg = '--protocol-launcher';
 const possibleProtocols = new Set(['cryptoarm']);
 
 if (process.env.NODE_ENV === 'production') {
@@ -62,118 +60,16 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
-function getQueryStringValue(query,  key) {
-  const value = query[key]
-  if (value == null) {
-    return null
-  }
-
-  if (Array.isArray(value)) {
-    return value[0]
-  }
-
-  return value
-}
-
-// TODO: use parse-app-url.ts
-function parseAppURL(url) {
-  const parsedURL = URL.parse(url, true);
-  const hostname = parsedURL.hostname;
-  const unknown = { name: "unknown", url };
-  if (!hostname) {
-    return unknown;
-  }
-
-  const query = parsedURL.query;
-
-  const actionName = hostname.toLowerCase();
-  const command = getQueryStringValue(query, "command");
-  const accessToken = getQueryStringValue(query, "accessToken");
-
-  // we require something resembling a URL first
-  // - bail out if it's not defined
-  // - bail out if you only have `/`
-  const pathName = parsedURL.pathname;
-  if (!pathName || pathName.length <= 1) {
-    return unknown;
-  }
-
-  // Trim the trailing / from the URL
-  const parsedPath = pathName.substr(1);
-
-  if (actionName === "sign") {
-    return {
-      name: "sign-documents-from-url",
-      url: parsedPath,
-      command,
-      accessToken,
-    };
-  }
-
-  if (actionName === "verify") {
-    return {
-      name: "verify-documents-from-url",
-      url: parsedPath,
-      command,
-      accessToken,
-    };
-  }
-
-  return unknown;
-}
-
 function handleAppURL(url) {
+  const parsedCommand = parseUrlCommandApiV4(url);
+  if (parsedCommand.command !== "not supported") {
+    mainWindow.webContents.send('url-command', { command: parsedCommand });
+    return;
+  }
+
   const action = parseAppURL(url);
 
   mainWindow.webContents.send('url-action', { action });
-}
-
-function handlePossibleProtocolLauncherArgs(args) {
-  console.log(`Received possible protocol arguments: ${args.length}`);
-
-  if (__WIN32__) {
-    const matchingUrls = args.filter(arg => {
-      // sometimes `URL.parse` throws an error
-      try {
-        const url = URL.parse(arg)
-        // i think this `slice` is just removing a trailing `:`
-        return url.protocol && possibleProtocols.has(url.protocol.slice(0, -1))
-      } catch (e) {
-        console.log(`Unable to parse argument as URL: ${arg}`)
-        return false
-      }
-    })
-
-    if (args.includes(protocolLauncherArg) && matchingUrls.length === 1) {
-      handleAppURL(matchingUrls[0])
-    } else {
-      console.log(`Malformed launch arguments received: ${args}`)
-    }
-  } else if (args.length > 1) {
-    handleAppURL(args[1])
-  }
-}
-
-function registerForURLSchemeLinux(scheme) {
-  execSync(`xdg-mime default CryptoARM_GOST.desktop x-scheme-handler/${scheme}`);
-};
-
-/**
- * Wrapper around app.setAsDefaultProtocolClient that adds our
- * custom prefix command line switches on Windows.
- */
-function setAsDefaultProtocolClient(protocol) {
-  if (__WIN32__) {
-    app.setAsDefaultProtocolClient(protocol, process.execPath, [
-      protocolLauncherArg,
-    ])
-  } else {
-    if (process.platform === 'linux') {
-      registerForURLSchemeLinux(protocol);
-    } else {
-      app.setAsDefaultProtocolClient(protocol);
-    }
-  }
 }
 
 let trayIcon;
@@ -322,7 +218,10 @@ app.on('ready', async () => {
       delayedUrl = "";
     }
 
-    handlePossibleProtocolLauncherArgs(options);
+    const urlToProcess = handlePossibleProtocolLauncherArgs(options, possibleProtocols);
+    if (urlToProcess !== "") {
+      handleAppURL(urlToProcess);
+    }
     mainWindow.webContents.send("cmdArgs", options);
   });
 
@@ -387,7 +286,7 @@ app.on('will-finish-launching', () => {
     event.preventDefault()
 
     if (mainWindow) {
-      handleAppURL(url)
+      handleAppURL(url);
     } else {
       delayedUrl = url;
     }
@@ -414,7 +313,10 @@ app.on('second-instance', (e, args) => {
     mainWindow.show();
     mainWindow.focus();
 
-    handlePossibleProtocolLauncherArgs(args);
+    const urlToProcess = handlePossibleProtocolLauncherArgs(args, possibleProtocols);
+    if (urlToProcess !== "") {
+      handleAppURL(urlToProcess);
+    }
     mainWindow.webContents.send("cmdArgs", args);
   }
 });

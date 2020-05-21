@@ -15,7 +15,7 @@ import {
   MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA, MODAL_CLOUD_CSP,
   MODAL_DELETE_CERTIFICATE, MODAL_DELETE_CRL, MODAL_DELETE_REQUEST_CA, MODAL_EXPORT_CERTIFICATE,
   MODAL_EXPORT_CRL, MODAL_EXPORT_REQUEST_CA, MY, PFX, PROVIDER_CRYPTOPRO, REQUEST, ROOT,
-  USER_NAME,
+  USER_NAME, URL_CMD_CERTIFICATES_IMPORT, FAIL,
 } from "../../constants";
 import { filteredCertificatesSelector } from "../../selectors";
 import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
@@ -46,6 +46,7 @@ import CertificateExport from "./CertificateExport";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
+import { urlCmdCertImportFail, urlCmdCertImportSuccess } from "../../AC/urlCmdCertificates";
 
 const OS_TYPE = os.type();
 const dialog = window.electron.remote.dialog;
@@ -85,7 +86,13 @@ class CertWindow extends React.Component<any, any> {
   }
 
   componentDidMount() {
+    const { urlCmdProps } = this.props;
     $(".btn-floated").dropdown();
+    if (urlCmdProps && !urlCmdProps.done) {
+      if (urlCmdProps.operation == URL_CMD_CERTIFICATES_IMPORT) {
+        this.setState({ showModalBestStore: true });
+      }
+    }
   }
 
   handleShowModalByType = (typeOfModal: string) => {
@@ -426,7 +433,10 @@ class CertWindow extends React.Component<any, any> {
 
   handleAddCertToStore = (store: string, path: string) => {
     const { localize, locale } = this.context;
-    const { removeAllCertificates, isLoading, loadAllCertificates } = this.props;
+    const { removeAllCertificates, isLoading, loadAllCertificates, urlCmdProps } = this.props;
+
+    const isImportFromCommand = urlCmdProps && !urlCmdProps.done
+      && (urlCmdProps.operation == URL_CMD_CERTIFICATES_IMPORT);
 
     const format: trusted.DataFormat = fileCoding(path);
 
@@ -435,6 +445,9 @@ class CertWindow extends React.Component<any, any> {
     try {
       certificate = trusted.pki.Certificate.load(path, format);
     } catch (e) {
+      if (isImportFromCommand) {
+        urlCmdCertImportFail();
+      }
       return;
     }
 
@@ -466,6 +479,10 @@ class CertWindow extends React.Component<any, any> {
             userName: USER_NAME,
           });
 
+          if (isImportFromCommand) {
+            urlCmdCertImportSuccess();
+          }
+
           removeAllCertificates();
 
           if (!isLoading) {
@@ -485,6 +502,10 @@ class CertWindow extends React.Component<any, any> {
             },
             userName: USER_NAME,
           });
+
+          if (isImportFromCommand) {
+            urlCmdCertImportFail();
+          }
 
           return;
         }
@@ -508,6 +529,10 @@ class CertWindow extends React.Component<any, any> {
           },
           userName: USER_NAME,
         });
+
+        if (isImportFromCommand) {
+          urlCmdCertImportSuccess();
+        }
 
         removeAllCertificates();
 
@@ -536,6 +561,10 @@ class CertWindow extends React.Component<any, any> {
         userName: USER_NAME,
       });
 
+      if (isImportFromCommand) {
+        urlCmdCertImportSuccess();
+      }
+
       removeAllCertificates();
 
       if (!isLoading) {
@@ -549,8 +578,11 @@ class CertWindow extends React.Component<any, any> {
   handleInstallTrustedCertificate = () => {
     const { localize, locale } = this.context;
     // tslint:disable-next-line:no-shadowed-variable
-    const { isLoading, loadAllCertificates, removeAllCertificates } = this.props;
+    const { isLoading, loadAllCertificates, removeAllCertificates, urlCmdProps } = this.props;
     const { importingCertificate, importingCertificatePath } = this.state;
+
+    const isImportFromCommand = urlCmdProps && !urlCmdProps.done
+      && (urlCmdProps.operation == URL_CMD_CERTIFICATES_IMPORT);
 
     this.handleCloseDialogInstallRootCertificate();
 
@@ -574,6 +606,10 @@ class CertWindow extends React.Component<any, any> {
             userName: USER_NAME,
           });
 
+          if (isImportFromCommand) {
+            urlCmdCertImportFail();
+          }
+
           Materialize.toast(localize("Certificate.cert_import_failed", locale), 2000, "toast-cert_import_error");
         } else {
           removeAllCertificates();
@@ -593,6 +629,10 @@ class CertWindow extends React.Component<any, any> {
             },
             userName: USER_NAME,
           });
+
+          if (isImportFromCommand) {
+            urlCmdCertImportSuccess();
+          }
 
           Materialize.toast(localize("Certificate.cert_trusted_import_ok", locale), 2000, "toast-cert_trusted_import_ok");
         }
@@ -1191,7 +1231,7 @@ class CertWindow extends React.Component<any, any> {
   showModalBestStore = () => {
     const { localize, locale } = this.context;
     const { bestStore, pathOfImportedPkiItem, showModalBestStore } = this.state;
-    const { location } = this.props;
+    const { location, urlCmdProps } = this.props;
 
     if (!showModalBestStore) {
       return;
@@ -1199,6 +1239,9 @@ class CertWindow extends React.Component<any, any> {
 
     const currentStore = location.state.store;
     const header = location.state.head;
+
+    const isImportFromCommand = urlCmdProps && !urlCmdProps.done
+      && (urlCmdProps.operation == URL_CMD_CERTIFICATES_IMPORT);
 
     return (
       <Modal
@@ -1209,9 +1252,12 @@ class CertWindow extends React.Component<any, any> {
         <BestStore
           onCancel={() => this.handleCloseModalByType(MODAL_BEST_STORE)}
           autoImport={() => this.handleCertificateImport(pathOfImportedPkiItem, true)}
-          importToCurrent={() => this.handleAddCertToStore(currentStore, pathOfImportedPkiItem)}
+          importToCurrent={() => {
+            this.handleAddCertToStore(currentStore, isImportFromCommand ? urlCmdProps.certPath : pathOfImportedPkiItem);
+          }}
           bestStore={bestStore}
           currentStore={currentStore}
+          isImportFromUrlCmd = {isImportFromCommand}
         />
       </Modal>
     );
@@ -1259,7 +1305,8 @@ class CertWindow extends React.Component<any, any> {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { cloudCSPSettings, cloudCSPState, certificates, isLoading, location } = this.props;
+    const { cloudCSPSettings, cloudCSPState, certificates, isLoading,
+      location, urlCmdProps } = this.props;
     const { certificate, crl } = this.state;
     const { localize, locale } = this.context;
 
@@ -1269,6 +1316,14 @@ class CertWindow extends React.Component<any, any> {
 
     if (prevProps.isLoading && !isLoading) {
       $(".btn-floated").dropdown();
+    }
+
+    if (prevProps.urlCmdProps !== urlCmdProps) {
+      if (urlCmdProps && !urlCmdProps.done) {
+        if (urlCmdProps.operation == URL_CMD_CERTIFICATES_IMPORT) {
+          this.setState({ showModalBestStore: true });
+        }
+      }
     }
 
     if (prevProps.location !== location) {
@@ -1693,6 +1748,7 @@ export default connect((state) => {
     location: state.router.location,
     searchValue: state.filters.searchValue,
     servicesMap: state.services.entities,
+    urlCmdProps: state.urlCmdCertificates,
   };
 }, {
   changeSearchValue, deleteRequestCA, loadAllCertificates, loadAllContainers,
