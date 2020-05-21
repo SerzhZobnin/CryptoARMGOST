@@ -66,7 +66,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       //
     }
 
-    // this.handleReady();
+    this.handleReady();
   }
 
   render() {
@@ -208,7 +208,13 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
         $(".toast-authorization_successful").remove();
         Materialize.toast(localize("DSS.authorization_successful", locale), 3000, "toast-authorization_successful");
 
-        if  (!isRememberPassword) { deletePasswordDSS (user.id); } else {rememberPasswordDSS(user.id, field_value.password_dss); }
+        if (isRememberPassword) {
+          rememberPasswordDSS(user.id, field_value.password_dss);
+        } else {
+          if (passwordUserDSS && passwordUserDSS.password) {
+            deletePasswordDSS(user.id);
+          }
+        }
 
         getPolicyDSS(user.dssUrl, user.id, result.AccessToken).then(
           () => {
