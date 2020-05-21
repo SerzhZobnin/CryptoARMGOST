@@ -5,6 +5,7 @@ import {
   MODAL_CERTIFICATE_REQUEST_CA, MY, REQUEST, ROOT, INTERRUPT, URL_CMD_CERTIFICATES_IMPORT,
 } from "../../constants";
 import store from "../../store";
+import { navigationUnlock } from "../../AC/globalLocks";
 
 interface IBestStoreProps {
   autoImport: () => void;
@@ -113,6 +114,7 @@ class BestStore extends React.Component<IBestStoreProps, IBestStoreState> {
     const { onCancel, isImportFromUrlCmd } = this.props;
 
     if (interruptUrlCmd && isImportFromUrlCmd) {
+      navigationUnlock();
       store.dispatch({type: URL_CMD_CERTIFICATES_IMPORT + INTERRUPT});
     }
 

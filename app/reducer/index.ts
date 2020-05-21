@@ -13,6 +13,7 @@ import dssResponses from "./dssResponses";
 import events from "./events";
 import files from "./files";
 import filters from "./filters";
+import globalLocks from "./globalLocks";
 import license from "./license";
 import multiOperations from "./multiOperations";
 import passwordDSS from "./passwordDSS";
@@ -27,8 +28,8 @@ import tokens from "./tokens";
 import transactionDSS from "./transactionDSS";
 import trustedId from "./trustedId";
 import urlActions from "./urlActions";
-import users from "./users";
 import urlCmdCertificates from "./urlCmdCertificates";
+import users from "./users";
 
 export default combineReducers({
   router,
@@ -61,4 +62,5 @@ export default combineReducers({
   urlActions,
   users,
   urlCmdCertificates,
+  globalLocks,
 });

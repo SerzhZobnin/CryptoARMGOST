@@ -1,14 +1,13 @@
 import {
-  URL_CMD_CERTIFICATES_IMPORT,
-  URL_CMD_CERTIFICATES_EXPORT, FAIL, START, SUCCESS,
-  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
-  LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
-  MY, LOCATION_CERTIFICATES
+  FAIL, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
+  LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_CERTIFICATES, MY,
+  START, SUCCESS, URL_CMD_CERTIFICATES_EXPORT, URL_CMD_CERTIFICATES_IMPORT,
 } from "../constants";
-import { IUrlCommandApiV4Type } from "../parse-app-url";
-import { postRequest, paramsRequest, openWindow, writeCertToTmpFile } from "./urlCmdUtils";
-import store from "../store";
 import localize from "../i18n/localize";
+import { IUrlCommandApiV4Type } from "../parse-app-url";
+import store from "../store";
+import { navigationLock, navigationUnlock } from "./globalLocks";
+import { openWindow, paramsRequest, postRequest, writeCertToTmpFile } from "./urlCmdUtils";
 
 interface ICertResp {
   jsonrpc: string;
@@ -70,7 +69,7 @@ function sendCertsReq(id: string, certificates: ICertToExport[]) {
 export function handleUrlCommandCertificates(
   command: IUrlCommandApiV4Type
 ) {
-  postRequest( command.url, paramsRequestCerts(command.id)).then(
+  postRequest(command.url, paramsRequestCerts(command.id)).then(
     (data: any) => {
       const operation = data.result.operation;
       const props = data.result.props;
@@ -94,17 +93,18 @@ export function handleUrlCommandCertificates(
 }
 
 function exportCertificates(props: ICertificateOperationPropsExp, id: string, url: string) {
-  let stores = (props.store && (props.store.length>0)) ? props.store : [MY];
+  const stores = (props.store && (props.store.length > 0)) ? props.store : [MY];
 
   store.dispatch({
     type: URL_CMD_CERTIFICATES_EXPORT + START,
     payload: {
-      operation: URL_CMD_CERTIFICATES_EXPORT,
       expProps: props,
-      id: id,
-      url: url,
+      id,
+      operation: URL_CMD_CERTIFICATES_EXPORT,
+      url,
     },
   });
+  navigationLock();
 
   const targetLocation = props.multy ? LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT
     : LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE;
@@ -113,7 +113,7 @@ function exportCertificates(props: ICertificateOperationPropsExp, id: string, ur
 }
 
 function importCertificate(props: ICertificateOperationPropsImp) {
-  let certStore = props.store ? props.store : ["MY"];
+  const certStore = props.store ? props.store : ["MY"];
   const certTmpPath = writeCertToTmpFile(props.certificateBase64);
 
   store.dispatch({
@@ -124,11 +124,13 @@ function importCertificate(props: ICertificateOperationPropsImp) {
       certPath: certTmpPath
     },
   });
+  navigationLock();
 
   openWindow(LOCATION_CERTIFICATES, certStore[0]);
 }
 
 export function urlCmdCertImportFail() {
+  navigationUnlock();
   store.dispatch({type: URL_CMD_CERTIFICATES_IMPORT + FAIL});
   $(".toast-url-cmd-cert-import-fail").remove();
   Materialize.toast(localize("UrlCommand.cert_import_fail", window.locale),
@@ -136,6 +138,7 @@ export function urlCmdCertImportFail() {
 }
 
 export function urlCmdCertImportSuccess() {
+  navigationUnlock();
   store.dispatch({type: URL_CMD_CERTIFICATES_IMPORT + SUCCESS});
   $(".toast-url-cmd-cert-import-success").remove();
   Materialize.toast(localize("UrlCommand.cert_import_sucess", window.locale),
@@ -146,6 +149,7 @@ export function urlCmdSendCert(cert: any, id: string, url: string) {
   const certValue = converCertToPlainBase64(cert);
   postRequest( url, sendCertReq(id, certValue, cert.subjectFriendlyName )).then(
     (data: any) => {
+      navigationUnlock();
       store.dispatch({type: URL_CMD_CERTIFICATES_EXPORT + SUCCESS});
       $(".toast-url-cmd-cert-export-success").remove();
       Materialize.toast(localize("UrlCommand.cert_export_sucess", window.locale),
@@ -153,6 +157,7 @@ export function urlCmdSendCert(cert: any, id: string, url: string) {
     },
     (error) => {
       console.log("Error exporting certificate: " + error.message);
+      navigationUnlock();
       store.dispatch({type: URL_CMD_CERTIFICATES_EXPORT + FAIL});
       $(".toast-url-cmd-cert-export-fail").remove();
       Materialize.toast(localize("UrlCommand.cert_export_fail", window.locale),
@@ -171,6 +176,7 @@ export function urlCmdSendCerts(certs: any, id: string, url: string) {
   }
   postRequest( url, sendCertsReq(id, certificatesToSend )).then(
     (data: any) => {
+      navigationUnlock();
       store.dispatch({type: URL_CMD_CERTIFICATES_EXPORT + SUCCESS});
       $(".toast-url-cmd-certs-export-success").remove();
       Materialize.toast(localize("UrlCommand.certs_export_success", window.locale),
@@ -178,6 +184,7 @@ export function urlCmdSendCerts(certs: any, id: string, url: string) {
     },
     (error) => {
       console.log("Error exporting certificate: " + error.message);
+      navigationUnlock();
       store.dispatch({type: URL_CMD_CERTIFICATES_EXPORT + FAIL});
       $(".toast-url-cmd-certs-export-fail").remove();
       Materialize.toast(localize("UrlCommand.certs_export_fail", window.locale),
@@ -197,6 +204,7 @@ function converCertToPlainBase64(certToConvert: any) {
 }
 
 export function urlCmdCertExportFail() {
+  navigationUnlock();
   store.dispatch({type: URL_CMD_CERTIFICATES_EXPORT + FAIL});
   $(".toast-url-cmd-cert-export-fail").remove();
   Materialize.toast(localize("UrlCommand.certs_export_fail", window.locale),
