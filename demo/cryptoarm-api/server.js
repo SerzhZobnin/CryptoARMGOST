@@ -26,14 +26,22 @@ app.post('/json', function (req, res) {
     console.log("Error! Wrong jsonrpc version! (" + req.body.jsonrpc + " but MUST be 2.0)");
   }
 
-  if (req.body.method === "certificates.parameters") {
+  if (req.body.method === "certificates.parameters"
+    || req.body.method === "certificateInfo.parameters"
+  ) {
     if (id !== req.body.id) {
-      console.log("Error! Id from URL and ID from request is not match! (" + id + " and " + req.body.id+ ")");
+      console.log("Error! Id from URL and ID from request is not match! (" + id + " and " + req.body.id + ")");
     }
 
     if (id) {
       switch (req.body.id) {
         // Server errors
+        case "4b05b126-4b74-4d0f-af66-f87ce0bb9cee":
+          res.status(405).send('');
+          break;
+        case "d308db61-a693-4658-b089-25a242711217":
+          res.status(415).send('');
+          break;
         case "c1e334d3-378a-45ac-842b-b823d2702722":
           res.sendFile(__dirname + '/public/json/server-errors/internal-error.json');
           break;
@@ -50,6 +58,7 @@ app.post('/json', function (req, res) {
           res.sendFile(__dirname + '/public/json/server-errors/parse-error.json');
           break;
 
+
         // Certificates
         case "f2502c2b-ea27-44d2-bb18-077c6e20dd7d":
           res.sendFile(__dirname + '/public/json/certs/import-cert.json');
@@ -63,25 +72,24 @@ app.post('/json', function (req, res) {
         case "9b5e6a0b-489d-4812-8866-0b9afce648e1":
           res.sendFile(__dirname + '/public/json/certs/export-certs-stores.json');
           break;
-        case "4b05b126-4b74-4d0f-af66-f87ce0bb9cee":
-          res.status(405).send('');
-          break;
-        case "d308db61-a693-4658-b089-25a242711217":
-          res.status(415).send('');
+
+        // Certificates info
+        case "4da4a42a-cecd-4d3b-a13c-466a44fc6924":
+          res.sendFile(__dirname + '/public/json/cert-info/cert-info-params.json');
           break;
       }
     }
   } else if (req.body.method === "certificates.base64") {
     if (id !== req.body.params.id) {
-      console.log("Error! Id from URL and ID from request is not match! (" + id + " and " + req.body.params.id+ ")");
+      console.log("Error! Id from URL and ID from request is not match! (" + id + " and " + req.body.params.id + ")");
     }
 
     console.log("Recieved request with method " + req.body.method + " and id " + req.body.params.id);
 
-    if (req.body.params.certificates){
+    if (req.body.params.certificates) {
       console.log("Recieved " + req.body.params.certificates.length + " certificates for import");
       console.log("========================");
-      req.body.params.certificates.forEach(function(cert) {
+      req.body.params.certificates.forEach(function (cert) {
         console.log("Certificate name: " + cert.friendlyName);
         console.log("Certificate data: " + cert.certificateBase64);
         console.log("------------------------");
@@ -91,6 +99,41 @@ app.post('/json', function (req, res) {
       console.log("Recieved signgle certificate for import: " + req.body.params.friendlyName);
       console.log("Certificate data: " + req.body.params.certificateBase64);
     }
+
+    res.status(200).send("");
+  } else if (req.body.method === "certificateInfo.info") {
+    const params = req.body.params;
+    console.log("========================");
+    console.log("Certificate info recieved:");
+
+    if (params.hash) {
+      console.log("\thash: " + params.hash);
+    }
+    if (params.issuerFriendlyName) {
+      console.log("\tissuerFriendlyName: " + params.issuerFriendlyName);
+    }
+    if (params.issuerName) {
+      console.log("\tissuerName: " + params.issuerName);
+    }
+    if (params.notAfter) {
+      console.log("\tnotAfter: " + params.notAfter);
+    }
+    if (params.notBefore) {
+      console.log("\tnotBefore: " + params.notBefore);
+    }
+    if (params.subjectFriendlyName) {
+      console.log("\tsubjectFriendlyName: " + params.subjectFriendlyName);
+    }
+    if (params.subjectName) {
+      console.log("\tsubjectName: " + params.subjectName);
+    }
+    if (params.status) {
+      console.log("\tstatus: " + params.status);
+    }
+    if (params.serial) {
+      console.log("\tserial: " + params.serial);
+    }
+    console.log("========================");
 
     res.status(200).send("");
   } else {
