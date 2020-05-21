@@ -40,10 +40,11 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
     const passwordUserDSS = props.passwordDSS.get(props.dssUserID);
     this.state = ({
       field_value: { login_dss: "", password_dss: passwordUserDSS && passwordUserDSS.password ? passwordUserDSS.password : "" },
-      isRememberPassword: false,
+      isRememberPassword: passwordUserDSS && passwordUserDSS.password ? true : false,
       passwordUserDSS,
-      user: props.users.get(props.dssUserID),
       tryAuthWithoutPasswordEntering: true,
+      user: props.users.get(props.dssUserID),
+
     });
   }
 
@@ -65,7 +66,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
       //
     }
 
-    this.handleReady();
+    // this.handleReady();
   }
 
   render() {
@@ -207,11 +208,7 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
         $(".toast-authorization_successful").remove();
         Materialize.toast(localize("DSS.authorization_successful", locale), 3000, "toast-authorization_successful");
 
-        if (isRememberPassword) {
-          rememberPasswordDSS(user.id, field_value.password_dss);
-        } else {
-            deletePasswordDSS(user.id);
-        }
+        if  (!isRememberPassword) { deletePasswordDSS (user.id); } else {rememberPasswordDSS(user.id, field_value.password_dss); }
 
         getPolicyDSS(user.dssUrl, user.id, result.AccessToken).then(
           () => {
