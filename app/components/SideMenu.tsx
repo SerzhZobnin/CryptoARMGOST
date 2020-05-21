@@ -386,7 +386,7 @@ export default connect((state) => {
   return {
     operationRemoteAction: state.urlActions.action,
     operationIsRemote: state.urlActions.performed || state.urlActions.performing
-      || state.globalLocks.navigationLock,
+      || state.globalLocks.lockNavigation,
     certificates: state.certificates.entities,
     certrequests: state.certrequests.entities,
     crls: mapToArr(state.crls.entities),
