@@ -3138,6 +3138,14 @@ svg:hover {
     text-align: center;
     }
 
+.delete_container_modal {
+    height: 55px;
+}
+
+.dialog-message {
+    font-size: 14px ;
+}
+
 .ca_request_status {
   width: 20px;
   height: 20px;
