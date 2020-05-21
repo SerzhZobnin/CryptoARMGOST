@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { MY, ADDRESS_BOOK, CA, ROOT, TMP_DIR } from "../constants";
+import { ADDRESS_BOOK, CA, MY, ROOT, TMP_DIR } from "../constants";
 import history from "../history";
 import localize from "../i18n/localize";
 
@@ -7,7 +7,7 @@ interface IParamsRequest {
   jsonrpc: "2.0";
   method: string;
   id: string;
-};
+}
 
 export async function postRequest(url: string, requestData: string|Buffer) {
   return new Promise((resolve, reject) => {
@@ -24,22 +24,43 @@ export async function postRequest(url: string, requestData: string|Buffer) {
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
     curl.setOpt(window.Curl.option.POSTFIELDS, requestData);
 
-    curl.on("end", function (statusCode: number, response: any) {
+    curl.on("end", function(statusCode: number, response: any) {
       let data;
 
       try {
+        switch (statusCode) {
+          case 200:
+            if (!response || (response.toString().length === 0)) {
+              data = "";
+            } else {
+              data = JSON.parse(response.toString());
+            }
+            break;
 
-        if (statusCode !== 200) {
-          throw new Error(`Unexpected response, status code ${statusCode}`);
+          case 202:
+          case 204:
+            data = "";
+            break;
+
+          case 405:
+            throw new Error(localize("UrlCommand.server_error_method_not_allowed", window.locale));
+
+          case 415:
+            throw new Error(localize("UrlCommand.server_error_unsupported_media", window.locale));
+
+          default:
+            throw new Error(`Unexpected status code ${statusCode}`);
         }
 
-        if (!response || (response.toString().length === 0)) {
-          data = "";
-        } else {
-          data = JSON.parse(response.toString());
+        if (data !== "" && data.error) {
+          if (data.error.data) {
+            // tslint:disable-next-line: no-console
+            console.log(`Server error data: ${JSON.stringify(data.error.data)}`);
+          }
+          throw new Error(`${data.error.message} (${data.error.code})`);
         }
       } catch (error) {
-        reject(`Cannot load data, error: ${error.message}`);
+        reject(error.message);
         return;
       } finally {
         curl.close();
@@ -60,8 +81,9 @@ export async function postRequest(url: string, requestData: string|Buffer) {
 export function paramsRequest(method: string, id: string): IParamsRequest {
   return {
     jsonrpc: "2.0",
-    method: method,
-    id: id
+    method,
+    // tslint:disable-next-line: object-literal-sort-keys
+    id,
   };
 }
 
@@ -70,15 +92,15 @@ export function openWindow(location: string, certStore: string) {
   remote.getCurrentWindow().show();
   remote.getCurrentWindow().focus();
 
-  var resultLocation = location;
-  var filter = "my";
-  var state = {
+  const resultLocation = location;
+  let filter = "my";
+  let state = {
     head: localize("Certificate.certs_my", window.locale),
-    store: certStore
+    store: certStore,
   };
 
   if (certStore !== MY) {
-    switch(certStore) {
+    switch (certStore) {
       case ADDRESS_BOOK:
         filter = ADDRESS_BOOK;
         state.head = localize("AddressBook.address_book", window.locale);
@@ -102,12 +124,12 @@ export function openWindow(location: string, certStore: string) {
   history.push({
     pathname: resultLocation,
     search: filter,
-    state: state
+    state,
   });
-};
+}
 
 export function writeCertToTmpFile(certBase64: string): string {
-  var resultUri = TMP_DIR + "/cert-tmp-" + ((new Date()).getTime()) + ".cer";
+  const resultUri = TMP_DIR + "/cert-tmp-" + ((new Date()).getTime()) + ".cer";
   fs.writeFileSync(resultUri, certBase64);
 
   return resultUri;

@@ -33,6 +33,23 @@ app.post('/json', function (req, res) {
 
     if (id) {
       switch (req.body.id) {
+        // Server errors
+        case "c1e334d3-378a-45ac-842b-b823d2702722":
+          res.sendFile(__dirname + '/public/json/server-errors/internal-error.json');
+          break;
+        case "d53032c9-fc0d-42a7-bdfd-b45bec7b8ab9":
+          res.sendFile(__dirname + '/public/json/server-errors/invalid-params.json');
+          break;
+        case "90dc17c9-4df9-420a-9e25-53b8df4f709f":
+          res.sendFile(__dirname + '/public/json/server-errors/invalid-request.json');
+          break;
+        case "d2056bc4-c8c7-41ee-bdf8-aaa306cdec2f":
+          res.sendFile(__dirname + '/public/json/server-errors/method-not-found.json');
+          break;
+        case "14a52a48-dac7-4b21-8836-744e453a82d2":
+          res.sendFile(__dirname + '/public/json/server-errors/parse-error.json');
+          break;
+
         // Certificates
         case "f2502c2b-ea27-44d2-bb18-077c6e20dd7d":
           res.sendFile(__dirname + '/public/json/certs/import-cert.json');
@@ -42,6 +59,15 @@ app.post('/json', function (req, res) {
           break;
         case "0a94fab1-eb68-4257-a9da-1399ad208445":
           res.sendFile(__dirname + '/public/json/certs/export-certs.json');
+          break;
+        case "9b5e6a0b-489d-4812-8866-0b9afce648e1":
+          res.sendFile(__dirname + '/public/json/certs/export-certs-stores.json');
+          break;
+        case "4b05b126-4b74-4d0f-af66-f87ce0bb9cee":
+          res.status(405).send('');
+          break;
+        case "d308db61-a693-4658-b089-25a242711217":
+          res.status(415).send('');
           break;
       }
     }

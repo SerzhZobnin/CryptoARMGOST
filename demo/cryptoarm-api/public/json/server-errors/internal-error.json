@@ -1,0 +1,9 @@
+{
+  "jsonrpc": "2.0",
+  "error": {
+    "code": -32603,
+    "message": "Internal error",
+    "data": "Some internal error info"
+  },
+  "id": "c1e334d3-378a-45ac-842b-b823d2702722"
+}

@@ -48,10 +48,11 @@ function sendCertReq(id: string, certificate: string, friendlyName: string) {
     jsonrpc: "2.0",
     method: "certificates.base64",
     params: {
-      id: id,
+      id,
+      // tslint:disable-next-line: object-literal-sort-keys
       certificateBase64: certificate,
-      friendlyName: friendlyName
-    }
+      friendlyName,
+    },
   });
 }
 
@@ -60,15 +61,14 @@ function sendCertsReq(id: string, certificates: ICertToExport[]) {
     jsonrpc: "2.0",
     method: "certificates.base64",
     params: {
-      id: id,
-      certificates: certificates
-    }
+      id,
+      // tslint:disable-next-line: object-literal-sort-keys
+      certificates,
+    },
   });
 }
 
-export function handleUrlCommandCertificates(
-  command: IUrlCommandApiV4Type
-) {
+export function handleUrlCommandCertificates( command: IUrlCommandApiV4Type ) {
   postRequest(command.url, paramsRequestCerts(command.id)).then(
     (data: any) => {
       const operation = data.result.operation;
@@ -81,14 +81,19 @@ export function handleUrlCommandCertificates(
           importCertificate(props);
           break;
         default:
+          // tslint:disable-next-line: no-console
           console.log("Error! Unsupported certificates method: " + operation);
           break;
       }
     },
     (error) => {
+      $(".toast-url-cmd-cert-params-fail-err-descr").remove();
+      Materialize.toast(error, 3000, "toast-url-cmd-cert-params-fail-err-descr");
+
+      // tslint:disable-next-line: no-console
       console.log("Error recieving parameters of certificate command with id " + command.id
-        + ". Error description: " + error.message);
-    }
+        + ". Error description: " + error);
+    },
   );
 }
 
@@ -97,6 +102,7 @@ function exportCertificates(props: ICertificateOperationPropsExp, id: string, ur
 
   store.dispatch({
     type: URL_CMD_CERTIFICATES_EXPORT + START,
+    // tslint:disable-next-line: object-literal-sort-keys
     payload: {
       expProps: props,
       id,
@@ -117,12 +123,12 @@ function importCertificate(props: ICertificateOperationPropsImp) {
   const certTmpPath = writeCertToTmpFile(props.certificateBase64);
 
   store.dispatch({
-    type: URL_CMD_CERTIFICATES_IMPORT + START,
     payload: {
-      operation: URL_CMD_CERTIFICATES_IMPORT,
+      certPath: certTmpPath,
       impProps: props,
-      certPath: certTmpPath
+      operation: URL_CMD_CERTIFICATES_IMPORT,
     },
+    type: URL_CMD_CERTIFICATES_IMPORT + START,
   });
   navigationLock();
 
@@ -156,22 +162,23 @@ export function urlCmdSendCert(cert: any, id: string, url: string) {
         3000, "toast-url-cmd-cert-export-success");
     },
     (error) => {
-      console.log("Error exporting certificate: " + error.message);
       navigationUnlock();
       store.dispatch({type: URL_CMD_CERTIFICATES_EXPORT + FAIL});
+      $(".toast-url-cmd-cert-export-fail-err-descr").remove();
+      Materialize.toast(error, 3000, "toast-url-cmd-cert-export-fail-err-descr");
       $(".toast-url-cmd-cert-export-fail").remove();
       Materialize.toast(localize("UrlCommand.cert_export_fail", window.locale),
         3000, "toast-url-cmd-cert-export-fail");
-    }
+    },
   );
 }
 
 export function urlCmdSendCerts(certs: any, id: string, url: string) {
-  var certificatesToSend = [];
+  let certificatesToSend = [];
   for (const cert of certs) {
     certificatesToSend.push({
       certificateBase64: converCertToPlainBase64(cert),
-      friendlyName: cert.subjectFriendlyName
+      friendlyName: cert.subjectFriendlyName,
     });
   }
   postRequest( url, sendCertsReq(id, certificatesToSend )).then(
@@ -183,13 +190,12 @@ export function urlCmdSendCerts(certs: any, id: string, url: string) {
         3000, "toast-url-cmd-certs-export-success");
     },
     (error) => {
-      console.log("Error exporting certificate: " + error.message);
       navigationUnlock();
       store.dispatch({type: URL_CMD_CERTIFICATES_EXPORT + FAIL});
       $(".toast-url-cmd-certs-export-fail").remove();
       Materialize.toast(localize("UrlCommand.certs_export_fail", window.locale),
         3000, "toast-url-cmd-certs-export-fail");
-    }
+    },
   );
 }
 

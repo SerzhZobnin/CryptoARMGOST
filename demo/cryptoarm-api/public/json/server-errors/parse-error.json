@@ -1,0 +1,8 @@
+{
+  "jsonrpc": "2.0",
+  "error": {
+    "code": -32700,
+    "message": "Parse error"
+  },
+  "id": "14a52a48-dac7-4b21-8836-744e453a82d2"
+}
