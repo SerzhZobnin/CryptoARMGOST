@@ -91,8 +91,8 @@ export default (files = new DefaultReducerState(), action) => {
     case UNSELECT_ALL_FILES:
       return files.update("entities", (entities: any) => {
         return entities.map((file: any) => {
-          return file.setIn(["active"], false)
-        })
+          return file.setIn(["active"], false);
+        });
       });
 
     case REMOVE_ALL_FILES:
