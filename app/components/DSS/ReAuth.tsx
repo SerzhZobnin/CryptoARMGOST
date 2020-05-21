@@ -40,10 +40,11 @@ class ReAuth extends React.Component<IReAuthProps, IReAuthState> {
     const passwordUserDSS = props.passwordDSS.get(props.dssUserID);
     this.state = ({
       field_value: { login_dss: "", password_dss: passwordUserDSS && passwordUserDSS.password ? passwordUserDSS.password : "" },
-      isRememberPassword: false,
+      isRememberPassword: passwordUserDSS && passwordUserDSS.password ? true : false,
       passwordUserDSS,
-      user: props.users.get(props.dssUserID),
       tryAuthWithoutPasswordEntering: true,
+      user: props.users.get(props.dssUserID),
+
     });
   }
 
