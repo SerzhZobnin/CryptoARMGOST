@@ -47,7 +47,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
       <div className="row">
         <div className="col s12">
           <CheckBoxWithLabel
-            isChecked={reverse_operations}
+            isChecked={ reverse_operations && !operationIsRemote  }
             disabled={is_disabled}
             elementId="reverse_operations"
             onClickCheckBox={this.handleReverseOperationsClick}
@@ -63,7 +63,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
         </div>
         <div className="col s12">
           <CheckBoxWithLabel
-            isChecked={archivation_operation && !isDssCert}
+            isChecked={archivation_operation && !isDssCert && !operationIsRemote}
             disabled={is_disabled || isDssCert}
             elementId="archivation_operation"
             onClickCheckBox={this.handleArchivationOperationClick}
@@ -71,7 +71,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
         </div>
         <div className="col s12">
           <CheckBoxWithLabel
-            isChecked={encryption_operation && !isDssCert}
+            isChecked={encryption_operation && !isDssCert && !operationIsRemote}
             disabled={is_disabled || isDssCert}
             elementId="encryption_operation"
             onClickCheckBox={this.handleEncryptionOperationClick}
