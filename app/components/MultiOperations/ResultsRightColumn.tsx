@@ -146,11 +146,16 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
   getResults = () => {
     const { localize, locale } = this.context;
     const { results } = this.props;
+    let firstResult: null | false | true = null;
 
     const elements = results.map((value: any) => {
       let icon = "";
 
-      if (value.result) {
+      if (firstResult === null) {
+        firstResult = value.result;
+      }
+
+      if (firstResult && value.result) {
         icon = "status_ok_icon";
       } else {
         icon = "status_error_icon";
@@ -167,11 +172,11 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
         inFiles = value.in.filename;
       }
 
-      if (value.out && value.out.operation === 2 && value.out.unzipedFiles && Array.isArray(value.out.unzipedFiles)) {
+      if (firstResult && value.out && value.out.operation === 2 && value.out.unzipedFiles && Array.isArray(value.out.unzipedFiles)) {
         value.out.unzipedFiles.forEach((fileProps: any) => {
           outFiles += `${fileProps.filename}; `;
         });
-      } else if (value.out && value.out.filename) {
+      } else if (firstResult && value.out && value.out.filename) {
         outFiles = value.out.filename;
       }
 
