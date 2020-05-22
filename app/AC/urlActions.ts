@@ -11,12 +11,13 @@ import {
   SIGN, SIGN_DOCUMENTS_FROM_URL, START, SUCCESS,
   TMP_DIR, VERIFY, VERIFY_DOCUMENTS_FROM_URL, VERIFY_SIGNATURE,
 } from "../constants";
-import { URLActionType, IUrlCommandApiV4Type } from "../parse-app-url";
+import { IUrlCommandApiV4Type, URLActionType } from "../parse-app-url";
 import store from "../store";
 import { checkLicense } from "../trusted/jwt";
 import * as signs from "../trusted/sign";
 import { extFile, fileExists, md5 } from "../utils";
 import { handleUrlCommandCertificates } from "./urlCmdCertificates";
+import { handleUrlCommandCertificateInfo } from "./urlCmdCertInfo";
 
 const remote = window.electron.remote;
 
@@ -55,9 +56,13 @@ interface IEncryptRequest {
 export function dispatchURLCommand(
   command: IUrlCommandApiV4Type,
 ) {
-  switch (command.command) {
-    case "certificates": //TODO: move to constants
+  switch (command.command.toLowerCase()) {
+    case "certificates":
       handleUrlCommandCertificates(command);
+      break;
+
+    case "certificateinfo":
+      handleUrlCommandCertificateInfo(command);
       break;
 
     default:
