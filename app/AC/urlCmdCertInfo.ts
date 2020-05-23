@@ -1,9 +1,13 @@
+import { OrderedMap } from "immutable";
 import {
   FAIL, LOCATION_CERTIFICATES, START, SUCCESS, URL_CMD_CERT_INFO,
 } from "../constants";
+import history from "../history";
 import localize from "../i18n/localize";
 import { IUrlCommandApiV4Type } from "../parse-app-url";
+import { CertificateModel } from "../reducer/certificates";
 import store from "../store";
+import { arrayToMap } from "../utils";
 import { navigationLock, navigationUnlock } from "./globalLocks";
 import { openWindow, paramsRequest, postRequest } from "./urlCmdUtils";
 
@@ -47,12 +51,8 @@ export function handleUrlCommandCertificateInfo( command: IUrlCommandApiV4Type )
       }
 
       certInfoStart(cert, data.id, command.url);
-      // TODO: display UI with certificate information
-      // navigationLock();
-      // openWindow(LOCATION_CERTIFICATES, "");
-
-      // TODO: move to UI 'OK' handler
-      sendCertificateInfo(cert, command.url, data.id);
+      navigationLock();
+      openWindow(LOCATION_CERTIFICATES, "");
     },
     (error) => {
       $(".toast-url-cmd-cert-info-params-fail-err-descr").remove();
@@ -79,6 +79,7 @@ export function certInfoStart(cert: trusted.pki.Certificate, id: string, url: st
 }
 
 export function certInfoSuccess() {
+  history.goBack();
   navigationUnlock();
   store.dispatch({type: URL_CMD_CERT_INFO + SUCCESS});
   $(".toast-url-cmd-cert-info-success").remove();
@@ -87,6 +88,7 @@ export function certInfoSuccess() {
 }
 
 export function certInfoFail() {
+  history.goBack();
   navigationUnlock();
   store.dispatch({type: URL_CMD_CERT_INFO + FAIL});
   $(".toast-url-cmd-cert-info-fail").remove();
@@ -106,4 +108,40 @@ export function sendCertificateInfo(cert: trusted.pki.Certificate, cmdUrl: strin
         + ". Error description: " + error);
     },
   );
+}
+
+export function pkiCertToCertMap(certValue: trusted.pki.Certificate): any {
+  let status = false;
+  try {
+    status = trusted.utils.Csp.verifyCertificateChain(certValue);
+  } catch (e) {
+    status = false;
+  }
+
+  const certificateItem = {
+    hash: certValue.thumbprint,
+    issuerFriendlyName: certValue.issuerFriendlyName,
+    key: "",
+    notAfter: certValue.notAfter,
+    notBefore: certValue.notAfter,
+    object: certValue,
+    organizationName: certValue.organizationName,
+    provider: "CRYPTOPRO",
+    publicKeyAlgorithm: certValue.publicKeyAlgorithm,
+    serial: certValue.serialNumber,
+    signatureAlgorithm: certValue.signatureAlgorithm,
+    signatureDigestAlgorithm: certValue.signatureDigestAlgorithm,
+    subjectFriendlyName: certValue.subjectFriendlyName,
+    subjectName: certValue.subjectName,
+    // --------
+    // tslint:disable-next-line: object-literal-sort-keys
+    category: "MY",
+    format: "DER",
+    id: "CRYPTOPRO_MY_" + certValue.thumbprint,
+    issuerName: certValue.issuerName,
+    type: "CERTIFICATE",
+    status,
+    verified: true,
+  };
+  return OrderedMap({}).merge(arrayToMap([certificateItem], CertificateModel));
 }

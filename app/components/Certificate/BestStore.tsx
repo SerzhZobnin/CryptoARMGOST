@@ -1,11 +1,10 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { navigationUnlock } from "../../AC/globalLocks";
 import {
-  ADDRESS_BOOK, CA, MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST,
-  MODAL_CERTIFICATE_REQUEST_CA, MY, REQUEST, ROOT, INTERRUPT, URL_CMD_CERTIFICATES_IMPORT,
+  INTERRUPT, URL_CMD_CERTIFICATES_IMPORT,
 } from "../../constants";
 import store from "../../store";
-import { navigationUnlock } from "../../AC/globalLocks";
 
 interface IBestStoreProps {
   autoImport: () => void;

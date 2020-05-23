@@ -9,7 +9,7 @@ export const DefaultReducerState = Record({
   // currentOpration: "",
 });
 
-export default (globalLocks = new DefaultReducerState(), action) => {
+export default (globalLocks = new DefaultReducerState(), action: any) => {
   const { type, payload } = action;
   switch (type) {
     case GLOBAL_LOCKS_NAVIGATION_LOCK:

@@ -18,7 +18,7 @@ export const DefaultReducerState = Record({
   url: "",
 });
 
-export default (urlCmdCerts = new DefaultReducerState(), action) => {
+export default (urlCmdCerts = new DefaultReducerState(), action: any) => {
   const { type, payload } = action;
   switch (type) {
     case URL_CMD_CERTIFICATES_IMPORT + START:

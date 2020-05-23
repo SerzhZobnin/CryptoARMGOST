@@ -174,7 +174,7 @@ export function urlCmdSendCert(cert: any, id: string, url: string) {
 }
 
 export function urlCmdSendCerts(certs: any, id: string, url: string) {
-  let certificatesToSend = [];
+  const certificatesToSend = [];
   for (const cert of certs) {
     certificatesToSend.push({
       certificateBase64: converCertToPlainBase64(cert),
