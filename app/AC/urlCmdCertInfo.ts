@@ -35,7 +35,7 @@ function requestCertInfo(id: string, certificate: trusted.pki.Certificate) {
   });
 }
 
-export function handleUrlCommandCertificateInfo( command: IUrlCommandApiV4Type ) {
+export function handleUrlCommandCertificateInfo(command: IUrlCommandApiV4Type) {
   postRequest(command.url, paramsRequestCerts(command.id)).then(
     (data: any) => {
       const certValue = Buffer.from(data.result.certificateBase64);
@@ -71,6 +71,7 @@ export function certInfoStart(cert: trusted.pki.Certificate, id: string, url: st
     // tslint:disable-next-line: object-literal-sort-keys
     payload: {
       certToProcess: cert,
+      certToProcessPkiItemInfo: certificateToPkiItemInfo(cert),
       id,
       operation: URL_CMD_CERT_INFO,
       url,
@@ -81,7 +82,7 @@ export function certInfoStart(cert: trusted.pki.Certificate, id: string, url: st
 export function certInfoSuccess() {
   history.goBack();
   navigationUnlock();
-  store.dispatch({type: URL_CMD_CERT_INFO + SUCCESS});
+  store.dispatch({ type: URL_CMD_CERT_INFO + SUCCESS });
   $(".toast-url-cmd-cert-info-success").remove();
   Materialize.toast(localize("UrlCommand.cert_info_success", window.locale),
     3000, "toast-url-cmd-cert-info-success");
@@ -90,7 +91,7 @@ export function certInfoSuccess() {
 export function certInfoFail() {
   history.goBack();
   navigationUnlock();
-  store.dispatch({type: URL_CMD_CERT_INFO + FAIL});
+  store.dispatch({ type: URL_CMD_CERT_INFO + FAIL });
   $(".toast-url-cmd-cert-info-fail").remove();
   Materialize.toast(localize("UrlCommand.cert_info_fail", window.locale),
     3000, "toast-url-cmd-cert-info-fail");
@@ -110,38 +111,55 @@ export function sendCertificateInfo(cert: trusted.pki.Certificate, cmdUrl: strin
   );
 }
 
-export function pkiCertToCertMap(certValue: trusted.pki.Certificate): any {
-  let status = false;
-  try {
-    status = trusted.utils.Csp.verifyCertificateChain(certValue);
-  } catch (e) {
-    status = false;
-  }
+const certificateToPkiItemInfo = (certValue: trusted.pki.Certificate) => {
+  if (certValue) {
+    let status = false;
+    try {
+      status = trusted.utils.Csp.verifyCertificateChain(certValue);
+    } catch (e) {
+      status = false;
+    }
 
-  const certificateItem = {
-    hash: certValue.thumbprint,
-    issuerFriendlyName: certValue.issuerFriendlyName,
-    key: "",
-    notAfter: certValue.notAfter,
-    notBefore: certValue.notAfter,
-    object: certValue,
-    organizationName: certValue.organizationName,
-    provider: "CRYPTOPRO",
-    publicKeyAlgorithm: certValue.publicKeyAlgorithm,
-    serial: certValue.serialNumber,
-    signatureAlgorithm: certValue.signatureAlgorithm,
-    signatureDigestAlgorithm: certValue.signatureDigestAlgorithm,
-    subjectFriendlyName: certValue.subjectFriendlyName,
-    subjectName: certValue.subjectName,
-    // --------
-    // tslint:disable-next-line: object-literal-sort-keys
-    category: "MY",
-    format: "DER",
-    id: "CRYPTOPRO_MY_" + certValue.thumbprint,
-    issuerName: certValue.issuerName,
-    type: "CERTIFICATE",
-    status,
-    verified: true,
-  };
-  return OrderedMap({}).merge(arrayToMap([certificateItem], CertificateModel));
+    try {
+      return {
+        hash: certValue.thumbprint,
+        issuerFriendlyName: certValue.issuerFriendlyName,
+        key: "",
+        notAfter: certValue.notAfter,
+        notBefore: certValue.notAfter,
+        object: certValue,
+        organizationName: certValue.organizationName,
+        provider: "CRYPTOPRO",
+        publicKeyAlgorithm: certValue.publicKeyAlgorithm,
+        serial: certValue.serialNumber,
+        signatureAlgorithm: certValue.signatureAlgorithm,
+        signatureDigestAlgorithm: certValue.signatureDigestAlgorithm,
+        subjectFriendlyName: certValue.subjectFriendlyName,
+        subjectName: certValue.subjectName,
+        // --------
+        // tslint:disable-next-line: object-literal-sort-keys
+        category: "MY",
+        format: "DER",
+        id: "CRYPTOPRO_MY_" + certValue.thumbprint,
+        issuerName: certValue.issuerName,
+        type: "CERTIFICATE",
+        status,
+        verified: true,
+      };
+    } catch (e) {
+      // tslint:disable-next-line: no-console
+      console.log("Error transform pki.Cetificate to PkiItem", e);
+      return undefined;
+    }
+  } else {
+    return undefined;
+  }
+};
+
+export function pkiCertToCertMap(certToProcessPkiItemInfo: any): any {
+  if (certToProcessPkiItemInfo) {
+    return OrderedMap({}).merge(arrayToMap([certToProcessPkiItemInfo], CertificateModel));
+  } else {
+    return OrderedMap({});
+  }
 }

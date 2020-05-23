@@ -41,13 +41,14 @@ class CertificateStatusIcon extends React.Component<ICertificateStatusIconProps,
       return null;
     }
 
-    const verifiedCert = isCertInfoMode ? urlCmdCertInfo.certToProcess : certificate;
+    const verifiedCert = isCertInfoMode && urlCmdCertInfo.certToProcessPkiItemInfo
+      ? urlCmdCertInfo.certToProcessPkiItemInfo : certificate;
     let curStatusStyle;
 
     if (verifiedCert && verifiedCert.status) {
       curStatusStyle = verifiedCert.dssUserID ? "cloud_cert_status_ok" : "cert_status_ok";
     } else {
-      curStatusStyle = verifiedCert.dssUserID  ? "cloud_cert_status_error" : "cert_status_error";
+      curStatusStyle = verifiedCert.dssUserID ? "cloud_cert_status_error" : "cert_status_error";
     }
 
     return (

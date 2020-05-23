@@ -11,7 +11,7 @@ import { deleteRequestCA } from "../../AC/caActions";
 import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
 import { urlCmdCertImportFail, urlCmdCertImportSuccess } from "../../AC/urlCmdCertificates";
-import { certInfoFail, pkiCertToCertMap, sendCertificateInfo } from "../../AC/urlCmdCertInfo";
+import { certInfoFail, sendCertificateInfo } from "../../AC/urlCmdCertInfo";
 import {
   ADDRESS_BOOK, CA, CERTIFICATE, CRL,
   DEFAULT_CSR_PATH, FAIL, MODAL_ADD_CERTIFICATE, MODAL_ADD_SERVICE_CA,
@@ -88,12 +88,16 @@ class CertWindow extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    const { urlCmdProps } = this.props;
+    const { isCertInfoMode, urlCmdProps, urlCmdCertInfo } = this.props;
     $(".btn-floated").dropdown();
     if (urlCmdProps && !urlCmdProps.done) {
       if (urlCmdProps.operation === URL_CMD_CERTIFICATES_IMPORT) {
         this.setState({ showModalBestStore: true });
       }
+    }
+
+    if (isCertInfoMode && urlCmdCertInfo.certToProcessPkiItemInfo) {
+      this.handleActiveCert(urlCmdCertInfo.certToProcessPkiItemInfo);
     }
   }
 
@@ -662,7 +666,7 @@ class CertWindow extends React.Component<any, any> {
         name: "CryptoARM GOST",
       };
 
-      window.sudo.exec(cmd, options, function(err: Error) {
+      window.sudo.exec(cmd, options, function (err: Error) {
         if (err) {
 
           logger.log({
@@ -771,7 +775,7 @@ class CertWindow extends React.Component<any, any> {
         name: "CryptoARM GOST",
       };
 
-      window.sudo.exec(cmd, options, function(err: Error) {
+      window.sudo.exec(cmd, options, function (err: Error) {
         if (err) {
 
           logger.log({
@@ -1264,7 +1268,7 @@ class CertWindow extends React.Component<any, any> {
           }}
           bestStore={bestStore}
           currentStore={currentStore}
-          isImportFromUrlCmd = {isImportFromCommand}
+          isImportFromUrlCmd={isImportFromCommand}
         />
       </Modal>
     );
@@ -1312,7 +1316,7 @@ class CertWindow extends React.Component<any, any> {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { cloudCSPSettings, cloudCSPState, certificates, isLoading,
+    const { cloudCSPSettings, cloudCSPState, certificates, isCertInfoMode, isLoading,
       location, urlCmdProps } = this.props;
     const { certificate, crl } = this.state;
     const { localize, locale } = this.context;
@@ -1331,6 +1335,10 @@ class CertWindow extends React.Component<any, any> {
           this.setState({ showModalBestStore: true });
         }
       }
+    }
+
+    if (!prevProps.isCertInfoMode && this.props.isCertInfoMode && this.props.urlCmdCertInfo.certToProcessPkiItemInfo) {
+      this.handleActiveCert(this.props.urlCmdCertInfo.certToProcessPkiItemInfo);
     }
 
     if (prevProps.location !== location) {
@@ -1420,26 +1428,26 @@ class CertWindow extends React.Component<any, any> {
           <div className="col s8 leftcol">
             {
               isCertInfoMode ? null :
-              <div className="row halfbottom">
-                <div className="row halfbottom" />
-                <div className="col" style={{ width: "calc(100% - 60px)" }}>
-                  <div className="input-field input-field-csr col s12 border_element find_box">
-                    <i className="material-icons prefix">search</i>
-                    <input
-                      id="search"
-                      type="search"
-                      placeholder={localize("Certificate.search_in_certificates_list", locale)}
-                      value={searchValue}
-                      onChange={this.handleSearchValueChange} />
-                    <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
+                <div className="row halfbottom">
+                  <div className="row halfbottom" />
+                  <div className="col" style={{ width: "calc(100% - 60px)" }}>
+                    <div className="input-field input-field-csr col s12 border_element find_box">
+                      <i className="material-icons prefix">search</i>
+                      <input
+                        id="search"
+                        type="search"
+                        placeholder={localize("Certificate.search_in_certificates_list", locale)}
+                        value={searchValue}
+                        onChange={this.handleSearchValueChange} />
+                      <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
+                    </div>
+                  </div>
+                  <div className="col" style={{ width: "40px", marginLeft: "20px" }}>
+                    <a onClick={this.handleReloadCertificates}>
+                      <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
+                    </a>
                   </div>
                 </div>
-                <div className="col" style={{ width: "40px", marginLeft: "20px" }}>
-                  <a onClick={this.handleReloadCertificates}>
-                    <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
-                  </a>
-                </div>
-              </div>
             }
             <div className={"collection " + VIEW}>
               <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
@@ -1448,7 +1456,7 @@ class CertWindow extends React.Component<any, any> {
                   certrequests.length < 1 && certificates.size < 1 && crls.size < 1 ?
                     <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
                     <CertificateList
-                      selectedCert={isCertInfoMode ? pkiCertToCertMap(urlCmdCertInfo.certToProcess)
+                      selectedCert={isCertInfoMode && urlCmdCertInfo.certToProcessPkiItemInfo ? urlCmdCertInfo.certToProcessPkiItemInfo
                         : this.state.certificate}
                       selectedCrl={this.state.crl}
                       activeCert={this.handleActiveCert}
@@ -1522,19 +1530,19 @@ class CertWindow extends React.Component<any, any> {
 
             {
               isCertInfoMode ?
-              <div className="row fixed-bottom-rightcolumn">
-                <div className="col s6 offset-s1">
-                  <a className="btn btn-text waves-effect waves-light" onClick={this.handleCertInfoCancel}>
-                    ОТМЕНА
+                <div className="row fixed-bottom-rightcolumn">
+                  <div className="col s6 offset-s1">
+                    <a className="btn btn-text waves-effect waves-light" onClick={this.handleCertInfoCancel}>
+                      ОТМЕНА
                   </a>
+                  </div>
+                  <div className="col s2">
+                    <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleCertInfoConfirm}>
+                      {localize("Settings.Choose", locale)}
+                    </a>
+                  </div>
                 </div>
-                <div className="col s2">
-                  <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleCertInfoConfirm}>
-                    {localize("Settings.Choose", locale)}
-                  </a>
-                </div>
-              </div>
-              : null
+                : null
             }
 
             {
@@ -1587,11 +1595,11 @@ class CertWindow extends React.Component<any, any> {
 
         {
           isCertInfoMode ? null :
-          <div className="fixed-action-btn" style={{ bottom: "20px", right: "380px" }} onClick={() => this.handleShowModalByType(MODAL_ADD_CERTIFICATE)}>
-            <a className="btn-floating btn-large cryptoarm-red">
-              <i className="large material-icons">add</i>
-            </a>
-          </div>
+            <div className="fixed-action-btn" style={{ bottom: "20px", right: "380px" }} onClick={() => this.handleShowModalByType(MODAL_ADD_CERTIFICATE)}>
+              <a className="btn-floating btn-large cryptoarm-red">
+                <i className="large material-icons">add</i>
+              </a>
+            </div>
         }
       </div>
     );

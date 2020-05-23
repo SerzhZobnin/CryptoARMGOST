@@ -355,12 +355,7 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
       let rowClassName = index % 2 === 0 ? "evenRow " : "oddRow ";
 
       const founded = foundDocuments.indexOf(index) >= 0;
-      let selCert = this.props.selectedCert;
-      if (isCertInfoMode && certificatesMap.size > 0) {
-        selCert = certificatesMap.first();
-      }
-
-      const selected = selCert ? selCert.id === rowData.id : false;
+      const selected = this.props.selectedCert ? this.props.selectedCert.id === rowData.id : false;
 
       if (founded && selected) {
         rowClassName += "foundAndSelectedEvent ";
@@ -472,7 +467,7 @@ interface IOwnProps {
 export default connect((state, ownProps: IOwnProps) => ({
   certificatesMap: !(state.urlCmdCertInfo && !state.urlCmdCertInfo.done)
     ? filteredCertificatesSelector(state, { operation: ownProps.operation })
-    : pkiCertToCertMap(state.urlCmdCertInfo.certToProcess),
+    : pkiCertToCertMap(state.urlCmdCertInfo.certToProcessPkiItemInfo),
   isCertInfoMode: !state.urlCmdCertInfo.done,
   location: state.router.location,
 }), { activeFile, deleteFile, selectTempContentOfSignedFiles })(CertificateTable);
