@@ -15,14 +15,14 @@ export async function postRequest(url: string, requestData: string|Buffer) {
 
     const headerfields = [
       "Content-Type: application/json",
-      "Content-Length: " + requestData.length,
+      "Content-Length: " + Buffer.byteLength(requestData),
       "Accept: application/json",
     ];
 
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
-    curl.setOpt(window.Curl.option.POSTFIELDS, requestData);
+    curl.setOpt(window.Curl.option.POSTFIELDS, requestData.toString());
 
     curl.on("end", function(statusCode: number, response: any) {
       let data;
@@ -92,9 +92,8 @@ export function openWindow(location: string, certStore: string) {
   remote.getCurrentWindow().show();
   remote.getCurrentWindow().focus();
 
-  const resultLocation = location;
   let filter = "my";
-  let state = {
+  const state = {
     head: localize("Certificate.certs_my", window.locale),
     store: certStore,
   };
@@ -118,11 +117,15 @@ export function openWindow(location: string, certStore: string) {
         state.head = localize("Certificate.certs_root", window.locale);
         state.store = ROOT;
         break;
+
+      default:
+        state.head = localize("UrlCommand.certificate_info_header", window.locale);
+        break;
     }
   }
 
   history.push({
-    pathname: resultLocation,
+    pathname: location,
     search: filter,
     state,
   });

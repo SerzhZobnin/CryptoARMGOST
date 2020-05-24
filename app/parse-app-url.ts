@@ -1,6 +1,6 @@
-import * as URL from "url";
 import { execSync } from "child_process";
-import { app } from 'electron';
+import { app } from "electron";
+import * as URL from "url";
 
 export interface ISignDocumentsFromURLAction {
   name: "sign-documents-from-url";
@@ -35,19 +35,19 @@ export interface IUrlCommandApiV4Type {
 }
 
 const __WIN32__ = process.platform === "win32";
-const protocolLauncherArg = '--protocol-launcher';
+const protocolLauncherArg = "--protocol-launcher";
 
-function getQueryStringValue(query,  key) {
-  const value = query[key]
+function getQueryStringValue(query: any,  key: any) {
+  const value = query[key];
   if (value == null) {
-    return null
+    return null;
   }
 
   if (Array.isArray(value)) {
-    return value[0]
+    return value[0];
   }
 
-  return value
+  return value;
 }
 
 export function parseAppURL(url: string): URLActionType {
@@ -79,6 +79,7 @@ export function parseAppURL(url: string): URLActionType {
     return {
       name: "url-action-certificates",
       url: parsedPath,
+      // tslint:disable-next-line: object-literal-sort-keys
       command,
       accessToken,
     };
@@ -88,6 +89,7 @@ export function parseAppURL(url: string): URLActionType {
     return {
       name: "sign-documents-from-url",
       url: parsedPath,
+      // tslint:disable-next-line: object-literal-sort-keys
       command,
       accessToken,
     };
@@ -97,6 +99,7 @@ export function parseAppURL(url: string): URLActionType {
     return {
       name: "verify-documents-from-url",
       url: parsedPath,
+      // tslint:disable-next-line: object-literal-sort-keys
       command,
       accessToken,
     };
@@ -106,25 +109,28 @@ export function parseAppURL(url: string): URLActionType {
 }
 
 export function handlePossibleProtocolLauncherArgs(args: string[], possibleProtocols: Set<string>): string {
+  // tslint:disable-next-line: no-console
   console.log(`Received possible protocol arguments: ${args.length}`);
 
   if (__WIN32__) {
-    const matchingUrls = args.filter(arg => {
+    const matchingUrls = args.filter((arg) => {
       // sometimes `URL.parse` throws an error
       try {
-        const url = URL.parse(arg)
+        const url = URL.parse(arg);
         // i think this `slice` is just removing a trailing `:`
-        return url.protocol && possibleProtocols.has(url.protocol.slice(0, -1))
+        return url.protocol && possibleProtocols.has(url.protocol.slice(0, -1));
       } catch (e) {
-        console.log(`Unable to parse argument as URL: ${arg}`)
+        // tslint:disable-next-line: no-console
+        console.log(`Unable to parse argument as URL: ${arg}`);
         return false;
       }
-    })
+    });
 
     if (args.includes(protocolLauncherArg) && matchingUrls.length === 1) {
       return matchingUrls[0];
     } else {
-      console.log(`Malformed launch arguments received: ${args}`)
+      // tslint:disable-next-line: no-console
+      console.log(`Malformed launch arguments received: ${args}`);
     }
   } else if (args.length > 1) {
     return args[1];
@@ -133,9 +139,9 @@ export function handlePossibleProtocolLauncherArgs(args: string[], possibleProto
   return "";
 }
 
-function registerForURLSchemeLinux(scheme) {
+function registerForURLSchemeLinux(scheme: string) {
   execSync(`xdg-mime default CryptoARM_GOST.desktop x-scheme-handler/${scheme}`);
-};
+}
 
 /**
  * Wrapper around app.setAsDefaultProtocolClient that adds our
@@ -145,9 +151,9 @@ export function setAsDefaultProtocolClient(protocol: string) {
   if (__WIN32__) {
     app.setAsDefaultProtocolClient(protocol, process.execPath, [
       protocolLauncherArg,
-    ])
+    ]);
   } else {
-    if (process.platform === 'linux') {
+    if (process.platform === "linux") {
       registerForURLSchemeLinux(protocol);
     } else {
       app.setAsDefaultProtocolClient(protocol);
@@ -156,20 +162,22 @@ export function setAsDefaultProtocolClient(protocol: string) {
 }
 
 export function parseUrlCommandApiV4(urlWithCommand: string): IUrlCommandApiV4Type {
-  var result: IUrlCommandApiV4Type = {
+  const result: IUrlCommandApiV4Type = {
     command: "not supported",
+    id: "",
     url: "",
-    id: ""
   };
 
   const parsedURL = URL.parse(urlWithCommand, true);
-  const recievedCommand = parsedURL.hostname;
+  const recievedCommand = parsedURL.hostname ? parsedURL.hostname : "";
 
-  switch (recievedCommand) {
+  switch (recievedCommand.toLowerCase()) {
     case "certificates":
+    case "certificateinfo":
       break;
     default:
-      console.log("Warning! Command \"" + recievedCommand + "\" is not supported")
+      // tslint:disable-next-line: no-console
+      console.log("Warning! Command \"" + recievedCommand + "\" is not supported");
       return result;
   }
 

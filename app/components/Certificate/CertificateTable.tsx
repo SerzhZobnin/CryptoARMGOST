@@ -6,6 +6,7 @@ import Media from "react-media";
 import { connect } from "react-redux";
 import { AutoSizer, Column, Table } from "react-virtualized";
 import { activeFile, deleteFile, selectTempContentOfSignedFiles } from "../../AC";
+import { pkiCertToCertMap } from "../../AC/urlCmdCertInfo";
 import { activeFilesSelector, filteredCertificatesSelector, filteredFilesSelector } from "../../selectors";
 import "../../table.global.css";
 import { bytesToSize, mapToArr } from "../../utils";
@@ -45,6 +46,7 @@ interface ICertificateTableProps {
   selectedFilesPackage: boolean;
   selectingFilesPackage: boolean;
   style: any;
+  isCertInfoMode: boolean;
 }
 
 interface ICertificateTableDispatch {
@@ -339,12 +341,12 @@ class CertificateTable extends React.Component<ICertificateTableProps & ICertifi
 
   getDatum = (list: any, index: number) => {
     const arr = mapToArr(list);
-
     return arr[index];
   }
 
   rowClassName = ({ index }: { index: number }) => {
     const { foundDocuments } = this.state;
+    const { certificatesMap, isCertInfoMode } = this.props;
     const rowData = this.getDatum(this.state.sortedList, index);
 
     if (index < 0) {
@@ -463,6 +465,9 @@ interface IOwnProps {
 }
 
 export default connect((state, ownProps: IOwnProps) => ({
-  certificatesMap: filteredCertificatesSelector(state, { operation: ownProps.operation }),
+  certificatesMap: !(state.urlCmdCertInfo && !state.urlCmdCertInfo.done)
+    ? filteredCertificatesSelector(state, { operation: ownProps.operation })
+    : pkiCertToCertMap(state.urlCmdCertInfo.certToProcessPkiItemInfo),
+  isCertInfoMode: !state.urlCmdCertInfo.done,
   location: state.router.location,
 }), { activeFile, deleteFile, selectTempContentOfSignedFiles })(CertificateTable);
