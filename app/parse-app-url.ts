@@ -161,7 +161,7 @@ export function setAsDefaultProtocolClient(protocol: string) {
   }
 }
 
-export function parseUrlCommandApiV4(urlWithCommand: string): IUrlCommandApiV4Type {
+export function parseUrlCommandApiV7(urlWithCommand: string): IUrlCommandApiV4Type {
   const result: IUrlCommandApiV4Type = {
     command: "not supported",
     id: "",
@@ -173,7 +173,6 @@ export function parseUrlCommandApiV4(urlWithCommand: string): IUrlCommandApiV4Ty
 
   switch (recievedCommand.toLowerCase()) {
     case "certificates":
-    case "certificateinfo":
       break;
     default:
       // tslint:disable-next-line: no-console

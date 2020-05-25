@@ -72,10 +72,12 @@ app.post('/json', function (req, res) {
         case "9b5e6a0b-489d-4812-8866-0b9afce648e1":
           res.sendFile(__dirname + '/public/json/certs/export-certs-stores.json');
           break;
-
-        // Certificates info
         case "4da4a42a-cecd-4d3b-a13c-466a44fc6924":
           res.sendFile(__dirname + '/public/json/cert-info/cert-info-params.json');
+          break;
+
+        default:
+          res.status(202).sendFile(__dirname + '/public/json/server-errors/internal-error.json');
           break;
       }
     }
