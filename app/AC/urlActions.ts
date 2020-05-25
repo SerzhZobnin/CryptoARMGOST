@@ -61,10 +61,6 @@ export function dispatchURLCommand(
       handleUrlCommandCertificates(command);
       break;
 
-    case "certificateinfo":
-      handleUrlCommandCertificateInfo(command);
-      break;
-
     default:
       break;
   }

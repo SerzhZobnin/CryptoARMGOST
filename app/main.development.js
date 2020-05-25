@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Tray, Menu, protocol } = require('electron');
 const { parseAppURL, handlePossibleProtocolLauncherArgs,
-  setAsDefaultProtocolClient, parseUrlCommandApiV4 } = require('./parse-app-url.ts');
+  setAsDefaultProtocolClient, parseUrlCommandApiV7 } = require('./parse-app-url.ts');
 
 let mainWindow = null;
 let preloader = null;
@@ -61,7 +61,7 @@ app.on('window-all-closed', () => {
 });
 
 function handleAppURL(url) {
-  const parsedCommand = parseUrlCommandApiV4(url);
+  const parsedCommand = parseUrlCommandApiV7(url);
   if (parsedCommand.command !== "not supported") {
     mainWindow.webContents.send('url-command', { command: parsedCommand });
     return;

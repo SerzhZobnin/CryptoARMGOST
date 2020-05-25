@@ -30,16 +30,17 @@ export async function postRequest(url: string, requestData: string|Buffer) {
       try {
         switch (statusCode) {
           case 200:
+          case 202:
+          case 204:
             if (!response || (response.toString().length === 0)) {
               data = "";
             } else {
-              data = JSON.parse(response.toString());
+              try {
+                data = JSON.parse(response.toString());
+              } catch (e) {
+                //
+              }
             }
-            break;
-
-          case 202:
-          case 204:
-            data = "";
             break;
 
           case 405:
