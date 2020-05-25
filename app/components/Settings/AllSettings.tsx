@@ -121,12 +121,11 @@ class AllSettings extends React.Component<any, {}> {
                   <SignatureStandardSelector
                     value={signatureStandard}
                     handleChange={this.handleSignatureStandardChange}
-                    disabled={disabled || isCertFromDSS || !(TSP_OCSP_ENABLED)} />
+                    disabled={!(TSP_OCSP_ENABLED)} />
 
                   <SignatureTypeSelector
                     detached={isDetached}
-                    handleChange={this.handleDetachedChange}
-                    disabled={disabled} />
+                    handleChange={this.handleDetachedChange} />
 
                   <EncodingTypeSelector
                     EncodingValue={encoding}
