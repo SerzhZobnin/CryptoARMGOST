@@ -4,6 +4,10 @@ const { parseAppURL, handlePossibleProtocolLauncherArgs,
 
 let mainWindow = null;
 let preloader = null;
+const isMAS = process.mas === true;
+const isMacOS = process.platform === "darwin";
+let gotInstanceLock = false;
+const possibleProtocols = new Set(['cryptoarm']);
 
 let delayedUrl = "";
 
@@ -12,75 +16,46 @@ global.globalObj = {
   launch: null,
 };
 
-const gotInstanceLock = app.requestSingleInstanceLock();
+// requestSingleInstance causes the MAS build to quit on startup
+if (!isMAS) {
+  gotInstanceLock = app.requestSingleInstanceLock();
+}
+
 const path = require('path');
 
-if (!gotInstanceLock) {
-  app.quit();
-}
+function restoreWin(win) {
+  if (win && win instanceof BrowserWindow) {
+    if (win.isMinimized()) {
+      win.restore();
+    }
 
-const possibleProtocols = new Set(['cryptoarm']);
+    win.show();
+    win.focus();
 
-if (process.env.NODE_ENV === 'production') {
-  const sourceMapSupport = require('source-map-support');
-  sourceMapSupport.install();
-}
-
-var options = process.argv;
-
-if (options.indexOf('logcrypto') !== -1) {
-  global.sharedObject = { logcrypto: true };
-} else {
-  global.sharedObject = { logcrypto: false };
-}
-
-global.sharedObject.isQuiting = false;
-
-if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
-  require('electron-debug')();
-  const p = path.join(__dirname, '..', 'app', 'node_modules');
-  require('module').globalPaths.push(p);
-}
-
-const installExtensions = async () => {
-  const installer = require('electron-devtools-installer');
-  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-  const extensions = [
-    'REACT_DEVELOPER_TOOLS',
-    'REDUX_DEVTOOLS'
-  ];
-
-  return Promise
-    .all(extensions.map(name => installer.default(installer[name], forceDownload)))
-    .catch(console.log);
-};
-
-
-app.on('window-all-closed', () => {
-  app.quit();
-});
-
-function handleAppURL(url) {
-  const parsedCommand = parseUrlCommandApiV7(url);
-  if (parsedCommand.command !== "not supported") {
-    mainWindow.webContents.send('url-command', { command: parsedCommand });
-    return;
+    if (isMacOS) {
+      app.dock.show();
+    }
   }
+}
 
-  const action = parseAppURL(url);
+function utilShowWindow() {
+  if (mainWindow) {
+    mainWindow.show();
 
-  mainWindow.webContents.send('url-action', { action });
+    if (isMacOS) {
+      app.dock.show();
+    }
+  }
 }
 
 let trayIcon;
 let trayMenu;
 
-app.on('ready', async () => {
-  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
-    await installExtensions();
+function createMainWindow() {
+  if (mainWindow && mainWindow instanceof BrowserWindow) {
+    restoreWin(mainWindow);
+    return;
   }
-
-  possibleProtocols.forEach(protocol => setAsDefaultProtocolClient(protocol));
 
   let iconPath;
   switch (process.platform) {
@@ -124,10 +99,6 @@ app.on('ready', async () => {
   mainWindow.loadURL(`file://${__dirname}/resources/index.html`);
   preloader.loadURL(`file://${__dirname}/resources/preloader_index.html`);
 
-  protocol.registerHttpProtocol('urn', (request, callback) => {
-    callback({ url: request.url, method: request.method });
-  });
-
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true' || options.indexOf("devtools") !== -1) {
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
@@ -143,14 +114,6 @@ app.on('ready', async () => {
     trayIcon = new Tray(__dirname + '/resources/image/tray_mac.png');
   } else {
     trayIcon = new Tray(__dirname + '/resources/image/tray.png');
-  }
-
-  function utilShowWindow() {
-    mainWindow.show();
-
-    if (process.platform === "darwin") {
-      app.dock.show();
-    }
   }
 
   const trayMenuTemplate = [
@@ -173,7 +136,7 @@ app.on('ready', async () => {
   trayIcon.on('click', utilShowWindow);
   trayIcon.on('double-click', utilShowWindow);
 
-  if (process.platform === "darwin") {
+  if (isMacOS) {
     app.dock.setMenu(trayMenu);
   }
 
@@ -230,102 +193,183 @@ app.on('ready', async () => {
       event.preventDefault();
       mainWindow.hide();
 
-      if (process.platform === "darwin") {
+      if (isMacOS) {
         app.dock.hide();
       }
     }
 
     return false;
   });
+}
 
-  if (process.platform === 'darwin') {
-    // Create our menu entries so that we can use MAC shortcuts
-    const template = [
-      {
-        label: app.getName(), submenu: [
-          {
-            label: 'Quit',
-            click: function () {
-              global.sharedObject.isQuiting = true;
-              app.quit();
+if (!gotInstanceLock && !isMAS) {
+  app.quit();
+} else {
+  if (!isMAS) {
+    app.on('second-instance', (e, argv) => {
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) {
+          mainWindow.restore();
+        }
+
+        mainWindow.show();
+        mainWindow.focus();
+
+        const urlToProcess = handlePossibleProtocolLauncherArgs(argv, possibleProtocols);
+        if (urlToProcess !== "") {
+          handleAppURL(urlToProcess);
+        }
+
+        mainWindow.webContents.send("cmdArgs", argv);
+      }
+    });
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    const sourceMapSupport = require('source-map-support');
+    sourceMapSupport.install();
+  }
+
+  var options = process.argv;
+
+  if (options.indexOf('logcrypto') !== -1) {
+    global.sharedObject = { logcrypto: true };
+  } else {
+    global.sharedObject = { logcrypto: false };
+  }
+
+  global.sharedObject.isQuiting = false;
+
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
+    require('electron-debug')();
+    const p = path.join(__dirname, '..', 'app', 'node_modules');
+    require('module').globalPaths.push(p);
+  }
+
+
+  app.on('ready', async () => {
+    if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
+      await installExtensions();
+    }
+
+    createMainWindow();
+
+    protocol.registerHttpProtocol('urn', (request, callback) => {
+      callback({ url: request.url, method: request.method });
+    });
+
+    possibleProtocols.forEach(protocol => setAsDefaultProtocolClient(protocol));
+
+    if (process.platform === 'darwin') {
+      // Create our menu entries so that we can use MAC shortcuts
+      const template = [
+        {
+          label: app.getName(), submenu: [
+            {
+              label: 'Quit',
+              click: function () {
+                global.sharedObject.isQuiting = true;
+                app.quit();
+              }
+            },
+          ],
+        },
+        {
+          label: 'Edit', submenu: [
+            { role: 'undo' },
+            { role: 'redo' },
+            { type: 'separator' },
+            { role: 'cut' },
+            { role: 'copy' },
+            { role: 'paste' },
+            { role: 'pasteandmatchstyle' },
+            { role: 'delete' },
+            { role: 'selectall' },
+          ],
+        },
+        {
+          label: 'Help', submenu: [
+            {
+              role: 'help',
+              click() { require('electron').shell.openExternal('https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost.pdf') }
             }
-          },
-        ],
-      },
-      {
-        label: 'Edit', submenu: [
-          { role: 'undo' },
-          { role: 'redo' },
-          { type: 'separator' },
-          { role: 'cut' },
-          { role: 'copy' },
-          { role: 'paste' },
-          { role: 'pasteandmatchstyle' },
-          { role: 'delete' },
-          { role: 'selectall' },
-        ],
-      },
-      {
-        label: 'Help', submenu: [
-          {
-            role: 'help',
-            click() { require('electron').shell.openExternal('https://cryptoarm.ru/upload/docs/userguide-cryptoarm-gost.pdf') }
-          }
-        ],
-      },
-    ];
-    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-  }
-});
+          ],
+        },
+      ];
 
-
-
-app.on('will-finish-launching', () => {
-  // macOS only
-  app.on('open-url', (event, url) => {
-    event.preventDefault()
-
-    if (mainWindow) {
-      handleAppURL(url);
-    } else {
-      delayedUrl = url;
+      Menu.setApplicationMenu(Menu.buildFromTemplate(template));
     }
+  });
+
+  app.on('window-all-closed', () => {
+    app.quit();
+  });
+
+  app.on('activate', () => {
+    if (app.isReady()) {
+      createMainWindow();
+    }
+  });
+
+  app.on('will-finish-launching', () => {
+    // macOS only
+    app.on('open-url', (event, url) => {
+      event.preventDefault()
+
+      if (mainWindow) {
+        handleAppURL(url);
+      } else {
+        delayedUrl = url;
+      }
+    })
   })
-})
 
-app.on('web-contents-created', (event, win) => {
-  win.on('new-window', (event, newURL, frameName, disposition,
-    options, additionalFeatures) => {
-    if (!options.webPreferences) options.webPreferences = {};
-    options.webPreferences.nodeIntegration = false;
-    options.webPreferences.nodeIntegrationInWorker = false;
-    options.webPreferences.webviewTag = false;
-    delete options.webPreferences.preload;
+  app.on('web-contents-created', (event, win) => {
+    win.on('new-window', (event, newURL, frameName, disposition,
+      options, additionalFeatures) => {
+      if (!options.webPreferences) options.webPreferences = {};
+      options.webPreferences.nodeIntegration = false;
+      options.webPreferences.nodeIntegrationInWorker = false;
+      options.webPreferences.webviewTag = false;
+      delete options.webPreferences.preload;
+    })
   })
-})
 
-app.on('second-instance', (e, args) => {
-  if (mainWindow) {
-    if (mainWindow.isMinimized()) {
-      mainWindow.restore();
+  app.on('before-quit', function (evt) {
+    global.sharedObject.isQuiting = true;
+
+    if (trayIcon != null) {
+      trayIcon.destroy();
+      trayIcon = null;
     }
+  });
+}
 
-    mainWindow.show();
-    mainWindow.focus();
+const installExtensions = async () => {
+  const installer = require('electron-devtools-installer');
+  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+  const extensions = [
+    'REACT_DEVELOPER_TOOLS',
+    'REDUX_DEVTOOLS'
+  ];
 
-    const urlToProcess = handlePossibleProtocolLauncherArgs(args, possibleProtocols);
-    if (urlToProcess !== "") {
-      handleAppURL(urlToProcess);
-    }
-    mainWindow.webContents.send("cmdArgs", args);
+  return Promise
+    .all(extensions.map(name => installer.default(installer[name], forceDownload)))
+    .catch(console.log);
+};
+
+function handleAppURL(url) {
+  const parsedCommand = parseUrlCommandApiV7(url);
+  if (parsedCommand.command !== "not supported") {
+    mainWindow.webContents.send('url-command', { command: parsedCommand });
+    return;
   }
-});
 
-app.on('before-quit', function (evt) {
-  global.sharedObject.isQuiting = true;
+  const action = parseAppURL(url);
 
-  if (trayIcon != null) {
-    trayIcon.destroy();
-    trayIcon = null;
-  }
-});
+  mainWindow.webContents.send('url-action', { action });
+}
+
+
+
+
