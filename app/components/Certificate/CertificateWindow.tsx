@@ -1461,7 +1461,7 @@ class CertWindow extends React.Component<any, any> {
                   <div className="col s12">
                     <hr />
                   </div>
-                  <div className="col s4 waves-effect waves-cryptoarm" onClick={() => certificate ? this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE) : this.handleShowModalByType(MODAL_EXPORT_CRL)}>
+                  <div style = {{ paddingLeft: 0 }} className="col s4 waves-effect waves-cryptoarm" onClick={() => certificate ? this.handleShowModalByType(MODAL_EXPORT_CERTIFICATE) : this.handleShowModalByType(MODAL_EXPORT_CRL)}>
                     <div className="col s12 svg_icon">
                       <a data-position="bottom">
                         <i className="material-icons certificate export" />
