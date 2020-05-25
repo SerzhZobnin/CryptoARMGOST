@@ -42,7 +42,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
     const isDssCert = (signerCert && (signerCert.service || signerCert.dssUserID)) ? true : false;
     const is_disabled = operationIsRemote;
 
-    if (operationIsRemote && reverse_operations) {this.handleArchivationOperationClick(); }
+    // if (operationIsRemote && reverse_operations) {this.handleArchivationOperationClick(); }
 
     return (
       <div className="row">

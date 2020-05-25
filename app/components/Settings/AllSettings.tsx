@@ -228,7 +228,7 @@ class AllSettings extends React.Component<any, {}> {
   getDisabled = () => {
     const { loadingFiles, operationIsRemote } = this.props;
 
-    if (loadingFiles && loadingFiles.length) {
+    if (operationIsRemote || loadingFiles && loadingFiles.length) {
       return true;
     }
 
