@@ -121,10 +121,11 @@ class AllSettings extends React.Component<any, {}> {
                   <SignatureStandardSelector
                     value={signatureStandard}
                     handleChange={this.handleSignatureStandardChange}
-                    disabled={!(TSP_OCSP_ENABLED)} />
+                    disabled={disabled || isCertFromDSS || !(TSP_OCSP_ENABLED)} />
 
                   <SignatureTypeSelector
                     detached={isDetached}
+                    disabled = {disabled}
                     handleChange={this.handleDetachedChange} />
 
                   <EncodingTypeSelector
@@ -227,7 +228,7 @@ class AllSettings extends React.Component<any, {}> {
   getDisabled = () => {
     const { loadingFiles, operationIsRemote } = this.props;
 
-    if (operationIsRemote || loadingFiles && loadingFiles.length) {
+    if (loadingFiles && loadingFiles.length) {
       return true;
     }
 
