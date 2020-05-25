@@ -949,6 +949,7 @@ nav .cert-seacrh label i {
     width: 100%;
     height: 100%;
     background-color: white;
+    overflow: hidden;
 }
 .add-cert-collection {
     margin: 0;
@@ -965,7 +966,7 @@ nav .cert-seacrh label i {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    height: calc(100% - 70px);
     width: 100%;
 }
 .cert-item.not-active {
