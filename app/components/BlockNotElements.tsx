@@ -9,7 +9,7 @@ class BlockNotElements extends React.Component<IBlockNotElementsProps, {}> {
   render() {
     const { name, title } = this.props;
     return (
-      <div className={"cert-item " + name}>
+      <div style={{height: `calc(100% - 70px)`}} className={"cert-item " + name}>
         <div className="headline6 add-file-item-text center-align">{title}</div>
         <i className="material-icons large fullscreen">block</i>
       </div>

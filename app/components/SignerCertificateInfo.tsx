@@ -34,7 +34,7 @@ class SignerCertificateInfo extends React.Component<any, any> {
       <div className="content-wrapper z-depth-1">
         <HeaderWorkspaceBlock text={localize("Certificate.cert_info", locale)} />
         <div className="add-certs">
-          <div className="add-certs-item">
+          <div style={{overflow: `hidden`}}className="add-certs-item">
             {body}
           </div>
         </div>;
