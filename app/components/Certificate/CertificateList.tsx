@@ -6,6 +6,7 @@ import { AutoSizer, List } from "react-virtualized";
 import { loadAllCertificates, verifyCertificate } from "../../AC";
 import { REQUEST } from "../../constants";
 import accordion from "../../decorators/accordion";
+import { IUrlCmdCertInfo } from "../../reducer/urlCmdCertInfo";
 import { filteredCertificatesSelector } from "../../selectors";
 import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
 import { filteredRequestCASelector } from "../../selectors/requestCASelector";
@@ -27,12 +28,14 @@ interface ICertificateListProps {
   activeRequestCA: (requestCA: any) => void;
   certificates: any;
   crls: any;
+  isCertInfoMode: boolean;
   isLoaded: boolean;
   isLoading: boolean;
   operation: string;
   certrequests: any;
   loadAllCertificates: () => void;
   verifyCertificate: (id: number) => void;
+  urlCmdCertInfo: IUrlCmdCertInfo;
 }
 
 class CertificateList extends React.Component<ICertificateListProps, any> {
@@ -62,10 +65,14 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
   }
 
   render() {
-    const { certificates, crls, isLoading, certrequests } = this.props;
+    const { certificates, crls, isLoading, certrequests, isCertInfoMode } = this.props;
 
     if (isLoading) {
       return <ProgressBars />;
+    }
+
+    if (isCertInfoMode) {
+      return this.getCertInfoList();
     }
 
     const TYPE = this.props.location.state ? this.props.location.state.type : "CERTIFICATE";
@@ -194,6 +201,20 @@ class CertificateList extends React.Component<ICertificateListProps, any> {
       </AutoSizer>
     );
   }
+
+  getCertInfoList = () => {
+    const { activeCert, toggleOpenItem, isItemOpened } = this.props;
+
+    return (
+      <CertificateTable
+        isItemOpened={isItemOpened}
+        toggleOpenItem={toggleOpenItem}
+        activeCert={activeCert}
+        selectedCert={this.props.selectedCert}
+        operation={this.props.operation}
+      />
+    );
+  }
 }
 
 interface IOwnProps {
@@ -205,9 +226,11 @@ export default connect((state, ownProps: IOwnProps) => {
     certificates: mapToArr(filteredCertificatesSelector(state, { operation: ownProps.operation })),
     certrequests: filteredRequestCASelector(state).concat(mapToArr(filteredCertificatesSelector(state, { operation: ownProps.operation }))),
     crls: filteredCrlsSelector(state),
+    isCertInfoMode: !state.urlCmdCertInfo.done,
     isLoaded: state.certificates.loaded,
     isLoading: state.certificates.loading,
     location: state.router.location,
     services: state.services,
+    urlCmdCertInfo: state.urlCmdCertInfo,
   };
 }, { loadAllCertificates, verifyCertificate }, null, { pure: false })(accordion(CertificateList));

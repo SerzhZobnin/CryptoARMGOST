@@ -1,4 +1,5 @@
 import { execFile } from "child_process";
+import fs from "fs";
 import * as os from "os";
 import * as path_module from "path";
 import PropTypes from "prop-types";
@@ -9,13 +10,15 @@ import { loadAllCertificates, loadAllContainers, removeAllCertificates, removeAl
 import { deleteRequestCA } from "../../AC/caActions";
 import { resetCloudCSP } from "../../AC/cloudCspActions";
 import { changeSearchValue } from "../../AC/searchActions";
+import { urlCmdCertImportFail, urlCmdCertImportSuccess } from "../../AC/urlCmdCertificates";
+import { certInfoFail, sendCertificateInfo } from "../../AC/urlCmdCertInfo";
 import {
   ADDRESS_BOOK, CA, CERTIFICATE, CRL,
-  DEFAULT_CSR_PATH, MODAL_ADD_CERTIFICATE, MODAL_ADD_SERVICE_CA, MODAL_BEST_STORE,
-  MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA, MODAL_CLOUD_CSP,
-  MODAL_DELETE_CERTIFICATE, MODAL_DELETE_CRL, MODAL_DELETE_REQUEST_CA, MODAL_EXPORT_CERTIFICATE,
-  MODAL_EXPORT_CRL, MODAL_EXPORT_REQUEST_CA, MY, PFX, PROVIDER_CRYPTOPRO, REQUEST, ROOT,
-  USER_NAME, URL_CMD_CERTIFICATES_IMPORT, FAIL,
+  DEFAULT_CSR_PATH, FAIL, MODAL_ADD_CERTIFICATE, MODAL_ADD_SERVICE_CA,
+  MODAL_BEST_STORE, MODAL_CERTIFICATE_IMPORT_DSS, MODAL_CERTIFICATE_REQUEST, MODAL_CERTIFICATE_REQUEST_CA,
+  MODAL_CLOUD_CSP, MODAL_DELETE_CERTIFICATE, MODAL_DELETE_CRL, MODAL_DELETE_REQUEST_CA,
+  MODAL_EXPORT_CERTIFICATE, MODAL_EXPORT_CRL, MODAL_EXPORT_REQUEST_CA, MY, PFX, PROVIDER_CRYPTOPRO, REQUEST,
+  ROOT, URL_CMD_CERTIFICATES_IMPORT, USER_NAME,
 } from "../../constants";
 import { filteredCertificatesSelector } from "../../selectors";
 import { filteredCrlsSelector } from "../../selectors/crlsSelectors";
@@ -46,7 +49,6 @@ import CertificateExport from "./CertificateExport";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
-import { urlCmdCertImportFail, urlCmdCertImportSuccess } from "../../AC/urlCmdCertificates";
 
 const OS_TYPE = os.type();
 const dialog = window.electron.remote.dialog;
@@ -86,12 +88,16 @@ class CertWindow extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    const { urlCmdProps } = this.props;
+    const { isCertInfoMode, urlCmdProps, urlCmdCertInfo } = this.props;
     $(".btn-floated").dropdown();
     if (urlCmdProps && !urlCmdProps.done) {
-      if (urlCmdProps.operation == URL_CMD_CERTIFICATES_IMPORT) {
+      if (urlCmdProps.operation === URL_CMD_CERTIFICATES_IMPORT) {
         this.setState({ showModalBestStore: true });
       }
+    }
+
+    if (isCertInfoMode && urlCmdCertInfo.certToProcessPkiItemInfo) {
+      this.handleActiveCert(urlCmdCertInfo.certToProcessPkiItemInfo);
     }
   }
 
@@ -436,7 +442,7 @@ class CertWindow extends React.Component<any, any> {
     const { removeAllCertificates, isLoading, loadAllCertificates, urlCmdProps } = this.props;
 
     const isImportFromCommand = urlCmdProps && !urlCmdProps.done
-      && (urlCmdProps.operation == URL_CMD_CERTIFICATES_IMPORT);
+      && (urlCmdProps.operation === URL_CMD_CERTIFICATES_IMPORT);
 
     const format: trusted.DataFormat = fileCoding(path);
 
@@ -445,10 +451,15 @@ class CertWindow extends React.Component<any, any> {
     try {
       certificate = trusted.pki.Certificate.load(path, format);
     } catch (e) {
-      if (isImportFromCommand) {
-        urlCmdCertImportFail();
+      try {
+        const certToImport = fs.readFileSync(path);
+        certificate = trusted.pki.Certificate.import(Buffer.from(certToImport), format);
+      } catch (e2) {
+        if (isImportFromCommand) {
+          urlCmdCertImportFail();
+        }
+        return;
       }
-      return;
     }
 
     if (store === MY) {
@@ -582,7 +593,7 @@ class CertWindow extends React.Component<any, any> {
     const { importingCertificate, importingCertificatePath } = this.state;
 
     const isImportFromCommand = urlCmdProps && !urlCmdProps.done
-      && (urlCmdProps.operation == URL_CMD_CERTIFICATES_IMPORT);
+      && (urlCmdProps.operation === URL_CMD_CERTIFICATES_IMPORT);
 
     this.handleCloseDialogInstallRootCertificate();
 
@@ -1241,7 +1252,7 @@ class CertWindow extends React.Component<any, any> {
     const header = location.state.head;
 
     const isImportFromCommand = urlCmdProps && !urlCmdProps.done
-      && (urlCmdProps.operation == URL_CMD_CERTIFICATES_IMPORT);
+      && (urlCmdProps.operation === URL_CMD_CERTIFICATES_IMPORT);
 
     return (
       <Modal
@@ -1257,7 +1268,7 @@ class CertWindow extends React.Component<any, any> {
           }}
           bestStore={bestStore}
           currentStore={currentStore}
-          isImportFromUrlCmd = {isImportFromCommand}
+          isImportFromUrlCmd={isImportFromCommand}
         />
       </Modal>
     );
@@ -1305,7 +1316,7 @@ class CertWindow extends React.Component<any, any> {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { cloudCSPSettings, cloudCSPState, certificates, isLoading,
+    const { cloudCSPSettings, cloudCSPState, certificates, isCertInfoMode, isLoading,
       location, urlCmdProps } = this.props;
     const { certificate, crl } = this.state;
     const { localize, locale } = this.context;
@@ -1320,10 +1331,14 @@ class CertWindow extends React.Component<any, any> {
 
     if (prevProps.urlCmdProps !== urlCmdProps) {
       if (urlCmdProps && !urlCmdProps.done) {
-        if (urlCmdProps.operation == URL_CMD_CERTIFICATES_IMPORT) {
+        if (urlCmdProps.operation === URL_CMD_CERTIFICATES_IMPORT) {
           this.setState({ showModalBestStore: true });
         }
       }
+    }
+
+    if (!prevProps.isCertInfoMode && this.props.isCertInfoMode && this.props.urlCmdCertInfo.certToProcessPkiItemInfo) {
+      this.handleActiveCert(this.props.urlCmdCertInfo.certToProcessPkiItemInfo);
     }
 
     if (prevProps.location !== location) {
@@ -1396,7 +1411,8 @@ class CertWindow extends React.Component<any, any> {
   }
 
   render() {
-    const { certrequests, certificates, crls, isLoading, isLoadingFromDSS, searchValue } = this.props;
+    const { certrequests, certificates, crls, isLoading,
+      isLoadingFromDSS, searchValue, isCertInfoMode, urlCmdCertInfo } = this.props;
     const { certificate, crl, requestCA } = this.state;
     const { localize, locale } = this.context;
 
@@ -1410,26 +1426,29 @@ class CertWindow extends React.Component<any, any> {
       <div className="content-noflex">
         <div className="row">
           <div className="col s8 leftcol">
-            <div className="row halfbottom">
-              <div className="row halfbottom" />
-              <div className="col" style={{ width: "calc(100% - 60px)" }}>
-                <div className="input-field input-field-csr col s12 border_element find_box">
-                  <i className="material-icons prefix">search</i>
-                  <input
-                    id="search"
-                    type="search"
-                    placeholder={localize("Certificate.search_in_certificates_list", locale)}
-                    value={searchValue}
-                    onChange={this.handleSearchValueChange} />
-                  <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
+            {
+              isCertInfoMode ? null :
+                <div className="row halfbottom">
+                  <div className="row halfbottom" />
+                  <div className="col" style={{ width: "calc(100% - 60px)" }}>
+                    <div className="input-field input-field-csr col s12 border_element find_box">
+                      <i className="material-icons prefix">search</i>
+                      <input
+                        id="search"
+                        type="search"
+                        placeholder={localize("Certificate.search_in_certificates_list", locale)}
+                        value={searchValue}
+                        onChange={this.handleSearchValueChange} />
+                      <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.state.searchValue ? { color: "#444" } : {}}>close</i>
+                    </div>
+                  </div>
+                  <div className="col" style={{ width: "40px", marginLeft: "20px" }}>
+                    <a onClick={this.handleReloadCertificates}>
+                      <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
+                    </a>
+                  </div>
                 </div>
-              </div>
-              <div className="col" style={{ width: "40px", marginLeft: "20px" }}>
-                <a onClick={this.handleReloadCertificates}>
-                  <i className="file-setting-item waves-effect material-icons secondary-content">autorenew</i>
-                </a>
-              </div>
-            </div>
+            }
             <div className={"collection " + VIEW}>
               <div style={{ flex: "1 1 auto", height: "calc(100vh - 110px)" }}>
 
@@ -1437,7 +1456,8 @@ class CertWindow extends React.Component<any, any> {
                   certrequests.length < 1 && certificates.size < 1 && crls.size < 1 ?
                     <BlockNotElements name={"active"} title={localize("Certificate.cert_not_found", locale)} /> :
                     <CertificateList
-                      selectedCert={this.state.certificate}
+                      selectedCert={isCertInfoMode && urlCmdCertInfo.certToProcessPkiItemInfo ? urlCmdCertInfo.certToProcessPkiItemInfo
+                        : this.state.certificate}
                       selectedCrl={this.state.crl}
                       activeCert={this.handleActiveCert}
                       activeCrl={this.handleActiveCRL}
@@ -1456,7 +1476,7 @@ class CertWindow extends React.Component<any, any> {
               </div>
             </div>
             {
-              certificate || crl ?
+              (certificate || crl) && !isCertInfoMode ?
                 <div className="row fixed-bottom-rightcolumn" style={{ bottom: "20px" }}>
                   <div className="col s12">
                     <hr />
@@ -1509,6 +1529,23 @@ class CertWindow extends React.Component<any, any> {
             }
 
             {
+              isCertInfoMode ?
+                <div className="row fixed-bottom-rightcolumn">
+                  <div className="col s6 offset-s1">
+                    <a className="btn btn-text waves-effect waves-light" onClick={this.handleCertInfoCancel}>
+                      ОТМЕНА
+                  </a>
+                  </div>
+                  <div className="col s2">
+                    <a className="btn btn-outlined waves-effect waves-light" onClick={this.handleCertInfoConfirm}>
+                      {localize("Settings.Choose", locale)}
+                    </a>
+                  </div>
+                </div>
+                : null
+            }
+
+            {
               requestCA ?
                 <div className="row fixed-bottom-rightcolumn" style={{ bottom: "20px" }}>
                   <div className="col s12">
@@ -1556,11 +1593,14 @@ class CertWindow extends React.Component<any, any> {
           <PasswordDialog value={this.state.password} onChange={this.handlePasswordChange} />
         </div>
 
-        <div className="fixed-action-btn" style={{ bottom: "20px", right: "380px" }} onClick={() => this.handleShowModalByType(MODAL_ADD_CERTIFICATE)}>
-          <a className="btn-floating btn-large cryptoarm-red">
-            <i className="large material-icons">add</i>
-          </a>
-        </div>
+        {
+          isCertInfoMode ? null :
+            <div className="fixed-action-btn" style={{ bottom: "20px", right: "380px" }} onClick={() => this.handleShowModalByType(MODAL_ADD_CERTIFICATE)}>
+              <a className="btn-floating btn-large cryptoarm-red">
+                <i className="large material-icons">add</i>
+              </a>
+            </div>
+        }
       </div>
     );
   }
@@ -1732,6 +1772,15 @@ class CertWindow extends React.Component<any, any> {
       return "";
     }
   }
+
+  handleCertInfoConfirm = () => {
+    const { urlCmdCertInfo } = this.props;
+    sendCertificateInfo(urlCmdCertInfo.certToProcess, urlCmdCertInfo.url, urlCmdCertInfo.id);
+  }
+
+  handleCertInfoCancel = () => {
+    certInfoFail();
+  }
 }
 
 export default connect((state) => {
@@ -1749,6 +1798,8 @@ export default connect((state) => {
     searchValue: state.filters.searchValue,
     servicesMap: state.services.entities,
     urlCmdProps: state.urlCmdCertificates,
+    urlCmdCertInfo: state.urlCmdCertInfo,
+    isCertInfoMode: !state.urlCmdCertInfo.done,
   };
 }, {
   changeSearchValue, deleteRequestCA, loadAllCertificates, loadAllContainers,
