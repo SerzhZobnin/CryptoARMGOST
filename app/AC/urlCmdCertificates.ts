@@ -7,6 +7,7 @@ import localize from "../i18n/localize";
 import { IUrlCommandApiV4Type } from "../parse-app-url";
 import store from "../store";
 import { navigationLock, navigationUnlock } from "./globalLocks";
+import { certificateInfo } from "./urlCmdCertInfo";
 import { openWindow, paramsRequest, postRequest, writeCertToTmpFile } from "./urlCmdUtils";
 
 interface ICertResp {
@@ -16,23 +17,17 @@ interface ICertResp {
 }
 
 interface ICertificateParameters {
-  operation: "import"|"export";
+  operation: "import"|"export"|"information";
   props: ICertificateOperationProps;
 }
 
-interface ICertificateOperationPropsExp {
+interface ICertificateOperationProps {
+  headerText?: string;
+  descriptionText?: string;
   store?: string[];
-  multy: boolean;
+  multy?: boolean;
+  certificateBase64?: string;
 }
-
-interface ICertificateOperationPropsImp {
-  store?: string[];
-  certificateBase64: string;
-}
-
-type ICertificateOperationProps =
-  | ICertificateOperationPropsExp
-  | ICertificateOperationPropsImp;
 
 interface ICertToExport {
   certificateBase64: string;
@@ -77,9 +72,15 @@ export function handleUrlCommandCertificates( command: IUrlCommandApiV4Type ) {
         case "export":
           exportCertificates(props, data.id, command.url);
           break;
+
         case "import":
           importCertificate(props);
           break;
+
+        case "information":
+          certificateInfo(props.certificateBase64, data.id, command.url);
+          break;
+
         default:
           // tslint:disable-next-line: no-console
           console.log("Error! Unsupported certificates method: " + operation);
@@ -97,7 +98,7 @@ export function handleUrlCommandCertificates( command: IUrlCommandApiV4Type ) {
   );
 }
 
-function exportCertificates(props: ICertificateOperationPropsExp, id: string, url: string) {
+function exportCertificates(props: ICertificateOperationProps, id: string, url: string) {
   const stores = (props.store && (props.store.length > 0)) ? props.store : [MY];
 
   store.dispatch({
@@ -118,8 +119,15 @@ function exportCertificates(props: ICertificateOperationPropsExp, id: string, ur
   openWindow(targetLocation, stores[0]);
 }
 
-function importCertificate(props: ICertificateOperationPropsImp) {
+function importCertificate(props: ICertificateOperationProps) {
   const certStore = props.store ? props.store : ["MY"];
+
+  if (!props.certificateBase64) {
+    $(".toast-url-cmd-cert-import-fail").remove();
+    Materialize.toast(localize("UrlCommand.cert_import_fail", window.locale),
+      3000, "toast-url-cmd-cert-import-fail");
+    return;
+  }
   const certTmpPath = writeCertToTmpFile(props.certificateBase64);
 
   store.dispatch({
@@ -174,7 +182,7 @@ export function urlCmdSendCert(cert: any, id: string, url: string) {
 }
 
 export function urlCmdSendCerts(certs: any, id: string, url: string) {
-  let certificatesToSend = [];
+  const certificatesToSend = [];
   for (const cert of certs) {
     certificatesToSend.push({
       certificateBase64: converCertToPlainBase64(cert),
