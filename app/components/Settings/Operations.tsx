@@ -40,7 +40,6 @@ class Operations extends React.Component<IOperationsProps, {}> {
       save_copy_to_documents, save_result_to_folder, signing_operation } = operations;
 
     const isDssCert = (signerCert && (signerCert.service || signerCert.dssUserID)) ? true : false;
-
     const is_disabled = operationIsRemote;
 
     return (
@@ -52,6 +51,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
             elementId="reverse_operations"
             onClickCheckBox={this.handleReverseOperationsClick}
             title={localize("Operations.reverse_operations", locale)} />
+
         </div>
         <div className="col s12">
           <CheckBoxWithLabel
