@@ -42,17 +42,16 @@ class Operations extends React.Component<IOperationsProps, {}> {
     const isDssCert = (signerCert && (signerCert.service || signerCert.dssUserID)) ? true : false;
     const is_disabled = operationIsRemote;
 
-    // if (operationIsRemote && reverse_operations) {this.handleArchivationOperationClick(); }
-
     return (
       <div className="row">
         <div className="col s12">
           <CheckBoxWithLabel
-          isChecked = {reverse_operations}
-          disabled={is_disabled}
-          elementId="reverse_operations"
-          onClickCheckBox={this.handleReverseOperationsClick}
-          title={localize("Operations.reverse_operations", locale)} />
+            isChecked={reverse_operations}
+            disabled={is_disabled}
+            elementId="reverse_operations"
+            onClickCheckBox={this.handleReverseOperationsClick}
+            title={localize("Operations.reverse_operations", locale)} />
+
         </div>
         <div className="col s12">
           <CheckBoxWithLabel
@@ -64,7 +63,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
         </div>
         <div className="col s12">
           <CheckBoxWithLabel
-            isChecked={archivation_operation && !isDssCert && !operationIsRemote}
+            isChecked={archivation_operation && !isDssCert}
             disabled={is_disabled || isDssCert}
             elementId="archivation_operation"
             onClickCheckBox={this.handleArchivationOperationClick}
@@ -72,7 +71,7 @@ class Operations extends React.Component<IOperationsProps, {}> {
         </div>
         <div className="col s12">
           <CheckBoxWithLabel
-            isChecked={encryption_operation && !isDssCert && !operationIsRemote}
+            isChecked={encryption_operation && !isDssCert}
             disabled={is_disabled || isDssCert}
             elementId="encryption_operation"
             onClickCheckBox={this.handleEncryptionOperationClick}

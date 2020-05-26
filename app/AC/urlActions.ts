@@ -18,7 +18,6 @@ import * as signs from "../trusted/sign";
 import { extFile, fileExists, md5 } from "../utils";
 import { handleUrlCommandCertificates } from "./urlCmdCertificates";
 import { toggleReverseOperations, toggleSigningOperation, resetSettingChanges } from "./settingsActions";
-import { reverse } from "dns";
 
 const remote = window.electron.remote;
 

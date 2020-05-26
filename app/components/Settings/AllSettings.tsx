@@ -125,8 +125,8 @@ class AllSettings extends React.Component<any, {}> {
 
                   <SignatureTypeSelector
                     detached={isDetached}
-                    disabled = {disabled}
-                    handleChange={this.handleDetachedChange} />
+                    handleChange={this.handleDetachedChange}
+                    disabled={disabled} />
 
                   <EncodingTypeSelector
                     EncodingValue={encoding}
