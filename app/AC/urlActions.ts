@@ -17,6 +17,8 @@ import { checkLicense } from "../trusted/jwt";
 import * as signs from "../trusted/sign";
 import { extFile, fileExists, md5 } from "../utils";
 import { handleUrlCommandCertificates } from "./urlCmdCertificates";
+import { toggleReverseOperations, toggleSigningOperation, resetSettingChanges } from "./settingsActions";
+import { reverse } from "dns";
 
 const remote = window.electron.remote;
 
@@ -122,6 +124,12 @@ function signDocumentsFromURL(action: URLActionType) {
   cleanFileLists();
   openWindow(SIGN);
 
+  store.dispatch (toggleReverseOperations(false));
+  store.dispatch (toggleSigningOperation(true));
+
+  store.dispatch({
+    type: SIGN_DOCUMENTS_FROM_URL + START,
+  });
   setTimeout(async () => {
     try {
       let data: any;
