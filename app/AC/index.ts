@@ -21,6 +21,7 @@ import {
   VERIFY_CERTIFICATE,
   VERIFY_SIGNATURE,
   MULTI_DIRECT_OPERATION, LOCATION_RESULTS_MULTI_OPERATIONS,
+  VERIFY_CRL,
 } from "../constants";
 import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import { connectedSelector } from "../selectors";
@@ -484,6 +485,27 @@ export function verifyCertificate(certificateId: string) {
     dispatch({
       payload: { certificateId, certificateStatus },
       type: VERIFY_CERTIFICATE,
+    });
+  };
+}
+
+export function verifyCRL(crlId: string) {
+  return (dispatch: (action: {}) => void, getState: () => any) => {
+    const { crls } = getState();
+
+    const crlItem = crls.getIn(["entities", crlId]);
+    const crl = window.PKISTORE.getPkiObject(crlItem);
+    let crlStatus = false;
+
+    try {
+      crlStatus = trusted.utils.Csp.verifyCRL(crl);
+    } catch (e) {
+      crlStatus = false;
+    }
+
+    dispatch({
+      payload: { crlId, crlStatus },
+      type: VERIFY_CRL,
     });
   };
 }

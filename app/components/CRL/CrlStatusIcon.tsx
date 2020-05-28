@@ -1,19 +1,45 @@
 import React from "react";
+import { connect } from "react-redux";
+import { verifyCRL } from "../../AC";
 
 interface ICrlStatusIconProps {
   crl: any;
+  verifyCRL: (id: string) => void;
 }
 
 class CrlStatusIcon extends React.Component<ICrlStatusIconProps, {}> {
   timerHandle: NodeJS.Timer | null;
 
+  componentDidMount() {
+    // tslint:disable-next-line: no-shadowed-variable
+    const { crl, verifyCRL } = this.props;
+
+    this.timerHandle = setTimeout(() => {
+      if (!crl.verified) {
+        verifyCRL(crl.id);
+      }
+
+      this.timerHandle = null;
+    }, 2000);
+  }
+
+  componentWillUnmount() {
+    if (this.timerHandle) {
+      clearTimeout(this.timerHandle);
+      this.timerHandle = null;
+    }
+  }
+
   render() {
     const { crl } = this.props;
 
-    let curStatusStyle;
-    const status = this.checkCRL(crl);
+    if (!crl) {
+      return null;
+    }
 
-    if (status) {
+    let curStatusStyle;
+
+    if (crl && crl.status) {
       curStatusStyle = "cert_status_ok";
     } else {
       curStatusStyle = "cert_status_error";
@@ -23,19 +49,10 @@ class CrlStatusIcon extends React.Component<ICrlStatusIconProps, {}> {
       <div className={curStatusStyle} />
     );
   }
-
-  checkCRL = (crl: any) => {
-    const currentDate = new Date();
-
-    if (((new Date(crl.nextUpdate)).getTime() >= currentDate.getTime()) &&
-      ((new Date(crl.lastUpdate)).getTime() <= currentDate.getTime())) {
-      return true;
-    } else {
-      //
-    }
-
-    return false;
-  }
 }
 
-export default CrlStatusIcon;
+export default connect((state, ownProps: any) => {
+  return {
+    crl: ownProps.crl ? state.crls.getIn(["entities", ownProps.crl.id]) : undefined,
+  };
+}, { verifyCRL })(CrlStatusIcon);
