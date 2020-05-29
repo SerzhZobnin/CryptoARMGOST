@@ -406,6 +406,11 @@ export default {
     unselect_all: "Сбросить выделение",
   },
   Encrypt: {
+    AES_128: "AES 128",
+    AES_192: "AES 192",
+    AES_256: "AES 256",
+    DES: "DES",
+    DES3: "3DES",
     Encrypt: "ЗАШИФРОВАТЬ",
     Encryption: "ШИФРОВАНИЕ",
     GOST_28147: "ГОСТ 28147-89",

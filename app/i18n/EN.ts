@@ -406,6 +406,11 @@ export default {
     unselect_all: "Unselect",
   },
   Encrypt: {
+    AES_128: "AES 128",
+    AES_192: "AES 192",
+    AES_256: "AES 256",
+    DES: "DES",
+    DES3: "3DES",
     Encrypt: "ENCRYPT",
     Encryption: "FILES",
     GOST_28147: "GOST 28147-89",

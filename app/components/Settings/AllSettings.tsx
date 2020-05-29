@@ -8,10 +8,10 @@ import {
   changeArchiveFilesBeforeEncrypt, changeDeleteFilesAfterEncrypt, changeEncryptEncoding, changeEncryptionAlgorithm,
   changeOutfolder, changeSignatureDetached, changeSignatureEncoding,
   changeSignatureStandard, changeSignatureTime, changeSignatureTimestamp,
-  changeSignatureTimestampOnSign, toggleSaveToDocuments,
+  changeSignatureTimestampOnSign, getDefaultEncryptionAlg, isGostRecipients, toggleSaveToDocuments,
 } from "../../AC/settingsActions";
 import {
-  DEFAULT_DOCUMENTS_PATH, GOST_28147, TSP_OCSP_ENABLED,
+  DEFAULT_DOCUMENTS_PATH, TSP_OCSP_ENABLED,
 } from "../../constants";
 import { loadingRemoteFilesSelector } from "../../selectors";
 import { isCsp5R2 } from "../../utils";
@@ -82,7 +82,10 @@ class AllSettings extends React.Component<any, {}> {
     }
 
     if (!isCsp5R2orHigh) {
-      changeEncryptionAlgorithm(GOST_28147);
+      const isGostRecp = isGostRecipients(this.props.recipients);
+      changeEncryptionAlgorithm(
+        getDefaultEncryptionAlg(isGostRecp),
+      );
     }
   }
 
@@ -99,6 +102,8 @@ class AllSettings extends React.Component<any, {}> {
     const classDisabledTspAndOcsp = (signatureStandard === SignatureStandard.CADES && !isCertFromDSS) ? "" : "disabled";
     const classDisabledTsp = isCertFromDSS ? "disabled" : "";
     const isDetached = settings.sign.detached;
+
+    const isGostRecp = isGostRecipients(recipients);
 
     if (isCertFromDSS && encoding !== "BASE-64") {
       encoding = "BASE-64";
@@ -175,11 +180,12 @@ class AllSettings extends React.Component<any, {}> {
                 />
 
                 {
-                  isCsp5R2orHigh ?
+                  isCsp5R2orHigh || !isGostRecp ?
                     <EncryptionAlgorithmSelector
                       disabled={disabled}
                       EncryptionValue={settings.encrypt.algorithm}
-                      handleChange={this.handleEncryptAlgoritmChange} />
+                      handleChange={this.handleEncryptAlgoritmChange}
+                      showGostAlgs={isGostRecp} />
                     : null
                 }
 

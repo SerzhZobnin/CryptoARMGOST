@@ -8,7 +8,13 @@ declare namespace trusted {
     enum EncryptAlg {
         GOST_28147 = 0,
         GOST_R3412_2015_M = 1,
-        GOST_R3412_2015_K = 2
+        GOST_R3412_2015_K = 2,
+
+        DES = 5,
+        DES3 = 6,
+        AES_128 = 7,
+        AES_192 = 8,
+        AES_256 = 9
     }
 }
 declare namespace trusted {
