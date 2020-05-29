@@ -394,6 +394,7 @@ export default {
     information_about_doc: "Информация о документе",
     information_about_docs: "Информация о документах",
     mtime: "Изменён",
+    no_rows: "Нет документов",
     open_in_sign_and_encrypt: "Открыть в мастере подписи и шифрования",
     realy_delete_documents: "Вы действительно хотите удалить выбранные документы?",
     save_to_documents: "Сохранить в разделе Документы",

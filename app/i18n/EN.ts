@@ -394,6 +394,7 @@ export default {
     information_about_doc: "Information about document",
     information_about_docs: "Information about documents",
     mtime: "Modified date",
+    no_rows: "No have documents",
     open_in_sign_and_encrypt: "Open in sign and encrypt",
     realy_delete_documents: "You really want delete selected documents?",
     save_to_documents: "Save to Documents",
