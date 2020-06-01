@@ -160,6 +160,7 @@ export default {
     organization_name: "Organization Name (eg, company)",
     organizational_unit_name: "Organizational unit name",
     province_name: "State or Province Name (full name)",
+    signing_request_error: "Error signing request",
     snils: "SNILS",
     subject_params: "Subject parameters",
     template_additional_fields: "Template with additional fields",

@@ -553,8 +553,21 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       }
 
       certReq.save(path.join(DEFAULT_CSR_PATH, csrFileName), trusted.DataFormat.PEM);
-    } catch (e) {
-      //
+    } catch (err) {
+      logger.log({
+        certificate: cn,
+        level: "error",
+        message: err.message ? err.message : err,
+        operation: "Генерация и сохранение запроса",
+        operationObject: {
+          in: containerName,
+          out: "Null",
+        },
+        userName: USER_NAME,
+      });
+      $(".toast-create_request_error").remove();
+      Materialize.toast(localize("CSR.create_request_error", locale), 3000, "toast-create_request_error");
+      return;
     }
 
     providerType = PROVIDER_CRYPTOPRO;
@@ -563,7 +576,24 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       const cert = new trusted.pki.Certificate(certReq);
       cert.serialNumber = randomSerial();
       cert.notAfter = 60 * 60 * 24 * 365; // 365 days in sec
-      cert.sign();
+      try {
+        cert.sign();
+      } catch (err) {
+        logger.log({
+          certificate: cn,
+          level: "error",
+          message: err.message ? err.message : err,
+          operation: "Генерация сертификата",
+          operationObject: {
+            in: "CN=" + cn,
+            out: "Null",
+          },
+          userName: USER_NAME,
+        });
+        $(".toast-signing_error").remove();
+        Materialize.toast(localize("CSR.signing_request_error", locale), 3000, "toast-signing_error");
+        return;
+      }
 
       logger.log({
         certificate: cert.subjectName,
@@ -649,7 +679,23 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       const cert = new trusted.pki.Certificate(certReq);
       cert.serialNumber = randomSerial();
       cert.notAfter = 60; // 60 sec
-      cert.sign();
+      try {
+        cert.sign();
+      } catch(err) {
+        logger.log({
+          certificate: cn,
+          level: "error",
+          message: err.message ? err.message : err,
+          operation: "Создание запроса",
+          operationObject: {
+            in: "CN=" + cn,
+            out: "Null",
+          },
+          userName: USER_NAME,
+        });
+        $(".toast-signing_error").remove();
+        Materialize.toast(localize("CSR.signing_request_error", locale), 3000, "toast-signing_error");
+      }
 
       window.PKISTORE.importCertificate(cert, providerType, (err: Error) => {
         if (err) {
