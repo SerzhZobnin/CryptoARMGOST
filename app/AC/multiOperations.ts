@@ -5,13 +5,14 @@ import * as path from "path";
 import { push } from "react-router-redux";
 import * as unzipper from "unzipper";
 import {
-  ARCHIVATION_OPERATION, BASE64, DEFAULT_DOCUMENTS_PATH, DEFAULT_TEMP_PATH, DER,
-  ENCRYPTION_OPERATION, GOST_28147, GOST_R3412_2015_K,
-  GOST_R3412_2015_M,
-  HOME_DIR, LOCATION_RESULTS_MULTI_OPERATIONS,
-  MULTI_DIRECT_OPERATION,
-  MULTI_REVERSE_OPERATION,
-  SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_ARCHIVED_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_DOCUMENT_IN_OPERAIONS_RESULT,
+  AES_128, AES_192, AES_256, ARCHIVATION_OPERATION, BASE64,
+  DEFAULT_DOCUMENTS_PATH, DEFAULT_TEMP_PATH, DER,
+  DES, DES3, ENCRYPTION_OPERATION, GOST_28147,
+  GOST_R3412_2015_K, GOST_R3412_2015_M, HOME_DIR,
+  LOCATION_RESULTS_MULTI_OPERATIONS,
+  MULTI_DIRECT_OPERATION, MULTI_REVERSE_OPERATION,
+  SELECT_ALL_DOCUMENTS_IN_OPERAIONS_RESULT, SELECT_ARCHIVED_DOCUMENTS_IN_OPERAIONS_RESULT,
+  SELECT_DOCUMENT_IN_OPERAIONS_RESULT,
   SELECT_ENCRYPTED_DOCUMENTS_IN_OPERAIONS_RESULT,
   SELECT_SIGNED_DOCUMENTS_IN_OPERAIONS_RESULT,
   SIGNING_OPERATION, START, SUCCESS,
@@ -282,6 +283,22 @@ export function multiDirectOperation(
             break;
           case GOST_R3412_2015_K:
             encAlg = trusted.EncryptAlg.GOST_R3412_2015_K;
+            break;
+
+          case DES:
+            encAlg = trusted.EncryptAlg.DES;
+            break;
+          case DES3:
+            encAlg = trusted.EncryptAlg.DES3;
+            break;
+          case AES_128:
+            encAlg = trusted.EncryptAlg.AES_128;
+            break;
+          case AES_192:
+            encAlg = trusted.EncryptAlg.AES_192;
+            break;
+          case AES_256:
+            encAlg = trusted.EncryptAlg.AES_256;
             break;
         }
 

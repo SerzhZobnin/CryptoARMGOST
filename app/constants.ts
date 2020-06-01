@@ -96,6 +96,11 @@ export const CHANGE_ECRYPT_ALGORITHM = "CHANGE_ECRYPT_ALGORITHM";
 export const GOST_28147 = "GOST_28147";
 export const GOST_R3412_2015_M = "GOST_R3412_2015_M";
 export const GOST_R3412_2015_K = "GOST_R3412_2015_K";
+export const DES = "DES";
+export const DES3 = "DES3";
+export const AES_128 = "AES_128";
+export const AES_192 = "AES_192";
+export const AES_256 = "AES_256";
 
 export const TOGGLE_SAVE_TO_DOCUMENTS = "TOGGLE_SAVE_TO_DOCUMENTS";
 export const CHANGE_SETTINGS_NAME = "CHANGE_SETTINGS_NAME";
