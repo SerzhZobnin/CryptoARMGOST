@@ -573,11 +573,10 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     providerType = PROVIDER_CRYPTOPRO;
 
     if (selfSigned) {
-      const cert = new trusted.pki.Certificate(certReq);
-      cert.serialNumber = randomSerial();
-      cert.notAfter = 60 * 60 * 24 * 365; // 365 days in sec
+      let cert = undefined;
       try {
-        cert.sign();
+        const notAfter = 60 * 60 * 24 * 365; // 365 days in sec
+        cert = certReq.toCertificate(notAfter, randomSerial());
       } catch (err) {
         logger.log({
           certificate: cn,
@@ -642,8 +641,8 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       }
 
       try {
-        trusted.utils.Csp.installCertificateToContainer(cert, containerName, 75);
-        trusted.utils.Csp.installCertificateFromContainer(containerName, 75, "Crypto-Pro GOST R 34.10-2001 Cryptographic Service Provider");
+        trusted.utils.Csp.installCertificateToContainer(cert, containerName, 80);
+        trusted.utils.Csp.installCertificateFromContainer(containerName, 80, "Crypto-Pro GOST R 34.10-2012 Cryptographic Service Provider");
 
         this.handleReloadCertificates();
 
@@ -676,11 +675,9 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
         });
       }
     } else {
-      const cert = new trusted.pki.Certificate(certReq);
-      cert.serialNumber = randomSerial();
-      cert.notAfter = 60; // 60 sec
+      let cert = undefined;
       try {
-        cert.sign();
+        cert = certReq.toCertificate(60, randomSerial());
       } catch(err) {
         logger.log({
           certificate: cn,
