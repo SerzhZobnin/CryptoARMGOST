@@ -553,17 +553,46 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       }
 
       certReq.save(path.join(DEFAULT_CSR_PATH, csrFileName), trusted.DataFormat.PEM);
-    } catch (e) {
-      //
+    } catch (err) {
+      logger.log({
+        certificate: cn,
+        level: "error",
+        message: err.message ? err.message : err,
+        operation: "Генерация и сохранение запроса",
+        operationObject: {
+          in: containerName,
+          out: "Null",
+        },
+        userName: USER_NAME,
+      });
+      $(".toast-create_request_error").remove();
+      Materialize.toast(localize("CSR.create_request_error", locale), 3000, "toast-create_request_error");
+      return;
     }
 
     providerType = PROVIDER_CRYPTOPRO;
 
     if (selfSigned) {
-      const cert = new trusted.pki.Certificate(certReq);
-      cert.serialNumber = randomSerial();
-      cert.notAfter = 60 * 60 * 24 * 365; // 365 days in sec
-      cert.sign();
+      let cert = undefined;
+      try {
+        const notAfter = 60 * 60 * 24 * 365; // 365 days in sec
+        cert = certReq.toCertificate(notAfter, randomSerial());
+      } catch (err) {
+        logger.log({
+          certificate: cn,
+          level: "error",
+          message: err.message ? err.message : err,
+          operation: "Генерация сертификата",
+          operationObject: {
+            in: "CN=" + cn,
+            out: "Null",
+          },
+          userName: USER_NAME,
+        });
+        $(".toast-signing_error").remove();
+        Materialize.toast(localize("CSR.signing_request_error", locale), 3000, "toast-signing_error");
+        return;
+      }
 
       logger.log({
         certificate: cert.subjectName,
@@ -612,8 +641,8 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
       }
 
       try {
-        trusted.utils.Csp.installCertificateToContainer(cert, containerName, 75);
-        trusted.utils.Csp.installCertificateFromContainer(containerName, 75, "Crypto-Pro GOST R 34.10-2001 Cryptographic Service Provider");
+        trusted.utils.Csp.installCertificateToContainer(cert, containerName, 80);
+        trusted.utils.Csp.installCertificateFromContainer(containerName, 80, "Crypto-Pro GOST R 34.10-2012 Cryptographic Service Provider");
 
         this.handleReloadCertificates();
 
@@ -646,10 +675,24 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
         });
       }
     } else {
-      const cert = new trusted.pki.Certificate(certReq);
-      cert.serialNumber = randomSerial();
-      cert.notAfter = 60; // 60 sec
-      cert.sign();
+      let cert = undefined;
+      try {
+        cert = certReq.toCertificate(60, randomSerial());
+      } catch(err) {
+        logger.log({
+          certificate: cn,
+          level: "error",
+          message: err.message ? err.message : err,
+          operation: "Создание запроса",
+          operationObject: {
+            in: "CN=" + cn,
+            out: "Null",
+          },
+          userName: USER_NAME,
+        });
+        $(".toast-signing_error").remove();
+        Materialize.toast(localize("CSR.signing_request_error", locale), 3000, "toast-signing_error");
+      }
 
       window.PKISTORE.importCertificate(cert, providerType, (err: Error) => {
         if (err) {

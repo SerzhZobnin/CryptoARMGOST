@@ -160,6 +160,7 @@ export default {
     organization_name: "Организация",
     organizational_unit_name: "Подразделение",
     province_name: "Область",
+    signing_request_error: "Ошибка при подписании запроса",
     snils: "СНИЛС",
     subject_params: "Сведения о владельце сертификата",
     template_additional_fields: "Шаблон с расширенным списком полей",
