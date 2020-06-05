@@ -494,14 +494,17 @@ class FilterEvents extends React.Component<IFilterEventsProps, IEventsFilters> {
 
   handleApplyFilters = () => {
     this.props.applyEventsFilters(this.state);
-
     this.handelCancel();
   }
 
   handleResetFilters = () => {
     this.setState({ ...initialState });
     this.props.resetEventsFilters();
-    $("select").material_select();
+    $(document).ready(() => {
+      $("select").material_select();
+      Materialize.updateTextFields();
+    });
+
   }
 }
 
