@@ -500,7 +500,6 @@ class FilterEvents extends React.Component<IFilterEventsProps, IEventsFilters> {
   handleResetFilters = () => {
     this.setState({ ...initialState });
     this.props.resetEventsFilters();
-
     $(document).ready(() => {
       $("select").material_select();
       Materialize.updateTextFields();
