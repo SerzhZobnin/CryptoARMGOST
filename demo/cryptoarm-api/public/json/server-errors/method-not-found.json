@@ -1,0 +1,8 @@
+{
+  "jsonrpc": "2.0",
+  "error": {
+    "code": -32601,
+    "message": "Method not found"
+  },
+  "id": "d2056bc4-c8c7-41ee-bdf8-aaa306cdec2f"
+}

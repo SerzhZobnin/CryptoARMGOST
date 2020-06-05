@@ -1,6 +1,8 @@
 import { OrderedMap, Record } from "immutable";
-import { LOAD_ALL_CERTIFICATES, REMOVE_ALL_CERTIFICATES,
-  START, SUCCESS, VERIFY_CERTIFICATE } from "../constants";
+import {
+  LOAD_ALL_CERTIFICATES, REMOVE_ALL_CERTIFICATES,
+  START, SUCCESS, VERIFY_CERTIFICATE, VERIFY_CRL
+} from "../constants";
 import { arrayToMap } from "../utils";
 
 const CRLModel = Record({
@@ -18,8 +20,10 @@ const CRLModel = Record({
   provider: null,
   signatureAlgorithm: null,
   signatureDigestAlgorithm: null,
+  status: false,
   type: null,
   uri: null,
+  verified: false,
 });
 
 const DefaultReducerState = Record({
@@ -29,7 +33,7 @@ const DefaultReducerState = Record({
 });
 
 export default (CRLs = new DefaultReducerState(), action) => {
-  const { type, crls } = action;
+  const { type, crls, payload } = action;
   switch (type) {
     case LOAD_ALL_CERTIFICATES + START:
       return CRLs.set("loading", true);
@@ -39,6 +43,11 @@ export default (CRLs = new DefaultReducerState(), action) => {
         .update("entities", (entities) => arrayToMap(crls, CRLModel).merge(entities))
         .set("loading", false)
         .set("loaded", true);
+
+    case VERIFY_CRL:
+      return CRLs
+        .setIn(["entities", payload.crlId, "status"], payload.crlStatus)
+        .setIn(["entities", payload.crlId, "verified"], true);
 
     case REMOVE_ALL_CERTIFICATES:
       return CRLs = new DefaultReducerState();

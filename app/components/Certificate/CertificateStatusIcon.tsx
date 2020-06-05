@@ -4,13 +4,19 @@ import { verifyCertificate } from "../../AC";
 
 interface ICertificateStatusIconProps {
   certificate: any;
+  isCertInfoMode: boolean;
+  urlCmdCertInfo: any;
 }
 
 class CertificateStatusIcon extends React.Component<ICertificateStatusIconProps, {}> {
   timerHandle: NodeJS.Timer | null;
 
   componentDidMount() {
-    const { certificate, verifyCertificate } = this.props;
+    const { certificate, verifyCertificate, isCertInfoMode } = this.props;
+
+    if (isCertInfoMode) {
+      return;
+    }
 
     this.timerHandle = setTimeout(() => {
       if (!certificate.verified) {
@@ -29,18 +35,20 @@ class CertificateStatusIcon extends React.Component<ICertificateStatusIconProps,
   }
 
   render() {
-    const { certificate } = this.props;
+    const { certificate, isCertInfoMode, urlCmdCertInfo } = this.props;
 
-    if (!certificate) {
+    if (!isCertInfoMode && !certificate) {
       return null;
     }
 
+    const verifiedCert = isCertInfoMode && urlCmdCertInfo.certToProcessPkiItemInfo
+      ? urlCmdCertInfo.certToProcessPkiItemInfo : certificate;
     let curStatusStyle;
 
-    if (certificate && certificate.status) {
-      curStatusStyle = certificate.dssUserID ? "cloud_cert_status_ok" : "cert_status_ok";
+    if (verifiedCert && verifiedCert.status) {
+      curStatusStyle = verifiedCert.dssUserID ? "cloud_cert_status_ok" : "cert_status_ok";
     } else {
-      curStatusStyle = certificate.dssUserID  ? "cloud_cert_status_error" : "cert_status_error";
+      curStatusStyle = verifiedCert.dssUserID ? "cloud_cert_status_error" : "cert_status_error";
     }
 
     return (
@@ -52,5 +60,7 @@ class CertificateStatusIcon extends React.Component<ICertificateStatusIconProps,
 export default connect((state, ownProps: any) => {
   return {
     certificate: ownProps.certificate ? state.certificates.getIn(["entities", ownProps.certificate.id]) : undefined,
+    isCertInfoMode: !state.urlCmdCertInfo.done,
+    urlCmdCertInfo: state.urlCmdCertInfo,
   };
 }, { verifyCertificate })(CertificateStatusIcon);

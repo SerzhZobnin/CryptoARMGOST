@@ -8,7 +8,13 @@ declare namespace trusted {
     enum EncryptAlg {
         GOST_28147 = 0,
         GOST_R3412_2015_M = 1,
-        GOST_R3412_2015_K = 2
+        GOST_R3412_2015_K = 2,
+
+        DES = 5,
+        DES3 = 6,
+        AES_128 = 7,
+        AES_192 = 8,
+        AES_256 = 9
     }
 }
 declare namespace trusted {
@@ -95,6 +101,7 @@ declare namespace native {
             getOrganizationName(): string;
             getOCSPUrls(): string[];
             getCAIssuersUrls(): string[];
+            getSubjectKeyIdentifier(): Buffer;
             isSelfSigned(): boolean;
             isCA(): boolean;
             sign(): void;
@@ -234,6 +241,7 @@ declare namespace native {
             hasPrivateKey(cert: PKI.Certificate): boolean;
             buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             verifyCertificateChain(cert: PKI.Certificate): boolean;
+            verifyCRL(crl: PKI.CRL): boolean;
             isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
             certToPkcs12(cert: PKI.Certificate, exportPrivateKey: boolean, password?: string): PKI.PKCS12;
             importPkcs12(p12: PKI.PKCS12, password?: string): void;
@@ -1139,6 +1147,7 @@ declare namespace trusted.utils {
         hasPrivateKey(cert: pki.Certificate): boolean;
         static buildChain(cert: pki.Certificate): pki.CertificateCollection;
         static verifyCertificateChain(cert: pki.Certificate): boolean;
+        static verifyCRL(crl: pki.CRL): boolean;
         /**
          * Find certificate in MY store and check that private key exportable
          *
@@ -1907,6 +1916,7 @@ declare namespace trusted.pki {
          * @memberof Certificate
          */
         readonly CAIssuersUrls: string[];
+        readonly subjectKeyIdentifier: string;
         /**
          * Return true is a certificate is self signed
          *

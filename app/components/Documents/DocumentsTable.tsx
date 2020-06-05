@@ -357,10 +357,7 @@ class DocumentTable extends React.Component<IDocumentsTableProps & IDocumentsTab
   noRowsRenderer = () => {
     const { locale, localize } = this.context;
 
-    return <div className={"add-file-item not-active"} id="items-hidden">
-      <div className="headline6 add-file-item-text">{localize("Settings.drag_drop", locale)}</div>
-      <i className="material-icons large fullscreen">fullscreen</i>
-    </div>;
+    return <div className={"noRows"}>{localize("Documents.no_rows", locale)}</div>;
   }
 
   scrollToRow = (index: number) => {

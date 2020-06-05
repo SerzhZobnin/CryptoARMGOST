@@ -13,6 +13,8 @@ import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
+import { URL_CMD_CERTIFICATES_EXPORT } from "../../constants";
+import { urlCmdSendCert, urlCmdCertExportFail } from "../../AC/urlCmdCertificates";
 
 class CertificateSelectionForSignature extends React.Component<any, any> {
   static contextTypes = {
@@ -48,7 +50,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
   }
 
   render() {
-    const { certificates, isLoading, isLoadingFromDSS, searchValue } = this.props;
+    const { certificates, isLoading, isLoadingFromDSS, searchValue, exportCommmand } = this.props;
     const { certificate } = this.state;
     const { localize, locale } = this.context;
 
@@ -94,7 +96,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
                             <CertificateList
                               selectedCert={this.state.certificate}
                               activeCert={this.handleActiveCert}
-                              operation="sign" />
+                              operation={exportCommmand ? "export_certs" : "sign"} />
                         }
                       </div>
                     </div>
@@ -118,7 +120,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
             </div>
             <div className="row fixed-bottom-rightcolumn">
               <div className="col s6 offset-s1">
-                <a className="btn btn-text waves-effect waves-light" onClick={this.props.history.goBack}>
+                <a className="btn btn-text waves-effect waves-light" onClick={this.handleCancel}>
                   ОТМЕНА
                 </a>
               </div>
@@ -223,8 +225,28 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
     // tslint:disable-next-line: no-shadowed-variable
     const { selectSignerCertificate } = this.props;
     const { certificate } = this.state;
+    const { urlCmdProps } = this.props;
 
-    selectSignerCertificate(certificate.id);
+    if (urlCmdProps && !urlCmdProps.done
+      && (urlCmdProps.operation == URL_CMD_CERTIFICATES_EXPORT)
+    ) {
+      urlCmdSendCert(certificate, urlCmdProps.id, urlCmdProps.url);
+    } else {
+      selectSignerCertificate(certificate.id);
+    }
+
+    this.props.history.goBack();
+  }
+
+  handleCancel = () => {
+    const { urlCmdProps } = this.props;
+
+    if (urlCmdProps && !urlCmdProps.done
+      && (urlCmdProps.operation == URL_CMD_CERTIFICATES_EXPORT)
+    ) {
+      urlCmdCertExportFail();
+    }
+
     this.props.history.goBack();
   }
 
@@ -237,10 +259,15 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
 
 export default connect((state) => {
   return {
-    certificates: filteredCertificatesSelector(state, { operation: "sign" }),
+    certificates: filteredCertificatesSelector(state,
+      (state.urlCmdCertificates && !state.urlCmdCertificates.done
+        && (state.urlCmdCertificates.operation === URL_CMD_CERTIFICATES_EXPORT))
+        ? { operation: "export_certs" } : { operation: "sign" }),
+    exportCommmand: state.urlCmdCertificates && !state.urlCmdCertificates.done,
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
     searchValue: state.filters.searchValue,
+    urlCmdProps: state.urlCmdCertificates,
   };
 }, {
   changeSearchValue, loadAllCertificates,

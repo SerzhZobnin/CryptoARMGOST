@@ -52,7 +52,7 @@ class ContainerDelete extends React.Component<IContainerDeleteProps, ICertificat
     if (container.certificateItem !== null) {
       body = certificates.get(`CRYPTOPRO_MY_${container.certificateItem.hash}`) ?
         (
-          <div className="input-field col s12">
+          <div className="input-field col s12 delete_container_modal">
             <input
               name="groupDelCont"
               type="checkbox"

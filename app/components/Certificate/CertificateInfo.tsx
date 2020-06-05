@@ -27,6 +27,7 @@ export interface IX509Certificate {
   privateKey: boolean;
   active: boolean;
   key: string;
+  object?: trusted.pki.Certificate;
 }
 
 interface ICertificateInfoProps {
@@ -42,6 +43,14 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
   render() {
     const { localize, locale } = this.context;
     const { certificate } = this.props;
+    const signatureAlgorithm = localize(`OIDs.${certificate.signatureAlgorithm}`, locale);
+    const signatureDigestAlgorithm = localize(`OIDs.${certificate.signatureDigestAlgorithm}`, locale);
+    const publicKeyAlgorithm = localize(`OIDs.${certificate.publicKeyAlgorithm}`, locale);
+
+    if (!certificate) {
+      return null;
+    }
+
     const PRIV_KEY = certificate.key && certificate.key.length > 0 ? localize("Certificate.present", locale) : localize("Certificate.absent", locale);
     return (
       <div className="collection cert-info-list">
@@ -69,15 +78,15 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
         </div>
         <div className="collection-item certs-collection certificate-info">
           <div className="caption-text">{localize("Sign.alg", locale)}</div>
-          <div className="collection-title selectable-text">{localizeAlgorithm(certificate.signatureAlgorithm, locale)}</div>
+          <div className="collection-title selectable-text">{ signatureAlgorithm ? signatureAlgorithm : certificate.signatureAlgorithm}</div>
         </div>
         <div className="collection-item certs-collection certificate-info">
           <div className="caption-text">{localize("Certificate.signature_digest_algorithm", locale)}</div>
-          <div className="collection-title selectable-text">{localizeAlgorithm(certificate.signatureDigestAlgorithm, locale)}</div>
+          <div className="collection-title selectable-text">{signatureDigestAlgorithm ? signatureDigestAlgorithm : certificate.signatureDigestAlgorithm}</div>
         </div>
         <div className="collection-item certs-collection certificate-info">
           <div className="caption-text">{localize("Certificate.public_key_algorithm", locale)}</div>
-          <div className="collection-title selectable-text">{localizeAlgorithm(certificate.publicKeyAlgorithm, locale)}</div>
+          <div className="collection-title selectable-text">{publicKeyAlgorithm ? publicKeyAlgorithm : certificate.publicKeyAlgorithm}</div>
         </div>
         <div className="collection-item certs-collection certificate-info">
           <div className="caption-text">{localize("Certificate.thumbprint", locale)}</div>
@@ -96,7 +105,13 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
     const { localize, locale } = this.context;
     const { certificate } = this.props;
 
-    const x509: trusted.pki.Certificate = window.PKISTORE.getPkiObject(certificate);
+    if (!certificate) {
+      return null;
+    }
+
+    const x509: trusted.pki.Certificate = certificate.object &&
+     certificate.object instanceof trusted.pki.Certificate ?
+      certificate.object : window.PKISTORE.getPkiObject(certificate);
 
     if (x509) {
       const keyUsageString = x509.keyUsageString;

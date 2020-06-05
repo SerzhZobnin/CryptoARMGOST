@@ -6,13 +6,13 @@ import {
 } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import {
-  arhiveDocuments, loadAllDocuments, removeAllDocuments,
-  removeDocuments, selectAllDocuments, unselectAllDocuments,
+  arhiveDocuments, documentsPackageSelect, loadAllDocuments,
+  removeAllDocuments, removeDocuments, selectAllDocuments, unselectAllDocuments,
 } from "../../AC/documentsActions";
 import {
   DEFAULT_DOCUMENTS_PATH,
 } from "../../constants";
-import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
+import { selectedDocumentsSelector, selectedFiltredDocumentsSelector } from "../../selectors/documentsSelector";
 import { mapToArr } from "../../utils";
 import Modal from "../Modal";
 import DeleteDocuments from "./DeleteDocuments";
@@ -23,9 +23,11 @@ import FilterDocuments from "./FilterDocuments";
 interface IDocumentsWindowProps {
   documents: any;
   documentsLoading: boolean;
+  filtredDocuments: any;
   isDefaultFilters: boolean;
   loadAllDocuments: () => void;
   removeAllDocuments: () => void;
+  documentsPackageSelect: (documents: any) => void;
   selectAllDocuments: () => void;
   removeDocuments: (documents: any) => void;
   arhiveDocuments: (documents: any, arhiveName: string) => void;
@@ -281,9 +283,13 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
   handleSelectAllDocuments = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { selectAllDocuments } = this.props;
+    const { selectAllDocuments, filtredDocuments, documentsPackageSelect, isDefaultFilters } = this.props;
 
-    selectAllDocuments();
+    if (isDefaultFilters) {
+      selectAllDocuments();
+    } else {
+      documentsPackageSelect( filtredDocuments );
+    }
   }
 
   handleUnselectAllDocuments = () => {
@@ -307,6 +313,7 @@ export default connect((state) => {
 
   return {
     documents: selectedDocumentsSelector(state),
+    filtredDocuments: selectedFiltredDocumentsSelector (state),
     documentsLoading: state.events.loading,
     documentsMap: state.documents.entities,
     isDefaultFilters: state.filters.documents.isDefaultFilters,
@@ -319,7 +326,7 @@ export default connect((state) => {
   };
 }, {
   arhiveDocuments, deleteRecipient, documentsReviewed,
-  packageSign, loadAllDocuments,
+  packageSign, loadAllDocuments, documentsPackageSelect,
   removeAllDocuments, removeDocuments,
-  selectAllDocuments, selectSignerCertificate, unselectAllDocuments,
+  selectAllDocuments, selectSignerCertificate,  unselectAllDocuments,
 })(DocumentsWindow);

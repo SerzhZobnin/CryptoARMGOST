@@ -6,7 +6,7 @@ import {
   activeFile, filePackageDelete, filePackageSelect, removeAllRemoteFiles,
 } from "../../AC";
 import { deleteAllTemporyLicenses } from "../../AC/licenseActions";
-import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
+import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, filteredFilesSelector, loadingRemoteFilesSelector } from "../../selectors";
 import { CANCELLED, ERROR, SIGN, SIGNED, UPLOADED } from "../../server/constants";
 import { mapToArr } from "../../utils";
 import FilterDocuments from "../Documents/FilterDocuments";
@@ -25,6 +25,7 @@ interface ISignatureAndEncryptWindowProps {
   deleteAllTemporyLicenses: () => void;
   loadingFiles: any;
   files: any;
+  filesMap: any;
   method: string;
   operationsPerformed: boolean;
   operationsPerforming: boolean;
@@ -233,9 +234,9 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   selectedAll = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { files, activeFile } = this.props;
+    const {filesFilteredArr, activeFile } = this.props;
 
-    for (const file of files) {
+    for (const file of filesFilteredArr) {
       activeFile(file.id);
     }
   }
@@ -251,14 +252,13 @@ class SignatureAndEncryptWindow extends React.Component<ISignatureAndEncryptWind
 
   removeAllFiles = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { connections, connectedList, filesInTransactionList, filePackageDelete, files } = this.props;
+    const { filePackageDelete, filesMap } = this.props;
 
     const filePackage: number[] = [];
+    const filesToRemove = filesMap.toJS();
 
-    for (const file of files) {
-      if (!filesInTransactionList.includes(file.id)) {
-        filePackage.push(file.id);
-      }
+    for (const file in filesToRemove) {
+        filePackage.push(file);
     }
 
     filePackageDelete(filePackage);
@@ -335,7 +335,9 @@ export default connect((state) => {
     connectedList: connectedSelector(state, { connected: true }),
     connections: state.connections,
     files: mapToArr(state.files.entities),
+    filesFilteredArr: mapToArr(filteredFilesSelector(state)),
     filesInTransactionList: filesInTransactionsSelector(state),
+    filesMap: filteredFilesSelector(state),
     isDefaultFilters: state.filters.documents.isDefaultFilters,
     loadingFiles: mapToArr(loadingRemoteFilesSelector(state, { loading: true })),
     method: state.remoteFiles.method,

@@ -16,11 +16,12 @@ import {
   REMOVE_ALL_CERTIFICATES, REMOVE_ALL_CONTAINERS,
   REMOVE_ALL_FILES, REMOVE_ALL_REMOTE_FILES, SELECT_FILE,
   SELECT_SIGNER_CERTIFICATE, SELECT_TEMP_CONTENT_OF_SIGNED_FILES, START,
-  SUCCESS, INTERRUPT, PART_SUCCESS,
+  SUCCESS, INTERRUPT, PART_SUCCESS, UNSELECT_ALL_FILES,
   TOGGLE_SAVE_TO_DOCUMENTS,
   VERIFY_CERTIFICATE,
   VERIFY_SIGNATURE,
   MULTI_DIRECT_OPERATION, LOCATION_RESULTS_MULTI_OPERATIONS,
+  VERIFY_CRL,
 } from "../constants";
 import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import { connectedSelector } from "../selectors";
@@ -261,7 +262,6 @@ export function packageSign(
           type: MULTI_DIRECT_OPERATION + (multipackage ? PART_SUCCESS : SUCCESS),
         });
         dispatch(filePackageDelete(signedFileIdPackage));
-        console.log("multipackage: " + multipackage);
         if (!remoteFiles.uploader && !multipackage) {
           dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
         }
@@ -282,6 +282,7 @@ export function packageReSign(
   folderOutDSS?: string[],
   multiResult?: any = null,
   multipackage?: boolean = false,
+  doNotFinalizeOperation?: boolean = false,
 ) {
   return (dispatch: (action: {}) => void, getState: () => any) => {
     if (!multipackage) {
@@ -337,10 +338,10 @@ export function packageReSign(
       if (multiResult) {
         dispatch({
           payload: { status: true, directResult: multiResult },
-          type: MULTI_DIRECT_OPERATION + SUCCESS,
+          type: MULTI_DIRECT_OPERATION + (doNotFinalizeOperation ? PART_SUCCESS : SUCCESS),
         });
         dispatch(filePackageDelete(signedFileIdPackage));
-        if (!remoteFiles.uploader) {
+        if (!remoteFiles.uploader && !doNotFinalizeOperation) {
           dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
         }
       } else {
@@ -399,6 +400,12 @@ export function filePackageDelete(filePackage: string[]) {
 export function removeAllFiles() {
   return {
     type: REMOVE_ALL_FILES,
+  };
+}
+
+export function unselectAllFiles() {
+  return {
+    type: UNSELECT_ALL_FILES,
   };
 }
 
@@ -482,6 +489,27 @@ export function verifyCertificate(certificateId: string) {
   };
 }
 
+export function verifyCRL(crlId: string) {
+  return (dispatch: (action: {}) => void, getState: () => any) => {
+    const { crls } = getState();
+
+    const crlItem = crls.getIn(["entities", crlId]);
+    const crl = window.PKISTORE.getPkiObject(crlItem);
+    let crlStatus = false;
+
+    try {
+      crlStatus = trusted.utils.Csp.verifyCRL(crl);
+    } catch (e) {
+      crlStatus = false;
+    }
+
+    dispatch({
+      payload: { crlId, crlStatus },
+      type: VERIFY_CRL,
+    });
+  };
+}
+
 export function selectSignerCertificate(selected: string) {
   return {
     payload: { selected },
@@ -556,8 +584,9 @@ export function getCertificateFromContainer(container: number) {
           signatureAlgorithm: certificate.signatureAlgorithm,
           signatureDigestAlgorithm: certificate.signatureDigestAlgorithm,
           subjectFriendlyName: certificate.subjectFriendlyName,
-          subjectName: null,
+          subjectName: certificate.subjectName,
           provider: "CRYPTOPRO",
+          object: certificate,
         };
 
         dispatch({

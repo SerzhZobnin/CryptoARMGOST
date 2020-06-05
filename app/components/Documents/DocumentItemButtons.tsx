@@ -4,6 +4,7 @@ import { TMP_DIR } from "../../constants";
 import * as signs from "../../trusted/sign";
 import { fileExists } from "../../utils";
 import { connect } from "react-redux";
+import * as trustedEncrypts from "../../trusted/encrypt";
 import { filesInTransactionsSelector } from "../../selectors";
 import { verifySignature } from "../../AC/index";
 
@@ -54,7 +55,17 @@ class DocumentItemButtons extends React.Component<IDocumentItemButtonsProps, {}>
             </div> :
             null
         }
-
+        {
+          file.extension === "enc" ?
+            <div className="col" style={{ width: "40px" }}>
+              <i className="file-setting-item waves-effect material-icons secondary-content"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  this.openFile(file.fullpath);
+                }}>visibility</i>
+            </div> :
+            null
+        }
         <div className="col" style={{ width: "40px" }}>
           <i className="file-setting-item waves-effect material-icons secondary-content"
             onClick={(event) => {
@@ -67,6 +78,7 @@ class DocumentItemButtons extends React.Component<IDocumentItemButtonsProps, {}>
   }
 
   openFile = (file: string) => {
+
     if (file.split(".").pop() === "sig") {
       const cms: trusted.cms.SignedData | undefined = signs.loadSign(file);
 
@@ -78,11 +90,22 @@ class DocumentItemButtons extends React.Component<IDocumentItemButtonsProps, {}>
         if (newPath) {
           if (shell.openItem(newPath)) {
             this.props.selectTempContentOfSignedFiles(newPath);
+
           }
         }
       }
+    } else if (file.split(".").pop() === "enc") {
+      const newPath = trustedEncrypts.decryptFile(file, TMP_DIR);
+
+      if (newPath) {
+        if (shell.openItem(newPath)) {
+          this.props.selectTempContentOfSignedFiles(newPath);
+        }
+      }
+
     } else {
       shell.openItem(file);
+
     }
   }
 

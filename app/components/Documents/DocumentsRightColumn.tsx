@@ -10,13 +10,15 @@ import {
 import {
   LOCATION_MAIN, REMOVE, SIGN,
 } from "../../constants";
-import { selectedDocumentsSelector } from "../../selectors/documentsSelector";
+import { selectedDocumentsSelector, selectedFiltredDocumentsSelector } from "../../selectors/documentsSelector";
 import { bytesToSize, mapToArr } from "../../utils";
 import FileIcon from "../Files/FileIcon";
 import SignatureInfoBlock from "../Signature/SignatureInfoBlock";
 
 interface IDocumentsWindowProps {
   documents: any;
+  my: any;
+  filter: any;
   unselectAllDocuments: () => void;
 }
 
@@ -207,8 +209,8 @@ class DocumentsRightColumn extends React.Component<IDocumentsWindowProps, {}> {
 
   handleClickSign = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { changeLocation, documents, filePackageSelect } = this.props;
-    filePackageSelect(documents);
+    const { changeLocation, filtredDocuments, filePackageSelect } = this.props;
+    filePackageSelect(filtredDocuments);
     changeLocation(LOCATION_MAIN);
   }
 
@@ -247,9 +249,11 @@ export default connect((state) => {
   });
 
   return {
+
     activeDocumentsArr: selectedDocumentsSelector(state),
     documents: selectedDocumentsSelector(state),
     documentsMap: state.documents.entities,
+    filtredDocuments: selectedFiltredDocumentsSelector (state),
     selectedDocs: state.documents.selected,
     setting: state.settings.getIn(["entities", state.settings.default]),
     settings: state.settings.entities,

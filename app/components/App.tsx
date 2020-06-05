@@ -4,7 +4,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Route } from "react-router-dom";
 import { ConnectedRouter as Router, push } from "react-router-redux";
-import { dispatchURLAction } from "../AC/urlActions";
+import { dispatchURLAction, dispatchURLCommand } from "../AC/urlActions";
 import {
   LOCATION_ABOUT, LOCATION_ADDRESS_BOOK, LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT,
   LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE, LOCATION_CERTIFICATES,
@@ -39,6 +39,15 @@ ipcRenderer.on(
     console.log("url-action", action);
 
     dispatchURLAction(action);
+  },
+);
+
+ipcRenderer.on(
+  "url-command",
+  (event: Electron.IpcRendererEvent, { command }: { command: any }) => {
+    console.log("url-command", command.command);
+
+    dispatchURLCommand(command);
   },
 );
 
