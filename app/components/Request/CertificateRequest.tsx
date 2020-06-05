@@ -314,6 +314,10 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const { algorithm, cn, containerName, email, inn, locality, ogrnip, province, snils, template } = this.state;
     const REQULAR_EXPRESSION = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
+    if (!containerName.length) {
+      return false;
+    }
+
     if (cn.length > 0) {
       if (template === REQUEST_TEMPLATE_KEP_FIZ) {
         if (!snils || !snils.length || !validateSnils(snils) || !province.length || !locality.length) {
@@ -738,12 +742,12 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
   handleInputChange = (ev: any) => {
     const { localize, locale } = this.context;
     const pattern = /^[0-9a-z-.\\\s]+$/i;
-    const { disabled } = this.state;
+    const { disabled, containerName } = this.state;
     const target = ev.target;
     const name = target.name;
     const value = ev.target.value;
 
-    if (name === "containerName") {
+    if (name === "containerName" && (containerName.length < 0)) {
       if (pattern.test(value || !value)) {
         this.setState({ [name]: value });
       } else {
