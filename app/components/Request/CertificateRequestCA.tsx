@@ -79,8 +79,6 @@ interface ICertificateRequestCAProps {
   certificateTemplate: any;
   onCancel?: () => void;
   certificateLoading: boolean;
-  lic_error: number;
-  licenseStatus: boolean;
   loadAllCertificates: () => void;
   removeAllCertificates: () => void;
   addCertificateRequestCA: (certificateRequestCA: ICertificateRequestCA) => void;
@@ -495,7 +493,7 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       keyUsage, template, RDNsubject } = this.state;
     // tslint:disable-next-line: no-shadowed-variable
     const { addCertificateRequestCA, postCertRequest, postCertRequestAuthCert } = this.props;
-    const { licenseStatus, lic_error, servicesMap, regrequests, certrequests, certificates } = this.props;
+    const { servicesMap, regrequests, certrequests, certificates } = this.props;
 
     const exts = new trusted.pki.ExtensionCollection();
     let keyUsageStr = "critical";
@@ -510,24 +508,6 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       } else {
         Materialize.toast(localize("CA.goto_keyparams_set_template", locale), 3000, "toast-set_template");
       }
-      return;
-    }
-
-    if (licenseStatus !== true) {
-      $(".toast-jwtErrorLicense").remove();
-      Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
-
-      logger.log({
-        level: "error",
-        message: "No correct license",
-        operation: "Генерация сертификата",
-        operationObject: {
-          in: "License",
-          out: "Null",
-        },
-        userName: USER_NAME,
-      });
-
       return;
     }
 
@@ -860,8 +840,6 @@ export default connect((state) => {
     certificateLoading: state.certificates.loading,
     certificates: state.certificates.entities,
     certrequests: state.certrequests.entities,
-    lic_error: state.license.lic_error,
-    licenseStatus: state.license.status,
     regrequests: state.regrequests.entities,
     services: mapToArr(filteredServicesByType(state, { type: CA_SERVICE })),
     servicesMap: state.services.entities,

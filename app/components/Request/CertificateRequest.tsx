@@ -72,8 +72,6 @@ interface ICertificateRequestProps {
   certificateTemplate: any;
   onCancel?: () => void;
   certificateLoading: boolean;
-  lic_error: number;
-  licenseStatus: boolean;
   loadAllCertificates: () => void;
   removeAllCertificates: () => void;
 }
@@ -365,7 +363,6 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const { localize, locale } = this.context;
     const { algorithm, cn, country, containerName, email, exportableKey, extKeyUsage, inn, keyLength,
       keyUsage, locality, ogrnip, organization, organizationUnitName, province, selfSigned, snils, template, title } = this.state;
-    const { licenseStatus, lic_error } = this.props;
 
     const exts =
       new trusted.pki.ExtensionCollection();
@@ -376,24 +373,6 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     let extendedKeyUsageStr = "";
     let oid;
     let ext;
-
-    if (licenseStatus !== true) {
-      $(".toast-jwtErrorLicense").remove();
-      Materialize.toast(localize(jwt.getErrorMessage(lic_error), locale), 5000, "toast-jwtErrorLicense");
-
-      logger.log({
-        level: "error",
-        message: "No correct license",
-        operation: "Генерация сертификата",
-        operationObject: {
-          in: "License",
-          out: "Null",
-        },
-        userName: USER_NAME,
-      });
-
-      return;
-    }
 
     if (!this.verifyFields()) {
       $(".toast-required_fields").remove();
@@ -692,6 +671,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
         });
         $(".toast-signing_error").remove();
         Materialize.toast(localize("CSR.signing_request_error", locale), 3000, "toast-signing_error");
+        return;
       }
 
       window.PKISTORE.importCertificate(cert, providerType, (err: Error) => {
@@ -985,7 +965,5 @@ const getTemplateByCertificate = (certificate: any) => {
 export default connect((state) => {
   return {
     certificateLoading: state.certificates.loading,
-    lic_error: state.license.lic_error,
-    licenseStatus: state.license.status,
   };
 }, { loadAllCertificates, removeAllCertificates })(CertificateRequest);
