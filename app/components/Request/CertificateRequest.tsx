@@ -790,11 +790,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const name = target.name;
     const value = ev.target.value;
 
-<<<<<<< HEAD
     if (name === "containerName" && (containerName.length < 0)) {
-=======
-    if (name === "containerName") {
->>>>>>> 324171353f7fa6563e7f00382194045be3d6b3f9
       if (pattern.test(value || !value)) {
         this.setState({ [name]: value });
       } else {
