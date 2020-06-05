@@ -157,21 +157,15 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   componentDidUpdate(prevProps, prevState) {
 
-<<<<<<< HEAD
     if (!prevState.filedChanged && this.state.filedChanged) {
-=======
-    if  ( !prevState.filedChanged && this.state.filedChanged) {
->>>>>>> 324171353f7fa6563e7f00382194045be3d6b3f9
+
       if (this.verifyFields() === true) {
         this.setState({ disabled: true });
       } else {
         this.setState({ disabled: false });
       }
-<<<<<<< HEAD
       this.setState({ filedChanged: false });
-=======
-      this.setState ( {filedChanged: false});
->>>>>>> 324171353f7fa6563e7f00382194045be3d6b3f9
+
     }
 
     $(document).ready(() => {
@@ -191,12 +185,8 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       exportableKey, extKeyUsage, keyLength, keyUsage, keyUsageGroup,
       template, templateName, activeService, OpenButton, RDNsubject } = this.state;
     const { certificates, certrequests, regrequests, services, servicesMap, templates } = this.props;
-<<<<<<< HEAD
     const notEmptyCATemplate = (OpenButton && !this.state.caTemplate) ? true : false;
     const classDisabled = this.state.disabled && !notEmptyCATemplate ? "" : "disabled";
-=======
-    const classDisabled = this.state.disabled ? "" : "disabled";
->>>>>>> 324171353f7fa6563e7f00382194045be3d6b3f9
 
     let regRequest;
     let certrequest;
