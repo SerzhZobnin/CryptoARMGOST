@@ -97,7 +97,9 @@ class AskSaveSetting extends React.Component<IAskSaveSettingProps, {}> {
     if (isOnExit) {
       settings = settings
         .setIn(["entities", settings.active, "savetime"], new Date().getTime())
-        .setIn(["entities", settings.active, "changed"], false);
+        .setIn(["entities", settings.active, "changed"], false)
+        .setIn(["entities", settings.active, "changedSigner"], false)
+        .setIn(["entities", settings.active, "changedRecipients"], false);
 
       writeSettingsToFile(settings, (err: any) => this.handelCancel());
     } else {

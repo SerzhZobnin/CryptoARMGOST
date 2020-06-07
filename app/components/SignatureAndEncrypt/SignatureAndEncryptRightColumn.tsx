@@ -53,6 +53,7 @@ import Operations from "../Settings/Operations";
 import RenameSettings from "../Settings/RenameSettings";
 import SaveSettings from "../Settings/SaveSettings";
 import SettingsSelector from "../Settings/SettingsSelector";
+import WrongCertificate from "../Settings/WrongCertificate";
 import SignerInfo from "../Signature/SignerInfo";
 import store from "../../store";
 import { push } from "react-router-redux";
@@ -72,6 +73,7 @@ interface ISignatureAndEncryptRightColumnSettingsProps {
   createTransactionDSS: (url: string, token: string, body: ITransaction, fileId: string[]) => Promise<any>;
   dssPerformOperation: (url: string, token: string, body?: IDocumentDSS | IDocumentPackageDSS) => Promise<any>;
   dssOperationConfirmation: (url: string, token: string, TransactionTokenId: string, dssUserID: string) => Promise<any>;
+  setting: any;
   signatures: any;
   signedPackage: any;
   tokensAuth: any;
@@ -96,6 +98,8 @@ interface ISignatureAndEncryptRightColumnSettingsState {
   showModalSaveParams: boolean;
   signingPackage: boolean;
   packageSignResult: boolean;
+  showModalWrongCertificate: boolean;
+  isOnlySignerCertWrong: boolean;
 }
 
 interface IFilePackage {
@@ -498,7 +502,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               <React.Fragment>
                 <div className="col s12">
                   <a className={`btn btn-outlined waves-effect waves-light ${this.checkEnableMultiOperations() ? "" : "disabled"}`}
-                    onClick={setting.operations.signing_operation && isSignCertFromDSS ? this.handleClickSign : this.handleClickPerformOperations}
+                    onClick={setting.operations.signing_operation && isSignCertFromDSS ? this.handleClickSign : this.checkCertificatesBeforePerformOperation}
                     style={{ width: "100%" }}>
                     {localize("Common.perform", locale)}
                   </a>
@@ -513,6 +517,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         {this.showModalSaveParams()}
         {this.showModalAskSaveSetting()}
         {this.showModalRenameParams()}
+        {this.showModalWrongCertificate()}
       </React.Fragment>
     );
   }
@@ -662,6 +667,64 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         />
       </Modal>
     );
+  }
+
+  showModalWrongCertificate = () => {
+    const { localize, locale } = this.context;
+    const { showModalWrongCertificate } = this.state;
+
+    if (!showModalWrongCertificate) {
+      return;
+    }
+    return (
+      <Modal
+        isOpen={showModalWrongCertificate}
+        key="showModalWrongCertificate"
+        header={localize("Settings.warning", locale)}
+        onClose={this.handleClickPerformOperations}
+        style={{ width: "500px" }}>
+
+        <WrongCertificate
+          onCancel={this.handleCloseModalWrongCertificate}
+          onContinue={this.handleClickPerformOperations}
+          message={this.state.isOnlySignerCertWrong ? localize("Problems.problem_9_1", locale) : localize("Problems.problem_9", locale)}
+        />
+      </Modal>
+    );
+  }
+
+  checkCertificatesBeforePerformOperation = () => {
+    const { setting, signer, recipients } = this.props;
+
+    if (setting.operations.signing_operation && !setting.changedSigner && signer && !signer.status) {
+      this.handleshowModalWrongCertificate();
+
+      if (!setting.operations.encryption_operation) {
+        this.setState({ isOnlySignerCertWrong: true });
+      }
+
+      return;
+    }
+
+    if (setting.operations.encryption_operation && !setting.changedRecipients) {
+      for (const items of recipients) {
+        if (!items.status) {
+          this.handleshowModalWrongCertificate();
+          this.setState({ isOnlySignerCertWrong: false });
+          return;
+        }
+      }
+    }
+
+    this.handleClickPerformOperations();
+  }
+
+  handleCloseModalWrongCertificate = () => {
+    this.setState({ showModalWrongCertificate: false });
+  }
+
+  handleshowModalWrongCertificate = () => {
+    this.setState({ showModalWrongCertificate: true });
   }
 
   handleShowModalReAuth = () => {

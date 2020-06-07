@@ -10,8 +10,10 @@ import { changeSearchValue } from "../../AC/searchActions";
 import { filteredCertificatesSelector } from "../../selectors";
 import { mapToArr } from "../../utils";
 import BlockNotElements from "../BlockNotElements";
+import Modal from "../Modal";
 import ProgressBars from "../ProgressBars";
 import RecipientsList from "../RecipientsList";
+import WrongCertificate from "../Settings/WrongCertificate";
 import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
@@ -44,6 +46,7 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
       showModalDeleteCertifiacte: false,
       showModalExportCRL: false,
       showModalExportCertifiacte: false,
+      showModalWrongCertificate: false,
     });
   }
 
@@ -126,6 +129,8 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
               <div className="col s12">
                 <div className="primary-text">Сертификаты шифрования</div>
                 <hr />
+                {this.state.showModalWrongCertificate ?
+                  this.showModalWrongCertificate() : null}
               </div>
               <div className="col s12">
                 {(this.state.activeCertificate) ?
@@ -296,13 +301,19 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
     ) {
       urlCmdSendCerts(selectedRecipients, urlCmdProps.id, urlCmdProps.url);
     } else {
+      for (const items of selectedRecipients) {
+        if (!items.status) {
+          this.handleshowModalWrongCertificate();
+          return;
+        }
+      }
+
       this.handleCleanRecipientsList();
 
       for (const recipient of selectedRecipients) {
         addRecipientCertificate(recipient.id);
       }
 
-      this.setState({ modalCertList: false });
     }
 
     this.props.history.goBack();
@@ -337,6 +348,52 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
     // tslint:disable-next-line:no-shadowed-variable
     const { changeSearchValue } = this.props;
     changeSearchValue(ev.target.value);
+  }
+
+  showModalWrongCertificate = () => {
+    const { localize, locale } = this.context;
+    const { showModalWrongCertificate } = this.state;
+
+    if (!showModalWrongCertificate) {
+      return null;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalWrongCertificate}
+        key="showModalWrongCertificate"
+        header={localize("Settings.warning", locale)}
+        onClose={this.handleCloseModalWrongCertificate}
+        style={{ width: "500px" }}>
+
+        <WrongCertificate
+          onCancel={this.handleCloseModalWrongCertificate}
+          onContinue={this.handleCloseModalContinue}
+          message={localize("Problems.problem_9", locale)}
+        />
+      </Modal>
+    );
+  }
+
+  handleCloseModalContinue = () => {
+    const { selectedRecipients } = this.state;
+
+    this.setState({ showModalWrongCertificate: false });
+    this.handleCleanRecipientsList();
+
+    for (const recipient of selectedRecipients) {
+      this.props.addRecipientCertificate(recipient.id);
+    }
+
+    this.props.history.goBack();
+  }
+
+  handleshowModalWrongCertificate = () => {
+    this.setState({ showModalWrongCertificate: true });
+  }
+
+  handleCloseModalWrongCertificate = () => {
+    this.setState({ showModalWrongCertificate: false });
   }
 }
 

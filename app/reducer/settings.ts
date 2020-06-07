@@ -12,9 +12,10 @@ import {
   CHANGE_TSP_PROXY_LOGIN, CHANGE_TSP_PROXY_PASSWORD, CHANGE_TSP_PROXY_PORT, CHANGE_TSP_PROXY_URL,
   CHANGE_TSP_URL, CHANGE_TSP_USE_PROXY, CREATE_SETTING, DELETE_RECIPIENT_CERTIFICATE,
   DELETE_SETTING, GOST_28147, REMOVE_ALL_CERTIFICATES, RESET_SETTING_CHANGES, RU,
-  SAVE_SETTINGS, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON, TOGGLE_ARCHIVATION_OPERATION, TOGGLE_ENCRYPTION_OPERATION,
-  TOGGLE_REVERSE_OPERATIONS,
-  TOGGLE_SAVE_COPY_TO_DOCUMENTS, TOGGLE_SAVE_RESULT_TO_FOLDER, TOGGLE_SAVE_TO_DOCUMENTS, TOGGLE_SIGNING_OPERATION,
+  SAVE_SETTINGS, SELECT_SIGNER_CERTIFICATE, SETTINGS_JSON,
+  TOGGLE_ARCHIVATION_OPERATION, TOGGLE_ENCRYPTION_OPERATION, TOGGLE_REVERSE_OPERATIONS,
+  TOGGLE_SAVE_COPY_TO_DOCUMENTS,
+  TOGGLE_SAVE_RESULT_TO_FOLDER, TOGGLE_SAVE_TO_DOCUMENTS, TOGGLE_SIGNING_OPERATION,
 } from "../constants";
 import { fileExists, mapToArr, uuid } from "../utils";
 
@@ -105,6 +106,8 @@ export const DEFAULT_ID = "DEFAULT_ID";
 
 export const SettingsModel = Record({
   changed: false,
+  changedRecipients: false,
+  changedSigner: false,
   encrypt: new EncryptModel(),
   id: DEFAULT_ID,
   locale: RU,
@@ -220,6 +223,10 @@ export default (settings = new DefaultReducerState(), action) => {
     case CHANGE_DEFAULT_SETTINGS:
       unsavedSettings = settings.getIn(["entities", payload.id]);
       settings = settings.set("default", payload.id);
+
+      modifiedSettings = settings
+      .setIn(["entities", settings.active, "changedSigner"], false)
+      .setIn(["entities", settings.active, "changedRecipients"], false);
       break;
 
     case TOGGLE_REVERSE_OPERATIONS:
@@ -429,7 +436,8 @@ export default (settings = new DefaultReducerState(), action) => {
       }
 
       modifiedSettings = settings
-        .setIn(["entities", settings.active, "sign", "signer"], payload.selected);
+        .setIn(["entities", settings.active, "sign", "signer"], payload.selected)
+        .setIn(["entities", settings.active, "changedSigner"], true);
       break;
 
     case ADD_RECIPIENT_CERTIFICATE:
@@ -440,7 +448,8 @@ export default (settings = new DefaultReducerState(), action) => {
       modifiedSettings = settings
         .setIn(["entities", settings.active, "encrypt", "recipients", payload.certId], new RecipientModel({
           certId: payload.certId,
-        }));
+        }))
+        .setIn(["entities", settings.active, "changedRecipients"], true);
       break;
 
     case DELETE_RECIPIENT_CERTIFICATE:
@@ -501,7 +510,9 @@ export default (settings = new DefaultReducerState(), action) => {
     || type === CHANGE_SETTINGS_NAME) {
     settings = settings
       .setIn(["entities", settings.active, "savetime"], new Date().getTime())
-      .setIn(["entities", settings.active, "changed"], false);
+      .setIn(["entities", settings.active, "changed"], false)
+      .setIn(["entities", settings.active, "changedSigner"], false)
+      .setIn(["entities", settings.active, "changedRecipients"], false);
 
     writeSettingsToFile(settings, (err: any) => {
       if (err) {

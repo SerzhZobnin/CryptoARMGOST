@@ -8,7 +8,9 @@ import {
 import { changeSearchValue } from "../../AC/searchActions";
 import { filteredCertificatesSelector } from "../../selectors";
 import BlockNotElements from "../BlockNotElements";
+import Modal from "../Modal";
 import ProgressBars from "../ProgressBars";
+import WrongCertificate from "../Settings/WrongCertificate";
 import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
@@ -29,6 +31,7 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
       activeCertInfoTab: true,
       certificate: null,
       crl: null,
+      showModalWrongCertificate: false,
     });
   }
 
@@ -111,6 +114,8 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
               <div className="col s12">
                 <div className="primary-text">Сертификат подписи</div>
                 <hr />
+                {this.state.showModalWrongCertificate ?
+                  this.showModalWrongCertificate() : null}
               </div>
               <div className="col s12">
                 <div style={{ height: "calc(100vh - 120px)" }}>
@@ -145,6 +150,47 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
 
   handleActiveCert = (certificate: any) => {
     this.setState({ certificate, crl: null });
+  }
+
+  handleCloseModalContinue = () => {
+    const { certificate } = this.state;
+
+    this.setState({ showModalWrongCertificate: false });
+    this.props.selectSignerCertificate(certificate.id);
+    this.props.history.goBack();
+  }
+
+  showModalWrongCertificate = () => {
+    const { localize, locale } = this.context;
+    const { showModalWrongCertificate } = this.state;
+
+    if (!showModalWrongCertificate) {
+      return null;
+    }
+
+    return (
+      <Modal
+        isOpen={showModalWrongCertificate}
+        key="showModalWrongCertificate"
+        header={localize("Settings.warning", locale)}
+        onClose={this.handleCloseModalWrongCertificate}
+        style={{ width: "500px" }}>
+
+        <WrongCertificate
+          onCancel={this.handleCloseModalWrongCertificate}
+          onContinue={this.handleCloseModalContinue}
+          message={localize ("Problems.problem_9_1", locale)}
+        />
+      </Modal>
+    );
+  }
+
+  handleshowModalWrongCertificate = () => {
+    this.setState({ showModalWrongCertificate: true });
+  }
+
+  handleCloseModalWrongCertificate = () => {
+    this.setState({ showModalWrongCertificate: false });
   }
 
   getCertificateOrCRLInfo() {
@@ -232,6 +278,11 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
     ) {
       urlCmdSendCert(certificate, urlCmdProps.id, urlCmdProps.url);
     } else {
+      if (!certificate.status) {
+        this.handleshowModalWrongCertificate();
+        return;
+      }
+
       selectSignerCertificate(certificate.id);
     }
 
