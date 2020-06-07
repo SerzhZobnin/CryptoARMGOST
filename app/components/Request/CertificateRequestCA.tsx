@@ -755,9 +755,9 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
     const name = target.name;
     const value = ev.target.value;
 
-    if (name === "containerName" && (containerName.length < 0)) {
-      if (pattern.test(value || !value)) {
-        this.setState({ [name]: value });
+    if (name === "containerName") {
+      if (pattern.test(value) || !value) {
+        this.setState({ [name]: value, filedChanged: true });
       } else {
         $(".toast-invalid_character").remove();
         Materialize.toast(localize("Containers.invalid_character", locale), 2000, "toast-invalid_character");
