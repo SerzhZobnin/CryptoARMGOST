@@ -6,7 +6,7 @@ import PropTypes, { any } from "prop-types";
 import React from "react";
 import ReactDOM from "react-dom";
 import { connect } from "react-redux";
-import { addCertificateRequestCA, loadAllCertificates, removeAllCertificates } from "../../AC";
+import { addCertificateRequestCA, loadAllCertificates, removeAllCertificates} from "../../AC";
 import { postCertRequest, postCertRequestAuthCert } from "../../AC/caActions";
 import {
   ALG_GOST12_256, ALG_GOST12_512, CA_SERVICE, DEFAULT_CSR_PATH,
@@ -155,13 +155,15 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
 
   componentDidUpdate(prevProps, prevState) {
 
-    if  ( !prevState.filedChanged && this.state.filedChanged) {
+    if (!prevState.filedChanged && this.state.filedChanged) {
+
       if (this.verifyFields() === true) {
         this.setState({ disabled: true });
       } else {
         this.setState({ disabled: false });
       }
-      this.setState ( {filedChanged: false});
+      this.setState({ filedChanged: false });
+
     }
 
     $(document).ready(() => {
@@ -181,7 +183,8 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
       exportableKey, extKeyUsage, keyLength, keyUsage, keyUsageGroup,
       template, templateName, activeService, OpenButton, RDNsubject } = this.state;
     const { certificates, certrequests, regrequests, services, servicesMap, templates } = this.props;
-    const classDisabled = this.state.disabled ? "" : "disabled";
+    const notEmptyCATemplate = (OpenButton && !this.state.caTemplate) ? true : false;
+    const classDisabled = this.state.disabled && !notEmptyCATemplate ? "" : "disabled";
 
     let regRequest;
     let certrequest;
@@ -446,9 +449,12 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   }
 
   verifyFields = () => {
-    const { template, RDNsubject } = this.state;
+    const { template, RDNsubject, containerName, caTemplate, caTemplatesArray } = this.state;
     const REQULAR_EXPRESSION = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-
+    if (!containerName.length) {
+      return false;
+    }
+    if (caTemplatesArray && caTemplatesArray.length && !caTemplate) {return false; }
     if (!template || !template.RDN) {
       return false;
     }
@@ -724,14 +730,14 @@ class CertificateRequestCA extends React.Component<ICertificateRequestCAProps, I
   handleInputChange = (ev: any) => {
     const { localize, locale } = this.context;
     const pattern = /^[0-9a-z-.\\\s]+$/i;
-
+    const {containerName} = this.state;
     const target = ev.target;
     const name = target.name;
     const value = ev.target.value;
 
     if (name === "containerName") {
-      if (pattern.test(value || !value)) {
-        this.setState({ [name]: value });
+      if (pattern.test(value) || !value) {
+        this.setState({ [name]: value, filedChanged: true });
       } else {
         $(".toast-invalid_character").remove();
         Materialize.toast(localize("Containers.invalid_character", locale), 2000, "toast-invalid_character");
