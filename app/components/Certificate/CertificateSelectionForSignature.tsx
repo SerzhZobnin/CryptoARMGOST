@@ -311,10 +311,10 @@ class CertificateSelectionForSignature extends React.Component<any, any> {
 export default connect((state) => {
   return {
     certificates: filteredCertificatesSelector(state,
-      (state.urlCmdCertificates && !state.urlCmdCertificates.done
+      (state.urlCmdCertificates && state.urlCmdCertificates.performing
         && (state.urlCmdCertificates.operation === URL_CMD_CERTIFICATES_EXPORT))
         ? { operation: "export_certs" } : { operation: "sign" }),
-    exportCommmand: state.urlCmdCertificates && !state.urlCmdCertificates.done,
+    exportCommmand: state.urlCmdCertificates && state.urlCmdCertificates.performing,
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
     searchValue: state.filters.searchValue,
