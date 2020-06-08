@@ -8,10 +8,30 @@
        margin-top: 1em
     }
   </style>
+  <script src="public/js/custom-protocol-check.min.js"></script>
+  <script>
+    const someBody = () => {
+      customProtocolCheck(
+              "cryptoarm://",
+              () => {
+                alert("Custom protocol not found.");
+              },
+              () => {
+                alert("Custom protocol found and opened the file successfully.");
+              },
+              5000,
+              () => {
+                alert("Browser is not supported");
+              },
+      )
+    }
+  </script>
 </head>
 
 <body>
   <h1>Work with cryptoarm-api</h1>
+
+  <button onclick='someBody()'>v1</button>
 
   <h3>We use custom protocol: cryptoarm://</h3>
   <br />
