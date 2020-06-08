@@ -584,7 +584,7 @@ export default {
     S: "State",
     SN: "SurName",
     ST: "State",
-    Street: "Street",
+    STREET: "Street",
     T: "Title",
   },
   OIDs: {
