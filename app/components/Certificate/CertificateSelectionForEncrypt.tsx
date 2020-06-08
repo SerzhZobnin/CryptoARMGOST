@@ -343,10 +343,10 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
 export default connect((state) => {
   return {
     certificates: filteredCertificatesSelector(state,
-      (state.urlCmdCertificates && !state.urlCmdCertificates.done
+      (state.urlCmdCertificates && state.urlCmdCertificates.performing
         && (state.urlCmdCertificates.operation === URL_CMD_CERTIFICATES_EXPORT))
         ? { operation: "export_certs" } : { operation: "encrypt" }),
-    exportCommmand: state.urlCmdCertificates && !state.urlCmdCertificates.done,
+    exportCommmand: state.urlCmdCertificates && state.urlCmdCertificates.performing,
     isLoading: state.certificates.loading,
     isLoadingFromDSS: state.cloudCSP.loading,
     recipients: mapToArr(state.settings.getIn(["entities", state.settings.active]).encrypt.recipients)

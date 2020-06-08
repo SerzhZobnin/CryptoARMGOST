@@ -14,6 +14,7 @@ export const DefaultReducerState = Record({
   id: "",
   impProps: null,
   operation: "",
+  performing: false,
   result: false,
   url: "",
 });
@@ -23,9 +24,10 @@ export default (urlCmdCerts = new DefaultReducerState(), action: any) => {
   switch (type) {
     case URL_CMD_CERTIFICATES_IMPORT + START:
       urlCmdCerts = DefaultReducerState()
-         .set("operation", payload.operation)
-         .set("impProps", payload.impProps)
-         .set("certPath", payload.certPath);
+        .set("performing", true)
+        .set("operation", payload.operation)
+        .set("impProps", payload.impProps)
+        .set("certPath", payload.certPath);
       break;
 
     case URL_CMD_CERTIFICATES_IMPORT + INTERRUPT:
@@ -33,6 +35,7 @@ export default (urlCmdCerts = new DefaultReducerState(), action: any) => {
       cleanTmpCertFile(urlCmdCerts);
       urlCmdCerts = urlCmdCerts
         .set("done", true)
+        .set("performing", false)
         .set("result", false)
         .set("impProps", null)
         .set("certPath", "");
@@ -42,6 +45,7 @@ export default (urlCmdCerts = new DefaultReducerState(), action: any) => {
       cleanTmpCertFile(urlCmdCerts);
       urlCmdCerts = urlCmdCerts
         .set("done", true)
+        .set("performing", false)
         .set("result", true)
         .set("impProps", null)
         .set("certPath", "");
@@ -49,6 +53,7 @@ export default (urlCmdCerts = new DefaultReducerState(), action: any) => {
 
     case URL_CMD_CERTIFICATES_EXPORT + START:
       urlCmdCerts = DefaultReducerState()
+        .set("performing", true)
         .set("operation", payload.operation)
         .set("expProps", payload.expProps)
         .set("id", payload.id)
@@ -59,6 +64,7 @@ export default (urlCmdCerts = new DefaultReducerState(), action: any) => {
     case URL_CMD_CERTIFICATES_EXPORT + FAIL:
       urlCmdCerts = urlCmdCerts
         .set("done", true)
+        .set("performing", false)
         .set("result", false)
         .set("expProps", null)
         .set("id", "")
@@ -68,6 +74,7 @@ export default (urlCmdCerts = new DefaultReducerState(), action: any) => {
     case URL_CMD_CERTIFICATES_EXPORT + SUCCESS:
       urlCmdCerts = urlCmdCerts
         .set("done", true)
+        .set("performing", false)
         .set("result", true)
         .set("expProps", null)
         .set("id", "")
