@@ -164,6 +164,7 @@ export default {
     snils: "SNILS",
     subject_params: "Subject parameters",
     template_additional_fields: "Template with additional fields",
+    template_client_auth: "Client authentication",
     template_default: "Default template",
     template_kep_fiz: "Сертификат КЭП физического лица",
     template_kep_ip: "Сертификат КЭП индивидуального предпринимателя",

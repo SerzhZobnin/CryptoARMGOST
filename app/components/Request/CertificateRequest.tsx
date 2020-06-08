@@ -10,7 +10,7 @@ import {
   ALG_GOST12_256, ALG_GOST12_512, DEFAULT_CSR_PATH, HOME_DIR,
   KEY_USAGE_ENCIPHERMENT, KEY_USAGE_SIGN, KEY_USAGE_SIGN_AND_ENCIPHERMENT, MY,
   PROVIDER_CRYPTOPRO, PROVIDER_SYSTEM, REQUEST, REQUEST_TEMPLATE_ADDITIONAL,
-  REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
+  REQUEST_TEMPLATE_DEFAULT, REQUEST_TEMPLATE_KEP_FIZ, REQUEST_TEMPLATE_CLIENT_AUTH, REQUEST_TEMPLATE_KEP_IP, ROOT, USER_NAME,
 } from "../../constants";
 import * as jwt from "../../trusted/jwt";
 import { formatDate, randomSerial, uuid, validateInn, validateOgrnip, validateSnils } from "../../utils";
@@ -268,6 +268,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
                       handleKeyUsageGroupChange={this.handleKeyUsageGroupChange}
                       handleExtendedKeyUsageChange={this.handleExtendedKeyUsageChange}
                       toggleExportableKey={this.toggleExportableKey}
+                      disabled={template === REQUEST_TEMPLATE_CLIENT_AUTH}
                     />
                   </div>
                 </div>
