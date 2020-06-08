@@ -44,6 +44,7 @@ interface IKeyParametersProps {
   handleKeyUsageGroupChange: (ev: any) => void;
   handleExtendedKeyUsageChange: (ev: any) => void;
   toggleExportableKey: () => void;
+  disabled: boolean;
 }
 
 class KeyParameters extends React.Component<IKeyParametersProps, {}> {
@@ -331,6 +332,7 @@ class KeyParameters extends React.Component<IKeyParametersProps, {}> {
                       className="filled-in"
                       checked={extKeyUsage["1.3.6.1.5.5.7.3.2"]}
                       onChange={handleExtendedKeyUsageChange}
+                      disabled= { this.props.disabled }
                     />
                     <label htmlFor="1.3.6.1.5.5.7.3.2" className="truncate tooltipped" data-position="right" data-tooltip="1.3.6.1.5.5.7.3.2">
                       {localize("CSR.eku_clientAuth", locale)}
