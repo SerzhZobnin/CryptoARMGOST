@@ -15,7 +15,7 @@ import {
 import { IFile } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import { createTransactionDSS, dssOperationConfirmation, dssPerformOperation } from "../../AC/dssActions";
-import { multiDirectOperation, multiReverseOperation, multiOperationStart } from "../../AC/multiOperations";
+import { multiDirectOperation, multiOperationStart, multiReverseOperation  } from "../../AC/multiOperations";
 import {
   activeSetting, changeDefaultSettings, deleteSetting, saveSettings,
 } from "../../AC/settingsActions";
@@ -27,7 +27,7 @@ import {
   LOCATION_CERTIFICATE_SELECTION_FOR_ENCRYPT, LOCATION_CERTIFICATE_SELECTION_FOR_SIGNATURE,
   LOCATION_SETTINGS_CONFIG, LOCATION_SETTINGS_SELECT, MULTI_REVERSE, REMOVE, SIGN,
   SIGNING_OPERATION, UNSIGN, UNZIPPING, USER_NAME, VERIFY, LOCATION_RESULTS_MULTI_OPERATIONS, MULTI_DIRECT_OPERATION, SUCCESS,
-  PACKAGE_SIGN, INTERRUPT,
+  PACKAGE_SIGN, INTERRUPT, DEFAULT_DOCUMENTS_PATH,
 } from "../../constants";
 import { DEFAULT_ID, ISignParams } from "../../reducer/settings";
 import { activeFilesSelector, connectedSelector, filesInTransactionsSelector, loadingRemoteFilesSelector } from "../../selectors";
@@ -930,9 +930,9 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { packageSign, createTransactionDSS, dssPerformOperation, operationRemoteAction, uploader } = this.props;
     const { localize, locale } = this.context;
     const { pinCode } = this.state;
-
     const isSockets = this.isFilesFromSocket();
 
+    if  (!setting.operations.save_result_to_folder) {setting.set ("outfolder", ""); }
     if (isSockets) {
       setting = setting.set("outfolder", "");
       setting = operationRemoteAction && operationRemoteAction.isDetachedSign ? setting.setIn(["sign", "detached"], true) : setting.setIn(["sign", "detached"], false);
@@ -941,8 +941,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     if (files.length > 0) {
       const policies: string [] = [];
-
-      const folderOut = setting.outfolder;
+      const folderOut = setting.operations.save_copy_to_documents ? DEFAULT_DOCUMENTS_PATH : setting.outfolder;
       let format = trusted.DataFormat.PEM;
       if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
         format = trusted.DataFormat.DER;
