@@ -940,13 +940,13 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (files.length > 0) {
-      const policies: string [] = [];
+      const policies: string [] = [] ;
       const folderOut = setting.operations.save_copy_to_documents ? DEFAULT_DOCUMENTS_PATH : setting.outfolder;
       let format = trusted.DataFormat.PEM;
       if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
         format = trusted.DataFormat.DER;
       }
-
+      if (setting.sign.detached) {policies.push ("detached"); }
       if (folderOut.length > 0) {
         if (!dirExists(folderOut)) {
           $(".toast-failed_find_directory").remove();

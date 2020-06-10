@@ -261,6 +261,13 @@ export function packageSign(
           payload: { status: true, directResult: multiResult },
           type: MULTI_DIRECT_OPERATION + (multipackage ? PART_SUCCESS : SUCCESS),
         });
+        if (policies[0] === "detached") {
+          files.every((file) => {
+          const copyUriOriginalFile = path.join(folderOut, path.basename(file.fullpath));
+          if (!fileExists(copyUriOriginalFile)) {
+            fs.copyFileSync(file.fullpath, copyUriOriginalFile);
+          }
+        }); }
         dispatch(filePackageDelete(signedFileIdPackage));
         if (!remoteFiles.uploader && !multipackage) {
           dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
