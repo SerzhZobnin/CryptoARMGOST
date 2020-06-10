@@ -681,7 +681,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         isOpen={showModalWrongCertificate}
         key="showModalWrongCertificate"
         header={localize("Settings.warning", locale)}
-        onClose={this.handleClickPerformOperations}
+        onClose={this.handleCloseModalWrongCertificate}
         style={{ width: "500px" }}>
 
         <WrongCertificate
