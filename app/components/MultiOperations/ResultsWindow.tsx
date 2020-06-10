@@ -86,7 +86,7 @@ class ResultsWindow extends React.Component<any, any> {
                   <input
                     id="search"
                     type="search"
-                    placeholder={localize("Certificate.search_in_certificates_list", locale)}
+                    placeholder={localize("EventsTable.search_in_doclist", locale)}
                     value={searchValue}
                     onChange={this.handleSearchValueChange} />
                   <i className="material-icons close" onClick={() => this.props.changeSearchValue("")} style={this.props.searchValue ? { color: "#444" } : {}}>close</i>
