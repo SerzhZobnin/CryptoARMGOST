@@ -932,7 +932,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { pinCode } = this.state;
     const isSockets = this.isFilesFromSocket();
 
-    if  (!setting.operations.save_result_to_folder) {setting.set ("outfolder", ""); }
+    if  (!setting.operations.save_result_to_folder) { setting = setting.set("outfolder", ""); }
+
     if (isSockets) {
       setting = setting.set("outfolder", "");
       setting = operationRemoteAction && operationRemoteAction.isDetachedSign ? setting.setIn(["sign", "detached"], true) : setting.setIn(["sign", "detached"], false);
@@ -1048,7 +1049,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                             directResult.files = directFiles;
                             packageSign(files, cert, policies, null, format, folderOut, outURIList, directResult);
                           },
-                          (error) => {
+                          (error: any) => {
                             if (uploader) {
                               this.dispatchSignInterrupt();
                             } else {
