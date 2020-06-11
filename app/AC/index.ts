@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import logger from "../winstonLogger";
 import { push } from "react-router-redux";
 import { ICertificateRequestCA } from "../components/Services/types";
 import {
@@ -22,6 +23,7 @@ import {
   VERIFY_SIGNATURE,
   MULTI_DIRECT_OPERATION, LOCATION_RESULTS_MULTI_OPERATIONS,
   VERIFY_CRL,
+  USER_NAME,
 } from "../constants";
 import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import { connectedSelector } from "../selectors";
@@ -254,6 +256,20 @@ export function packageSign(
       dispatch({
         payload: { packageSignResult },
         type: PACKAGE_SIGN + SUCCESS,
+      });
+
+      files.every((file) => {
+        logger.log({
+          certificate: cert.subjectName,
+          level: "info",
+          message: "",
+          operation: "Подпись",
+          operationObject: {
+            in: path.basename(file.fullpath),
+            out: path.basename(folderOut),
+          },
+          userName: USER_NAME,
+        });
       });
 
       if (multiResult) {
