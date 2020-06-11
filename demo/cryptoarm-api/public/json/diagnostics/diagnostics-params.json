@@ -1,0 +1,19 @@
+{
+    "jsonrpc":"2.0",
+    "result": {
+      "operation": [
+        "SYSTEMINFORMATION",
+        "CSP_ENABLED",
+        "CADES_ENABLED",
+        "VERSIONS",
+        "PROVIDERS",
+        "LICENSES",
+        "PERSONALCERTIFICATES"
+      ],
+      "props": {
+        "headerText": "Диагностика cryptoarm demo",
+        "descriptionText": "Выполняется диагностика рабочего места для демонстрационного проекта"
+      }
+    },
+    "id": "dd528a4f-da00-40fe-b807-76d9bf7eb535"
+}
