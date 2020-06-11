@@ -1433,7 +1433,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                   if (uploader) {
                     this.dispatchSignInterrupt();
                   } else {
-                    this.dispatchSignInDssFail(files, setting.operations.toJS());
+                    this.dispatchSignInDssFail(files, setting.operations.toJS(), error);
                   }
 
                   $(".toast-dssOperationConfirmation_failed").remove();
