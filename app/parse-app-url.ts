@@ -173,6 +173,7 @@ export function parseUrlCommandApiV7(urlWithCommand: string): IUrlCommandApiV4Ty
 
   switch (recievedCommand.toLowerCase()) {
     case "certificates":
+    case "diagnostics":
       break;
     default:
       // tslint:disable-next-line: no-console
