@@ -2,6 +2,8 @@ import * as fs from "fs";
 import os from "os";
 import { LICENSE_PATH, LicenseManager, TSP_OCSP_ENABLED } from "../constants";
 import localize from "../i18n/localize";
+import { IUrlCommandApiV4Type } from "../parse-app-url";
+import { paramsRequest, postRequest } from "./urlCmdUtils";
 
 interface IDiagnosticsInformation {
   id: string;
@@ -55,7 +57,46 @@ interface ICertificateInfo {
   serial: string;
 }
 
-export function collectDiagnosticInfo(id: string, diagOperations: string[]): IDiagnosticsInformation {
+function paramsRequestDiag(id: string) {
+  return JSON.stringify(paramsRequest("diagnostics.parameters", id));
+}
+
+export function handleUrlCommandDiagnostics(command: IUrlCommandApiV4Type) {
+  postRequest(command.url, paramsRequestDiag(command.id)).then(
+    (data: any) => {
+      const operation = data.result.operation;
+      if (!operation || !operation.length) {
+        // tslint:disable-next-line: no-console
+        console.log("Error! Empty operation list.");
+        return;
+      }
+
+      const infoRequest = JSON.stringify({
+        jsonrpc: "2.0",
+        method: "diagnostics.information",
+        params: collectDiagnosticInfo(data.id, operation),
+      });
+
+      postRequest( command.url, infoRequest).then(
+        (respData: any) => {
+          //
+        },
+        (error) => {
+          // tslint:disable-next-line: no-console
+          console.log("Error sending of diagnostics info with id " + command.id
+            + ". Error description: " + error);
+        },
+      );
+    },
+    (error) => {
+      // tslint:disable-next-line: no-console
+      console.log("Error recieving parameters of diagnostics command with id " + command.id
+        + ". Error description: " + error);
+    },
+  );
+}
+
+function collectDiagnosticInfo(id: string, diagOperations: string[]): IDiagnosticsInformation {
   const result: IDiagnosticsInformation = {id};
   if (diagOperations.includes("SYSTEMINFORMATION")) {
     const sysinfo: ISystemInformation = {
