@@ -3,7 +3,6 @@ import os from "os";
 import { LICENSE_PATH, LicenseManager, TSP_OCSP_ENABLED } from "../constants";
 import localize from "../i18n/localize";
 import { IUrlCommandApiV4Type } from "../parse-app-url";
-import store from "../store";
 import { paramsRequest, postRequest } from "./urlCmdUtils";
 
 interface IDiagnosticsInformation {
