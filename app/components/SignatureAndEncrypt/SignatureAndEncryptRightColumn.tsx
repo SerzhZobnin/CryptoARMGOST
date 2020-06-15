@@ -1243,7 +1243,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     directResult.results = [];
     directResult.operations = operations;
     const directFiles: any = {};
-    console.log ("text errora", error);
 
     files.every((file) => {
       logger.log({
