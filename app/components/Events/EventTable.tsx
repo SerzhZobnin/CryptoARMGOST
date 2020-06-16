@@ -146,7 +146,7 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
                     dataKey="userName"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.15}
+                    width={width * 0.18}
                     label={localize("EventsTable.user_name", locale)}
                   />
                   <Column
@@ -192,7 +192,7 @@ class EventTable extends React.Component<IEventTableProps & IEventTableDispatch,
                     dataKey="level"
                     disableSort={false}
                     headerRenderer={this.headerRenderer}
-                    width={width * 0.07}
+                    width={width * 0.1}
                     label={localize("EventsTable.status", locale)}
                   />
                 </Table>
