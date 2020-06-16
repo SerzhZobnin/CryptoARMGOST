@@ -932,18 +932,15 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const { pinCode } = this.state;
     const isSockets = this.isFilesFromSocket();
 
-    if  (!setting.operations.save_result_to_folder) { setting = setting.set("outfolder", ""); }
-
     if (isSockets) {
       setting = setting.set("outfolder", "");
       setting = operationRemoteAction && operationRemoteAction.isDetachedSign ? setting.setIn(["sign", "detached"], true) : setting.setIn(["sign", "detached"], false);
       setting = setting.setIn(["sign", "time"], true);
     }
-
     if (files.length > 0) {
       const policies: string [] = [] ;
-      const folderOut = setting.outfolder;
-      // const folderOut = setting.operations.save_copy_to_documents ? DEFAULT_DOCUMENTS_PATH : setting.outfolder;
+      const folderOut = setting.operations.save_result_to_folder ? setting.outfolder : "";
+
       let format = trusted.DataFormat.PEM;
       if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
         format = trusted.DataFormat.DER;
@@ -1048,6 +1045,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                               };
                             });
                             directResult.files = directFiles;
+
                             packageSign(files, cert, policies, null, format, folderOut, outURIList, directResult);
                           },
                           (error: any) => {
@@ -1161,6 +1159,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             );
         }
       } else {
+
         if (setting.sign.detached) {
           policies.push("detached");
         }
