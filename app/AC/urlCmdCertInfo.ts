@@ -10,24 +10,49 @@ import { arrayToMap } from "../utils";
 import { navigationLock, navigationUnlock } from "./globalLocks";
 import { openWindow, postRequest } from "./urlCmdUtils";
 
+interface ICertificateInfo {
+  id: string;
+  hash: string;
+  issuerFriendlyName: string;
+  issuerName: string;
+  notAfter: string;
+  notBefore: string;
+  subjectFriendlyName: string;
+  subjectName: string;
+  status: boolean;
+  serial: string;
+}
+
 function requestCertInfo(id: string, certificate: trusted.pki.Certificate) {
   return JSON.stringify({
     jsonrpc: "2.0",
     method: "certificateInfo.info",
-    params: {
-      id,
-      // tslint:disable-next-line: object-literal-sort-keys
-      hash: certificate.hash(),
-      issuerFriendlyName: certificate.issuerFriendlyName,
-      issuerName: certificate.issuerName,
-      notAfter: certificate.notAfter,
-      notBefore: certificate.notBefore,
-      subjectFriendlyName: certificate.subjectFriendlyName,
-      subjectName: certificate.subjectFriendlyName,
-      status: trusted.utils.Csp.verifyCertificateChain(certificate),
-      serial: certificate.serialNumber,
-    },
+    params: PkiCertToCertInfo(id, certificate),
   });
+}
+
+export function PkiCertToCertInfo(id: string, certificate: trusted.pki.Certificate): ICertificateInfo {
+  let status = false;
+  try {
+    status = trusted.utils.Csp.verifyCertificateChain(certificate);
+  } catch (e) {
+    //
+  }
+  const result: ICertificateInfo = {
+    id,
+    // tslint:disable-next-line: object-literal-sort-keys
+    hash: certificate.hash(),
+    issuerFriendlyName: certificate.issuerFriendlyName,
+    issuerName: certificate.issuerName,
+    notAfter: certificate.notAfter.toString(),
+    notBefore: certificate.notBefore.toString(),
+    subjectFriendlyName: certificate.subjectFriendlyName,
+    subjectName: certificate.subjectFriendlyName,
+    status,
+    serial: certificate.serialNumber,
+  };
+
+  return result;
 }
 
 export function certificateInfo(certToView: string, id: string, url: string) {
