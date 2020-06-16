@@ -1,8 +1,11 @@
 import * as fs from "fs";
 import os from "os";
-import { LICENSE_PATH, LicenseManager, TSP_OCSP_ENABLED } from "../constants";
+import { CERTIFICATES_DSS_JSON, LICENSE_PATH, LicenseManager, TSP_OCSP_ENABLED } from "../constants";
 import localize from "../i18n/localize";
 import { IUrlCommandApiV4Type } from "../parse-app-url";
+import { Store } from "../trusted/store";
+import { fileExists } from "../utils";
+import { PkiCertToCertInfo } from "./urlCmdCertInfo";
 import { paramsRequest, postRequest } from "./urlCmdUtils";
 
 interface IDiagnosticsInformation {
@@ -233,7 +236,45 @@ function collectDiagnosticInfo(id: string, diagOperations: string[]): IDiagnosti
   }
 
   if (diagOperations.includes("PERSONALCERTIFICATES")) {
-    //
+    const certificateStore = new Store();
+
+    const certs: trusted.pki.Certificate[] = [];
+
+    for (const item of certificateStore.items) {
+      if (item.category === "MY") {
+        certs.push(certificateStore.getPkiObject(item));
+      }
+    }
+
+    if (fileExists(CERTIFICATES_DSS_JSON)) {
+      const certificatesDSS = fs.readFileSync(CERTIFICATES_DSS_JSON, "utf8");
+
+      if (certificatesDSS) {
+        try {
+          const data = JSON.parse(certificatesDSS);
+
+          for (const key1 of Object.keys(data.certificatesDSS)) {
+            for (const key2 of Object.keys(data.certificatesDSS[key1])) {
+              const cert = data.certificatesDSS[key1][key2];
+              if (cert.category === "MY") {
+                certs.push(certificateStore.getPkiObject(cert));
+              }
+            }
+          }
+        } catch (e) {
+          //
+        }
+      }
+    }
+
+    const certInfos: ICertificateInfo[] = [];
+    for (const cert of certs) {
+      if (cert) {
+        certInfos.push(PkiCertToCertInfo(id, cert));
+      }
+    }
+
+    result.PERSONALCERTIFICATES = certInfos;
   }
 
   return result;

@@ -194,7 +194,7 @@ function printCertificateInfo(certInfo) {
   if (certInfo.subjectName) {
     console.log("\tsubjectName: " + certInfo.subjectName);
   }
-  if (certInfo.status) {
+  if (certInfo.status !== undefined) {
     console.log("\tstatus: " + certInfo.status);
   }
   if (certInfo.serial) {
