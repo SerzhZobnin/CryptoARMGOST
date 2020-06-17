@@ -33,3 +33,11 @@ export const selectedOperationsResultsSelector = createSelector(entitiesSelector
 );
 
 export const originalSelector = createSelector(stateSelector, (state) => state.files.map((file: any) => file.original));
+
+export const selectedFiltredResultsSelector = createSelector(
+  filteredOperationsResultsSelector, selectionSelector, (filter, selection) =>
+  filter.filter((entries: any) => {
+    return selection.some((selectionFilter: any) => {
+      return entries.id === selectionFilter;
+    });
+  }));

@@ -13,12 +13,13 @@ import {
 import {
   DEFAULT_DOCUMENTS_PATH, LOCATION_MAIN, REMOVE, SIGN,
 } from "../../constants";
-import { originalSelector, selectedOperationsResultsSelector } from "../../selectors/operationsResultsSelector";
+import { selectedFiltredResultsSelector, selectedOperationsResultsSelector } from "../../selectors/operationsResultsSelector";
 import { fileExists, mapToArr } from "../../utils";
 
 interface IDocumentsWindowProps {
   documents: any;
   results: any;
+  filteredSelectedDocuments: any;
   unselectAllDocuments: () => void;
 }
 
@@ -201,8 +202,8 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
 
   handleClickSign = () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const { changeLocation, documents, filePackageSelect } = this.props;
-    filePackageSelect(documents);
+    const { changeLocation, filePackageSelect, filteredSelectedDocuments } = this.props;
+    filePackageSelect(filteredSelectedDocuments);
     changeLocation(LOCATION_MAIN);
   }
 
@@ -229,9 +230,9 @@ class ResultsRightColumn extends React.Component<IDocumentsWindowProps, IDocumen
   }
 
   handleSaveCopy = () => {
-    const { documents } = this.props;
+    const { filteredSelectedDocuments } = this.props;
 
-    documents.forEach((doc: any) => {
+    filteredSelectedDocuments.forEach((doc: any) => {
       const newFileUri = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(doc.fullpath));
 
       if (!fileExists(newFileUri)) {
@@ -256,6 +257,7 @@ export default connect((state) => {
     documents: selectedOperationsResultsSelector(state),
     entitiesMap: state.multiOperations.entities,
     filesMap: state.multiOperations.files,
+    filteredSelectedDocuments: selectedFiltredResultsSelector (state),
     isPerformed: state.multiOperations.performed,
     operations: state.multiOperations.operations,
     results: state.multiOperations.results,
