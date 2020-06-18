@@ -224,10 +224,11 @@ class DocumentsWindow extends React.Component<IDocumentsWindowProps, IDocumentsW
 
   handleClickDelete = () => {
     const { localize, locale } = this.context;
-    const { documents } = this.props;
-    const count = documents.length;
+    const { filtredDocuments } = this.props;
+    const deletingDocuments = filtredDocuments.toJS ();
+    const count = filtredDocuments.size;
 
-    removeDocuments(documents);
+    removeDocuments(deletingDocuments);
     this.handleReloadDocuments();
 
     const message = localize("Documents.documents_deleted1", locale) + count + localize("Documents.documents_deleted2", locale);
