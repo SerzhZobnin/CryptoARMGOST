@@ -62,6 +62,7 @@ export const postApi = async (url: string, postfields: string, headerfields: str
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
     curl.setOpt("URL", url);
+    curl.setOpt ("TIMEOUT", 60);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
 
