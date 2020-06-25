@@ -313,7 +313,7 @@ class CertificateRequest extends React.Component<ICertificateRequestProps, ICert
     const { algorithm, cn, containerName, email, inn, locality, ogrnip, province, snils, template } = this.state;
     const REQULAR_EXPRESSION = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
-    if (!containerName.length) {
+    if (!containerName.length || (containerName.trim() === "")) {
       return false;
     }
 
