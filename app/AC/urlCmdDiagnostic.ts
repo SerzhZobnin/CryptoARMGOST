@@ -82,7 +82,8 @@ export function handleUrlCommandDiagnostics(command: IUrlCommandApiV4Type) {
 
       postRequest( command.url, infoRequest).then(
         (respData: any) => {
-          //
+          const remote = window.electron.remote;
+          remote.getCurrentWindow().minimize();
         },
         (error) => {
           // tslint:disable-next-line: no-console
