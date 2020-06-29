@@ -47,7 +47,7 @@ export function PkiCertToCertInfo(id: string, certificate: trusted.pki.Certifica
     notAfter: certificate.notAfter.toString(),
     notBefore: certificate.notBefore.toString(),
     subjectFriendlyName: certificate.subjectFriendlyName,
-    subjectName: certificate.subjectFriendlyName,
+    subjectName: certificate.subjectName,
     status,
     serial: certificate.serialNumber,
   };
