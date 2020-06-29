@@ -3,9 +3,10 @@ import {
   CREATE_TEMP_USER_DSS, DELETE_CERTIFICATE, FAIL, GET_CERTIFICATES_DSS,
   GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_OPERATION_CONFIRMATION,
   POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, RESPONSE,
-  START, SUCCESS,
+  START, SUCCESS, USER_NAME,
 } from "../constants";
 import { uuid } from "../utils";
+import logger from "../winstonLogger";
 
 /**
  * Фукнция генерации стуктуры сертификата DSS
@@ -423,7 +424,35 @@ export function getCertificatesDSS(url: string, dssUserID: string, token: string
         },
         type: GET_CERTIFICATES_DSS + SUCCESS,
       });
+      for (const certificate of data) {
+              logger.log({
+          certificate: certificate.subjectName,
+          level: "info",
+          message: "",
+          operation: "Импорт сертификата DSS",
+          operationObject: {
+            in: "CN=" + certificate.subjectFriendlyName,
+            out: "Null",
+          },
+          userName: USER_NAME,
+        });
+      }
+
     } catch (e) {
+      for (const certificate of data) {
+              logger.log({
+          certificate: certificate.subjectName,
+          level: "error",
+          message: "",
+          operation: "Импорт сертификата DSS",
+          operationObject: {
+            in: "CN=" + certificate.subjectFriendlyName,
+            out: "Null",
+          },
+          userName: USER_NAME,
+        });
+      }
+
       dispatch({
         type: GET_CERTIFICATES_DSS + FAIL,
         payload: {
