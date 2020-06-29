@@ -25,7 +25,7 @@ import {
   VERIFY_CRL,
   USER_NAME,
 } from "../constants";
-import { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
+import settings, { IOcspModel, ISignModel, ITspModel } from "../reducer/settings";
 import { connectedSelector } from "../selectors";
 import { ERROR, SIGNED, UPLOADED, VERIFIED } from "../server/constants";
 import * as signs from "../trusted/sign";
@@ -277,6 +277,25 @@ export function packageSign(
           payload: { status: true, directResult: multiResult },
           type: MULTI_DIRECT_OPERATION + (multipackage ? PART_SUCCESS : SUCCESS),
         });
+
+        if (multiResult.operations.save_copy_to_documents) {
+          for (const file of files) {
+              const signedFile = signedFilePackage[files.indexOf(file)];
+              const copyUriOriginalFile = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(file.fullpath));
+              const copyUriSignedFile = path.join(DEFAULT_DOCUMENTS_PATH, path.basename(signedFile.fullpath));
+
+              fs.copyFileSync(signedFile.fullpath, copyUriSignedFile); // копирую подписанный файл
+              if (policies.includes("detached")) {
+                fs.copyFileSync(file.fullpath, copyUriOriginalFile); } // копирую оригинальный файл
+          }
+        }
+        if (policies.includes("detached")) {
+          for (const file of files) {
+            const copyUriOriginalFile = path.join(folderOut, path.basename(file.fullpath));
+            fs.copyFileSync(file.fullpath, copyUriOriginalFile);
+          }
+        }
+
         dispatch(filePackageDelete(signedFileIdPackage));
         if (!remoteFiles.uploader && !multipackage) {
           dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));

@@ -28,6 +28,7 @@ app.post('/json', function (req, res) {
 
   if (req.body.method === "certificates.parameters"
     || req.body.method === "certificateInfo.parameters"
+    || req.body.method === "diagnostics.parameters"
   ) {
     if (id !== req.body.id) {
       console.log("Error! Id from URL and ID from request is not match! (" + id + " and " + req.body.id + ")");
@@ -76,6 +77,10 @@ app.post('/json', function (req, res) {
           res.sendFile(__dirname + '/public/json/cert-info/cert-info-params.json');
           break;
 
+        case "dd528a4f-da00-40fe-b807-76d9bf7eb535":
+          res.sendFile(__dirname + '/public/json/diagnostics/diagnostics-params.json');
+          break;
+
         default:
           res.status(202).sendFile(__dirname + '/public/json/server-errors/internal-error.json');
           break;
@@ -107,36 +112,12 @@ app.post('/json', function (req, res) {
     const params = req.body.params;
     console.log("========================");
     console.log("Certificate info recieved:");
-
-    if (params.hash) {
-      console.log("\thash: " + params.hash);
-    }
-    if (params.issuerFriendlyName) {
-      console.log("\tissuerFriendlyName: " + params.issuerFriendlyName);
-    }
-    if (params.issuerName) {
-      console.log("\tissuerName: " + params.issuerName);
-    }
-    if (params.notAfter) {
-      console.log("\tnotAfter: " + params.notAfter);
-    }
-    if (params.notBefore) {
-      console.log("\tnotBefore: " + params.notBefore);
-    }
-    if (params.subjectFriendlyName) {
-      console.log("\tsubjectFriendlyName: " + params.subjectFriendlyName);
-    }
-    if (params.subjectName) {
-      console.log("\tsubjectName: " + params.subjectName);
-    }
-    if (params.status) {
-      console.log("\tstatus: " + params.status);
-    }
-    if (params.serial) {
-      console.log("\tserial: " + params.serial);
-    }
+    printCertificateInfo(params);
     console.log("========================");
 
+    res.status(200).send("");
+  } else if (req.body.method === "diagnostics.information") {
+    printDiagnosticInformation(req.body.params);
     res.status(200).send("");
   } else {
     console.log("Unsupported method: " + req.body.method);
@@ -190,3 +171,118 @@ app.post('/upload', function (req, res) {
 app.listen(PORT, function () {
   console.log('Express server listening on port ', PORT);
 });
+
+function printCertificateInfo(certInfo) {
+  if (certInfo.hash) {
+    console.log("\thash: " + certInfo.hash);
+  }
+  if (certInfo.issuerFriendlyName) {
+    console.log("\tissuerFriendlyName: " + certInfo.issuerFriendlyName);
+  }
+  if (certInfo.issuerName) {
+    console.log("\tissuerName: " + certInfo.issuerName);
+  }
+  if (certInfo.notAfter) {
+    console.log("\tnotAfter: " + certInfo.notAfter);
+  }
+  if (certInfo.notBefore) {
+    console.log("\tnotBefore: " + certInfo.notBefore);
+  }
+  if (certInfo.subjectFriendlyName) {
+    console.log("\tsubjectFriendlyName: " + certInfo.subjectFriendlyName);
+  }
+  if (certInfo.subjectName) {
+    console.log("\tsubjectName: " + certInfo.subjectName);
+  }
+  if (certInfo.status !== undefined) {
+    console.log("\tstatus: " + certInfo.status);
+  }
+  if (certInfo.serial) {
+    console.log("\tserial: " + certInfo.serial);
+  }
+}
+
+function printDiagnosticInformation(params) {
+  console.log("========================");
+  console.log("Diagnostic info recieved:");
+
+  if (params.SYSTEMINFORMATION) {
+    var sysinfo = params.SYSTEMINFORMATION;
+    console.log("\n\tSYSTEMINFORMATION");
+    if(sysinfo.type) {
+      console.log("type: " + sysinfo.type);
+    }
+    if(sysinfo.arch) {
+      console.log("arch: " + sysinfo.arch);
+    }
+    if(sysinfo.platform) {
+      console.log("platform: " + sysinfo.platform);
+    }
+    if(sysinfo.packageType) {
+      console.log("packageType: " + sysinfo.packageType);
+    }
+  }
+
+  if (params.CSP_ENABLED !== undefined) {
+    console.log("\n\tCSP_ENABLED");
+    console.log("CSP_ENABLED: " + params.CSP_ENABLED);
+  }
+
+  if (params.CADES_ENABLED !== undefined) {
+    console.log("\n\tCADES_ENABLED");
+    console.log("CADES_ENABLED: " + params.CADES_ENABLED);
+  }
+
+  if (params.VERSIONS) {
+    var versions = params.VERSIONS;
+    console.log("\n\tVERSIONS");
+    if(versions.cryptoarm) {
+      console.log("cryptoarm: " + versions.cryptoarm);
+    }
+    if(versions.csp) {
+      console.log("csp: " + versions.csp);
+    }
+  }
+
+  if (params.PROVIDERS) {
+    var provs = params.PROVIDERS;
+    console.log("\n\tPROVIDERS");
+    console.log("GOST2012_256: " + provs.GOST2012_256);
+    console.log("GOST2012_512: " + provs.GOST2012_512);
+  }
+
+  if (params.LICENSES) {
+    var licenses = params.LICENSES;
+    console.log("\n\tLICENSES");
+    if(licenses.cryptoarm) {
+      console.log("cryptoarm.status: " + licenses.cryptoarm.status);
+      if (licenses.cryptoarm.type) {
+        console.log("cryptoarm.type: " + licenses.cryptoarm.type);
+      }
+      if (licenses.cryptoarm.expiration) {
+        console.log("cryptoarm.expiration: " + licenses.cryptoarm.expiration);
+      }
+    }
+    if(licenses.csp) {
+      console.log("csp.status: " + licenses.csp.status);
+      if (licenses.csp.type) {
+        console.log("csp.type: " + licenses.csp.type);
+      }
+      if (licenses.csp.expiration) {
+        console.log("csp.expiration: " + licenses.csp.expiration);
+      }
+    }
+  }
+
+  if (params.PERSONALCERTIFICATES) {
+    var certs = params.PERSONALCERTIFICATES;
+    console.log("\n\tPERSONALCERTIFICATES");
+    certs.forEach((certInfo) => {
+      console.log("--------------------");
+      printCertificateInfo(certInfo);
+    });
+    console.log("--------------------");
+  }
+
+  console.log("========================");
+}

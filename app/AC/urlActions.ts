@@ -16,9 +16,9 @@ import store from "../store";
 import { checkLicense } from "../trusted/jwt";
 import * as signs from "../trusted/sign";
 import { extFile, fileExists, md5 } from "../utils";
+import { toggleReverseOperations, toggleSigningOperation } from "./settingsActions";
 import { handleUrlCommandCertificates } from "./urlCmdCertificates";
-import { toggleReverseOperations, toggleSigningOperation, resetSettingChanges } from "./settingsActions";
-import { handleUrlCommandCertificateInfo } from "./urlCmdCertInfo";
+import { handleUrlCommandDiagnostics } from "./urlCmdDiagnostic";
 
 const remote = window.electron.remote;
 
@@ -60,6 +60,10 @@ export function dispatchURLCommand(
   switch (command.command.toLowerCase()) {
     case "certificates":
       handleUrlCommandCertificates(command);
+      break;
+
+    case "diagnostics":
+      handleUrlCommandDiagnostics(command);
       break;
 
     default:

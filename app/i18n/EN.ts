@@ -41,9 +41,9 @@ export default {
     send: "Send",
     support: "Support",
     username: "Name",
-    version: "2.5.1",
+    version: "2.5.2",
     version_app: "Application version",
-    version_full: "Version: 2.5.1",
+    version_full: "Version: 2.5.2",
   },
   AddressBook: {
     address_book: "Address book",
@@ -586,7 +586,7 @@ export default {
     S: "State",
     SN: "SurName",
     ST: "State",
-    Street: "Street",
+    STREET: "Street",
     T: "Title",
   },
   OIDs: {
