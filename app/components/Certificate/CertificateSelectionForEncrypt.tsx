@@ -7,6 +7,9 @@ import {
   loadAllCertificates, removeAllCertificates,
 } from "../../AC";
 import { changeSearchValue } from "../../AC/searchActions";
+import { changeEncryptionAlgorithm, getDefaultEncryptionAlg, isGostRecipients } from "../../AC/settingsActions";
+import { urlCmdCertExportFail, urlCmdSendCerts } from "../../AC/urlCmdCertificates";
+import { URL_CMD_CERTIFICATES_EXPORT } from "../../constants";
 import { filteredCertificatesSelector } from "../../selectors";
 import { mapToArr } from "../../utils";
 import BlockNotElements from "../BlockNotElements";
@@ -18,8 +21,6 @@ import CertificateChainInfo from "./CertificateChainInfo";
 import CertificateInfo from "./CertificateInfo";
 import CertificateInfoTabs from "./CertificateInfoTabs";
 import CertificateList from "./CertificateList";
-import { URL_CMD_CERTIFICATES_EXPORT } from "../../constants";
-import { urlCmdSendCerts, urlCmdCertExportFail } from "../../AC/urlCmdCertificates";
 
 class CertificateSelectionForEncrypt extends React.Component<any, any> {
   static contextTypes = {
@@ -377,7 +378,10 @@ class CertificateSelectionForEncrypt extends React.Component<any, any> {
 
   handleCloseModalContinue = () => {
     const { selectedRecipients } = this.state;
+    const isGost = isGostRecipients (selectedRecipients);
+    const defaultAlg = getDefaultEncryptionAlg (isGost);
 
+    this.props.changeEncryptionAlgorithm(defaultAlg);
     this.setState({ showModalWrongCertificate: false });
     this.handleCleanRecipientsList();
 
@@ -413,6 +417,6 @@ export default connect((state) => {
     urlCmdProps: state.urlCmdCertificates,
   };
 }, {
-  addRecipientCertificate, changeSearchValue, deleteRecipient,
+  addRecipientCertificate, changeEncryptionAlgorithm, changeSearchValue, deleteRecipient,
   loadAllCertificates, removeAllCertificates,
 })(CertificateSelectionForEncrypt);
