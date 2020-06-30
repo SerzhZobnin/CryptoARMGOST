@@ -258,7 +258,7 @@ export function packageSign(
         type: PACKAGE_SIGN + SUCCESS,
       });
 
-      files.every((file) => {
+      files.forEach((file) => {
         logger.log({
           certificate: cert.subjectName,
           level: "info",
@@ -364,12 +364,10 @@ export function packageReSign(
           uploadFiles(remoteFilesToUpload, remoteFiles.uploader, urlActions);
         }
       }
-
       dispatch({
         payload: { packageSignResult },
         type: PACKAGE_SIGN + SUCCESS,
       });
-
       if (multiResult) {
         dispatch({
           payload: { status: true, directResult: multiResult },
@@ -377,6 +375,19 @@ export function packageReSign(
         });
         dispatch(filePackageDelete(signedFileIdPackage));
         if (!remoteFiles.uploader && !doNotFinalizeOperation) {
+          files.forEach((file) => {
+            logger.log({
+              certificate: cert.subjectName,
+              level: "info",
+              message: "",
+              operation: "Подпись",
+              operationObject: {
+                in: path.basename(file.fullpath),
+                out: path.basename(folderOut),
+              },
+              userName: USER_NAME,
+            });
+          });
           dispatch(push(LOCATION_RESULTS_MULTI_OPERATIONS));
         }
       } else {

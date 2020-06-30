@@ -63,14 +63,14 @@ export const postApi = async (url: string, postfields: string, headerfields: str
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
     curl.setOpt("URL", url);
-    curl.setOpt ("TIMEOUT", 60);
+    curl.setOpt("TIMEOUT", 60);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
 
     if (postfields) {
       curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
     }
-    curl.on("end", function(statusCode: number, response: any) {
+    curl.on("end", function (statusCode: number, response: any) {
       let data;
       try {
 
@@ -257,8 +257,8 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
             TextChallengeResponse:
               [
                 {
-                RefId: `${data1.Challenge.ContextData.RefID}`,
-              },
+                  RefId: `${data1.Challenge.ContextData.RefID}`,
+                },
               ],
           },
           Resource: "urn:cryptopro:dss:signserver:signserver",
@@ -293,20 +293,20 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
               JSON.stringify(challengeResponse),
               headerfield,
             )
-            .catch((error) => {
-              dispatch(postAuthorizationUserFail(type, error));
-              dispatch({
-                payload: {
-                  RefID,
-                },
-                type: type + RESPONSE + FAIL,
+              .catch((error) => {
+                dispatch(postAuthorizationUserFail(type, error));
+                dispatch({
+                  payload: {
+                    RefID,
+                  },
+                  type: type + RESPONSE + FAIL,
+                });
+                if (timerHandle) {
+                  clearInterval(timerHandle);
+                  timerHandle = null;
+                  reject(error);
+                }
               });
-              if (timerHandle) {
-                clearInterval(timerHandle);
-                timerHandle = null;
-                reject(error);
-              }
-            });
             if (data2.IsFinal === true && !data2.IsError) {
               dispatch(postAuthorizationUserSuccess(type, data2, dssUserID));
               dispatch({
@@ -426,13 +426,13 @@ export function getCertificatesDSS(url: string, dssUserID: string, token: string
         type: GET_CERTIFICATES_DSS + SUCCESS,
       });
       for (const certificate of data) {
-              logger.log({
+        logger.log({
           certificate: certificate.subjectName,
           level: "info",
           message: "",
-          operation: "Импорт сертификата DSS",
+          operation: "Импорт сертификата",
           operationObject: {
-            in: "CN=" + certificate.subjectFriendlyName,
+            in: "CN=" + certificate.subjectName,
             out: "Null",
           },
           userName: USER_NAME,
@@ -441,11 +441,11 @@ export function getCertificatesDSS(url: string, dssUserID: string, token: string
 
     } catch (e) {
       for (const certificate of data) {
-              logger.log({
+        logger.log({
           certificate: certificate.subjectName,
           level: "error",
           message: "",
-          operation: "Импорт сертификата DSS",
+          operation: "Импорт сертификата",
           operationObject: {
             in: "CN=" + certificate.subjectFriendlyName,
             out: "Null",
