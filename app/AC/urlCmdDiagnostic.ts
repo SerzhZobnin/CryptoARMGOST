@@ -136,11 +136,17 @@ function collectDiagnosticInfo(id: string, diagOperations: string[]): IDiagnosti
   }
 
   if (diagOperations.includes("CSP_ENABLED")) {
-    result.CSP_ENABLED = false;
     try {
       result.CSP_ENABLED = trusted.utils.Csp.isGost2012_256CSPAvailable();
     } catch (e) {
-      //
+      result.CSP_ENABLED = true;
+      if (window.tcerr) {
+        if (window.tcerr.message) {
+          if (window.tcerr.message.indexOf("libcapi") !== -1) {
+            result.CSP_ENABLED = false;
+          }
+        }
+      }
     }
   }
 
