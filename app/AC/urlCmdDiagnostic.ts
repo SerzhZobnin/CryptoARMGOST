@@ -80,9 +80,10 @@ export function handleUrlCommandDiagnostics(command: IUrlCommandApiV4Type) {
         params: collectDiagnosticInfo(data.id, operation),
       });
 
-      postRequest( command.url, infoRequest).then(
+      postRequest(command.url, infoRequest).then(
         (respData: any) => {
-          //
+          const remote = window.electron.remote;
+          remote.getCurrentWindow().minimize();
         },
         (error) => {
           // tslint:disable-next-line: no-console
@@ -100,7 +101,7 @@ export function handleUrlCommandDiagnostics(command: IUrlCommandApiV4Type) {
 }
 
 function collectDiagnosticInfo(id: string, diagOperations: string[]): IDiagnosticsInformation {
-  const result: IDiagnosticsInformation = {id};
+  const result: IDiagnosticsInformation = { id };
   if (diagOperations.includes("SYSTEMINFORMATION")) {
     const sysinfo: ISystemInformation = {
       type: os.type(),
@@ -135,11 +136,15 @@ function collectDiagnosticInfo(id: string, diagOperations: string[]): IDiagnosti
   }
 
   if (diagOperations.includes("CSP_ENABLED")) {
-    result.CSP_ENABLED = true;
-    if (window.tcerr) {
-      if (window.tcerr.message) {
-        if (window.tcerr.message.indexOf("libcapi") === -1) {
-          result.CSP_ENABLED = false;
+    try {
+      result.CSP_ENABLED = trusted.utils.Csp.isGost2012_256CSPAvailable();
+    } catch (e) {
+      result.CSP_ENABLED = true;
+      if (window.tcerr) {
+        if (window.tcerr.message) {
+          if (window.tcerr.message.indexOf("libcapi") !== -1) {
+            result.CSP_ENABLED = false;
+          }
         }
       }
     }
@@ -289,9 +294,9 @@ function checkIfUtilIsAvailable(utilName: string, params?: string[]) {
   }
 
   try {
-    const res = spawnSync(utilName, paramsToUse, {timeout: 3000, windowsHide: true});
+    const res = spawnSync(utilName, paramsToUse, { timeout: 3000, windowsHide: true });
     if (res.output && !res.error) {
-        return true;
+      return true;
     }
   } catch (e) {
     //
