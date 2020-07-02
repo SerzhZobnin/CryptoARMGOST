@@ -36,7 +36,8 @@ export const filteredCertificatesSelector = createSelector(certificatesGetter, f
 
   if (operation === "sign" || operation === "personal_certs") {
     сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {
-      return item.category === "MY" && item.key.length > 0;
+      // TODO: compare with hash only for demo. Must be removed
+      return item.category === "MY" && (item.key.length > 0 || item.hash === "93a24e0c79b18d4ee283ecd2212d60ff2a5a5f40");
     });
   } else if (operation === "encrypt") {
     сertificatesByOperations = сertificatesByOperations.filter((item: trusted.pkistore.PkiItem) => {

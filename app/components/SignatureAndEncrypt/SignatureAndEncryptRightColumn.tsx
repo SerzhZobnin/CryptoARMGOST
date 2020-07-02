@@ -15,7 +15,8 @@ import {
 import { IFile } from "../../AC";
 import { documentsReviewed } from "../../AC/documentsActions";
 import { createTransactionDSS, dssOperationConfirmation, dssPerformOperation } from "../../AC/dssActions";
-import { multiDirectOperation, multiOperationStart, multiReverseOperation  } from "../../AC/multiOperations";
+import { ISerializedFiles, konturPostSign } from "../../AC/konturActions";
+import { multiDirectOperation, multiOperationStart, multiReverseOperation } from "../../AC/multiOperations";
 import {
   activeSetting, changeDefaultSettings, deleteSetting, saveSettings,
 } from "../../AC/settingsActions";
@@ -175,7 +176,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       this.handleCloseModalDssResponse();
     }
 
-    if(prevProps.signingPackage && !this.props.signingPackage && !this.props.packageSignResult) {
+    if (prevProps.signingPackage && !this.props.signingPackage && !this.props.packageSignResult) {
       $(".toast-files_signed_failed").remove();
       Materialize.toast(localize("Sign.files_signed_failed", locale), 7000, "toast-files_signed_failed");
     }
@@ -195,7 +196,8 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
 
     const disabledNavigate = this.isFilesFromSocket();
     const classDisabled = disabledNavigate ? "disabled" : "";
-    const isSignCertFromDSS = (signer && (signer.service || signer.dssUserID)) ? true : false;
+    // TODO: compare with hash only for demo. Must be removed
+    const isSignCertFromDSS = (signer && (signer.service || signer.dssUserID || signer.hash === "93a24e0c79b18d4ee283ecd2212d60ff2a5a5f40")) ? true : false;
 
     let countAllFiles = 0;
     let countSignedFiles = 0;
@@ -911,7 +913,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if ((setting.sign.timestamp_on_data || setting.sign.timestamp_on_sign)
-    && setting.tsp.url === "") {
+      && setting.tsp.url === "") {
       $(".toast-Sign_failed_TSP_misconfigured").remove();
       Materialize.toast(localize("Tsp.failed_tsp_url", locale), 3000, "toast-Sign_failed-TSP_misconfigured");
       return;
@@ -958,6 +960,34 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
         }
       }
 
+      // TODO: compare with hash only for demo. Must be removed
+      if (signer && signer.hash === "93a24e0c79b18d4ee283ecd2212d60ff2a5a5f40") {
+        const documents: ISerializedFiles[] = [];
+        const documentsId: string[] = [];
+
+        filesForSign.forEach((file) => {
+          const ContentBase64 = fs.readFileSync(file.fullpath, "base64");
+          const documentContent: ISerializedFiles = {
+            ContentBase64,
+            FileName: path.basename(file.fullpath),
+            Id: file.id,
+          };
+          documents.push(documentContent);
+          documentsId.push(file.id);
+        });
+
+        const signerCert = window.PKISTORE.getPkiObject(signer);
+        let cmsContext = signerCert.export(trusted.DataFormat.PEM).toString();
+
+        cmsContext = cmsContext.replace("-----BEGIN CERTIFICATE-----", "");
+        cmsContext = cmsContext.replace("-----END CERTIFICATE-----", "");
+        cmsContext = cmsContext.replace(/\r\n|\n|\r/gm, "");
+
+        this.props.konturPostSign(cmsContext, documents);
+
+        return;
+      }
+
       if (signer.dssUserID) {
         multiOperationStart(this.props.setting.operations);
       }
@@ -1001,14 +1031,14 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       setting = setting.setIn(["sign", "time"], true);
     }
     if (files.length > 0) {
-      const policies: string [] = [] ;
+      const policies: string[] = [];
       const folderOut = setting.operations.save_result_to_folder ? setting.outfolder : "";
 
       let format = trusted.DataFormat.PEM;
       if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
         format = trusted.DataFormat.DER;
       }
-      if (setting.sign.detached) {policies.push ("detached"); }
+      if (setting.sign.detached) { policies.push("detached"); }
       if (folderOut.length > 0) {
         if (!dirExists(folderOut)) {
           $(".toast-failed_find_directory").remove();
@@ -1310,7 +1340,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
   }
 
   resignDss = (filesAtt: IFilePackage, filesDet: IFilePackage, setting: any, cert: any,
-               multipackage: boolean = false) => {
+    multipackage: boolean = false) => {
     const { signer, tokensAuth, users, policyDSS, uploader,
       createTransactionDSS, packageReSign } = this.props;
     const { pinCode } = this.state;
@@ -1326,7 +1356,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     const policy = policyDSS.getIn([signer.dssUserID, "policy"]).filter(
       (item: any) => item.Action === (isSignPackage ? "SignDocuments" : "SignDocument"));
     const mfaRequired = policy[0].MfaRequired;
-    const policies: string [] = [];
+    const policies: string[] = [];
     const folderOut = setting.outfolder;
     let format = trusted.DataFormat.PEM;
     if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
@@ -1334,7 +1364,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (mfaRequired) {
-      const originalDocument = (signsIsDetached &&  !isSignPackage) ? documents[0].OriginalContent : "";
+      const originalDocument = (signsIsDetached && !isSignPackage) ? documents[0].OriginalContent : "";
       createTransactionDSS(user.dssUrl,
         tokenAuth.access_token,
         buildTransaction(
@@ -1408,7 +1438,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
                         packageReSign(files, cert, policies, format, folderOut, outURIList,
                           directResult, isNeedToSignSecondPackage || multipackage,
                           isNeedToSignSecondPackage);
-                        if(isNeedToSignSecondPackage) {
+                        if (isNeedToSignSecondPackage) {
                           this.resignDss(null, filesDet, setting, cert, true);
                         } else {
                           this.setState({ pinCode: "" });
@@ -1471,7 +1501,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
           },
         );
     } else {
-      const originalData = (signsIsDetached &&  !isSignPackage) ? documents[0].OriginalContent : "";
+      const originalData = (signsIsDetached && !isSignPackage) ? documents[0].OriginalContent : "";
       this.props.dssPerformOperation(
         user.dssUrl + (isSignPackage ? "/api/documents/packagesignature" : "/api/documents"),
         tokenAuth.access_token,
@@ -1532,7 +1562,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
             const isNeedToSignSecondPackage = !signsIsDetached && filesDet;
             packageReSign(files, cert, policies, format, folderOut, outURIList, directResult,
               isNeedToSignSecondPackage || multipackage, isNeedToSignSecondPackage);
-            if(isNeedToSignSecondPackage) {
+            if (isNeedToSignSecondPackage) {
               this.resignDss(null, filesDet, setting, cert, multipackage);
             } else {
               this.setState({ pinCode: "" });
@@ -1572,7 +1602,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (files.length > 0) {
-      const policies: string [] = [];
+      const policies: string[] = [];
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
       if (setting.sign.encoding !== localize("Settings.BASE", locale)) {
@@ -2266,7 +2296,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     }
 
     if (filesSign.length > 0) {
-      const policies: string [] = [];
+      const policies: string[] = [];
 
       const folderOut = setting.outfolder;
       let format = trusted.DataFormat.PEM;
@@ -2542,7 +2572,7 @@ export default connect((state) => {
 }, {
   activeFile, activeSetting, changeDefaultSettings, createTransactionDSS, dssPerformOperation, dssOperationConfirmation,
   deleteSetting, deleteFile, deleteRecipient, documentsReviewed,
-  filePackageSelect, filePackageDelete, multiDirectOperation,
+  filePackageSelect, filePackageDelete, konturPostSign, multiDirectOperation,
   multiReverseOperation,
   packageSign, packageReSign, saveSettings, selectFile,
   verifyCertificate, selectSignerCertificate, verifySignature, multiOperationStart,
