@@ -121,8 +121,42 @@ export function konturPostSign(CertificateBase64: string, SerializedFiles: ISeri
         ],
       );
 
-      console.log("--- data", data);
+      if (data) {
+        const deploy: number = 10000;
+        let timeout: number = 0;
+        let timerHandle: NodeJS.Timeout | null;
+        let data2;
 
+        return await new Promise((resolve, reject) => {
+          timerHandle = setInterval(async () => {
+            timeout += deploy;
+
+            data2 = await getApi(
+              `${KONTUR_CRYPTO_POINT}/GetStatus?operationId=${data.OperationId}`,
+              [],
+            )
+            .catch((error) => {
+              console.log("--- error getApi", error);
+
+              if (timerHandle) {
+                clearInterval(timerHandle);
+                timerHandle = null;
+                reject(error);
+              }
+            });
+            if (data2 && data2.FileStatuses && data2.FileStatuses.length) {
+              console.log("+++ operation compleated", data2);
+              if (timerHandle) {
+                clearInterval(timerHandle);
+                timerHandle = null;
+                resolve(data2);
+              }
+            } else {
+              console.log("--- operation performing", data2);
+            }
+          }, 10000);
+        });
+      }
     } catch (e) {
       console.log("Error", e);
 
