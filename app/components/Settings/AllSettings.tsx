@@ -140,13 +140,6 @@ class AllSettings extends React.Component<any, {}> {
 
                 <div className="col s12">
                   <CheckBoxWithLabel
-                    disabled={ true }
-                    // onClickCheckBox={this.handleTimeClick}
-                    isChecked={true}
-                    elementId="sign_time"
-                    title={localize("Sign.sign_time", locale)} />
-
-                  <CheckBoxWithLabel
                     disabled={!(TSP_OCSP_ENABLED) || signatureStandard === SignatureStandard.CADES || isCertFromDSS}
                     onClickCheckBox={this.handleTimestampOnSignClick}
                     isChecked={signatureStandard === SignatureStandard.CADES ? true : settings.sign.timestamp_on_sign}
@@ -253,13 +246,6 @@ class AllSettings extends React.Component<any, {}> {
     const { changeSignatureTimestamp, settings } = this.props;
 
     changeSignatureTimestamp(!settings.sign.timestamp_on_data);
-  }
-
-  handleTimeClick = () => {
-    // tslint:disable-next-line: no-shadowed-variable
-    const { changeSignatureTime, settings } = this.props;
-
-    changeSignatureTime(!settings.sign.time);
   }
 
   handleTimestampOnSignClick = () => {
