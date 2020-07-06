@@ -66,6 +66,7 @@ export const postApi = async (url: string, postfields: string, headerfields: str
 export const getApi = async (url: string, headerfields: string[]) => {
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
+    console.log("url", url);
     curl.setOpt("URL", url);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
@@ -126,8 +127,9 @@ export function konturPostSign(CertificateBase64: string, SerializedFiles: ISeri
         let timeout: number = 0;
         let timerHandle: NodeJS.Timeout | null;
         let data2;
+        let resultBlock;
 
-        return await new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
           timerHandle = setInterval(async () => {
             timeout += deploy;
 
@@ -149,8 +151,19 @@ export function konturPostSign(CertificateBase64: string, SerializedFiles: ISeri
               if (timerHandle) {
                 clearInterval(timerHandle);
                 timerHandle = null;
-                resolve(data2);
+                // resolve(data2);
               }
+
+              resultBlock = await getApi(
+                `${KONTUR_CRYPTO_POINT}/GetResult?resultId=${data2.FileStatuses[0].FileId}&offset=0&size=${data2.FileStatuses[0].ResultSize}`,
+                [],
+              )
+              .catch((error) => {
+                console.log("--- error getApi", error);
+              });
+
+              console.log("+++ GetResult compleated ", resultBlock);
+
             } else {
               console.log("--- operation performing", data2);
             }
