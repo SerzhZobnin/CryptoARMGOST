@@ -155,7 +155,7 @@ export function konturPostSign(CertificateBase64: string, SerializedFiles: ISeri
               }
 
               resultBlock = await getApi(
-                `${KONTUR_CRYPTO_POINT}/GetResult?resultId=${data2.FileStatuses[0].FileId}&offset=0&size=${data2.FileStatuses[0].ResultSize}`,
+                `${KONTUR_CRYPTO_POINT}/GetResult?resultId=${data2.FileStatuses[0].ResultId}&offset=0&size=${data2.FileStatuses[0].ResultSize}`,
                 [],
               )
               .catch((error) => {
