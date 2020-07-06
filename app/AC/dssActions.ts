@@ -425,6 +425,8 @@ export function getCertificatesDSS(url: string, dssUserID: string, token: string
         },
         type: GET_CERTIFICATES_DSS + SUCCESS,
       });
+
+      if ( data.certificate !== 0) {
       for (const certificate of data) {
         logger.log({
           certificate: certificate.subjectName,
@@ -437,22 +439,32 @@ export function getCertificatesDSS(url: string, dssUserID: string, token: string
           },
           userName: USER_NAME,
         });
-      }
-
-    } catch (e) {
-      for (const certificate of data) {
+        }
+      } else {
         logger.log({
-          certificate: certificate.subjectName,
           level: "error",
-          message: "",
+          message: "Сертификаты отсутствуют",
           operation: "Импорт сертификата",
           operationObject: {
-            in: "CN=" + certificate.subjectFriendlyName,
+            in: "CN=" + "Сертификаты отсутствуют",
             out: "Null",
           },
           userName: USER_NAME,
         });
       }
+
+    } catch (e) {
+
+      logger.log({
+        level: "error",
+        message: "Ошибка получения сертификатов",
+        operation: "Импорт сертификата",
+        operationObject: {
+          in: "CN=" ,
+          out: "Null",
+        },
+        userName: USER_NAME,
+      });
 
       dispatch({
         type: GET_CERTIFICATES_DSS + FAIL,
