@@ -3,9 +3,10 @@ import {
   CREATE_TEMP_USER_DSS, DELETE_CERTIFICATE, FAIL, GET_CERTIFICATES_DSS,
   GET_POLICY_DSS, POST_AUTHORIZATION_USER_DSS, POST_OPERATION_CONFIRMATION,
   POST_PERFORM_OPERATION, POST_TRANSACTION_DSS, RESPONSE,
-  START, SUCCESS,
+  START, SUCCESS, USER_NAME,
 } from "../constants";
 import { uuid } from "../utils";
+import logger from "../winstonLogger";
 
 /**
  * Фукнция генерации стуктуры сертификата DSS
@@ -62,14 +63,14 @@ export const postApi = async (url: string, postfields: string, headerfields: str
   return new Promise((resolve, reject) => {
     const curl = new window.Curl();
     curl.setOpt("URL", url);
-    curl.setOpt ("TIMEOUT", 60);
+    curl.setOpt("TIMEOUT", 60);
     curl.setOpt("FOLLOWLOCATION", true);
     curl.setOpt(window.Curl.option.HTTPHEADER, headerfields);
 
     if (postfields) {
       curl.setOpt(window.Curl.option.POSTFIELDS, postfields);
     }
-    curl.on("end", function(statusCode: number, response: any) {
+    curl.on("end", function (statusCode: number, response: any) {
       let data;
       try {
 
@@ -256,8 +257,8 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
             TextChallengeResponse:
               [
                 {
-                RefId: `${data1.Challenge.ContextData.RefID}`,
-              },
+                  RefId: `${data1.Challenge.ContextData.RefID}`,
+                },
               ],
           },
           Resource: "urn:cryptopro:dss:signserver:signserver",
@@ -292,20 +293,20 @@ export function dssPostMFAUser(url: string, headerfield: string[], body: any, ds
               JSON.stringify(challengeResponse),
               headerfield,
             )
-            .catch((error) => {
-              dispatch(postAuthorizationUserFail(type, error));
-              dispatch({
-                payload: {
-                  RefID,
-                },
-                type: type + RESPONSE + FAIL,
+              .catch((error) => {
+                dispatch(postAuthorizationUserFail(type, error));
+                dispatch({
+                  payload: {
+                    RefID,
+                  },
+                  type: type + RESPONSE + FAIL,
+                });
+                if (timerHandle) {
+                  clearInterval(timerHandle);
+                  timerHandle = null;
+                  reject(error);
+                }
               });
-              if (timerHandle) {
-                clearInterval(timerHandle);
-                timerHandle = null;
-                reject(error);
-              }
-            });
             if (data2.IsFinal === true && !data2.IsError) {
               dispatch(postAuthorizationUserSuccess(type, data2, dssUserID));
               dispatch({
@@ -424,7 +425,47 @@ export function getCertificatesDSS(url: string, dssUserID: string, token: string
         },
         type: GET_CERTIFICATES_DSS + SUCCESS,
       });
+
+      if ( data.certificate !== 0) {
+      for (const certificate of data) {
+        logger.log({
+          certificate: certificate.subjectName,
+          level: "info",
+          message: "",
+          operation: "Импорт сертификата",
+          operationObject: {
+            in: "CN=" + certificate.subjectName,
+            out: "Null",
+          },
+          userName: USER_NAME,
+        });
+        }
+      } else {
+        logger.log({
+          level: "error",
+          message: "Сертификаты отсутствуют",
+          operation: "Импорт сертификата",
+          operationObject: {
+            in: "CN=" + "Сертификаты отсутствуют",
+            out: "Null",
+          },
+          userName: USER_NAME,
+        });
+      }
+
     } catch (e) {
+
+      logger.log({
+        level: "error",
+        message: "Ошибка получения сертификатов",
+        operation: "Импорт сертификата",
+        operationObject: {
+          in: "CN=" ,
+          out: "Null",
+        },
+        userName: USER_NAME,
+      });
+
       dispatch({
         type: GET_CERTIFICATES_DSS + FAIL,
         payload: {

@@ -1244,7 +1244,7 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
     directResult.operations = operations;
     const directFiles: any = {};
 
-    files.every((file) => {
+    files.forEach((file) => {
       logger.log({
         level: "error",
         message: error.message,
@@ -1315,7 +1315,6 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
       createTransactionDSS, packageReSign } = this.props;
     const { pinCode } = this.state;
     const { localize, locale } = this.context;
-
     const user = users.get(signer.dssUserID);
     const tokenAuth = tokensAuth.get(signer.dssUserID);
     const signsIsDetached = filesAtt ? false : true;
@@ -1528,11 +1527,10 @@ class SignatureAndEncryptRightColumnSettings extends React.Component<ISignatureA
               };
             });
             directResult.files = directFiles;
-
             const isNeedToSignSecondPackage = !signsIsDetached && filesDet;
             packageReSign(files, cert, policies, format, folderOut, outURIList, directResult,
               isNeedToSignSecondPackage || multipackage, isNeedToSignSecondPackage);
-            if(isNeedToSignSecondPackage) {
+            if (isNeedToSignSecondPackage) {
               this.resignDss(null, filesDet, setting, cert, multipackage);
             } else {
               this.setState({ pinCode: "" });
