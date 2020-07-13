@@ -58,6 +58,7 @@ interface ICertificateInfo {
   subjectName: string;
   status: boolean;
   serial: string;
+  isRootMinkomsvyz: boolean;
 }
 
 function paramsRequestDiag(id: string) {
@@ -275,6 +276,7 @@ function collectDiagnosticInfo(id: string, diagOperations: string[]): IDiagnosti
     const certInfos: ICertificateInfo[] = [];
     for (const cert of certs) {
       if (cert) {
+        console.log ("certInfos cert", cert);
         certInfos.push(PkiCertToCertInfo(id, cert));
       }
     }
