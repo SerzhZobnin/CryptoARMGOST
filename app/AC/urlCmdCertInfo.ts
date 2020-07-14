@@ -21,7 +21,7 @@ interface ICertificateInfo {
   subjectName: string;
   status: boolean;
   serial: string;
-  isRootMinkomsvyz: boolean;
+  isMynsvyaz: boolean;
 }
 
 function requestCertInfo(id: string, certificate: trusted.pki.Certificate) {
@@ -32,7 +32,7 @@ function requestCertInfo(id: string, certificate: trusted.pki.Certificate) {
   });
 }
 
-export function PkiCertToCertInfo(id: string, certificate: trusted.pki.Certificate): ICertificateInfo {
+export function PkiCertToCertInfo(id: string, certificate: trusted.pki.Certificate, isMynsvyaz: boolean): ICertificateInfo {
   let status = false;
   try {
     status = trusted.utils.Csp.verifyCertificateChain(certificate);
@@ -51,7 +51,7 @@ export function PkiCertToCertInfo(id: string, certificate: trusted.pki.Certifica
     subjectName: certificate.subjectName,
     status,
     serial: certificate.serialNumber,
-    isRootMinkomsvyz: isMinsvyazRoot (),
+    isMynsvyaz,
   };
 
   return result;
@@ -120,22 +120,6 @@ export function sendCertificateInfo(cert: trusted.pki.Certificate, cmdUrl: strin
     },
   );
 }
-const isMinsvyazRoot = () => {
-    const { chain } = this.state;
-
-    if (chain && chain.length) {
-      const rootCertInChain = chain.items(chain.length - 1);
-
-      if (rootCertInChain && rootCertInChain.thumbprint.toLowerCase() === "4BC6DC14D97010C41A26E058AD851F81C842415A".toLowerCase()) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
-
 
 const certificateToPkiItemInfo = (certValue: trusted.pki.Certificate) => {
   if (certValue) {
