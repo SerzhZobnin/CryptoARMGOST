@@ -16,6 +16,7 @@ interface ISignatureStatusProps {
 interface ISignatureStatusState {
   isShowTimeStamps: boolean;
   currentStampType: string;
+  chain: trusted.pki.CertificateCollection | null;
 }
 
 class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureStatusState> {
@@ -28,9 +29,20 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
     super(props);
 
     this.state = {
+      chain: null,
       currentStampType: "1",
       isShowTimeStamps: false,
     };
+  }
+  componentDidMount() {
+    const { signature } = this.props;
+    const signerCert = signature.certs[signature.certs.length - 1];
+
+    if (signerCert) {
+      const chain = this.buildChain(signerCert);
+
+      this.setState({ chain });
+    }
   }
 
   handleClick = () => {
@@ -111,6 +123,20 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
                   </div>
 
                   <div className="collection-item certs-collection certificate-info">
+                    {
+                      this.isMinsvyazRoot() ?
+                        <React.Fragment>
+                          <div className="collection-title">{signerCert.issuerFriendlyName}</div>
+                          <div className="collection-title selectable-text valid">выдан аккредитованным УЦ</div>
+                          <div className="collection-info">{localize("Certificate.issuer", locale)}</div>
+                        </React.Fragment>
+                        :
+                        <React.Fragment>
+                          <div className="collection-title">{signerCert.issuerFriendlyName}</div>
+                          <div className="collection-info">{localize("Certificate.issuer", locale)}</div>
+                        </React.Fragment>
+                    }
+
                     <div className="collection-title">{signerCert.issuerFriendlyName}</div>
                     <div className="collection-info">{localize("Certificate.issuer", locale)}</div>
                   </div>
@@ -200,6 +226,32 @@ class SignatureStatus extends React.Component<ISignatureStatusProps, ISignatureS
 
     return types;
   }
+  isMinsvyazRoot = () => {
+    const { chain } = this.state;
+
+    if (chain && chain.length) {
+      const rootCertInChain = chain.items(chain.length - 1);
+
+      if (rootCertInChain && rootCertInChain.thumbprint.toLowerCase() === "4BC6DC14D97010C41A26E058AD851F81C842415A".toLowerCase()) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  buildChain = (certItem: any) => {
+    const certificate = certItem.object ? certItem.object : certItem.x509 ? certItem.x509 : window.PKISTORE.getPkiObject(certItem);
+
+    try {
+      return trusted.utils.Csp.buildChain(certificate);
+    } catch (e) {
+      return null;
+    }
+  }
+
 }
 
 export default SignatureStatus;

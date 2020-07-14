@@ -39,6 +39,32 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
     locale: PropTypes.string,
     localize: PropTypes.func,
   };
+  constructor(props: any) {
+    super(props);
+    this.state = ({
+      chain: [],
+    });
+  }
+
+  componentDidMount() {
+    const { certificate } = this.props;
+
+    if (certificate) {
+      const chain = this.buildChain(certificate);
+
+      this.setState({ chain });
+    }
+  }
+
+  componentDidUpdate(prevProps: ICertificateInfoProps) {
+    if (this.props.certificate && prevProps.certificate && this.props.certificate.hash !== prevProps.certificate.hash) {
+      const { certificate } = this.props;
+
+      const chain = this.buildChain(certificate);
+
+      this.setState({ chain });
+    }
+  }
 
   render() {
     const { localize, locale } = this.context;
@@ -63,6 +89,20 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
           <div className="collection-title selectable-text">{certificate.issuerFriendlyName}</div>
         </div>
         <div className="collection-item certs-collection certificate-info">
+          {
+            this.isMinsvyazRoot() ?
+              <React.Fragment>
+                <div className="caption-text">{localize("Certificate.issuer_name", locale)}</div>
+                <div className="collection-title selectable-text">{certificate.issuerFriendlyName}</div>
+                <div className="collection-title selectable-text valid">выдан аккредитованным УЦ</div>
+              </React.Fragment>
+              :
+              <React.Fragment>
+                <div className="caption-text">{localize("Certificate.issuer_name", locale)}</div>
+                <div className="collection-title selectable-text">{certificate.issuerFriendlyName}</div>
+              </React.Fragment>
+          }
+
           <div className="caption-text">{localize("Certificate.cert_valid", locale)}</div>
           <div className="collection-title selectable-text">{(new Date(certificate.notAfter)).toLocaleDateString(locale, {
             day: "numeric",
@@ -78,7 +118,7 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
         </div>
         <div className="collection-item certs-collection certificate-info">
           <div className="caption-text">{localize("Sign.alg", locale)}</div>
-          <div className="collection-title selectable-text">{ signatureAlgorithm ? signatureAlgorithm : certificate.signatureAlgorithm}</div>
+          <div className="collection-title selectable-text">{signatureAlgorithm ? signatureAlgorithm : certificate.signatureAlgorithm}</div>
         </div>
         <div className="collection-item certs-collection certificate-info">
           <div className="caption-text">{localize("Certificate.signature_digest_algorithm", locale)}</div>
@@ -100,6 +140,31 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
       </div>
     );
   }
+  isMinsvyazRoot = () => {
+    const { chain } = this.state;
+
+    if (chain && chain.length) {
+      const rootCertInChain = chain.items(chain.length - 1);
+
+      if (rootCertInChain && rootCertInChain.thumbprint.toLowerCase() === "4BC6DC14D97010C41A26E058AD851F81C842415A".toLowerCase()) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  buildChain = (certItem: any) => {
+    const certificate = certItem.object ? certItem.object : certItem.x509 ? certItem.x509 : window.PKISTORE.getPkiObject(certItem);
+
+    try {
+      return trusted.utils.Csp.buildChain(certificate);
+    } catch (e) {
+      return null;
+    }
+  }
 
   getKeyUsage = () => {
     const { localize, locale } = this.context;
@@ -110,7 +175,7 @@ export default class CertificateInfo extends React.Component<ICertificateInfoPro
     }
 
     const x509: trusted.pki.Certificate = certificate.object &&
-     certificate.object instanceof trusted.pki.Certificate ?
+      certificate.object instanceof trusted.pki.Certificate ?
       certificate.object : window.PKISTORE.getPkiObject(certificate);
 
     if (x509) {

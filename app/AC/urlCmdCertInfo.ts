@@ -21,6 +21,7 @@ interface ICertificateInfo {
   subjectName: string;
   status: boolean;
   serial: string;
+  isMynsvyaz: boolean;
 }
 
 function requestCertInfo(id: string, certificate: trusted.pki.Certificate) {
@@ -31,7 +32,7 @@ function requestCertInfo(id: string, certificate: trusted.pki.Certificate) {
   });
 }
 
-export function PkiCertToCertInfo(id: string, certificate: trusted.pki.Certificate): ICertificateInfo {
+export function PkiCertToCertInfo(id: string, certificate: trusted.pki.Certificate, isMynsvyaz: boolean): ICertificateInfo {
   let status = false;
   try {
     status = trusted.utils.Csp.verifyCertificateChain(certificate);
@@ -50,6 +51,7 @@ export function PkiCertToCertInfo(id: string, certificate: trusted.pki.Certifica
     subjectName: certificate.subjectName,
     status,
     serial: certificate.serialNumber,
+    isMynsvyaz,
   };
 
   return result;

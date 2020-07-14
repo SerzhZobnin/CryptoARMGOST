@@ -273,9 +273,23 @@ function collectDiagnosticInfo(id: string, diagOperations: string[]): IDiagnosti
     }
 
     const certInfos: ICertificateInfo[] = [];
+    let isMynsvyaz: boolean = false;
     for (const cert of certs) {
       if (cert) {
-        certInfos.push(PkiCertToCertInfo(id, cert));
+        const chain = trusted.utils.Csp.buildChain(cert);
+        if (chain && chain.length) {
+          const rootCertInChain = chain.items(chain.length - 1);
+
+          if (rootCertInChain && rootCertInChain.thumbprint.toLowerCase() === "4BC6DC14D97010C41A26E058AD851F81C842415A".toLowerCase()) {
+            isMynsvyaz = true;
+          } else {
+            isMynsvyaz = false;
+          }
+        } else {
+          isMynsvyaz = false;
+        }
+
+        certInfos.push(PkiCertToCertInfo(id, cert, isMynsvyaz));
       }
     }
 
