@@ -314,6 +314,10 @@ export const CANCEL_URL_ACTION = "CANCEL_URL_ACTION";
 export const SIGN_DOCUMENTS_FROM_URL = "sign-documents-from-url";
 export const VERIFY_DOCUMENTS_FROM_URL = "verify-documents-from-url";
 export const REMOVE_URL_ACTION = "REMOVE_URL_ACTION";
+export const DIAGNOSTIC_FROM_URL = "diagnostic-from-url";
+
+export const ADD_TRUSTED_SERVICE = "ADD_TRUSTED_SERVICE";
+export const TRUSTED_SERVICES_JSON = window.TRUSTED_SERVICES_JSON;
 
 export const SERVICE_URL = "https://id.trusted.plus";
 export const SERVICE_TRUSTEDAPP = SERVICE_URL + "/trustedapp";

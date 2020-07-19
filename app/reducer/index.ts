@@ -27,6 +27,7 @@ import templates from "./templates";
 import tokens from "./tokens";
 import transactionDSS from "./transactionDSS";
 import trustedId from "./trustedId";
+import trustedServices from "./trustedServices";
 import urlActions from "./urlActions";
 import urlCmdCertificates from "./urlCmdCertificates";
 import urlCmdCertInfo from "./urlCmdCertInfo";
@@ -60,6 +61,7 @@ export default combineReducers({
   templates,
   tokens,
   trustedId,
+  trustedServices,
   urlActions,
   users,
   urlCmdCertificates,
