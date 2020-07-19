@@ -8,9 +8,11 @@ import { CertificateModel } from "../reducer/certificates";
 import store from "../store";
 import { arrayToMap } from "../utils";
 import { navigationLock, navigationUnlock } from "./globalLocks";
+import { converCertToPlainBase64 } from "./urlCmdCertificates";
 import { openWindow, postRequest } from "./urlCmdUtils";
 
 interface ICertificateInfo {
+  certificateBase64?: string;
   id: string;
   hash: string;
   issuerFriendlyName: string;
@@ -39,9 +41,16 @@ export function PkiCertToCertInfo(id: string, certificate: trusted.pki.Certifica
   } catch (e) {
     //
   }
+
+  let certificateBase64: string = certificate.export(trusted.DataFormat.PEM).toString();
+  certificateBase64 = certificateBase64.replace("-----BEGIN CERTIFICATE-----", "");
+  certificateBase64 = certificateBase64.replace("-----END CERTIFICATE-----", "");
+  certificateBase64 = certificateBase64.replace(/\r\n|\n|\r/gm, "");
+
   const result: ICertificateInfo = {
     id,
     // tslint:disable-next-line: object-literal-sort-keys
+    certificateBase64,
     hash: certificate.hash(),
     issuerFriendlyName: certificate.issuerFriendlyName,
     issuerName: certificate.issuerName,
