@@ -169,7 +169,16 @@ export function parseUrlCommandApiV7(urlWithCommand: string): IUrlCommandApiV4Ty
   };
 
   const parsedURL = URL.parse(urlWithCommand, true);
-  const recievedCommand = parsedURL.hostname ? parsedURL.hostname : "";
+  if (parsedURL.protocol !== "cryptoarm:") {
+    return result;
+  }
+
+  const query = parsedURL.query;
+  const hostname = parsedURL.hostname;
+  if (!hostname) {
+    return result;
+  }
+  const recievedCommand = hostname;
 
   switch (recievedCommand.toLowerCase()) {
     case "certificates":
@@ -181,9 +190,24 @@ export function parseUrlCommandApiV7(urlWithCommand: string): IUrlCommandApiV4Ty
       return result;
   }
 
-  result.command = recievedCommand;
-  result.id = getQueryStringValue(parsedURL.query, "id");
+  // we require something resembling a URL first
+  // - bail out if it's not defined
+  // - bail out if you only have `/`
+  const pathName = parsedURL.pathname;
+  if (!pathName || pathName.length <= 1) {
+    return result;
+  }
 
+  // Trim the trailing / from the URL
+  const parsedPath = pathName.substr(1);
+
+  // enable only https
+  if (URL.parse(parsedPath, true).protocol !== "https:") {
+    return result;
+  }
+
+  result.command = recievedCommand;
+  result.id = getQueryStringValue(query, "id");
   const path = parsedURL.pathname;
   if (path) {
     const urlIndex = urlWithCommand.indexOf(path) + 1;
