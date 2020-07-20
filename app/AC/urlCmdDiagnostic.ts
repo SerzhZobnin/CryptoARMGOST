@@ -7,6 +7,7 @@ import {
   TSP_OCSP_ENABLED,
   DIAGNOSTIC_FROM_URL,
   START,
+  LOCATION_MAIN,
 } from "../constants";
 import localize from "../i18n/localize";
 import { IUrlCommandApiV4Type } from "../parse-app-url";
@@ -16,6 +17,7 @@ import { fileExists } from "../utils";
 import { PkiCertToCertInfo } from "./urlCmdCertInfo";
 import { paramsRequest, postRequest } from "./urlCmdUtils";
 import { addTrustedService } from "./trustedServicesActions";
+import { push } from "react-router-redux";
 
 interface IDiagnosticsInformation {
   id: string;
@@ -76,6 +78,26 @@ function paramsRequestDiag(id: string) {
 export function handleUrlCommandDiagnostics(command: IUrlCommandApiV4Type) {
   const state = store.getState();
   const { trustedServices } = state;
+
+  if (trustedServices && trustedServices.entities && trustedServices.entities.size) {
+    //
+  } else {
+    window.SHOW_MODAL = true;
+
+    const remote = window.electron.remote;
+    const curWindow = remote.getCurrentWindow();
+
+    if ( curWindow.isMinimized()) {
+      curWindow.restore();
+    }
+
+    curWindow.show();
+    curWindow.focus();
+
+    store.dispatch(push(LOCATION_MAIN));
+
+
+  }
 
   store.dispatch(addTrustedService(command.url));
 
